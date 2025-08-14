@@ -124,24 +124,40 @@
         }
 
         function inscrire() {
-    const nom = encodeURIComponent(document.getElementById("nomcomplet").value.trim());
-    const pays = encodeURIComponent(document.getElementById("pays").value.trim());
-    const email = encodeURIComponent(document.getElementById("adresseemail").value.trim());
+            const nom = document.getElementById("nomcomplet").value.trim();
+            const pays = document.getElementById("pays").value.trim();
+            const email = document.getElementById("adresseemail").value.trim();
 
-    const params = `nomcomplet=${nom}&pays=${pays}&adresseemail=${email}`;
+            const params = `nomcomplet=${nom}&pays=${pays}&adresseemail=${email}`;
+            
+            if (!nom || !pays || !email) {
+                alert("Veuillez remplir tous les champs.");
+                return;
+            }
 
-    fetch(inscriptionUrl, {
-        method: "POST",
-        headers: {"Content-Type": "application/x-www-form-urlencoded"},
-        body: params
-    })
-    .then(res => res.text())
-    .then(data => {
-        alert("Inscription réussie !");
-        console.log(data);
-    })
-    .catch(err => {
-        console.error(err);
-        alert("Erreur lors de l'inscription.");
-    });
-}
+            fetch(inscriptionUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: JSON.stringify({
+                    nomcomplet: nom,
+                    pays: pays,
+                    adresseemail: email
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                alert("Inscription réussie !");
+                hideInscription();
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Erreur lors de l'inscription.");
+            });
+        }
+    </script>
+</body>
+</html>
+
