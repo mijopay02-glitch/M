@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>MIJO PAY - Connexion</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 300px;
+            text-align: center;
+        }
+        img {
+            max-width: 120px;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0b7dda;
+        }
+        .link-btn {
+            background: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY Logo">
+        <h2>Connexion</h2>
+        <input type="text" id="cardNumber" placeholder="Numéro de carte">
+        <input type="text" id="cin" placeholder="CIN">
+        <button onclick="login()">Se connecter</button>
+        <button class="link-btn" onclick="showInscription()">S’inscrire</button>
+
+        <div id="message"></div>
+    </div>
+
+    <!-- Formulaire d'inscription caché -->
+    <div class="container" id="inscriptionForm" style="display:none; margin-top:20px;">
+        <h2>Inscription</h2>
+        <input type="text" id="nomcomplet" placeholder="Nom complet">
+        <input type="text" id="pays" placeholder="Pays">
+        <input type="email" id="adresseemail" placeholder="Adresse email">
+        <button onclick="inscrire()">Valider inscription</button>
+        <button onclick="hideInscription()">Annuler</button>
+    </div>
+
+    <script>
+        const loginUrl = "https://script.google.com/macros/s/AKfycbxBjLDbpKe555P-ort7XulOZicYHGrGsqoEQ8fRTm211xXWmPWkn1bG7WgrgaeEpygHyA/exec";
+        const inscriptionUrl = "https://script.google.com/macros/s/AKfycbwElsWAvpTyjc-4Lu6czvZv-3NK746vMGB8KkN40_N2pHSKtMo54a_pO5-3zXu6E7bK/exec";
+
+        function login() {
+            const cardNumber = document.getElementById("cardNumber").value.trim();
+            const cin = document.getElementById("cin").value.trim();
+
+            if (!cardNumber || !cin) {
+                document.getElementById("message").innerText = "Veuillez remplir tous les champs.";
+                return;
+            }
+
+            fetch(loginUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    action: "login_user_by_card",
+                    cardNumber: cardNumber,
+                    password: cin
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                if (data.success) {
+                    // Création d'un token local (peut être amélioré côté Apps Script)
+                    localStorage.setItem("mijo_token", data.token);
+                    window.location.href = "home.html?token=" + data.token;
+                } else {
+                    document.getElementById("message").innerText = "Connexion refusée.";
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById("message").innerText = "Erreur de connexion.";
+            });
+        }
+
+        function showInscription() {
+            document.querySelector(".container").style.display = "none";
+            document.getElementById("inscriptionForm").style.display = "block";
+        }
+
+        function hideInscription() {
+            document.querySelector(".container").style.display = "block";
+            document.getElementById("inscriptionForm").style.display = "none";
+        }
+
+        function inscrire() {
+            const nom = document.getElementById("nomcomplet").value.trim();
+            const pays = document.getElementById("pays").value.trim();
+            const email = document.getElementById("adresseemail").value.trim();
+
+            if (!nom || !pays || !email) {
+                alert("Veuillez remplir tous les champs.");
+                return;
+            }
+
+            fetch(inscriptionUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    nomcomplet: nom,
+                    pays: pays,
+                    adresseemail: email
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                alert("Inscription réussie !");
+                hideInscription();
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Erreur lors de l'inscription.");
+            });
+        }
+    </script>
+</body>
+</html>
