@@ -103,65 +103,65 @@
          * Fonction de connexion
          * Envoie les données en format JSON, comme dans le bloc Kodular
          */
-       async function login() {
-            const cardNumber = document.getElementById("cardNumber").value.trim();
-            const cin = document.getElementById("cin").value.trim();
+       // Copiez et remplacez l'intégralité de votre fonction login() par ce code
+async function login() {
+    const cardNumber = document.getElementById("cardNumber").value.trim();
+    const cin = document.getElementById("cin").value.trim();
 
-            if (!cardNumber || !cin) {
-                messageDiv.innerText = "Veuillez remplir tous les champs.";
-                return;
-            }
+    if (!cardNumber || !cin) {
+        messageDiv.innerText = "Veuillez remplir tous les champs.";
+        return;
+    }
 
-            // Désactiver le bouton et montrer un message de chargement
-            loginBtn.disabled = true;
-            loginBtn.innerText = "Connexion en cours...";
-            messageDiv.innerText = "";
+    loginBtn.disabled = true;
+    loginBtn.innerText = "Connexion en cours...";
+    messageDiv.innerText = "";
 
-            try {
-                const requestData = {
-                    action: "login_user_by_card",
-                    cardNumber: cardNumber,
-                    password: cin
-                };
+    try {
+        const requestData = {
+            action: "login_user_by_card",
+            cardNumber: cardNumber,
+            password: cin
+        };
 
-                const response = await fetch(loginUrl, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    redirect: "follow",
-                    body: JSON.stringify(requestData)
-                });
-              
-        const data = await finalResponse.json();
-        // Traitement des données
-            
-
-                if (data.success) {
-                    messageDiv.style.color = "green";
-                    messageDiv.innerText = "Connexion réussie ! Redirection...";
-                    console.log("Données de l'utilisateur:", data.user);
-                    
-                    // Exemple de redirection
-                    setTimeout(() => {
-                         window.location.href = "home.html";
-                    }, 1000); 
-                    
-                } else {
-                    messageDiv.style.color = "red";
-                    messageDiv.innerText = data.error || "Une erreur est survenue. Veuillez réessayer.";
-                }
-
-            } catch (err) {
-                console.error("Erreur de connexion:", err);
-                messageDiv.style.color = "red";
-                messageDiv.innerText = "Erreur de connexion avec le serveur.";
-            } finally {
-                loginBtn.disabled = false;
-                loginBtn.innerText = "Se connecter";
-            }
+        const response = await fetch(loginUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            // Utilisez `follow` car votre déploiement devrait gérer la redirection en interne
+            redirect: "follow", 
+            body: JSON.stringify(requestData)
+        });
+        
+        // Gérer le cas où la réponse n'est pas OK (par exemple, erreur 404, 500, etc.)
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
         }
         
+        const data = await response.json();
+
+        if (data.success) {
+            messageDiv.style.color = "green";
+            messageDiv.innerText = "Connexion réussie ! Redirection...";
+            console.log("Données de l'utilisateur:", data.user);
+            
+            setTimeout(() => {
+                window.location.href = "home.html";
+            }, 1000); 
+        } else {
+            messageDiv.style.color = "red";
+            messageDiv.innerText = data.error || "Numéro de carte ou CIN incorrect.";
+        }
+    } catch (err) {
+        console.error("Erreur de connexion:", err);
+        messageDiv.style.color = "red";
+        messageDiv.innerText = "Erreur de connexion avec le serveur.";
+    } finally {
+        loginBtn.disabled = false;
+        loginBtn.innerText = "Se connecter";
+    }
+}
         /**
          * Fonction d'inscription
          * Envoie les données en format URL-encodé, comme dans le bloc Kodular
