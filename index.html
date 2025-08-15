@@ -90,7 +90,7 @@
 
     <script>
         // --- VOS URLS GOOGLE APPS SCRIPT ---
-        const loginUrl = "https://script.google.com/macros/s/AKfycbzgGBG9C9qjH4KgCSNZnVBfYoYqZx28AFdRzQyuHK18FvAp-eRFs3zBf2vDWB3eMYG7/exec";
+        const loginUrl = "https://eo504zoef8wy9nx.m.pipedream.net";
         const inscriptionUrl = "https://script.google.com/macros/s/AKfycbwElsWAvpTyjc-4Lu6czvZv-3NK746vMGB8KkN40_N2pHSKtMo54a_pO5-3zXu6E7bK/exec";
         
         // --- ÉLÉMENTS DU DOM ---
@@ -129,11 +129,23 @@
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    redirect: "follow",
+                    redirect: "manual",
                     body: JSON.stringify(requestData)
                 });
-                
-                const data = await response.json();
+                if (response.status === 302) {
+    const newUrl = response.headers.get("Location"); // On récupère la nouvelle URL
+    if (newUrl) {
+        // On envoie une nouvelle requête POST vers la nouvelle URL
+        const finalResponse = await fetch(newUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestData)
+        });
+        const data = await finalResponse.json();
+        // Traitement des données
+            
 
                 if (data.success) {
                     messageDiv.style.color = "green";
