@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIJO PAY - Home</title>
+<style>
+    body { font-family: Arial, sans-serif; margin:0; background-color: #f8f8f8; }
+    .header { display:flex; align-items:center; padding:15px; background:#fff; border-bottom:1px solid #ddd; }
+    .profile-pic { width:60px; height:60px; border-radius:50%; margin-right:10px; }
+    .user-info { flex:1; }
+    .username { font-size:18px; font-weight:bold; }
+    .email { font-size:14px; color:#555; }
+    .help-icon { width:25px; height:25px; cursor:pointer; }
+    .balance-container { padding:20px; background:#fff; text-align:center; margin-top:10px; }
+    .balance { font-size:28px; font-weight:bold; }
+    .toggle-balance { font-size:14px; color:#007bff; cursor:pointer; display:block; margin-top:5px; }
+    .flyers { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:10px; }
+    .flyer { background:#fff; padding:20px; text-align:center; border-radius:10px; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+    .footer-menu { position:fixed; bottom:0; width:100%; background:#fff; display:flex; border-top:1px solid #ddd; }
+    .menu-btn { flex:1; padding:10px; text-align:center; font-size:14px; cursor:pointer; }
+    .menu-btn:hover { background:#f0f0f0; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <img src="https://lh3.googleusercontent.com/a-/AOh14GiH89_profile_photo" alt="Profile" class="profile-pic" id="profilePic">
+    <div class="user-info">
+        <div class="username" id="username">Mikyson Antoine</div>
+        <div class="email" id="email">Mikkyantoine@gmail.com</div>
+    </div>
+    <img src="https://tonurl.com/interrogation.png" class="help-icon" onclick="openWhatsApp()">
+</div>
+
+<!-- Balance -->
+<div class="balance-container">
+    <div class="balance" id="balance">212,550 G</div>
+    <span class="toggle-balance" onclick="toggleBalance()">Cacher</span>
+</div>
+
+<!-- Flyers -->
+<div class="flyers">
+    <div class="flyer" onclick="goTo('argent')" id="flyerArgent">💰 Gagner de l'argent</div>
+    <div class="flyer" onclick="goTo('entreprise')" id="flyerEntreprise">🏢 Créer mon entreprise</div>
+    <div class="flyer" onclick="goTo('carte')">💳 Carte physique</div>
+    <div class="flyer" onclick="goTo('don')">❤️ Faire un don</div>
+</div>
+
+<!-- Footer Menu -->
+<div class="footer-menu">
+    <div class="menu-btn">🏠 Home</div>
+    <div class="menu-btn">📜 Historique</div>
+    <div class="menu-btn">🛒 Store</div>
+    <div class="menu-btn" onclick="logout()">🚪 Déconnexion</div>
+</div>
+
+<script>
+    let estPremium = true; // venant du script
+    let solde = 212550;
+    let balanceVisible = true;
+
+    function toggleBalance() {
+        let balanceElement = document.getElementById('balance');
+        let toggleText = document.querySelector('.toggle-balance');
+        if (balanceVisible) {
+            balanceElement.innerText = "****";
+            toggleText.innerText = "Afficher";
+        } else {
+            balanceElement.innerText = solde.toLocaleString() + " G";
+            toggleText.innerText = "Cacher";
+        }
+        balanceVisible = !balanceVisible;
+    }
+
+    function goTo(page) {
+        if ((page === 'argent' || page === 'entreprise') && !estPremium) {
+            alert("Cette fonctionnalité est réservée aux membres Premium.");
+            return;
+        }
+        alert("Ouverture : " + page); // Remplacer par la vraie navigation
+    }
+
+    function openWhatsApp() {
+        window.location.href = "https://wa.me/50933886402?text=Bonjour%20j'ai%20besoin%20d'informations%20sur%20MIJO%20PAY";
+    }
+
+    function logout() {
+        alert("Déconnexion...");
+    }
+</script>
+
+</body>
+</html>
