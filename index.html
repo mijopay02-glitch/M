@@ -124,40 +124,57 @@
         }
 
         function inscrire() {
-            const nom = document.getElementById("nomcomplet").value.trim();
-            const pays = document.getElementById("pays").value.trim();
-            const email = document.getElementById("adresseemail").value.trim();
+        // Get the sign-up button to disable it during the request
+        const boutonInscription = document.getElementById("bouton_inscription");
 
-            const params = `nomcomplet=${nom}&pays=${pays}&adresseemail=${email}`;
-            
-            if (!nom || !pays || !email) {
-                alert("Veuillez remplir tous les champs.");
-                return;
-            }
+        // Get values from form fields and trim whitespace
+        const nom = document.getElementById("nomcomplet").value.trim();
+        const pays = document.getElementById("pays").value.trim();
+        const email = document.getElementById("adresseemail").value.trim();
 
-            fetch(inscriptionUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: JSON.stringify({
-                    nomcomplet: nom,
-                    pays: pays,
-                    adresseemail: email
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data);
-                alert("Inscription réussie !");
-                hideInscription();
-            })
-            .catch(err => {
-                console.error(err);
-                alert("Erreur lors de l'inscription.");
-            });
+        // Check if all fields are filled
+        if (!nom || !pays || !email) {
+            alert("Veuillez remplir tous les champs.");
+            return;
         }
-    </script>
-</body>
-</html>
 
+        // Disable the button to prevent multiple clicks
+        boutonInscription.disabled = true;
+        boutonInscription.textContent = "Inscription en cours...";
+
+        // Create the payload in the "application/x-www-form-urlencoded" format
+        const params = `nomcomplet=${encodeURIComponent(nom)}&pays=${encodeURIComponent(pays)}&adresseemail=${encodeURIComponent(email)}`;
+        
+        // Make the POST request
+        fetch(inscriptionUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: params // Use the 'params' string directly
+        })
+        .then(res => {
+            // Check for a successful response before trying to parse it as JSON
+            if (res.ok) {
+                return res.json();
+            } else {
+                throw new Error("Erreur de la requête réseau.");
+            }
+        })
+        .then(data => {
+            console.log(data);
+            alert("Inscription réussie !");
+            // Optionally, you can add a function to clear the form or redirect the user
+            // hideInscription();
+        })
+        .catch(err => {
+            console.error("Erreur:", err);
+            alert("Erreur lors de l'inscription : " + err.message);
+        })
+        .finally(() => {
+            // Re-enable the button and reset its text regardless of success or failure
+            boutonInscription.disabled = false;
+            boutonInscription.textContent = "S'inscrire";
+        });
+    }
+</script>
