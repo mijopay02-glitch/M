@@ -12,6 +12,7 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
+            margin: 0;
         }
         .container {
             background: white;
@@ -26,6 +27,7 @@
             margin-bottom: 20px;
         }
         input {
+            box-sizing: border-box; /* Important pour que le padding n'augmente pas la largeur */
             width: 100%;
             padding: 10px;
             margin: 8px 0;
@@ -41,140 +43,185 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            transition: background-color 0.3s, opacity 0.3s;
         }
         button:hover {
             background: #0b7dda;
         }
+        /* Style pour un bouton désactivé */
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
         .link-btn {
             background: #4CAF50;
+        }
+        .link-btn:hover {
+            background: #45a049;
+        }
+        #message {
+            margin-top: 15px;
+            color: red;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="loginContainer">
         <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY Logo">
         <h2>Connexion</h2>
         <input type="text" id="cardNumber" placeholder="Numéro de carte">
-        <input type="text" id="cin" placeholder="CIN">
-        <button onclick="login()">Se connecter</button>
+        <input type="password" id="cin" placeholder="Mot de passe (CIN)">
+        <button id="loginButton" onclick="login()">Se connecter</button>
         <button class="link-btn" onclick="showInscription()">S’inscrire</button>
-
         <div id="message"></div>
     </div>
 
-    <!-- Formulaire d'inscription caché -->
     <div class="container" id="inscriptionForm" style="display:none; margin-top:20px;">
         <h2>Inscription</h2>
         <input type="text" id="nomcomplet" placeholder="Nom complet">
         <input type="text" id="pays" placeholder="Pays">
         <input type="email" id="adresseemail" placeholder="Adresse email">
-        <button onclick="inscrire()">Valider inscription</button>
+        <button id="inscriptionButton" onclick="inscrire()">Valider inscription</button>
         <button onclick="hideInscription()">Annuler</button>
+        <div id="inscriptionMessage"></div>
     </div>
 
     <script>
+        // --- VOS URLS GOOGLE APPS SCRIPT ---
         const loginUrl = "https://script.google.com/macros/s/AKfycbxBjLDbpKe555P-ort7XulOZicYHGrGsqoEQ8fRTm211xXWmPWkn1bG7WgrgaeEpygHyA/exec";
         const inscriptionUrl = "https://script.google.com/macros/s/AKfycbwElsWAvpTyjc-4Lu6czvZv-3NK746vMGB8KkN40_N2pHSKtMo54a_pO5-3zXu6E7bK/exec";
+        
+        // --- ÉLÉMENTS DU DOM ---
+        const loginBtn = document.getElementById('loginButton');
+        const inscriptionBtn = document.getElementById('inscriptionButton');
+        const messageDiv = document.getElementById('message');
+        const inscriptionMessageDiv = document.getElementById('inscriptionMessage');
 
-        function login() {
+        /**
+         * Fonction de connexion
+         * Envoie les données en format JSON, comme dans le bloc Kodular
+         */
+        async function login() {
             const cardNumber = document.getElementById("cardNumber").value.trim();
             const cin = document.getElementById("cin").value.trim();
 
             if (!cardNumber || !cin) {
-                document.getElementById("message").innerText = "Veuillez remplir tous les champs.";
+                messageDiv.innerText = "Veuillez remplir tous les champs.";
                 return;
             }
 
-            fetch(loginUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
+            // Désactiver le bouton et montrer un message de chargement
+            loginBtn.disabled = true;
+            loginBtn.innerText = "Recherche en cours...";
+            messageDiv.innerText = ""; // Vider l'ancien message d'erreur
+
+            // Le bloc `try...finally` s'assure que le bouton est réactivé, même en cas d'erreur
+            try {
+                // Création de l'objet de données
+                const requestData = {
                     action: "login_user_by_card",
                     cardNumber: cardNumber,
-                    password: cin
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data);
+                    password: cin // Le champ "cin" est utilisé comme mot de passe
+                };
+                
+                const response = await fetch(loginUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    // Le `redirect` est important pour gérer les redirections de Google Apps Script
+                    redirect: "follow",
+                    body: JSON.stringify(requestData)
+                });
+                
+                const data = await response.json();
+                
+                console.log(data); // Pour le débogage
+                
                 if (data.success) {
-                    // Création d'un token local (peut être amélioré côté Apps Script)
-                    localStorage.setItem("mijo_token", data.token);
-                    window.location.href = "home.html?token=" + data.token;
+                    // Si la connexion réussit, on peut rediriger l'utilisateur
+                    messageDiv.innerText = "Connexion réussie ! Redirection...";
+                    // Exemple de redirection vers une page d'accueil
+                    window.location.href = "home.html";
                 } else {
-                    document.getElementById("message").innerText = "Connexion refusée.";
+                    // Afficher le message d'erreur renvoyé par le serveur
+                    messageDiv.innerText = data.message || "Numéro de carte ou CIN incorrect.";
                 }
-            })
-            .catch(err => {
-                console.error(err);
-                document.getElementById("message").innerText = "Erreur de connexion.";
-            });
-        }
 
+            } catch (err) {
+                console.error(err);
+                messageDiv.innerText = "Erreur de connexion avec le serveur.";
+            } finally {
+                // Réactiver le bouton et restaurer son texte original
+                loginBtn.disabled = false;
+                loginBtn.innerText = "Se connecter";
+            }
+        }
+        
+        /**
+         * Fonction d'inscription
+         * Envoie les données en format URL-encodé, comme dans le bloc Kodular
+         */
+        async function inscrire() {
+            const nom = document.getElementById("nomcomplet").value.trim();
+            const pays = document.getElementById("pays").value.trim();
+            const email = document.getElementById("adresseemail").value.trim();
+
+            if (!nom || !pays || !email) {
+                inscriptionMessageDiv.innerText = "Veuillez remplir tous les champs.";
+                return;
+            }
+
+            // Désactiver le bouton et montrer un message de chargement
+            inscriptionBtn.disabled = true;
+            inscriptionBtn.innerText = "Envoi en cours...";
+            inscriptionMessageDiv.innerText = "";
+
+            try {
+                // Construction du corps de la requête au format "x-www-form-urlencoded"
+                const params = new URLSearchParams();
+                params.append('nomcomplet', nom);
+                params.append('pays', pays);
+                params.append('adresseemail', email);
+
+                const response = await fetch(inscriptionUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    redirect: "follow",
+                    body: params.toString()
+                });
+
+                const data = await response.text(); // Google Script renvoie souvent du texte simple
+                
+                console.log(data); // Pour le débogage
+                alert("Inscription réussie ! veuillez verifier votre email");
+                hideInscription(); // Revenir au formulaire de connexion
+
+            } catch (err) {
+                console.error(err);
+                alert("Une erreur est survenue lors de l'inscription.");
+            } finally {
+                // Réactiver le bouton et restaurer son texte original
+                inscriptionBtn.disabled = false;
+                inscriptionBtn.innerText = "Valider inscription";
+            }
+        }
+        
+        // --- Fonctions pour afficher/cacher les formulaires ---
         function showInscription() {
-            document.querySelector(".container").style.display = "none";
+            document.getElementById("loginContainer").style.display = "none";
             document.getElementById("inscriptionForm").style.display = "block";
         }
 
         function hideInscription() {
-            document.querySelector(".container").style.display = "block";
+            document.getElementById("loginContainer").style.display = "block";
             document.getElementById("inscriptionForm").style.display = "none";
         }
 
-        function inscrire() {
-        // Get the sign-up button to disable it during the request
-        const boutonInscription = document.getElementById("bouton_inscription");
-
-        // Get values from form fields and trim whitespace
-        const nom = document.getElementById("nomcomplet").value.trim();
-        const pays = document.getElementById("pays").value.trim();
-        const email = document.getElementById("adresseemail").value.trim();
-
-        // Check if all fields are filled
-        if (!nom || !pays || !email) {
-            alert("Veuillez remplir tous les champs.");
-            return;
-        }
-
-        // Disable the button to prevent multiple clicks
-        boutonInscription.disabled = true;
-        boutonInscription.textContent = "Inscription en cours...";
-
-        // Create the payload in the "application/x-www-form-urlencoded" format
-        const params = `nomcomplet=${encodeURIComponent(nom)}&pays=${encodeURIComponent(pays)}&adresseemail=${encodeURIComponent(email)}`;
-        
-        // Make the POST request
-        fetch(inscriptionUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: params // Use the 'params' string directly
-        })
-        .then(res => {
-            // Check for a successful response before trying to parse it as JSON
-            if (res.ok) {
-                return res.json();
-            } else {
-                throw new Error("Erreur de la requête réseau.");
-            }
-        })
-        .then(data => {
-            console.log(data);
-            alert("Inscription réussie !");
-            // Optionally, you can add a function to clear the form or redirect the user
-            // hideInscription();
-        })
-        .catch(err => {
-            console.error("Erreur:", err);
-            alert("Erreur lors de l'inscription : " + err.message);
-        })
-        .finally(() => {
-            // Re-enable the button and reset its text regardless of success or failure
-            boutonInscription.disabled = false;
-            boutonInscription.textContent = "S'inscrire";
-        });
-    }
-</script>
+    </script>
+</body>
+</html>
