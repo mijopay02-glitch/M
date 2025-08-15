@@ -129,20 +129,10 @@
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    redirect: "manual",
+                    redirect: "follow",
                     body: JSON.stringify(requestData)
                 });
-                if (response.status === 302) {
-    const newUrl = response.headers.get("Location"); // On récupère la nouvelle URL
-    if (newUrl) {
-        // On envoie une nouvelle requête POST vers la nouvelle URL
-        const finalResponse = await fetch(newUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(requestData)
-        });
+              
         const data = await finalResponse.json();
         // Traitement des données
             
