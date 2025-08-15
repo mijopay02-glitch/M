@@ -103,7 +103,7 @@
          * Fonction de connexion
          * Envoie les données en format JSON, comme dans le bloc Kodular
          */
-        async function login() {
+       async function login() {
             const cardNumber = document.getElementById("cardNumber").value.trim();
             const cin = document.getElementById("cin").value.trim();
 
@@ -114,47 +114,47 @@
 
             // Désactiver le bouton et montrer un message de chargement
             loginBtn.disabled = true;
-            loginBtn.innerText = "Recherche en cours...";
-            messageDiv.innerText = ""; // Vider l'ancien message d'erreur
+            loginBtn.innerText = "Connexion en cours...";
+            messageDiv.innerText = "";
 
-            // Le bloc `try...finally` s'assure que le bouton est réactivé, même en cas d'erreur
             try {
-                // Création de l'objet de données
                 const requestData = {
                     action: "login_user_by_card",
                     cardNumber: cardNumber,
-                    password: cin // Le champ "cin" est utilisé comme mot de passe
+                    password: cin
                 };
-                
+
                 const response = await fetch(loginUrl, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    // Le `redirect` est important pour gérer les redirections de Google Apps Script
                     redirect: "follow",
                     body: JSON.stringify(requestData)
                 });
                 
                 const data = await response.json();
-                
-                console.log(data); // Pour le débogage
-                
+
                 if (data.success) {
-                    // Si la connexion réussit, on peut rediriger l'utilisateur
+                    messageDiv.style.color = "green";
                     messageDiv.innerText = "Connexion réussie ! Redirection...";
-                    // Exemple de redirection vers une page d'accueil
-                    window.location.href = "home.html";
+                    console.log("Données de l'utilisateur:", data.user);
+                    
+                    // Exemple de redirection
+                    setTimeout(() => {
+                         window.location.href = "home.html";
+                    }, 1000); 
+                    
                 } else {
-                    // Afficher le message d'erreur renvoyé par le serveur
-                    messageDiv.innerText = data.message || "Numéro de carte ou CIN incorrect.";
+                    messageDiv.style.color = "red";
+                    messageDiv.innerText = data.error || "Une erreur est survenue. Veuillez réessayer.";
                 }
 
             } catch (err) {
-                console.error(err);
+                console.error("Erreur de connexion:", err);
+                messageDiv.style.color = "red";
                 messageDiv.innerText = "Erreur de connexion avec le serveur.";
             } finally {
-                // Réactiver le bouton et restaurer son texte original
                 loginBtn.disabled = false;
                 loginBtn.innerText = "Se connecter";
             }
