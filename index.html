@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIJO PAY - Connexion</title>
     <style>
         body {
@@ -19,7 +20,8 @@
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            width: 300px;
+            width: 90%; /* Adapte la largeur à l'écran */
+            max-width: 380px; /* Limite la largeur sur les grands écrans */
             text-align: center;
         }
         img {
@@ -27,7 +29,7 @@
             margin-bottom: 20px;
         }
         input {
-            box-sizing: border-box; /* Important pour que le padding n'augmente pas la largeur */
+            box-sizing: border-box;
             width: 100%;
             padding: 10px;
             margin: 8px 0;
@@ -48,7 +50,6 @@
         button:hover {
             background: #0b7dda;
         }
-        /* Style pour un bouton désactivé */
         button:disabled {
             background: #cccccc;
             cursor: not-allowed;
@@ -89,81 +90,76 @@
     </div>
 
     <script>
-        // --- VOS URLS GOOGLE APPS SCRIPT ---
         const loginUrl = "https://script.google.com/macros/s/AKfycbx0KSRambwCR-12xl-rHE4IX6bdjUI-cYz40TOyrB9qgPSJci469GxhgwjjJJGsQ8r9Hg/exec";
         const inscriptionUrl = "https://script.google.com/macros/s/AKfycbwElsWAvpTyjc-4Lu6czvZv-3NK746vMGB8KkN40_N2pHSKtMo54a_pO5-3zXu6E7bK/exec";
         
-        // --- ÉLÉMENTS DU DOM ---
         const loginBtn = document.getElementById('loginButton');
         const inscriptionBtn = document.getElementById('inscriptionButton');
         const messageDiv = document.getElementById('message');
         const inscriptionMessageDiv = document.getElementById('inscriptionMessage');
 
-        /**
-         * Fonction de connexion
-         * Envoie les données en format JSON, comme dans le bloc Kodular
-         */
-       // Copiez et remplacez l'intégralité de votre fonction login() par ce code
-async function login() {
-    const cardNumber = document.getElementById("cardNumber").value.trim();
-    const cin = document.getElementById("cin").value.trim();
+        async function login() {
+            const cardNumber = document.getElementById("cardNumber").value.trim();
+            const cin = document.getElementById("cin").value.trim();
 
-    if (!cardNumber || !cin) {
-        messageDiv.innerText = "Veuillez remplir tous les champs.";
-        return;
-    }
+            if (!cardNumber || !cin) {
+                messageDiv.innerText = "Veuillez remplir tous les champs.";
+                return;
+            }
 
-    loginBtn.disabled = true;
-    loginBtn.innerText = "Connexion en cours...";
-    messageDiv.innerText = "";
+            loginBtn.disabled = true;
+            loginBtn.innerText = "Connexion en cours...";
+            messageDiv.innerText = "";
 
-    try {
-        const requestData = {
-            action: "login_user_by_card",
-            cardNumber: cardNumber,
-            password: cin
-        };
+            try {
+                const requestData = {
+                    action: "login_user_by_card",
+                    cardNumber: cardNumber,
+                    password: cin
+                };
 
-        const response = await fetch(loginUrl, {
-            method: "POST",
-            headers: {
-                   "Content-Type": "application/json"
-    },
-    redirect: "follow",  // <= important
-    body: JSON.stringify(requestData)
-});
-        // Gérer le cas où la réponse n'est pas OK (par exemple, erreur 404, 500, etc.)
-        if (!response.ok) {
-            throw new Error(`Erreur HTTP: ${response.status}`);
+                const response = await fetch(loginUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    redirect: "follow",
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+
+                // La ligne console.log(await response.text()); est une erreur, car elle consomme la réponse avant la ligne suivante.
+                // const data = await response.json();
+                // Cela provoque l'erreur "TypeError: Failed to execute 'json' on 'Response': body stream is locked"
+                const data = await response.json();
+
+                if (data.success) {
+                    // Stocker les infos de l'utilisateur
+                    localStorage.setItem("user", JSON.stringify(data.user));
+
+                    messageDiv.style.color = "green";
+                    messageDiv.innerText = "Connexion réussie ! Redirection...";
+                    
+                    setTimeout(() => {
+                        window.location.href = "home.html";
+                    }, 1000);
+                } else {
+                    messageDiv.style.color = "red";
+                    messageDiv.innerText = data.error || "Numéro de carte ou CIN incorrect.";
+                }
+            } catch (err) {
+                console.error("Erreur de connexion:", err);
+                messageDiv.style.color = "red";
+                messageDiv.innerText = "Erreur de connexion avec le serveur.";
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerText = "Se connecter";
+            }
         }
-        console.log(await response.text());
-        const data = await response.json();
 
-        if (data.success) {
-            messageDiv.style.color = "green";
-            messageDiv.innerText = "Connexion réussie ! Redirection...";
-            console.log("Données de l'utilisateur:", data.user);
-            localStorage.setItem("user", JSON.stringify(data.user));
-            setTimeout(() => {
-                window.location.href = "home.html";
-            }, 1000); 
-        } else {
-            messageDiv.style.color = "red";
-            messageDiv.innerText = data.error || "Numéro de carte ou CIN incorrect.";
-        }
-    } catch (err) {
-        console.error("Erreur de connexion:", err);
-        messageDiv.style.color = "red";
-        messageDiv.innerText = "Erreur de connexion avec le serveur.";
-    } finally {
-        loginBtn.disabled = false;
-        loginBtn.innerText = "Se connecter";
-    }
-}
-        /**
-         * Fonction d'inscription
-         * Envoie les données en format URL-encodé, comme dans le bloc Kodular
-         */
         async function inscrire() {
             const nom = document.getElementById("nomcomplet").value.trim();
             const pays = document.getElementById("pays").value.trim();
@@ -174,13 +170,11 @@ async function login() {
                 return;
             }
 
-            // Désactiver le bouton et montrer un message de chargement
             inscriptionBtn.disabled = true;
             inscriptionBtn.innerText = "Envoi en cours...";
             inscriptionMessageDiv.innerText = "";
 
             try {
-                // Construction du corps de la requête au format "x-www-form-urlencoded"
                 const params = new URLSearchParams();
                 params.append('nomcomplet', nom);
                 params.append('pays', pays);
@@ -195,23 +189,20 @@ async function login() {
                     body: params.toString()
                 });
 
-                const data = await response.text(); // Google Script renvoie souvent du texte simple
+                const data = await response.text();
                 
-                console.log(data); // Pour le débogage
+                console.log(data);
                 alert("Inscription réussie ! veuillez verifier votre email");
-                hideInscription(); // Revenir au formulaire de connexion
-
+                hideInscription();
             } catch (err) {
                 console.error(err);
                 alert("Une erreur est survenue lors de l'inscription.");
             } finally {
-                // Réactiver le bouton et restaurer son texte original
                 inscriptionBtn.disabled = false;
                 inscriptionBtn.innerText = "Valider inscription";
             }
         }
         
-        // --- Fonctions pour afficher/cacher les formulaires ---
         function showInscription() {
             document.getElementById("loginContainer").style.display = "none";
             document.getElementById("inscriptionForm").style.display = "block";
@@ -221,7 +212,6 @@ async function login() {
             document.getElementById("loginContainer").style.display = "block";
             document.getElementById("inscriptionForm").style.display = "none";
         }
-
     </script>
 </body>
 </html>
