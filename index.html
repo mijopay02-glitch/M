@@ -127,12 +127,11 @@ async function login() {
         const response = await fetch(loginUrl, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
-            },
-            // Utilisez `follow` car votre déploiement devrait gérer la redirection en interne
-            redirect: "manual", 
-            body: JSON.stringify(requestData)
-        });
+                 "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    redirect: "follow",
+                    body: params.toString()
+                });
         
         // Gérer le cas où la réponse n'est pas OK (par exemple, erreur 404, 500, etc.)
         if (!response.ok) {
