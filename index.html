@@ -130,7 +130,7 @@ async function login() {
                 "Content-Type": "application/json"
             },
             // Utilisez `follow` car votre déploiement devrait gérer la redirection en interne
-            redirect: "follow", 
+            redirect: "manual", 
             body: JSON.stringify(requestData)
         });
         
