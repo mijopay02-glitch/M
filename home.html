@@ -1,65 +1,94 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MIJO PAY - Home</title>
-<style>
-    body { font-family: Arial, sans-serif; margin:0; background-color: #f8f8f8; }
-    .header { display:flex; align-items:center; padding:15px; background:#fff; border-bottom:1px solid #ddd; }
-    .profile-pic { width:60px; height:60px; border-radius:50%; margin-right:10px; }
-    .user-info { flex:1; }
-    .username { font-size:18px; font-weight:bold; }
-    .email { font-size:14px; color:#555; }
-    .help-icon { width:25px; height:25px; cursor:pointer; }
-    .balance-container { padding:20px; background:#fff; text-align:center; margin-top:10px; }
-    .balance { font-size:28px; font-weight:bold; }
-    .toggle-balance { font-size:14px; color:#007bff; cursor:pointer; display:block; margin-top:5px; }
-    .flyers { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:10px; }
-    .flyer { background:#fff; padding:20px; text-align:center; border-radius:10px; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
-    .footer-menu { position:fixed; bottom:0; width:100%; background:#fff; display:flex; border-top:1px solid #ddd; }
-    .menu-btn { flex:1; padding:10px; text-align:center; font-size:14px; cursor:pointer; }
-    .menu-btn:hover { background:#f0f0f0; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIJO PAY - Home</title>
+    <style>
+        /* Styles CSS inchangés */
+        body { font-family: Arial, sans-serif; margin:0; background-color: #f8f8f8; }
+        .header { display:flex; align-items:center; padding:15px; background:#fff; border-bottom:1px solid #ddd; }
+        .profile-pic { width:60px; height:60px; border-radius:50%; margin-right:10px; }
+        .user-info { flex:1; }
+        .username { font-size:18px; font-weight:bold; }
+        .email { font-size:14px; color:#555; }
+        .help-icon { width:25px; height:25px; cursor:pointer; }
+        .balance-container { padding:20px; background:#fff; text-align:center; margin-top:10px; }
+        .balance { font-size:28px; font-weight:bold; }
+        .toggle-balance { font-size:14px; color:#007bff; cursor:pointer; display:block; margin-top:5px; }
+        .flyers { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:10px; }
+        .flyer { background:#fff; padding:20px; text-align:center; border-radius:10px; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+        .footer-menu { position:fixed; bottom:0; width:100%; background:#fff; display:flex; border-top:1px solid #ddd; }
+        .menu-btn { flex:1; padding:10px; text-align:center; font-size:14px; cursor:pointer; }
+        .menu-btn:hover { background:#f0f0f0; }
+        .flyer img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 10px; }
+    </style>
 </head>
 <body>
 
-<!-- Header -->
 <div class="header">
-    <img src="https://lh3.googleusercontent.com/a-/AOh14GiH89_profile_photo" alt="Profile" class="profile-pic" id="profilePic">
+    <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="Profile" class="profile-pic" id="profilePic">
     <div class="user-info">
-        <div class="username" id="username">Mikyson Antoine</div>
-        <div class="email" id="email">Mikkyantoine@gmail.com</div>
+        <div class="username" id="username"></div>
+        <div class="email" id="email"></div>
     </div>
-    <img src="https://tonurl.com/interrogation.png" class="help-icon" onclick="openWhatsApp()">
+    <img src="https://i.postimg.cc/BbyVvWBn/icons8-help-64.png" class="help-icon" onclick="openWhatsApp()">
 </div>
 
-<!-- Balance -->
 <div class="balance-container">
-    <div class="balance" id="balance">212,550 G</div>
+    <div class="balance" id="balance"></div>
     <span class="toggle-balance" onclick="toggleBalance()">Cacher</span>
 </div>
 
-<!-- Flyers -->
 <div class="flyers">
-    <div class="flyer" onclick="goTo('argent')" id="flyerArgent">💰 Gagner de l'argent</div>
-    <div class="flyer" onclick="goTo('entreprise')" id="flyerEntreprise">🏢 Créer mon entreprise</div>
-    <div class="flyer" onclick="goTo('carte')">💳 Carte physique</div>
-    <div class="flyer" onclick="goTo('don')">❤️ Faire un don</div>
+    <div class="flyer" onclick="goTo('argent')" id="flyerArgent">
+        <img src="https://i.postimg.cc/sxtTrY3B/a-vibrant-lifestyle-advertisement-for-mi-a-X3-M3ft-KQ-a1if-Xmlc-A48w-Rnrn0-Ier-Qy6o-Lls-RLn-T-s-A.jpg" alt="Flyer Gagner de l'argent">
+        <span>💰 Gagner de l'argent</span>
+    </div>
+    <div class="flyer" onclick="goTo('entreprise')" id="flyerEntreprise">
+        <img src="https://i.postimg.cc/zDbm9pjG/a-vibrant-lifestyle-advertisement-for-mi-VPUrwb-Q1-RNCKr2-Df-T1ftc-A-0xo-Wrk-YJTLacd-Do-Yt-Y7-Bi-A.jpg" alt="Flyer Créer mon entreprise">
+        <span>🏢 Créer mon entreprise</span>
+    </div>
+    <div class="flyer" onclick="goTo('carte')">
+        <img src="https://i.postimg.cc/9MtzNzV8/a-sleek-product-shot-advertisement-showc-dn-RNraq-ARUKf5-Ux-FUEwg-Lw-6-Kqvf-UE-SKy-J-f-CNb-OJdnw.jpg" alt="Flyer Carte physique">
+        <span>💳 Carte physique</span>
+    </div>
+    <div class="flyer" onclick="goTo('don')">
+        <img src="https://i.postimg.cc/BbWhW5Sj/a-heartwarming-digital-flyer-advertiseme-spq1z-TDTRQu8-Sq7x-Ylr6-Q-wiy-Jeq-U-QQi-RWIPp-E5-VCyw.jpg" alt="Flyer Faire un don">
+        <span>❤️ Faire un don</span>
+    </div>
 </div>
 
-<!-- Footer Menu -->
 <div class="footer-menu">
-    <div class="menu-btn">🏠 Home</div>
-    <div class="menu-btn">📜 Historique</div>
-    <div class="menu-btn">🛒 Store</div>
+    <div class="menu-btn" onclick="goToPage('home.html')">🏠 Home</div>
+    <div class="menu-btn" onclick="goToPage('historique.html')">📜 Historique</div>
+    <div class="menu-btn" onclick="goToPage('store.html')">🛒 Store</div>
     <div class="menu-btn" onclick="logout()">🚪 Déconnexion</div>
 </div>
 
 <script>
-    let estPremium = true; // venant du script
-    let solde = 212550;
+    let userData = null;
     let balanceVisible = true;
+
+    // Charger les données de l'utilisateur stockées après la connexion
+    document.addEventListener('DOMContentLoaded', () => {
+        const storedUser = sessionStorage.getItem('userData');
+        if (storedUser) {
+            userData = JSON.parse(storedUser);
+            updateUI();
+        } else {
+            // Si pas de données, rediriger vers la page de connexion
+            window.location.href = 'index.html'; 
+        }
+    });
+
+    function updateUI() {
+        if (!userData) return;
+        
+        document.getElementById('username').innerText = userData.NomUtilisateur;
+        document.getElementById('email').innerText = userData.Email;
+        document.getElementById('balance').innerText = userData.Solde.toLocaleString() + " G";
+    }
 
     function toggleBalance() {
         let balanceElement = document.getElementById('balance');
@@ -68,18 +97,24 @@
             balanceElement.innerText = "****";
             toggleText.innerText = "Afficher";
         } else {
-            balanceElement.innerText = solde.toLocaleString() + " G";
+            balanceElement.innerText = userData.Solde.toLocaleString() + " G";
             toggleText.innerText = "Cacher";
         }
         balanceVisible = !balanceVisible;
     }
 
     function goTo(page) {
-        if ((page === 'argent' || page === 'entreprise') && !estPremium) {
+        if ((page === 'argent' || page === 'entreprise') && !userData.EstPremium) {
             alert("Cette fonctionnalité est réservée aux membres Premium.");
             return;
         }
-        alert("Ouverture : " + page); // Remplacer par la vraie navigation
+        // Redirection vers des pages spécifiques si nécessaire
+        alert("Ouverture : " + page); // À remplacer par une vraie navigation
+        // window.location.href = page + '.html'; // Exemple de redirection
+    }
+
+    function goToPage(page) {
+        window.location.href = page;
     }
 
     function openWhatsApp() {
@@ -87,7 +122,8 @@
     }
 
     function logout() {
-        alert("Déconnexion...");
+        sessionStorage.removeItem('userData'); // Supprimer les données
+        window.location.href = 'index.html';
     }
 </script>
 
