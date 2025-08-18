@@ -3,88 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test - Informations Utilisateur</title>
+    <title>MIJO PAY - Accueil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #2196F3;
+            --secondary-color: #4CAF50;
+            --text-color: #333;
+            --light-text-color: #666;
+            --bg-color: #f0f2f5;
+            --card-bg: #fff;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 40px 20px 20px;
+            text-align: center;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            border: 2px solid white;
+        }
+
+        .username {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .email {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .balance-card {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transform: translateY(50%);
+            margin: 0 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f2f5;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
-        h1 {
-            color: #333;
+
+        .balance-label {
+            font-size: 0.9em;
+            color: var(--light-text-color);
         }
-        p {
-            font-size: 1.1em;
-            color: #555;
+
+        .balance-value {
+            font-size: 2em;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-top: 5px;
         }
-        #logoutBtn {
-            margin-top: 20px;
-            padding: 10px 20px;
+
+        .toggle-balance {
+            font-size: 0.8em;
+            color: var(--light-text-color);
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            padding: 80px 20px 20px;
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .action-button {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .action-button:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-button .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .action-button span {
+            font-size: 0.9em;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 15px;
+        }
+
+        .history-item, .ad-item {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item .details, .ad-item .details {
+            flex-grow: 1;
+        }
+
+        .history-item .amount {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .ad-item img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        .footer-menu {
+            background-color: var(--card-bg);
+            border-top: 1px solid #ddd;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--light-text-color);
+            font-size: 0.7em;
+            text-decoration: none;
+            flex: 1;
+            padding: 5px 0;
+        }
+
+        .menu-btn.active {
+            color: var(--primary-color);
+        }
+
+        .menu-btn .icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .logout-btn {
+            background: none;
             border: none;
-            border-radius: 5px;
-            background-color: #ff4c4c;
-            color: white;
+            color: var(--text-color);
             cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Bienvenue !</h1>
-        <p>Nom : <strong id="username"></strong></p>
-        <p>Email : <strong id="email"></strong></p>
-        <p>Solde : <strong id="balance"></strong></p>
-        <button id="logoutBtn">Déconnexion</button>
+    <div class="header">
+        <div class="header-content">
+            <div class="profile-info">
+                <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="Profile" class="profile-pic">
+                <div>
+                    <div class="username" id="username">Chargement...</div>
+                    <div class="email" id="email"></div>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">🚪</button>
+        </div>
+        <div class="balance-card">
+            <div class="balance-label">Solde actuel</div>
+            <div class="balance-value" id="balance">0 G</div>
+        </div>
     </div>
 
+    <div class="container main-content">
+        <div class="buttons-grid">
+            <div class="action-button" onclick="alert('Fonctionnalité Dépôt')">
+                <span class="icon">⬆️</span>
+                <span>Déposer</span>
+            </div>
+            <div class="action-button" onclick="alert('Fonctionnalité Retrait')">
+                <span class="icon">⬇️</span>
+                <span>Retirer</span>
+            </div>
+            <div class="action-button" onclick="alert('Fonctionnalité Transfert')">
+                <span class="icon">➡️</span>
+                <span>Transférer</span>
+            </div>
+            <div class="action-button" onclick="alert('Fonctionnalité MAF')">
+                <span class="icon">🤝</span>
+                <span>MIJO Affilié (MAF)</span>
+            </div>
+            <div class="action-button" onclick="alert('Fonctionnalité Promo')">
+                <span class="icon">🎁</span>
+                <span>Promotions</span>
+            </div>
+        </div>
+
+        <h2 class="section-title">Publicités</h2>
+        <div id="ads-section">
+            <div class="ad-item">
+                <p>Votre publicité ici.</p>
+                <img src="https://via.placeholder.com/300x150?text=Publicite+1" alt="Publicité 1">
+            </div>
+            </div>
+
+        <h2 class="section-title">Historique des transactions</h2>
+        <div id="history-section">
+            <div class="history-item">
+                <div class="details">
+                    <div>Dépôt</div>
+                    <div style="font-size: 0.8em; color: #888;">21 octobre 2024</div>
+                </div>
+                <div class="amount" style="color: var(--secondary-color);">+ 500 G</div>
+            </div>
+            <div class="history-item">
+                <div class="details">
+                    <div>Retrait</div>
+                    <div style="font-size: 0.8em; color: #888;">20 octobre 2024</div>
+                </div>
+                <div class="amount" style="color: #e53935;">- 150 G</div>
+            </div>
+            </div>
+    </div>
+
+    <nav class="footer-menu">
+        <a href="#" class="menu-btn active">
+            <span class="icon">🏠</span>
+            <span>Accueil</span>
+        </a>
+        <a href="historique.html" class="menu-btn">
+            <span class="icon">📜</span>
+            <span>Historique</span>
+        </a>
+        <a href="store.html" class="menu-btn">
+            <span class="icon">🛒</span>
+            <span>Store</span>
+        </a>
+    </nav>
+
     <script>
-        // Récupérer la chaîne JSON de l'utilisateur depuis le localStorage
-        const userString = localStorage.getItem('user');
-
-        if (userString) {
-            try {
-                // Tenter de convertir la chaîne en objet JavaScript
-                const userData = JSON.parse(userString);
-                
-                // Mettre à jour les éléments de la page
-                // ATTENTION : remplacez "NomComplet", "Email" et "Solde"
-                // par les NOMS EXACTS des champs de votre API Airtable.
-                document.getElementById('username').innerText = userData.NomComplet || "Nom non trouvé";
-                document.getElementById('email').innerText = userData.Email || "Email non trouvé";
-                document.getElementById('balance').innerText = userData.Solde + " G" || "Solde non trouvé";
-
-                // Gérer le bouton de déconnexion
-                document.getElementById('logoutBtn').addEventListener('click', () => {
+        let userData = null;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                try {
+                    userData = JSON.parse(storedUser);
+                    updateUI();
+                } catch (e) {
+                    console.error("Erreur de données utilisateur:", e);
                     localStorage.removeItem('user');
                     window.location.href = 'index.html';
-                });
-
-            } catch (error) {
-                // Gérer l'erreur si les données ne sont pas au format JSON
-                console.error("Erreur lors de l'analyse des données de l'utilisateur:", error);
-                alert("Erreur : Données utilisateur corrompues. Veuillez vous reconnecter.");
-                localStorage.removeItem('user');
+                }
+            } else {
                 window.location.href = 'index.html';
             }
-        } else {
-            // Si aucune donnée n'est trouvée, rediriger vers la page de connexion
-            alert("Aucune session trouvée. Redirection vers la page de connexion.");
+        });
+
+        function updateUI() {
+            if (!userData) return;
+            // Assurez-vous que les noms des champs (Nom, Email, Solde) correspondent à votre API Airtable
+            document.getElementById('username').innerText = userData.NomUtilisateur || 'Utilisateur';
+            document.getElementById('email').innerText = userData.Email || '';
+            document.getElementById('balance').innerText = (userData.Solde || '0') + " G";
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
             window.location.href = 'index.html';
         }
     </script>
-
 </body>
 </html>
