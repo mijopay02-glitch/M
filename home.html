@@ -131,46 +131,34 @@
         .middle-section {
             padding: 50px 20px 20px;
         }
-
-        .card-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        
+        /* NOUVEAU STYLE POUR LES FLYERS */
+        .flyer-list {
+            display: grid;
+            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            /* 'auto-fit' est plus flexible que 'auto-fill' */
         }
-
-        .list-item {
+        
+        .flyer-item {
             background-color: var(--card-bg);
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-            padding: 15px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
+            display: block;
+            overflow: hidden;
+            text-decoration: none;
             cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .flyer-item:active {
+            transform: scale(0.98);
         }
         
-        .list-item img {
-            width: 40px;
-            height: 40px;
-            margin-right: 15px;
-        }
-        
-        .item-details {
-            flex-grow: 1;
-        }
-        
-        .item-details .name {
-            font-weight: 600;
-            color: var(--text-color);
-        }
-        
-        .item-details .price {
-            font-size: 0.9em;
-            color: var(--light-text-color);
-        }
-        
-        .item-amount {
-            font-weight: 600;
+        .flyer-item img {
+            width: 100%;
+            height: auto;
+            display: block;
         }
 
         .footer-menu {
@@ -211,7 +199,7 @@
     <div class="top-section">
         <div class="user-header">
             <div class="user-profile">
-                <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="Profil">
+                <img src="https://i.postimg.cc/vm8ShjMs/a-digital-illustration-of-a-stylized-sma-e-Nct-Kg2v-RGmg-UPTRI4-Zs-UA-3q5o-P2yu-Q4yup5-Nnqd9-D-g.jpg" alt="Profil">
                 <div class="user-info">
                     <span class="username" id="username">Chargement...</span>
                     <span class="email" id="email"></span>
@@ -228,69 +216,40 @@
         
         <div class="action-buttons">
             <a href="#" class="action-button" onclick="alert('Déposer')">
-                <span class="icon"><img src="https://i.postimg.cc/Gp8HvTvk/icons8-t-l-charger-24.png" alt="Dépôt" style="width: 24px; height: 24px;">
-    </span>
-    <span>Dépôt</span>
-</a>
+                <span class="icon"><img src="https://i.postimg.cc/Gp8HvTvk/icons8-t-l-charger-24.png" alt="Dépôt" style="width: 24px; height: 24px;"></span>
+                <span>Dépôt</span>
+            </a>
             <a href="#" class="action-button" onclick="alert('Retirer')">
-                <span class="icon"><img src="https://i.postimg.cc/KjLPfsLD/icons8-d-p-t-50.png" alt="Retrait" style="width: 24px; height: 24px;">
-    </span>
-    <span>Retrait</span>
-</a>
+                <span class="icon"><img src="https://i.postimg.cc/KjLPfsLD/icons8-d-p-t-50.png" alt="Retrait" style="width: 24px; height: 24px;"></span>
+                <span>Retrait</span>
+            </a>
             <a href="#" class="action-button" onclick="alert('Transférer')">
-                <span class="icon"><img src="https://i.postimg.cc/jdtwB5rb/icons8-transfert-50.png" alt="Transfert" style="width: 24px; height: 24px;">
-    </span>
-    <span>Transfert</span>
-</a>
+                <span class="icon"><img src="https://i.postimg.cc/jdtwB5rb/icons8-transfert-50.png" alt="Transfert" style="width: 24px; height: 24px;"></span>
+                <span>Transfert</span>
+            </a>
             <a href="#" class="action-button" onclick="alert('MAF')">
-                <span class="icon"><img src="https://i.postimg.cc/KjXqmTDQ/icons8-l-argent-avec-des-ailes-50.png" alt="Mijo Affiliate promo" style="width: 24px; height: 24px;">
-    </span>
-    <span>Mijo Affiliate promo</span>
-</a>
+                <span class="icon"><img src="https://i.postimg.cc/KjXqmTDQ/icons8-l-argent-avec-des-ailes-50.png" alt="Mijo Affiliate promo" style="width: 24px; height: 24px;"></span>
+                <span>Mijo Affiliate promo</span>
+            </a>
         </div>
     </div>
 
     <div class="container middle-section">
-    <div class="card-list" id="flyers-list">
-        <a href="#" class="flyer-item" data-page="premium.html">
-            <img src="https://i.postimg.cc/d1zd7P3j/a-dynamic-promotional-poster-for-mijo-pa-O35h-A-9v-Sn-Srwi5-Blvd-PPA-l-NGj-Bdlx-TM6i-XCh8xxmma-A.jpg" alt="MIJO PAY Premium">
-        </a>
-        <a href="#" class="flyer-item" data-page="carte.html">
-            <img src="https://i.postimg.cc/9MtzNzV8/a-sleek-product-shot-advertisement-showc-dn-RNraq-ARUKf5-Ux-FUEwg-Lw-6-Kqvf-UE-SKy-J-f-CNb-OJdnw.jpg" alt="Carte physique MIJO">
-        </a>
-        <a href="#" class="flyer-item" data-page="netflix.html">
-            <img src="https://i.postimg.cc/nhcshcTt/a-wide-cinematic-image-featuring-the-tex-r6ul-KVM9-RVO84q-Qfpl-TJWA-vf-u3-W9-LT1-WIIub3-Nm-J-Qg.jpg" alt="Abonnement Netflix">
-        </a>
-        <a href="#" class="flyer-item" data-page="don.html">
-            <img src="https://i.postimg.cc/BbWhW5Sj/a-heartwarming-digital-flyer-advertiseme-spq1z-TDTRQu8-Sq7x-Ylr6-Q-wiy-Jeq-U-QQi-RWIPp-E5-VCyw.jpg" alt="Faire un don">
-        </a>
+        <div class="flyer-list">
+            <a href="#" class="flyer-item" data-page="premium.html">
+                <img src="https://i.postimg.cc/d1zd7P3j/a-dynamic-promotional-poster-for-mijo-pa-O35h-A-9v-Sn-Srwi5-Blvd-PPA-l-NGj-Bdlx-TM6i-XCh8xxmma-A.jpg" alt="MIJO PAY Premium">
+            </a>
+            <a href="#" class="flyer-item" data-page="carte.html">
+                <img src="https://i.postimg.cc/9MtzNzV8/a-sleek-product-shot-advertisement-showc-dn-RNraq-ARUKf5-Ux-FUEwg-Lw-6-Kqvf-UE-SKy-J-f-CNb-OJdnw.jpg" alt="Carte physique MIJO">
+            </a>
+            <a href="#" class="flyer-item" data-page="netflix.html">
+                <img src="https://i.postimg.cc/nhcshcTt/a-wide-cinematic-image-featuring-the-tex-r6ul-KVM9-RVO84q-Qfpl-TJWA-vf-u3-W9-LT1-WIIub3-Nm-J-Qg.jpg" alt="Abonnement Netflix">
+            </a>
+            <a href="#" class="flyer-item" data-page="don.html">
+                <img src="https://i.postimg.cc/BbWhW5Sj/a-heartwarming-digital-flyer-advertiseme-spq1z-TDTRQu8-Sq7x-Ylr6-Q-wiy-Jeq-U-QQi-RWIPp-E5-VCyw.jpg" alt="Faire un don">
+            </a>
+        </div>
     </div>
-</div>
-
-<script>
-// ... (votre code JavaScript existant) ...
-
-// Fonction pour gérer le clic sur un flyer
-document.addEventListener('DOMContentLoaded', () => {
-    // ... (votre code existant) ...
-    
-    // Ajoute un écouteur d'événement à tous les éléments de la classe 'flyer-item'
-    document.querySelectorAll('.flyer-item').forEach(item => {
-        item.addEventListener('click', function(event) {
-            event.preventDefault(); // Empêche le lien de s'ouvrir directement
-            
-            const page = this.getAttribute('data-page'); // Récupère l'URL de la page de destination
-            
-            // Les informations de l'utilisateur sont déjà stockées dans 'userData' par la fonction de connexion.
-            // Il vous suffit de les utiliser ici si nécessaire, ou simplement de rediriger.
-            console.log("Redirection vers la page : " + page + " avec les données de l'utilisateur :", userData);
-
-            // Rediriger vers la page correspondante
-            window.location.href = page;
-        });
-    });
-});
-</script>
 
     <nav class="footer-menu">
         <a href="#" class="menu-btn active">
@@ -338,6 +297,16 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('user');
             window.location.href = 'index.html';
         }
+        
+        // Gère les clics sur les flyers
+        document.querySelectorAll('.flyer-item').forEach(item => {
+            item.addEventListener('click', function(event) {
+                event.preventDefault();
+                const page = this.getAttribute('data-page');
+                console.log("Redirection vers : " + page);
+                window.location.href = page;
+            });
+        });
     </script>
 </body>
 </html>
