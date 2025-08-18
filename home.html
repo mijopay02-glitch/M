@@ -192,6 +192,10 @@
             font-size: 1.5em;
             margin-bottom: 5px;
         }
+        .top-section.premium {
+    background-color: #f7a62d; /* Une couleur dorée, ou celle de votre choix */
+    background-image: linear-gradient(135deg, #f7a62d, #ffc977); /* Un dégradé pour un effet plus sophistiqué */
+}
     </style>
 </head>
 <body>
@@ -291,7 +295,15 @@
             document.getElementById('username').innerText = userData.NomUtilisateur || 'Utilisateur';
             document.getElementById('email').innerText = userData.Email || 'Email non renseigné';
             document.getElementById('balance').innerText = (userData.Solde || '0') + " G";
-        }
+        
+            if (userData.EstPremium) { 
+        topSection.classList.add('premium');
+        document.querySelector('.user-profile').classList.add('is-premium');
+    } else {
+        topSection.classList.remove('premium');
+        document.querySelector('.user-profile').classList.remove('is-premium');
+    }
+}
 
         function logout() {
             localStorage.removeItem('user');
