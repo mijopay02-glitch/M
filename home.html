@@ -3,128 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIJO PAY - Home</title>
+    <title>Test - Informations Utilisateur</title>
     <style>
-        /* Styles CSS inchangés */
-        body { font-family: Arial, sans-serif; margin:0; background-color: #f8f8f8; }
-        .header { display:flex; align-items:center; padding:15px; background:#fff; border-bottom:1px solid #ddd; }
-        .profile-pic { width:60px; height:60px; border-radius:50%; margin-right:10px; }
-        .user-info { flex:1; }
-        .username { font-size:18px; font-weight:bold; }
-        .email { font-size:14px; color:#555; }
-        .help-icon { width:25px; height:25px; cursor:pointer; }
-        .balance-container { padding:20px; background:#fff; text-align:center; margin-top:10px; }
-        .balance { font-size:28px; font-weight:bold; }
-        .toggle-balance { font-size:14px; color:#007bff; cursor:pointer; display:block; margin-top:5px; }
-        .flyers { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:10px; }
-        .flyer { background:#fff; padding:20px; text-align:center; border-radius:10px; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
-        .footer-menu { position:fixed; bottom:0; width:100%; background:#fff; display:flex; border-top:1px solid #ddd; }
-        .menu-btn { flex:1; padding:10px; text-align:center; font-size:14px; cursor:pointer; }
-        .menu-btn:hover { background:#f0f0f0; }
-        .flyer img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 10px; }
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            font-size: 1.1em;
+            color: #555;
+        }
+        #logoutBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff4c4c;
+            color: white;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="Profile" class="profile-pic" id="profilePic">
-    <div class="user-info">
-        <div class="username" id="username"></div>
-        <div class="email" id="email"></div>
+    <div class="container">
+        <h1>Bienvenue !</h1>
+        <p>Nom : <strong id="username"></strong></p>
+        <p>Email : <strong id="email"></strong></p>
+        <p>Solde : <strong id="balance"></strong></p>
+        <button id="logoutBtn">Déconnexion</button>
     </div>
-    <img src="https://i.postimg.cc/BbyVvWBn/icons8-help-64.png" class="help-icon" onclick="openWhatsApp()">
-</div>
 
-<div class="balance-container">
-    <div class="balance" id="balance"></div>
-    <span class="toggle-balance" onclick="toggleBalance()">Cacher</span>
-</div>
+    <script>
+        // Récupérer la chaîne JSON de l'utilisateur depuis le localStorage
+        const userString = localStorage.getItem('user');
 
-<div class="flyers">
-    <div class="flyer" onclick="goTo('argent')" id="flyerArgent">
-        <img src="https://i.postimg.cc/sxtTrY3B/a-vibrant-lifestyle-advertisement-for-mi-a-X3-M3ft-KQ-a1if-Xmlc-A48w-Rnrn0-Ier-Qy6o-Lls-RLn-T-s-A.jpg" alt="Flyer Gagner de l'argent">
-        <span>💰 Gagner de l'argent</span>
-    </div>
-    <div class="flyer" onclick="goTo('entreprise')" id="flyerEntreprise">
-        <img src="https://i.postimg.cc/zDbm9pjG/a-vibrant-lifestyle-advertisement-for-mi-VPUrwb-Q1-RNCKr2-Df-T1ftc-A-0xo-Wrk-YJTLacd-Do-Yt-Y7-Bi-A.jpg" alt="Flyer Créer mon entreprise">
-        <span>🏢 Créer mon entreprise</span>
-    </div>
-    <div class="flyer" onclick="goTo('carte')">
-        <img src="https://i.postimg.cc/9MtzNzV8/a-sleek-product-shot-advertisement-showc-dn-RNraq-ARUKf5-Ux-FUEwg-Lw-6-Kqvf-UE-SKy-J-f-CNb-OJdnw.jpg" alt="Flyer Carte physique">
-        <span>💳 Carte physique</span>
-    </div>
-    <div class="flyer" onclick="goTo('don')">
-        <img src="https://i.postimg.cc/BbWhW5Sj/a-heartwarming-digital-flyer-advertiseme-spq1z-TDTRQu8-Sq7x-Ylr6-Q-wiy-Jeq-U-QQi-RWIPp-E5-VCyw.jpg" alt="Flyer Faire un don">
-        <span>❤️ Faire un don</span>
-    </div>
-</div>
+        if (userString) {
+            try {
+                // Tenter de convertir la chaîne en objet JavaScript
+                const userData = JSON.parse(userString);
+                
+                // Mettre à jour les éléments de la page
+                // ATTENTION : remplacez "NomComplet", "Email" et "Solde"
+                // par les NOMS EXACTS des champs de votre API Airtable.
+                document.getElementById('username').innerText = userData.NomComplet || "Nom non trouvé";
+                document.getElementById('email').innerText = userData.Email || "Email non trouvé";
+                document.getElementById('balance').innerText = userData.Solde + " G" || "Solde non trouvé";
 
-<div class="footer-menu">
-    <div class="menu-btn" onclick="goToPage('home.html')">🏠 Home</div>
-    <div class="menu-btn" onclick="goToPage('historique.html')">📜 Historique</div>
-    <div class="menu-btn" onclick="goToPage('store.html')">🛒 Store</div>
-    <div class="menu-btn" onclick="logout()">🚪 Déconnexion</div>
-</div>
+                // Gérer le bouton de déconnexion
+                document.getElementById('logoutBtn').addEventListener('click', () => {
+                    localStorage.removeItem('user');
+                    window.location.href = 'index.html';
+                });
 
-<script>
-    let userData = null;
-    let balanceVisible = true;
-
-    // Charger les données de l'utilisateur stockées après la connexion
-    document.addEventListener('DOMContentLoaded', () => {
-        const storedUser = localStorage.getItem('user'); // <-- CORRIGÉ : utilise localStorage
-        if (storedUser) {
-            userData = JSON.parse(storedUser);
-            updateUI();
+            } catch (error) {
+                // Gérer l'erreur si les données ne sont pas au format JSON
+                console.error("Erreur lors de l'analyse des données de l'utilisateur:", error);
+                alert("Erreur : Données utilisateur corrompues. Veuillez vous reconnecter.");
+                localStorage.removeItem('user');
+                window.location.href = 'index.html';
+            }
         } else {
-            // Si pas de données, rediriger vers la page de connexion
+            // Si aucune donnée n'est trouvée, rediriger vers la page de connexion
+            alert("Aucune session trouvée. Redirection vers la page de connexion.");
             window.location.href = 'index.html';
         }
-    });
-
-    function updateUI() {
-        if (!userData) return;
-        
-        // CORRIGÉ : Les noms des champs doivent correspondre à ceux de l'API Airtable
-        document.getElementById('username').innerText = userData.Nom; // Changez 'Nom' par le nom du champ Airtable
-        document.getElementById('email').innerText = userData.Email; // Changez 'Email' par le nom du champ Airtable
-        document.getElementById('balance').innerText = userData.Solde.toLocaleString() + " G"; // Changez 'Solde' par le nom du champ Airtable
-    }
-
-    function toggleBalance() {
-        let balanceElement = document.getElementById('balance');
-        let toggleText = document.querySelector('.toggle-balance');
-        if (balanceVisible) {
-            balanceElement.innerText = "****";
-            toggleText.innerText = "Afficher";
-        } else {
-            balanceElement.innerText = userData.Solde.toLocaleString() + " G";
-            toggleText.innerText = "Cacher";
-        }
-        balanceVisible = !balanceVisible;
-    }
-
-    function goTo(page) {
-        if ((page === 'argent' || page === 'entreprise') && !userData.EstPremium) { // `EstPremium` est correct
-            alert("Cette fonctionnalité est réservée aux membres Premium.");
-            return;
-        }
-        alert("Ouverture : " + page);
-    }
-
-    function goToPage(page) {
-        window.location.href = page;
-    }
-
-    function openWhatsApp() {
-        window.location.href = "https://wa.me/50933886402?text=Bonjour%20j'ai%20besoin%20d'informations%20sur%20MIJO%20PAY";
-    }
-
-    function logout() {
-        localStorage.removeItem('user'); // <-- CORRIGÉ : utilise localStorage
-        window.location.href = 'index.html';
-    }
-</script>
+    </script>
 
 </body>
 </html>
