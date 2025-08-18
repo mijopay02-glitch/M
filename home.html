@@ -67,28 +67,28 @@
 </div>
 
 <script>
-    const user = JSON.parse(localStorage.getItem("user"));
     let userData = null;
     let balanceVisible = true;
 
     // Charger les données de l'utilisateur stockées après la connexion
     document.addEventListener('DOMContentLoaded', () => {
-        const storedUser = sessionStorage.getItem('userData');
+        const storedUser = localStorage.getItem('user'); // <-- CORRIGÉ : utilise localStorage
         if (storedUser) {
             userData = JSON.parse(storedUser);
             updateUI();
         } else {
             // Si pas de données, rediriger vers la page de connexion
-            window.location.href = 'index.html'; 
+            window.location.href = 'index.html';
         }
     });
 
     function updateUI() {
         if (!userData) return;
         
-        document.getElementById('username').innerText = userData.NomUtilisateur;
-        document.getElementById('email').innerText = userData.Email;
-        document.getElementById('balance').innerText = userData.Solde.toLocaleString() + " G";
+        // CORRIGÉ : Les noms des champs doivent correspondre à ceux de l'API Airtable
+        document.getElementById('username').innerText = userData.Nom; // Changez 'Nom' par le nom du champ Airtable
+        document.getElementById('email').innerText = userData.Email; // Changez 'Email' par le nom du champ Airtable
+        document.getElementById('balance').innerText = userData.Solde.toLocaleString() + " G"; // Changez 'Solde' par le nom du champ Airtable
     }
 
     function toggleBalance() {
@@ -105,13 +105,11 @@
     }
 
     function goTo(page) {
-        if ((page === 'argent' || page === 'entreprise') && !userData.EstPremium) {
+        if ((page === 'argent' || page === 'entreprise') && !userData.EstPremium) { // `EstPremium` est correct
             alert("Cette fonctionnalité est réservée aux membres Premium.");
             return;
         }
-        // Redirection vers des pages spécifiques si nécessaire
-        alert("Ouverture : " + page); // À remplacer par une vraie navigation
-        // window.location.href = page + '.html'; // Exemple de redirection
+        alert("Ouverture : " + page);
     }
 
     function goToPage(page) {
@@ -123,7 +121,7 @@
     }
 
     function logout() {
-        sessionStorage.removeItem('userData'); // Supprimer les données
+        localStorage.removeItem('user'); // <-- CORRIGÉ : utilise localStorage
         window.location.href = 'index.html';
     }
 </script>
