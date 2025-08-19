@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 
 export default async (req, res) => {
     // Définit les en-têtes CORS pour autoriser l'accès depuis votre site
-    res.setHeader('Access-Control-Allow-Origin', 'https://mijopay02-glitch.github.io');
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
