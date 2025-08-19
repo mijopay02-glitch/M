@@ -193,9 +193,9 @@
             margin-bottom: 5px;
         }
         .top-section.premium {
-    background-color: #f7a62d; /* Une couleur dorée, ou celle de votre choix */
-    background-image: linear-gradient(135deg, #f7a62d, #ffc977); /* Un dégradé pour un effet plus sophistiqué */
-}
+            background-color: #f7a62d; 
+            background-image: linear-gradient(135deg, #f7a62d, #ffc977);
+        }
     </style>
 </head>
 <body>
@@ -203,7 +203,7 @@
     <div class="top-section">
         <div class="user-header">
             <div class="user-profile">
-                <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="Profil">
+                <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY Logo">
                 <div class="user-info">
                     <span class="username" id="username">Chargement...</span>
                     <span class="email" id="email"></span>
@@ -273,6 +273,9 @@
     <script>
         let userData = null;
         
+        // Déclarez la variable ici pour qu'elle soit accessible partout
+        const topSection = document.querySelector('.top-section');
+        
         document.addEventListener('DOMContentLoaded', () => {
             const storedUser = localStorage.getItem('user');
             if (storedUser) {
@@ -295,15 +298,14 @@
             document.getElementById('username').innerText = userData.NomUtilisateur || 'Utilisateur';
             document.getElementById('email').innerText = userData.Email || 'Email non renseigné';
             document.getElementById('balance').innerText = (userData.Solde || '0') + " G";
-        
+            
+            // Correction ici : la variable topSection est maintenant définie
             if (userData.EstPremium) { 
-        topSection.classList.add('premium');
-        document.querySelector('.user-profile').classList.add('is-premium');
-    } else {
-        topSection.classList.remove('premium');
-        document.querySelector('.user-profile').classList.remove('is-premium');
-    }
-}
+                topSection.classList.add('premium');
+            } else {
+                topSection.classList.remove('premium');
+            }
+        }
 
         function logout() {
             localStorage.removeItem('user');
