@@ -20,8 +20,8 @@
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            width: 90%; /* Adapte la largeur à l'écran */
-            max-width: 380px; /* Limite la largeur sur les grands écrans */
+            width: 90%;
+            max-width: 380px;
             text-align: center;
         }
         img {
@@ -90,7 +90,10 @@
     </div>
 
     <script>
-        const loginUrl = "https://script.google.com/macros/s/AKfycbx-VYg-sA7fPEgSIZ9jCoihqcaYnzGi5KhwOJX6-CWqIKCwl0GAFp7xiV_k4vIT4nJbGg/exec";
+        // C'est la seule ligne qui change. Utilisez l'URL de votre proxy Vercel.
+        // Remplacez 'votre-nom-de-projet' par le nom de votre projet sur Vercel.
+        const loginUrl = "https://m-three-gamma.vercel.app/api/login";
+        
         const inscriptionUrl = "https://script.google.com/macros/s/AKfycbwElsWAvpTyjc-4Lu6czvZv-3NK746vMGB8KkN40_N2pHSKtMo54a_pO5-3zXu6E7bK/exec";
         
         const loginBtn = document.getElementById('loginButton');
@@ -123,7 +126,6 @@
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    redirect: "follow",
                     body: JSON.stringify(requestData)
                 });
 
@@ -131,15 +133,10 @@
                     throw new Error(`Erreur HTTP: ${response.status}`);
                 }
 
-                // La ligne console.log(await response.text()); est une erreur, car elle consomme la réponse avant la ligne suivante.
-                // const data = await response.json();
-                // Cela provoque l'erreur "TypeError: Failed to execute 'json' on 'Response': body stream is locked"
                 const data = await response.json();
 
                 if (data.success) {
-                    // Stocker les infos de l'utilisateur
                     localStorage.setItem("user", JSON.stringify(data.user));
-
                     messageDiv.style.color = "green";
                     messageDiv.innerText = "Connexion réussie ! Redirection...";
                     
@@ -185,7 +182,6 @@
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded"
                     },
-                    redirect: "follow",
                     body: params.toString()
                 });
 
