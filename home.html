@@ -382,7 +382,7 @@
             
             const requestData = {
                 action: "automatic_transfer",
-                senderId: userData.userId,
+                senderId: currentUserData.RecordID, // Correction: Utiliser `currentUserData`
                 recipientEmail: recipientEmail,
                 amount: parseFloat(amount)
             };
