@@ -27,38 +27,40 @@
             flex-grow: 1;
             padding: 20px;
         }
-.modal {
-    position: fixed;
-    z-index: 10;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
 
-.modal-content {
-    background-color: #fefefe;
-    margin: auto;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    width: 90%;
-    max-width: 400px;
-    position: relative;
-}
+        .modal {
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            display: none; /* Le modal est masqué par défaut */
+            justify-content: center;
+            align-items: center;
+        }
 
-.close-btn {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
         .top-section {
             background-color: var(--primary-color);
             color: white;
@@ -168,7 +170,6 @@
             display: grid;
             gap: 15px;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            /* 'auto-fit' est plus flexible que 'auto-fill' */
         }
         
         .flyer-item {
@@ -223,6 +224,7 @@
             font-size: 1.5em;
             margin-bottom: 5px;
         }
+        
         .top-section.premium {
             background-color: #f7a62d; 
             background-image: linear-gradient(135deg, #f7a62d, #ffc977);
@@ -251,17 +253,17 @@
         
         <div class="action-buttons">
             <a href="https://wa.me/50944990203?text=Bonjour,%20je%20souhaite%20faire%20un%20dépôt." class="action-button">
-    <span class="icon"><img src="https://i.postimg.cc/Gp8HvTvk/icons8-t-l-charger-24.png" alt="Dépôt" style="width: 24px; height: 24px;"></span>
-    <span>Dépôt</span>
-</a>
+                <span class="icon"><img src="https://i.postimg.cc/Gp8HvTvk/icons8-t-l-charger-24.png" alt="Dépôt" style="width: 24px; height: 24px;"></span>
+                <span>Dépôt</span>
+            </a>
             <a href="https://wa.me/50944990203?text=Bonjour,%20je%20souhaite%20faire%20un%20Retrait." class="action-button">
                 <span class="icon"><img src="https://i.postimg.cc/KjLPfsLD/icons8-d-p-t-50.png" alt="Retrait" style="width: 24px; height: 24px;"></span>
                 <span>Retrait</span>
             </a>
-            <a href="#" class="action-button" onclick="showTransferForm()">
-    <span class="icon"><img src="https://i.postimg.cc/jdtwB5rb/icons8-transfert-50.png" alt="Transfert" style="width: 24px; height: 24px;"></span>
-    <span>Transfert</span>
-</a>
+            <a href="#" class="action-button" onclick="showTransferModal()">
+                <span class="icon"><img src="https://i.postimg.cc/jdtwB5rb/icons8-transfert-50.png" alt="Transfert" style="width: 24px; height: 24px;"></span>
+                <span>Transfert</span>
+            </a>
             <a href="#" class="action-button" onclick="alert('MAF')">
                 <span class="icon"><img src="https://i.postimg.cc/KjXqmTDQ/icons8-l-argent-avec-des-ailes-50.png" alt="Mijo Affiliate promo" style="width: 24px; height: 24px;"></span>
                 <span>Mijo Affiliate promo</span>
@@ -283,15 +285,18 @@
             <a href="#" class="flyer-item" data-page="don.html">
                 <img src="https://i.postimg.cc/BbWhW5Sj/a-heartwarming-digital-flyer-advertiseme-spq1z-TDTRQu8-Sq7x-Ylr6-Q-wiy-Jeq-U-QQi-RWIPp-E5-VCyw.jpg" alt="Faire un don">
             </a>
-            </div>
-        
-            <div id="transferForm" style="padding: 20px; background-color: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-top: 20px; display: none;">
-    <h3>Effectuer un transfert</h3>
-    <input type="number" id="transferAmount" placeholder="Montant du transfert" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
-    <input type="email" id="recipientEmail" placeholder="Email du destinataire" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
-    <button onclick="handleTransfer()" style="width: 100%; padding: 10px; background-color: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer;">Confirmer le transfert</button>
-    <div id="transferMessage" style="margin-top: 10px; font-weight: bold;"></div>
-</div>
+        </div>
+    </div>
+
+    <div id="transferModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="hideTransferModal()">&times;</span>
+            <h3>Effectuer un transfert</h3>
+            <input type="number" id="transferAmount" placeholder="Montant du transfert">
+            <input type="email" id="recipientEmail" placeholder="Email du destinataire">
+            <button onclick="handleTransfer()">Confirmer le transfert</button>
+            <div id="transferMessage"></div>
+        </div>
     </div>
 
     <nav class="footer-menu">
@@ -311,34 +316,41 @@
 
     <script>
         let userData = null;
-        
-        // Déclarez la variable ici pour qu'elle soit accessible partout
         const topSection = document.querySelector('.top-section');
-        
+        const transferUrl = "https://transfert.mijocomplexe.workers.dev/"; 
+
         document.addEventListener('DOMContentLoaded', () => {
             const storedUser = localStorage.getItem('user');
             if (storedUser) {
                 try {
                     userData = JSON.parse(storedUser);
-                    updateUI();
+                    if (userData && userData.NomUtilisateur) { // Vérification minimale
+                        updateUI();
+                        // Gère les clics sur les flyers
+                        document.querySelectorAll('.flyer-item').forEach(item => {
+                            item.addEventListener('click', function(event) {
+                                event.preventDefault();
+                                const page = this.getAttribute('data-page');
+                                window.location.href = page;
+                            });
+                        });
+                    } else {
+                        logout();
+                    }
                 } catch (e) {
                     console.error("Erreur de données utilisateur:", e);
-                    localStorage.removeItem('user');
-                    window.location.href = 'index.html';
+                    logout();
                 }
             } else {
-                window.location.href = 'index.html';
+                logout();
             }
         });
 
         function updateUI() {
             if (!userData) return;
-            // Remplacer par les noms de champs exacts de votre API Airtable
             document.getElementById('username').innerText = userData.NomUtilisateur || 'Utilisateur';
             document.getElementById('email').innerText = userData.Email || 'Email non renseigné';
             document.getElementById('balance').innerText = (userData.Solde || '0') + " G";
-            
-            // Correction ici : la variable topSection est maintenant définie
             if (userData.EstPremium) { 
                 topSection.classList.add('premium');
             } else {
@@ -351,129 +363,97 @@
             window.location.href = 'index.html';
         }
         
-        // Gère les clics sur les flyers
-        document.querySelectorAll('.flyer-item').forEach(item => {
-            item.addEventListener('click', function(event) {
-                event.preventDefault();
-                const page = this.getAttribute('data-page');
-                console.log("Redirection vers : " + page);
-                window.location.href = page;
-            });
-        });
-        // Variable globale pour l'URL de votre API Apps Script de transfert
-const transferUrl = "https://transfert.mijocomplexe.workers.dev/"; // REMPLACEZ PAR VOTRE VRAI URL
-
-// Affiche le formulaire de transfert
-function showTransferForm() {
-    document.getElementById('transferModal').style.display = 'flex';
-}
-        function hideTransferForm() {
-    document.getElementById('transferModal').style.display = 'none';
-}
-
-// Gère le transfert d'argent
-async function handleTransfer() {
-    const amount = document.getElementById('transferAmount').value;
-    const recipientEmail = document.getElementById('recipientEmail').value;
-    const transferMessage = document.getElementById('transferMessage');
-    
-    // Vérification de base
-    if (!amount || !recipientEmail || parseFloat(amount) <= 0) {
-        transferMessage.innerText = "Veuillez entrer un montant valide et l'email du destinataire.";
-        transferMessage.style.color = 'red';
-        return;
-    }
-    
-    // Récupérer les données de l'utilisateur
-    let userData = null;
-    try {
-        userData = JSON.parse(localStorage.getItem('user'));
-    } catch (e) {
-        console.error("Erreur de données utilisateur:", e);
-        transferMessage.innerText = "Erreur de données utilisateur. Veuillez vous reconnecter.";
-        transferMessage.style.color = 'red';
-        return;
-    }
-
-    if (!userData || !userData.RecordID) {
-        transferMessage.innerText = "Utilisateur non connecté ou données manquantes.";
-        transferMessage.style.color = 'red';
-        return;
-    }
-
-    // Afficher un message de chargement
-    transferMessage.innerText = "Transfert en cours... Veuillez patienter.";
-    transferMessage.style.color = '#2196F3';
-    
-    const requestData = {
-        action: "automatic_transfer",
-        senderId: userData.RecordID,
-        recipientEmail: recipientEmail,
-        amount: parseFloat(amount)
-    };
-
-    try {
-        const response = await fetch(transferUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(requestData)
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            // Mettre à jour le solde sur la page
-            const newBalance = data.newBalance || userData.Solde - parseFloat(amount);
-            userData.Solde = newBalance;
-            localStorage.setItem('user', JSON.stringify(userData));
-            document.getElementById('balance').innerText = newBalance + " G";
-
-            // Enregistrer la transaction dans l'historique local
-            saveToHistory('Transfert', parseFloat(amount), 'Envoyé', recipientEmail);
-
-            transferMessage.innerText = "Transfert réussi !";
-            transferMessage.style.color = 'green';
-            // Cacher le formulaire après un court délai
-            setTimeout(() => {
-                document.getElementById('transferForm').style.display = 'none';
-            }, 2000);
-
-        } else {
-            transferMessage.innerText = data.error || "Échec du transfert.";
-            transferMessage.style.color = 'red';
+        function showTransferModal() {
+            document.getElementById('transferModal').style.display = 'flex';
         }
 
-    } catch (error) {
-        console.error("Erreur de transfert:", error);
-        transferMessage.innerText = "Erreur de connexion avec le serveur.";
-        transferMessage.style.color = 'red';
-    }
-}
+        function hideTransferModal() {
+            document.getElementById('transferModal').style.display = 'none';
+        }
 
-// Fonction pour enregistrer une transaction dans le localStorage pour l'historique
-function saveToHistory(type, amount, status, recipient) {
-    let history = JSON.parse(localStorage.getItem('transactions')) || [];
-    const newTransaction = {
-        id: Date.now(),
-        type: type,
-        amount: amount,
-        status: status,
-        recipient: recipient,
-        date: new Date().toLocaleDateString()
-    };
-    history.push(newTransaction);
-    localStorage.setItem('transactions', JSON.stringify(history));
-}
-        <div id="transferModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <span class="close-btn" onclick="hideTransferForm()">&times;</span>
-        <h3>Effectuer un transfert</h3>
-        <input type="number" id="transferAmount" placeholder="Montant du transfert">
-        <input type="email" id="recipientEmail" placeholder="Email du destinataire">
-        <button onclick="handleTransfer()">Confirmer le transfert</button>
-        <div id="transferMessage"></div>
-    </div>
-</div>
+        async function handleTransfer() {
+            const amount = document.getElementById('transferAmount').value;
+            const recipientEmail = document.getElementById('recipientEmail').value;
+            const transferMessage = document.getElementById('transferMessage');
+            
+            if (!amount || !recipientEmail || parseFloat(amount) <= 0) {
+                transferMessage.innerText = "Veuillez entrer un montant valide et l'email du destinataire.";
+                transferMessage.style.color = 'red';
+                return;
+            }
+            
+            let currentUserData = null;
+            try {
+                currentUserData = JSON.parse(localStorage.getItem('user'));
+            } catch (e) {
+                console.error("Erreur de données utilisateur:", e);
+                transferMessage.innerText = "Erreur de données utilisateur. Veuillez vous reconnecter.";
+                transferMessage.style.color = 'red';
+                return;
+            }
+
+            if (!currentUserData || !currentUserData.RecordID) {
+                transferMessage.innerText = "Utilisateur non connecté ou données manquantes.";
+                transferMessage.style.color = 'red';
+                return;
+            }
+
+            transferMessage.innerText = "Transfert en cours... Veuillez patienter.";
+            transferMessage.style.color = '#2196F3';
+            
+            const requestData = {
+                action: "automatic_transfer",
+                senderId: currentUserData.RecordID,
+                recipientEmail: recipientEmail,
+                amount: parseFloat(amount)
+            };
+
+            try {
+                const response = await fetch(transferUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(requestData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const newBalance = data.newBalance || currentUserData.Solde - parseFloat(amount);
+                    currentUserData.Solde = newBalance;
+                    localStorage.setItem('user', JSON.stringify(currentUserData));
+                    document.getElementById('balance').innerText = newBalance + " G";
+
+                    saveToHistory('Transfert', parseFloat(amount), 'Envoyé', recipientEmail);
+
+                    transferMessage.innerText = "Transfert réussi !";
+                    transferMessage.style.color = 'green';
+                    setTimeout(() => {
+                        hideTransferModal();
+                    }, 2000);
+                } else {
+                    transferMessage.innerText = data.error || "Échec du transfert.";
+                    transferMessage.style.color = 'red';
+                }
+            } catch (error) {
+                console.error("Erreur de transfert:", error);
+                transferMessage.innerText = "Erreur de connexion avec le serveur.";
+                transferMessage.style.color = 'red';
+            }
+        }
+
+        function saveToHistory(type, amount, status, recipient) {
+            let history = JSON.parse(localStorage.getItem('transactions')) || [];
+            const newTransaction = {
+                id: Date.now(),
+                type: type,
+                amount: amount,
+                status: status,
+                recipient: recipient,
+                date: new Date().toLocaleDateString()
+            };
+            history.push(newTransaction);
+            localStorage.setItem('transactions', JSON.stringify(history));
+        }
     </script>
 </body>
 </html>
