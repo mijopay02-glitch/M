@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIJO PAY - Historique</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --text-color: #333;
+            --light-text-color: #999;
+            --bg-color: #f0f2f5;
+            --card-bg: #fff;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            flex-grow: 1;
+            padding: 20px;
+            margin-bottom: 70px; /* Espace pour le menu en bas */
+        }
+        
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .transaction-item {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .transaction-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .transaction-type {
+            font-weight: 600;
+        }
+        
+        .transaction-date {
+            font-size: 0.8em;
+            color: var(--light-text-color);
+        }
+
+        .transaction-amount {
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        .status-success {
+            color: green;
+        }
+        
+        .status-failed {
+            color: red;
+        }
+
+        .no-transactions {
+            text-align: center;
+            color: var(--light-text-color);
+            margin-top: 50px;
+        }
+        
+        /* Menu de pied de page dupliqué pour la cohérence */
+        .footer-menu {
+            background-color: var(--card-bg);
+            border-top: 1px solid #ddd;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .menu-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--light-text-color);
+            font-size: 0.7em;
+            text-decoration: none;
+            flex: 1;
+            padding: 5px 0;
+        }
+
+        .menu-btn.active {
+            color: var(--primary-color);
+        }
+
+        .menu-btn .icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>Historique des transactions</h2>
+    </div>
+
+    <div class="container">
+        <div id="transactionList" class="transaction-list">
+            </div>
+    </div>
+
+    <nav class="footer-menu">
+        <a href="home.html" class="menu-btn">
+            <span class="icon">🏠</span>
+            <span>Accueil</span>
+        </a>
+        <a href="#" class="menu-btn active">
+            <span class="icon">📜</span>
+            <span>Historique</span>
+        </a>
+        <a href="store.html" class="menu-btn">
+            <span class="icon">🛒</span>
+            <span>Store</span>
+        </a>
+    </nav>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const transactionList = document.getElementById('transactionList');
+        const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+        if (transactions.length > 0) {
+            transactions.forEach(transaction => {
+                const item = document.createElement('div');
+                item.classList.add('transaction-item');
+
+                const details = document.createElement('div');
+                details.classList.add('transaction-details');
+
+                const type = document.createElement('span');
+                type.classList.add('transaction-type');
+                type.innerText = transaction.type;
+
+                const date = document.createElement('span');
+                date.classList.add('transaction-date');
+                date.innerText = transaction.date;
+
+                details.appendChild(type);
+                details.appendChild(date);
+                
+                if (transaction.recipient) {
+                    const recipient = document.createElement('span');
+                    recipient.innerText = `Destinataire: ${transaction.recipient}`;
+                    recipient.style.fontSize = '0.8em';
+                    recipient.style.color = 'var(--light-text-color)';
+                    details.appendChild(recipient);
+                }
+
+                const amount = document.createElement('span');
+                amount.classList.add('transaction-amount');
+                amount.innerText = `${transaction.amount} G`;
+
+                item.appendChild(details);
+                item.appendChild(amount);
+
+                transactionList.appendChild(item);
+            });
+        } else {
+            transactionList.innerHTML = '<p class="no-transactions">Aucune transaction.</p>';
+        }
+    });
+</script>
+</body>
+</html>
