@@ -360,7 +360,7 @@
             let currentUserData = null;
             try {
                 // Tente de récupérer les données utilisateur
-                currentUserData = JSON.parse(localStorage.getItem('userId'));
+                currentUserData = JSON.parse(localStorage.getItem('user'));
             } catch (e) {
                 console.error("Erreur de données utilisateur:", e);
                 transferMessage.innerText = "Erreur de données utilisateur. Veuillez vous reconnecter.";
@@ -382,7 +382,7 @@
             
             const requestData = {
                 action: "automatic_transfer",
-                senderId: currentUserData.RecordID,
+                senderId: userData.userId,
                 recipientEmail: recipientEmail,
                 amount: parseFloat(amount)
             };
