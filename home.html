@@ -321,10 +321,13 @@
 
         // Fonction pour mettre à jour l'UI avec les données de l'utilisateur
         function updateUI() {
-            if (!userData) return;
-            document.getElementById('username').innerText = userData.NomUtilisateur || 'Utilisateur';
-            document.getElementById('email').innerText = userData.Email || 'Email non renseigné';
-            document.getElementById('balance').innerText = (userData.Solde || '0') + " G";
+            const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.NomUtilisateur) {
+        document.getElementById('username').innerText = user.NomUtilisateur || 'Utilisateur';
+        document.getElementById('email').innerText = user.Email || 'Email non renseigné';
+        document.getElementById('balance').innerText = (user.Solde || '0') + " G";
+    }
+}
             if (userData.EstPremium) { 
                 topSection.classList.add('premium');
             } else {
@@ -369,7 +372,7 @@
                 transferMessage.style.color = 'red';
                 return;
             }
-
+const currentUserData = JSON.parse(localStorage.getItem('user'));
             if (!currentUserData || !currentUserData.RecordID) {
                 transferMessage.innerText = "Utilisateur non connecté ou données manquantes.";
                 transferMessage.style.color = 'red';
