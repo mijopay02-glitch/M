@@ -360,7 +360,7 @@
             let currentUserData = null;
             try {
                 // Tente de récupérer les données utilisateur
-                currentUserData = JSON.parse(localStorage.getItem('user'));
+                currentUserData = JSON.parse(localStorage.getItem('userId'));
             } catch (e) {
                 console.error("Erreur de données utilisateur:", e);
                 transferMessage.innerText = "Erreur de données utilisateur. Veuillez vous reconnecter.";
