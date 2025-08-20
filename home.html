@@ -223,14 +223,14 @@
     <span class="icon"><img src="https://i.postimg.cc/Gp8HvTvk/icons8-t-l-charger-24.png" alt="Dépôt" style="width: 24px; height: 24px;"></span>
     <span>Dépôt</span>
 </a>
-            <a href="#" class="action-button" onclick="alert('Retirer')">
+            <a href="https://wa.me/50944990203?text=Bonjour,%20je%20souhaite%20faire%20un%20Retrait." class="action-button">
                 <span class="icon"><img src="https://i.postimg.cc/KjLPfsLD/icons8-d-p-t-50.png" alt="Retrait" style="width: 24px; height: 24px;"></span>
                 <span>Retrait</span>
             </a>
-            <a href="#" class="action-button" onclick="alert('Transférer')">
-                <span class="icon"><img src="https://i.postimg.cc/jdtwB5rb/icons8-transfert-50.png" alt="Transfert" style="width: 24px; height: 24px;"></span>
-                <span>Transfert</span>
-            </a>
+            <a href=""#" class="action-button" onclick="showTransferForm()">
+    <span class="icon"><img src="https://i.postimg.cc/jdtwB5rb/icons8-transfert-50.png" alt="Transfert" style="width: 24px; height: 24px;"></span>
+    <span>Transfert</span>
+</a>
             <a href="#" class="action-button" onclick="alert('MAF')">
                 <span class="icon"><img src="https://i.postimg.cc/KjXqmTDQ/icons8-l-argent-avec-des-ailes-50.png" alt="Mijo Affiliate promo" style="width: 24px; height: 24px;"></span>
                 <span>Mijo Affiliate promo</span>
@@ -252,6 +252,13 @@
             <a href="#" class="flyer-item" data-page="don.html">
                 <img src="https://i.postimg.cc/BbWhW5Sj/a-heartwarming-digital-flyer-advertiseme-spq1z-TDTRQu8-Sq7x-Ylr6-Q-wiy-Jeq-U-QQi-RWIPp-E5-VCyw.jpg" alt="Faire un don">
             </a>
+            <div id="transferForm" style="padding: 20px; background-color: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-top: 20px; display: none;">
+    <h3>Effectuer un transfert</h3>
+    <input type="number" id="transferAmount" placeholder="Montant du transfert" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+    <input type="email" id="recipientEmail" placeholder="Email du destinataire" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+    <button onclick="handleTransfer()" style="width: 100%; padding: 10px; background-color: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer;">Confirmer le transfert</button>
+    <div id="transferMessage" style="margin-top: 10px; font-weight: bold;"></div>
+</div>
         </div>
     </div>
 
@@ -321,6 +328,107 @@
                 window.location.href = page;
             });
         });
+        // Variable globale pour l'URL de votre API Apps Script de transfert
+const transferUrl = "https://transfert.mijocomplexe.workers.dev/"; // REMPLACEZ PAR VOTRE VRAI URL
+
+// Affiche le formulaire de transfert
+function showTransferForm() {
+    document.getElementById('transferForm').style.display = 'block';
+}
+
+// Gère le transfert d'argent
+async function handleTransfer() {
+    const amount = document.getElementById('transferAmount').value;
+    const recipientEmail = document.getElementById('recipientEmail').value;
+    const transferMessage = document.getElementById('transferMessage');
+    
+    // Vérification de base
+    if (!amount || !recipientEmail || parseFloat(amount) <= 0) {
+        transferMessage.innerText = "Veuillez entrer un montant valide et l'email du destinataire.";
+        transferMessage.style.color = 'red';
+        return;
+    }
+    
+    // Récupérer les données de l'utilisateur
+    let userData = null;
+    try {
+        userData = JSON.parse(localStorage.getItem('user'));
+    } catch (e) {
+        console.error("Erreur de données utilisateur:", e);
+        transferMessage.innerText = "Erreur de données utilisateur. Veuillez vous reconnecter.";
+        transferMessage.style.color = 'red';
+        return;
+    }
+
+    if (!userData || !userData.RecordID) {
+        transferMessage.innerText = "Utilisateur non connecté ou données manquantes.";
+        transferMessage.style.color = 'red';
+        return;
+    }
+
+    // Afficher un message de chargement
+    transferMessage.innerText = "Transfert en cours... Veuillez patienter.";
+    transferMessage.style.color = '#2196F3';
+    
+    const requestData = {
+        action: "automatic_transfer",
+        senderId: userData.RecordID,
+        recipientEmail: recipientEmail,
+        amount: parseFloat(amount)
+    };
+
+    try {
+        const response = await fetch(transferUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestData)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Mettre à jour le solde sur la page
+            const newBalance = data.newBalance || userData.Solde - parseFloat(amount);
+            userData.Solde = newBalance;
+            localStorage.setItem('user', JSON.stringify(userData));
+            document.getElementById('balance').innerText = newBalance + " G";
+
+            // Enregistrer la transaction dans l'historique local
+            saveToHistory('Transfert', parseFloat(amount), 'Envoyé', recipientEmail);
+
+            transferMessage.innerText = "Transfert réussi !";
+            transferMessage.style.color = 'green';
+            // Cacher le formulaire après un court délai
+            setTimeout(() => {
+                document.getElementById('transferForm').style.display = 'none';
+            }, 2000);
+
+        } else {
+            transferMessage.innerText = data.error || "Échec du transfert.";
+            transferMessage.style.color = 'red';
+        }
+
+    } catch (error) {
+        console.error("Erreur de transfert:", error);
+        transferMessage.innerText = "Erreur de connexion avec le serveur.";
+        transferMessage.style.color = 'red';
+    }
+}
+
+// Fonction pour enregistrer une transaction dans le localStorage pour l'historique
+function saveToHistory(type, amount, status, recipient) {
+    let history = JSON.parse(localStorage.getItem('transactions')) || [];
+    const newTransaction = {
+        id: Date.now(),
+        type: type,
+        amount: amount,
+        status: status,
+        recipient: recipient,
+        date: new Date().toLocaleDateString()
+    };
+    history.push(newTransaction);
+    localStorage.setItem('transactions', JSON.stringify(history));
+}
     </script>
 </body>
 </html>
