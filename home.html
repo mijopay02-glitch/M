@@ -314,8 +314,6 @@
     </nav>
 
     <script>
-        // La variable userData est maintenant déclarée, mais nous ne l'utiliserons pas globalement.
-        // Chaque fonction obtiendra les données dont elle a besoin pour éviter les erreurs.
         const topSection = document.querySelector('.top-section');
         const transferUrl = "https://transfert.mijocomplexe.workers.dev/"; 
 
@@ -326,7 +324,6 @@
                 document.getElementById('email').innerText = user.Email || 'Email non renseigné';
                 document.getElementById('balance').innerText = (user.Solde || '0') + " G";
 
-                // Utiliser l'objet 'user' passé en paramètre
                 if (user.EstPremium) { 
                     topSection.classList.add('premium');
                 } else {
@@ -433,4 +430,39 @@
                 type: type,
                 amount: amount,
                 status: status,
-                recipient:
+                recipient: recipient,
+                date: new Date().toLocaleDateString()
+            };
+            history.push(newTransaction);
+            localStorage.setItem('transactions', JSON.stringify(history));
+        }
+
+        // Ce bloc de code s'exécute une fois que la page est entièrement chargée
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                try {
+                    const user = JSON.parse(storedUser);
+                    if (user && user.NomUtilisateur) {
+                        updateUI(user);
+                        document.querySelectorAll('.flyer-item').forEach(item => {
+                            item.addEventListener('click', function(event) {
+                                event.preventDefault();
+                                const page = this.getAttribute('data-page');
+                                window.location.href = page;
+                            });
+                        });
+                    } else {
+                        logout();
+                    }
+                } catch (e) {
+                    console.error("Erreur de données utilisateur:", e);
+                    logout();
+                }
+            } else {
+                logout();
+            }
+        });
+    </script>
+</body>
+</html>
