@@ -317,7 +317,6 @@
         const topSection = document.querySelector('.top-section');
         const transferUrl = "https://transfert.mijocomplexe.workers.dev/"; 
 
-        // Fonction pour mettre à jour l'interface utilisateur avec les données de l'utilisateur
         function updateUI(user) {
             if (user && user.NomUtilisateur) {
                 document.getElementById('username').innerText = user.NomUtilisateur || 'Utilisateur';
@@ -330,27 +329,23 @@
                     topSection.classList.remove('premium');
                 }
             } else {
-                logout(); // Déconnexion si les données sont invalides
+                logout();
             }
         }
 
-        // Fonction pour gérer la déconnexion de l'utilisateur
         function logout() {
             localStorage.removeItem('user');
             window.location.href = 'index.html';
         }
         
-        // Fonction pour afficher la fenêtre modale de transfert
         function showTransferModal() {
             document.getElementById('transferModal').style.display = 'flex';
         }
 
-        // Fonction pour masquer la fenêtre modale de transfert
         function hideTransferModal() {
             document.getElementById('transferModal').style.display = 'none';
         }
 
-        // Fonction pour gérer le processus de transfert d'argent
         async function handleTransfer() {
             const amount = document.getElementById('transferAmount').value;
             const recipientEmail = document.getElementById('recipientEmail').value;
@@ -364,6 +359,7 @@
             
             let currentUserData = null;
             try {
+                // Tente de récupérer les données utilisateur
                 currentUserData = JSON.parse(localStorage.getItem('user'));
             } catch (e) {
                 console.error("Erreur de données utilisateur:", e);
@@ -372,9 +368,12 @@
                 return;
             }
 
+            // Vérifie si les données utilisateur sont valides avant de continuer
             if (!currentUserData || !currentUserData.RecordID) {
                 transferMessage.innerText = "Utilisateur non connecté ou données manquantes.";
                 transferMessage.style.color = 'red';
+                // Déconnexion forcée et redirection pour résoudre le problème
+                logout(); 
                 return;
             }
 
@@ -402,7 +401,7 @@
                     currentUserData.Solde = newBalance;
                     localStorage.setItem('user', JSON.stringify(currentUserData));
                     
-                    updateUI(currentUserData); // Mise à jour de l'UI avec les nouvelles données
+                    updateUI(currentUserData);
 
                     saveToHistory('Transfert', parseFloat(amount), 'Envoyé', recipientEmail);
 
@@ -422,7 +421,6 @@
             }
         }
 
-        // Fonction pour enregistrer une transaction dans le localStorage pour l'historique
         function saveToHistory(type, amount, status, recipient) {
             let history = JSON.parse(localStorage.getItem('transactions')) || [];
             const newTransaction = {
@@ -437,7 +435,6 @@
             localStorage.setItem('transactions', JSON.stringify(history));
         }
 
-        // Ce bloc de code s'exécute une fois que la page est entièrement chargée
         document.addEventListener('DOMContentLoaded', () => {
             const storedUser = localStorage.getItem('user');
             if (storedUser) {
