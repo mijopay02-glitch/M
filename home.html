@@ -1,463 +1,436 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIJO PAY - Accueil</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #2196F3;
-            --text-color: #333;
-            --light-text-color: #999;
-            --bg-color: #f0f2f5;
-            --card-bg: #fff;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIJO PAY - Accueil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --text-color: #333;
+            --light-text-color: #999;
+            --bg-color: #f0f2f5;
+            --card-bg: #fff;
+        }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            background-color: var(--bg-color);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
-        .container {
-            flex-grow: 1;
-            padding: 20px;
-        }
+        .container {
+            flex-grow: 1;
+            padding: 20px;
+        }
 
-        .modal {
-            position: fixed;
-            z-index: 10;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
+        .modal {
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
 
-        .modal-content {
-            background-color: #fefefe;
-            margin: auto;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            width: 90%;
-            max-width: 400px;
-            position: relative;
-        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
 
-        .close-btn {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .top-section {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 30px 20px 80px;
-            text-align: center;
-            border-bottom-left-radius: 25px;
-            border-bottom-right-radius: 25px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            position: relative;
-        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .top-section {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 30px 20px 80px;
+            text-align: center;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
 
-        .user-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
+        .user-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
 
-        .user-profile {
-            display: flex;
-            align-items: center;
-        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
 
-        .user-profile img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-            border: 2px solid white;
-        }
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid white;
+        }
 
-        .user-info {
-            display: flex;
-            flex-direction: column;
-            text-align: left;
-        }
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
 
-        .username {
-            font-size: 1.1em;
-            font-weight: 500;
-        }
-        
-        .email {
-            font-size: 0.8em;
-            opacity: 0.8;
-            margin-top: -5px;
-        }
+        .username {
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        .email {
+            font-size: 0.8em;
+            opacity: 0.8;
+            margin-top: -5px;
+        }
 
-        .balance-display {
-            margin-top: 20px;
-        }
+        .balance-display {
+            margin-top: 20px;
+        }
 
-        .balance-value {
-            font-size: 2.8em;
-            font-weight: 700;
-        }
+        .balance-value {
+            font-size: 2.8em;
+            font-weight: 700;
+        }
 
-        .balance-label {
-            font-size: 1.1em;
-            opacity: 0.8;
-        }
+        .balance-label {
+            font-size: 1.1em;
+            opacity: 0.8;
+        }
 
-        .action-buttons {
-            display: flex;
-            justify-content: space-around;
-            position: absolute;
-            bottom: -30px;
-            width: 100%;
-            left: 0;
-        }
+        .action-buttons {
+            display: flex;
+            justify-content: space-around;
+            position: absolute;
+            bottom: -30px;
+            width: 100%;
+            left: 0;
+        }
 
-        .action-button {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background-color: var(--card-bg);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-decoration: none;
-            color: var(--text-color);
-            transition: transform 0.2s;
-            justify-content: center;
-        }
+        .action-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: var(--card-bg);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            color: var(--text-color);
+            transition: transform 0.2s;
+            justify-content: center;
+        }
 
-        .action-button:active {
-            transform: scale(0.95);
-        }
+        .action-button:active {
+            transform: scale(0.95);
+        }
 
-        .action-button .icon {
-            font-size: 1.5em;
-        }
-        
-        .action-button span {
-            font-size: 0.7em;
-            margin-top: 5px;
-            text-align: center;
-        }
+        .action-button .icon {
+            font-size: 1.5em;
+        }
+        
+        .action-button span {
+            font-size: 0.7em;
+            margin-top: 5px;
+            text-align: center;
+        }
 
-        .middle-section {
-            padding: 50px 20px 20px;
-        }
-        
-        .flyer-list {
-            display: grid;
-            gap: 15px;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        }
-        
-        .flyer-item {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-            display: block;
-            overflow: hidden;
-            text-decoration: none;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
+        .middle-section {
+            padding: 50px 20px 20px;
+        }
+        
+        .flyer-list {
+            display: grid;
+            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+        
+        .flyer-item {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: block;
+            overflow: hidden;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
 
-        .flyer-item:active {
-            transform: scale(0.98);
-        }
-        
-        .flyer-item img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
+        .flyer-item:active {
+            transform: scale(0.98);
+        }
+        
+        .flyer-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
 
-        .footer-menu {
-            background-color: var(--card-bg);
-            border-top: 1px solid #ddd;
-            padding: 10px 0;
-            display: flex;
-            justify-content: space-around;
-            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
+        .footer-menu {
+            background-color: var(--card-bg);
+            border-top: 1px solid #ddd;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
 
-        .menu-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--light-text-color);
-            font-size: 0.7em;
-            text-decoration: none;
-            flex: 1;
-            padding: 5px 0;
-        }
+        .menu-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--light-text-color);
+            font-size: 0.7em;
+            text-decoration: none;
+            flex: 1;
+            padding: 5px 0;
+        }
 
-        .menu-btn.active {
-            color: var(--primary-color);
-        }
+        .menu-btn.active {
+            color: var(--primary-color);
+        }
 
-        .menu-btn .icon {
-            font-size: 1.5em;
-            margin-bottom: 5px;
-        }
-        
-        .top-section.premium {
-            background-color: #f7a62d; 
-            background-image: linear-gradient(135deg, #f7a62d, #ffc977);
-        }
-    </style>
+        .menu-btn .icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+        
+        .top-section.premium {
+            background-color: #f7a62d; 
+            background-image: linear-gradient(135deg, #f7a62d, #ffc977);
+        }
+    </style>
 </head>
 <body>
 
-    <div class="top-section">
-        <div class="user-header">
-            <div class="user-profile">
-                <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY Logo">
-                <div class="user-info">
-                    <span class="username" id="username">Chargement...</span>
-                    <span class="email" id="email"></span>
-                </div>
-            </div>
-            <a href="#" class="icon-link" onclick="logout()">
-                <img src="https://i.postimg.cc/43mBtP8B/icons8-exporter-48.png" alt="Déconnexion" style="width: 24px;">
-            </a>
-        </div>
-        <div class="balance-display">
-            <div class="balance-label">Solde MIJO</div>
-            <div class="balance-value" id="balance">0 G</div>
-        </div>
-        
-        <div class="action-buttons">
-            <a href="https://wa.me/50944990203?text=Bonjour,%20je%20souhaite%20faire%20un%20dépôt." class="action-button">
-                <span class="icon"><img src="https://i.postimg.cc/Gp8HvTvk/icons8-t-l-charger-24.png" alt="Dépôt" style="width: 24px; height: 24px;"></span>
-                <span>Dépôt</span>
-            </a>
-            <a href="https://wa.me/50944990203?text=Bonjour,%20je%20souhaite%20faire%20un%20Retrait." class="action-button">
-                <span class="icon"><img src="https://i.postimg.cc/KjLPfsLD/icons8-d-p-t-50.png" alt="Retrait" style="width: 24px; height: 24px;"></span>
-                <span>Retrait</span>
-            </a>
-            <a href="#" class="action-button" onclick="showTransferModal()">
-                <span class="icon"><img src="https://i.postimg.cc/jdtwB5rb/icons8-transfert-50.png" alt="Transfert" style="width: 24px; height: 24px;"></span>
-                <span>Transfert</span>
-            </a>
-            <a href="#" class="action-button" onclick="alert('MAF')">
-                <span class="icon"><img src="https://i.postimg.cc/KjXqmTDQ/icons8-l-argent-avec-des-ailes-50.png" alt="Mijo Affiliate promo" style="width: 24px; height: 24px;"></span>
-                <span>Mijo Affiliate promo</span>
-            </a>
-        </div>
-    </div>
+    <div class="top-section">
+        <div class="user-header">
+            <div class="user-profile">
+                <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY Logo">
+                <div class="user-info">
+                    <span class="username" id="username">Chargement...</span>
+                    <span class="email" id="email"></span>
+                </div>
+            </div>
+            <a href="#" class="icon-link" onclick="logout()">
+                <img src="https://i.postimg.cc/43mBtP8B/icons8-exporter-48.png" alt="Déconnexion" style="width: 24px;">
+            </a>
+        </div>
+        <div class="balance-display">
+            <div class="balance-label">Solde MIJO</div>
+            <div class="balance-value" id="balance">0 G</div>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="https://wa.me/50944990203?text=Bonjour,%20je%20souhaite%20faire%20un%20dépôt." class="action-button">
+                <span class="icon"><img src="https://i.postimg.cc/Gp8HvTvk/icons8-t-l-charger-24.png" alt="Dépôt" style="width: 24px; height: 24px;"></span>
+                <span>Dépôt</span>
+            </a>
+            <a href="https://wa.me/50944990203?text=Bonjour,%20je%20souhaite%20faire%20un%20Retrait." class="action-button">
+                <span class="icon"><img src="https://i.postimg.cc/KjLPfsLD/icons8-d-p-t-50.png" alt="Retrait" style="width: 24px; height: 24px;"></span>
+                <span>Retrait</span>
+            </a>
+            <a href="#" class="action-button" onclick="showTransferModal()">
+                <span class="icon"><img src="https://i.postimg.cc/jdtwB5rb/icons8-transfert-50.png" alt="Transfert" style="width: 24px; height: 24px;"></span>
+                <span>Transfert</span>
+            </a>
+            <a href="#" class="action-button" onclick="alert('MAF')">
+                <span class="icon"><img src="https://i.postimg.cc/KjXqmTDQ/icons8-l-argent-avec-des-ailes-50.png" alt="Mijo Affiliate promo" style="width: 24px; height: 24px;"></span>
+                <span>Mijo Affiliate promo</span>
+            </a>
+        </div>
+    </div>
 
-    <div class="container middle-section">
-        <div class="flyer-list">
-            <a href="#" class="flyer-item" data-page="premium.html">
-                <img src="https://i.postimg.cc/d1zd7P3j/a-dynamic-promotional-poster-for-mijo-pa-O35h-A-9v-Sn-Srwi5-Blvd-PPA-l-NGj-Bdlx-TM6i-XCh8xxmma-A.jpg" alt="MIJO PAY Premium">
-            </a>
-            <a href="#" class="flyer-item" data-page="carte.html">
-                <img src="https://i.postimg.cc/9MtzNzV8/a-sleek-product-shot-advertisement-showc-dn-RNraq-ARUKf5-Ux-FUEwg-Lw-6-Kqvf-UE-SKy-J-f-CNb-OJdnw.jpg" alt="Carte physique MIJO">
-            </a>
-            <a href="#" class="flyer-item" data-page="netflix.html">
-                <img src="https://i.postimg.cc/nhcshcTt/a-wide-cinematic-image-featuring-the-tex-r6ul-KVM9-RVO84q-Qfpl-TJWA-vf-u3-W9-LT1-WIIub3-Nm-J-Qg.jpg" alt="Abonnement Netflix">
-            </a>
-            <a href="#" class="flyer-item" data-page="don.html">
-                <img src="https://i.postimg.cc/BbWhW5Sj/a-heartwarming-digital-flyer-advertiseme-spq1z-TDTRQu8-Sq7x-Ylr6-Q-wiy-Jeq-U-QQi-RWIPp-E5-VCyw.jpg" alt="Faire un don">
-            </a>
-        </div>
-    </div>
+    <div class="container middle-section">
+        <div class="flyer-list">
+            <a href="#" class="flyer-item" data-page="premium.html">
+                <img src="https://i.postimg.cc/d1zd7P3j/a-dynamic-promotional-poster-for-mijo-pa-O35h-A-9v-Sn-Srwi5-Blvd-PPA-l-NGj-Bdlx-TM6i-XCh8xxmma-A.jpg" alt="MIJO PAY Premium">
+            </a>
+            <a href="#" class="flyer-item" data-page="carte.html">
+                <img src="https://i.postimg.cc/9MtzNzV8/a-sleek-product-shot-advertisement-showc-dn-RNraq-ARUKf5-Ux-FUEwg-Lw-6-Kqvf-UE-SKy-J-f-CNb-OJdnw.jpg" alt="Carte physique MIJO">
+            </a>
+            <a href="#" class="flyer-item" data-page="netflix.html">
+                <img src="https://i.postimg.cc/nhcshcTt/a-wide-cinematic-image-featuring-the-tex-r6ul-KVM9-RVO84q-Qfpl-TJWA-vf-u3-W9-LT1-WIIub3-Nm-J-Qg.jpg" alt="Abonnement Netflix">
+            </a>
+            <a href="#" class="flyer-item" data-page="don.html">
+                <img src="https://i.postimg.cc/BbWhW5Sj/a-heartwarming-digital-flyer-advertiseme-spq1z-TDTRQu8-Sq7x-Ylr6-Q-wiy-Jeq-U-QQi-RWIPp-E5-VCyw.jpg" alt="Faire un don">
+            </a>
+        </div>
+    </div>
 
-    <div id="transferModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="hideTransferModal()">&times;</span>
-            <h3>Effectuer un transfert</h3>
-            <input type="number" id="transferAmount" placeholder="Montant du transfert">
-            <input type="email" id="recipientEmail" placeholder="Email du destinataire">
-            <button onclick="handleTransfer()">Confirmer le transfert</button>
-            <div id="transferMessage"></div>
-        </div>
-    </div>
+    <div id="transferModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="hideTransferModal()">&times;</span>
+            <h3>Effectuer un transfert</h3>
+            <input type="number" id="transferAmount" placeholder="Montant du transfert">
+            <input type="email" id="recipientEmail" placeholder="Email du destinataire">
+            <button onclick="handleTransfer()">Confirmer le transfert</button>
+            <div id="transferMessage"></div>
+        </div>
+    </div>
 
-    <nav class="footer-menu">
-        <a href="#" class="menu-btn active">
-            <span class="icon">🏠</span>
-            <span>Accueil</span>
-        </a>
-        <a href="historique.html" class="menu-btn">
-            <span class="icon">📜</span>
-            <span>Historique</span>
-        </a>
-        <a href="store.html" class="menu-btn">
-            <span class="icon">🛒</span>
-            <span>Store</span>
-        </a>
-    </nav>
+    <nav class="footer-menu">
+        <a href="#" class="menu-btn active">
+            <span class="icon">🏠</span>
+            <span>Accueil</span>
+        </a>
+        <a href="historique.html" class="menu-btn">
+            <span class="icon">📜</span>
+            <span>Historique</span>
+        </a>
+        <a href="store.html" class="menu-btn">
+            <span class="icon">🛒</span>
+            <span>Store</span>
+        </a>
+    </nav>
 
-    <script>
-        let userData = null;
-        const topSection = document.querySelector('.top-section');
-        const transferUrl = "https://transfert.mijocomplexe.workers.dev/"; 
+    <script>
+        // La variable userData est maintenant déclarée, mais nous ne l'utiliserons pas globalement.
+        // Chaque fonction obtiendra les données dont elle a besoin pour éviter les erreurs.
+        const topSection = document.querySelector('.top-section');
+        const transferUrl = "https://transfert.mijocomplexe.workers.dev/"; 
 
-        function updateUI() {
-            const user = JSON.parse(localStorage.getItem('user'));
-            if (user && user.NomUtilisateur) {
-                document.getElementById('username').innerText = user.NomUtilisateur || 'Utilisateur';
-                document.getElementById('email').innerText = user.Email || 'Email non renseigné';
-                document.getElementById('balance').innerText = (user.Solde || '0') + " G";
+        // Fonction pour mettre à jour l'interface utilisateur avec les données de l'utilisateur
+        function updateUI(user) {
+            if (user && user.NomUtilisateur) {
+                document.getElementById('username').innerText = user.NomUtilisateur || 'Utilisateur';
+                document.getElementById('email').innerText = user.Email || 'Email non renseigné';
+                document.getElementById('balance').innerText = (user.Solde || '0') + " G";
 
-                // Assurez-vous d'utiliser la variable 'user' qui est à jour
-                if (user.EstPremium) { 
-                    topSection.classList.add('premium');
-                } else {
-                    topSection.classList.remove('premium');
-                }
-            }
-        }
+                // Utiliser l'objet 'user' passé en paramètre
+                if (user.EstPremium) { 
+                    topSection.classList.add('premium');
+                } else {
+                    topSection.classList.remove('premium');
+                }
+            } else {
+                logout(); // Déconnexion si les données sont invalides
+            }
+        }
 
-        function logout() {
-            localStorage.removeItem('user');
-            window.location.href = 'index.html';
-        }
-        
-        function showTransferModal() {
-            document.getElementById('transferModal').style.display = 'flex';
-        }
+        // Fonction pour gérer la déconnexion de l'utilisateur
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+        
+        // Fonction pour afficher la fenêtre modale de transfert
+        function showTransferModal() {
+            document.getElementById('transferModal').style.display = 'flex';
+        }
 
-        function hideTransferModal() {
-            document.getElementById('transferModal').style.display = 'none';
-        }
+        // Fonction pour masquer la fenêtre modale de transfert
+        function hideTransferModal() {
+            document.getElementById('transferModal').style.display = 'none';
+        }
 
-        async function handleTransfer() {
-            const amount = document.getElementById('transferAmount').value;
-            const recipientEmail = document.getElementById('recipientEmail').value;
-            const transferMessage = document.getElementById('transferMessage');
-            
-            if (!amount || !recipientEmail || parseFloat(amount) <= 0) {
-                transferMessage.innerText = "Veuillez entrer un montant valide et l'email du destinataire.";
-                transferMessage.style.color = 'red';
-                return;
-            }
-            
-            let currentUserData = null;
-            try {
-                currentUserData = JSON.parse(localStorage.getItem('user'));
-            } catch (e) {
-                console.error("Erreur de données utilisateur:", e);
-                transferMessage.innerText = "Erreur de données utilisateur. Veuillez vous reconnecter.";
-                transferMessage.style.color = 'red';
-                return;
-            }
-            // SUPPRIMEZ LA LIGNE SUIVANTE qui est redondante et cause l'erreur
-            // const currentUserData = JSON.parse(localStorage.getItem('user'));
+        // Fonction pour gérer le processus de transfert d'argent
+        async function handleTransfer() {
+            const amount = document.getElementById('transferAmount').value;
+            const recipientEmail = document.getElementById('recipientEmail').value;
+            const transferMessage = document.getElementById('transferMessage');
             
-            if (!currentUserData || !currentUserData.RecordID) {
-                transferMessage.innerText = "Utilisateur non connecté ou données manquantes.";
-                transferMessage.style.color = 'red';
-                return;
-            }
+            if (!amount || !recipientEmail || parseFloat(amount) <= 0) {
+                transferMessage.innerText = "Veuillez entrer un montant valide et l'email du destinataire.";
+                transferMessage.style.color = 'red';
+                return;
+            }
+            
+            let currentUserData = null;
+            try {
+                currentUserData = JSON.parse(localStorage.getItem('user'));
+            } catch (e) {
+                console.error("Erreur de données utilisateur:", e);
+                transferMessage.innerText = "Erreur de données utilisateur. Veuillez vous reconnecter.";
+                transferMessage.style.color = 'red';
+                return;
+            }
 
-            transferMessage.innerText = "Transfert en cours... Veuillez patienter.";
-            transferMessage.style.color = '#2196F3';
-            
-            const requestData = {
-                action: "automatic_transfer",
-                senderId: currentUserData.RecordID,
-                recipientEmail: recipientEmail,
-                amount: parseFloat(amount)
-            };
+            if (!currentUserData || !currentUserData.RecordID) {
+                transferMessage.innerText = "Utilisateur non connecté ou données manquantes.";
+                transferMessage.style.color = 'red';
+                return;
+            }
 
-            try {
-                const response = await fetch(transferUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(requestData)
-                });
+            transferMessage.innerText = "Transfert en cours... Veuillez patienter.";
+            transferMessage.style.color = '#2196F3';
+            
+            const requestData = {
+                action: "automatic_transfer",
+                senderId: currentUserData.RecordID,
+                recipientEmail: recipientEmail,
+                amount: parseFloat(amount)
+            };
 
-                const data = await response.json();
+            try {
+                const response = await fetch(transferUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(requestData)
+                });
 
-                if (data.success) {
-                    const newBalance = data.newBalance || currentUserData.Solde - parseFloat(amount);
-                    currentUserData.Solde = newBalance;
-                    localStorage.setItem('user', JSON.stringify(currentUserData));
-                    document.getElementById('balance').innerText = newBalance + " G";
+                const data = await response.json();
 
-                    saveToHistory('Transfert', parseFloat(amount), 'Envoyé', recipientEmail);
+                if (data.success) {
+                    const newBalance = data.newBalance;
+                    currentUserData.Solde = newBalance;
+                    localStorage.setItem('user', JSON.stringify(currentUserData));
+                    
+                    updateUI(currentUserData); // Mise à jour de l'UI avec les nouvelles données
 
-                    transferMessage.innerText = "Transfert réussi !";
-                    transferMessage.style.color = 'green';
-                    setTimeout(() => {
-                        hideTransferModal();
-                    }, 2000);
-                } else {
-                    transferMessage.innerText = data.error || "Échec du transfert.";
-                    transferMessage.style.color = 'red';
-                }
-            } catch (error) {
-                console.error("Erreur de transfert:", error);
-                transferMessage.innerText = "Erreur de connexion avec le serveur.";
-                transferMessage.style.color = 'red';
-            }
-        }
+                    saveToHistory('Transfert', parseFloat(amount), 'Envoyé', recipientEmail);
 
-        function saveToHistory(type, amount, status, recipient) {
-            let history = JSON.parse(localStorage.getItem('transactions')) || [];
-            const newTransaction = {
-                id: Date.now(),
-                type: type,
-                amount: amount,
-                status: status,
-                recipient: recipient,
-                date: new Date().toLocaleDateString()
-            };
-            history.push(newTransaction);
-            localStorage.setItem('transactions', JSON.stringify(history));
-        }
+                    transferMessage.innerText = "Transfert réussi !";
+                    transferMessage.style.color = 'green';
+                    setTimeout(() => {
+                        hideTransferModal();
+                    }, 2000);
+                } else {
+                    transferMessage.innerText = data.error || "Échec du transfert.";
+                    transferMessage.style.color = 'red';
+                }
+            } catch (error) {
+                console.error("Erreur de transfert:", error);
+                transferMessage.innerText = "Erreur de connexion avec le serveur.";
+                transferMessage.style.color = 'red';
+            }
+        }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const storedUser = localStorage.getItem('user');
-            if (storedUser) {
-                try {
-                    userData = JSON.parse(storedUser);
-                    if (userData && userData.NomUtilisateur) {
-                        updateUI();
-                        document.querySelectorAll('.flyer-item').forEach(item => {
-                            item.addEventListener('click', function(event) {
-                                event.preventDefault();
-                                const page = this.getAttribute('data-page');
-                                window.location.href = page;
-                            });
-                        });
-                    } else {
-                        logout();
-                    }
-                } catch (e) {
-                    console.error("Erreur de données utilisateur:", e);
-                    logout();
-                }
-            } else {
-                logout();
-            }
-        });
-    </script>
-</body>
-</html>
+        // Fonction pour enregistrer une transaction dans le localStorage pour l'historique
+        function saveToHistory(type, amount, status, recipient) {
+            let history = JSON.parse(localStorage.getItem('transactions')) || [];
+            const newTransaction = {
+                id: Date.now(),
+                type: type,
+                amount: amount,
+                status: status,
+                recipient:
