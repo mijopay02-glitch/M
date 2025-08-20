@@ -319,33 +319,7 @@
         const topSection = document.querySelector('.top-section');
         const transferUrl = "https://transfert.mijocomplexe.workers.dev/"; 
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const storedUser = localStorage.getItem('user');
-            if (storedUser) {
-                try {
-                    userData = JSON.parse(storedUser);
-                    if (userData && userData.NomUtilisateur) { // Vérification minimale
-                        updateUI();
-                        // Gère les clics sur les flyers
-                        document.querySelectorAll('.flyer-item').forEach(item => {
-                            item.addEventListener('click', function(event) {
-                                event.preventDefault();
-                                const page = this.getAttribute('data-page');
-                                window.location.href = page;
-                            });
-                        });
-                    } else {
-                        logout();
-                    }
-                } catch (e) {
-                    console.error("Erreur de données utilisateur:", e);
-                    logout();
-                }
-            } else {
-                logout();
-            }
-        });
-
+        // Fonction pour mettre à jour l'UI avec les données de l'utilisateur
         function updateUI() {
             if (!userData) return;
             document.getElementById('username').innerText = userData.NomUtilisateur || 'Utilisateur';
@@ -358,19 +332,23 @@
             }
         }
 
+        // Fonction pour déconnecter l'utilisateur
         function logout() {
             localStorage.removeItem('user');
             window.location.href = 'index.html';
         }
         
+        // Affiche le modal de transfert
         function showTransferModal() {
             document.getElementById('transferModal').style.display = 'flex';
         }
 
+        // Cache le modal de transfert
         function hideTransferModal() {
             document.getElementById('transferModal').style.display = 'none';
         }
 
+        // Gère le transfert d'argent (corrigée)
         async function handleTransfer() {
             const amount = document.getElementById('transferAmount').value;
             const recipientEmail = document.getElementById('recipientEmail').value;
@@ -428,6 +406,7 @@
                     transferMessage.innerText = "Transfert réussi !";
                     transferMessage.style.color = 'green';
                     setTimeout(() => {
+                        // Utilise la fonction pour cacher le modal
                         hideTransferModal();
                     }, 2000);
                 } else {
@@ -441,6 +420,7 @@
             }
         }
 
+        // Fonction pour enregistrer une transaction dans le localStorage pour l'historique
         function saveToHistory(type, amount, status, recipient) {
             let history = JSON.parse(localStorage.getItem('transactions')) || [];
             const newTransaction = {
@@ -454,6 +434,34 @@
             history.push(newTransaction);
             localStorage.setItem('transactions', JSON.stringify(history));
         }
+
+        // Ce bloc de code s'exécute une fois que la page est entièrement chargée
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                try {
+                    userData = JSON.parse(storedUser);
+                    if (userData && userData.NomUtilisateur) {
+                        updateUI();
+                        // Gère les clics sur les flyers
+                        document.querySelectorAll('.flyer-item').forEach(item => {
+                            item.addEventListener('click', function(event) {
+                                event.preventDefault();
+                                const page = this.getAttribute('data-page');
+                                window.location.href = page;
+                            });
+                        });
+                    } else {
+                        logout();
+                    }
+                } catch (e) {
+                    console.error("Erreur de données utilisateur:", e);
+                    logout();
+                }
+            } else {
+                logout();
+            }
+        });
     </script>
 </body>
 </html>
