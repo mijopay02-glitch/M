@@ -172,18 +172,25 @@
         }
 
         #cart-count {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: red;
-            color: white;
-            border-radius: 50%;
-            padding: 2px 6px;
-            font-size: 0.7em;
-            font-weight: bold;
-            z-index: 100; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        }
+             position: absolute;
+    top: -5px;
+    right: -5px;
+
+    /* Crée un cercle parfait et centre le nombre à l'intérieur */
+    width: 20px; /* Taille du cercle */
+    height: 20px; /* Taille du cercle */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: red; /* Fond rouge */
+    color: white; /* Texte blanc */
+    border-radius: 50%; /* Arrondit les bords pour former un cercle */
+    font-size: 0.7em;
+    font-weight: bold;
+    z-index: 100; /* Assure que le compteur est au-dessus des autres éléments */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
 
         #cart-content {
             background-color: var(--card-bg);
