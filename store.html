@@ -150,11 +150,10 @@
         
         #cart-icon {
             background-color: transparent; /* Rendre le fond transparent pour ne pas masquer l'image */
-    border-radius: 50%;
+   
     width: 50px;
     height: 50px;
     display: block; /* S'assurer que le conteneur peut bien afficher l'image */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     cursor: pointer;
     position: relative;
     overflow: hidden; /* Assure que l'image ne dépasse pas les bords du conteneur */
@@ -164,6 +163,8 @@
     width: 100%;
     height: 100%;
     object-fit: cover; /* Assure que l'image remplit le conteneur sans distorsion */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
 }
         
         #cart-icon:hover {
@@ -181,6 +182,7 @@
             font-size: 0.7em;
             font-weight: bold;
             z-index: 100; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
 
         #cart-content {
