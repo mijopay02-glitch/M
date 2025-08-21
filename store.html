@@ -381,23 +381,23 @@
                 <div class="product-item">
                     <img src="https://i.postimg.cc/MGMhfNJ2/digital-marketing-5816304-640.jpg/250x150" alt="Image Formation Marketing">
                     <h3>Formation Marketing</h3>
-                    <p>Prix : 300 G</p>
+                    <p>5 vidéos</p>
                     <p>Code : FMa-14</p>
-                    <button onclick="addToCart('Formation Marketing', 300, 'FMa-14', 'https://drive.google.com/file/d/1_q_r_s_t_u_v_w_x_y_z_a_b_c/view?usp=sharing')">Ajouter au panier</button>
+                    <button onclick="addToCart('Formation Marketing', 300, 'FMa-14', 'https://drive.google.com/drive/folders/1XQiJ51tO1YX6hCJ0zl8yFrxjcOPMQSZA?usp=sharing')">Ajouter au panier</button>
                 </div>
                 <div class="product-item">
                     <img src="https://i.postimg.cc/vHfmQ1cM/a-clean-modern-book-cover-illustration-f-o79-YAln7-Tnao8fxz6p9-Pd-Q-g0-P-NGZVTcu08-SDb-QHh-Yy-Q.jpg/250x150" alt="Image Formation Gestion de Stock">
                     <h3>Formation Gestion de Stock</h3>
                     <p>Prix : 250 G</p>
-                    <p>Code : FGe15-</p>
-                    <button onclick="addToCart('Formation Gestion de Stock', 250, 'FGe15-', 'https://drive.google.com/file/d/1_d_e_f_g_h_i_j_k_l_m_n_o_p_q/view?usp=sharing')">Ajouter au panier</button>
+                    <p>3 vidéos</p>
+                    <button onclick="addToCart('Formation Gestion de Stock', 250, 'FGe15-', 'https://drive.google.com/drive/folders/1HB2CIp4q088GXxhCIa5DdYgG3LBjEHhu?usp=sharing')">Ajouter au panier</button>
                 </div>
                 <div class="product-item">
                     <img src="https://i.postimg.cc/DZHbZVgJ/ai-generated-8540913-1280.jpg/250x150" alt="Image Formation Intelligence artificielle">
                     <h3>Formation Intelligence artificielle</h3>
                     <p>Prix : 250 G</p>
-                    <p>Code : Fln16-</p>
-                    <button onclick="addToCart('Formation Intelligence artificielle', 250, 'Fln16-', 'https://drive.google.com/file/d/1_r_s_t_u_v_w_x_y_z_a_b_c_d_e/view?usp=sharing')">Ajouter au panier</button>
+                    <p>4 vidéos</p>
+                    <button onclick="addToCart('Formation Intelligence artificielle', 250, 'Fln16-', 'https://drive.google.com/drive/folders/1V62SzvV8l1cIKJGLFyoqXuZ6QUnUuffR?usp=sharing')">Ajouter au panier</button>
                 </div>
                 <div class="product-item free">
                     <img src="https://via.placeholder.com/250x150" alt="Image Ma Formation gratuite">
@@ -441,147 +441,155 @@
         </a>
     </nav>
     <script>
-        const storeScriptUrl = "https://script.google.com/macros/s/AKfycbwYITSD...l9Y-yM/exec";
+        <script>
+    // URL de votre script Google Apps Script
+    const storeScriptUrl = "https://store.mijocomplexe.workers.dev/";
+
+    const cartContent = document.getElementById('cart-content');
+    const cartIcon = document.getElementById('cart-icon');
+    const cartCount = document.getElementById('cart-count');
+    const cartItemsList = document.getElementById('cart-items');
+    const cartTotalDisplay = document.getElementById('cart-total');
+    const checkoutBtn = document.getElementById('checkout-btn');
+    let cart = [];
+
+    function renderCart() {
+        cartItemsList.innerHTML = '';
+        let total = 0;
+        if (cart.length === 0) {
+            cartItemsList.innerHTML = '<li>Panier vide</li>';
+            checkoutBtn.style.display = 'none';
+        } else {
+            cart.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${item.name}</span>
+                    <span>${item.price} G</span>
+                    <button onclick="removeFromCart('${item.code}')">Retirer</button>
+                `;
+                cartItemsList.appendChild(li);
+                total += item.price;
+            });
+            checkoutBtn.style.display = 'block';
+        }
+        cartCount.innerText = cart.length;
+        cartTotalDisplay.innerText = `Total: ${total} G`;
+    }
+
+    function addToCart(name, price, code, link) {
+        const existingItem = cart.find(item => item.code === code);
+        if (existingItem) {
+            alert("Ce produit est déjà dans votre panier.");
+            return;
+        }
+        cart.push({ name, price, code, link });
+        renderCart();
+        alert(`${name} a été ajouté au panier !`);
+    }
+
+    function removeFromCart(code) {
+        cart = cart.filter(item => item.code !== code);
+        renderCart();
+        alert("Produit retiré du panier.");
+    }
+
+    cartIcon.addEventListener('click', () => {
+        cartContent.classList.toggle('visible');
+    });
+
+    checkoutBtn.addEventListener('click', async () => {
+        if (cart.length === 0) {
+            alert("Votre panier est vide.");
+            return;
+        }
+
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            alert("Vous devez être connecté pour effectuer un achat.");
+            window.location.href = "index.html";
+            return;
+        }
         
-        const cartContent = document.getElementById('cart-content');
-        const cartIcon = document.getElementById('cart-icon');
-        const cartCount = document.getElementById('cart-count');
-        const cartItemsList = document.getElementById('cart-items');
-        const cartTotalDisplay = document.getElementById('cart-total');
-        const checkoutBtn = document.getElementById('checkout-btn');
-        let cart = [];
-
-        function renderCart() {
-            cartItemsList.innerHTML = '';
-            let total = 0;
-            if (cart.length === 0) {
-                cartItemsList.innerHTML = '<li>Panier vide</li>';
-                checkoutBtn.style.display = 'none';
-            } else {
-                cart.forEach(item => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <span>${item.name}</span>
-                        <span>${item.price} G</span>
-                        <button onclick="removeFromCart('${item.code}')">Retirer</button>
-                    `;
-                    cartItemsList.appendChild(li);
-                    total += item.price;
-                });
-                checkoutBtn.style.display = 'block';
-            }
-            cartCount.innerText = cart.length;
-            cartTotalDisplay.innerText = `Total: ${total} G`;
-        }
-
-        function addToCart(name, price, code, link) {
-            const existingItem = cart.find(item => item.code === code);
-            if (existingItem) {
-                alert("Ce produit est déjà dans votre panier.");
-                return;
-            }
-            cart.push({ name, price, code, link });
-            renderCart();
-            alert(`${name} a été ajouté au panier !`);
-        }
-
-        function removeFromCart(code) {
-            cart = cart.filter(item => item.code !== code);
-            renderCart();
-            alert("Produit retiré du panier.");
-        }
-
-        cartIcon.addEventListener('click', () => {
-            cartContent.classList.toggle('visible');
-        });
-
-        checkoutBtn.addEventListener('click', async () => {
-            if (cart.length === 0) {
-                alert("Votre panier est vide.");
-                return;
-            }
-
-            const user = JSON.parse(localStorage.getItem('user'));
-            if (!user) {
-                alert("Vous devez être connecté pour effectuer un achat.");
-                window.location.href = "index.html";
-                return;
-            }
-            
-            const totalAmount = cart.reduce((sum, item) => sum + item.price, 0);
-            const confirmPurchase = confirm(`Confirmer l'achat de tous les produits pour un total de ${totalAmount} G ?`);
-            if (!confirmPurchase) {
-                return;
-            }
-
-            alert("Achat en cours, veuillez patienter...");
-            
+        alert("Achat en cours, veuillez patienter...");
+        
+        let successCount = 0;
+        let purchasePromises = cart.map(item => {
             const requestData = {
-                action: "buy_products_in_cart",
                 userId: user.RecordID,
-                products: cart.map(item => ({ productCode: item.code, amount: item.price }))
+                productId: item.code
             };
 
-            try {
-                const response = await fetch(storeScriptUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(requestData)
-                });
-                const data = await response.json();
-
+            return fetch(storeScriptUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => response.json())
+            .then(data => {
                 if (data.success) {
-                    alert("Achat réussi !");
-                    user.Solde = data.newBalance;
-                    localStorage.setItem('user', JSON.stringify(user));
-
-                    cart.forEach(item => {
-                        saveToHistory(item.name, item.price);
-                        saveToMyProducts(item.name, item.link);
-                    });
-
-                    cart = [];
-                    renderCart();
-                    cartContent.classList.remove('visible');
-                    window.location.href = "home.html";
+                    successCount++;
+                    // Gérer les mises à jour en local
+                    saveToHistory(item.name, item.price);
+                    saveToMyProducts(item.name, item.link);
+                    return { success: true, newBalance: data.newBalance };
                 } else {
-                    alert(data.error || "Échec de l'achat.");
+                    return { success: false, error: data.error };
                 }
-
-            } catch (error) {
+            })
+            .catch(error => {
                 console.error("Erreur de connexion:", error);
-                alert("Erreur de connexion au serveur. Veuillez réessayer.");
-            }
+                return { success: false, error: "Erreur de connexion." };
+            });
         });
 
-        function downloadFree(productName, driveLink) {
-            alert(`Téléchargement de ${productName} démarré.`);
-            saveToHistory(productName, 0, "Produit gratuit");
-            saveToMyProducts(productName, driveLink);
-            window.open(driveLink, '_blank');
-        }
-
-        function saveToHistory(productName, price, status = "Achat") {
-            let history = JSON.parse(localStorage.getItem('transactions')) || [];
-            const newTransaction = {
-                id: Date.now(),
-                type: status,
-                description: productName,
-                amount: price,
-                date: new Date().toLocaleDateString()
-            };
-            history.push(newTransaction);
-            localStorage.setItem('transactions', JSON.stringify(history));
-        }
-
-        function saveToMyProducts(productName, driveLink) {
-            let myProducts = JSON.parse(localStorage.getItem('myProducts')) || [];
-            const productExists = myProducts.some(product => product.name === productName);
-            if (!productExists) {
-                myProducts.push({ name: productName, link: driveLink });
-                localStorage.setItem('myProducts', JSON.stringify(myProducts));
+        // Attendre que toutes les promesses soient résolues
+        const results = await Promise.all(purchasePromises);
+        
+        if (successCount > 0) {
+            // Mise à jour du solde de l'utilisateur après tous les achats réussis
+            const lastSuccessfulBalance = results.find(r => r.success)?.newBalance;
+            if (lastSuccessfulBalance !== undefined) {
+                user.Solde = lastSuccessfulBalance;
+                localStorage.setItem('user', JSON.stringify(user));
             }
+
+            alert(`Achat de ${successCount} produit(s) réussi !`);
+            cart = [];
+            renderCart();
+            cartContent.classList.remove('visible');
+            // Redirection ou rafraîchissement
+            window.location.href = "home.html";
+        } else {
+            alert("Échec de l'achat. Veuillez vérifier votre solde ou réessayer.");
         }
-    </script>
-</body>
-</html>
+    });
+
+    function downloadFree(productName, driveLink) {
+        alert(`Téléchargement de ${productName} démarré.`);
+        saveToHistory(productName, 0, "Produit gratuit");
+        saveToMyProducts(productName, driveLink);
+        window.open(driveLink, '_blank');
+    }
+
+    function saveToHistory(productName, price, status = "Achat") {
+        let history = JSON.parse(localStorage.getItem('transactions')) || [];
+        const newTransaction = {
+            id: Date.now(),
+            type: status,
+            description: productName,
+            amount: price,
+            date: new Date().toLocaleDateString()
+        };
+        history.push(newTransaction);
+        localStorage.setItem('transactions', JSON.stringify(history));
+    }
+
+    function saveToMyProducts(productName, driveLink) {
+        let myProducts = JSON.parse(localStorage.getItem('myProducts')) || [];
+        const productExists = myProducts.some(product => product.name === productName);
+        if (!productExists) {
+            myProducts.push({ name: productName, link: driveLink });
+            localStorage.setItem('myProducts', JSON.stringify(myProducts));
+        }
+    }
+</script>
