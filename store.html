@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIJO PAY - Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --text-color: #333;
+            --light-text-color: #999;
+            --bg-color: #f0f2f5;
+            --card-bg: #fff;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-bottom: 70px; /* Espace pour le menu fixe */
+        }
+
+        .container {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .product-section {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .product-list {
+            display: grid;
+            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+        
+        .product-item {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .product-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .product-item h3 {
+            margin-top: 0;
+            color: var(--text-color);
+            font-size: 1.1em;
+        }
+
+        .product-item p {
+            color: var(--light-text-color);
+            margin: 5px 0;
+        }
+
+        .product-item button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+        
+        .product-item button:hover {
+            background-color: #1976D2;
+        }
+        
+        .product-item.free {
+            background-color: #E8F5E9;
+            border: 1px solid #C8E6C9;
+        }
+        
+        .free-btn {
+            background-color: #4CAF50;
+        }
+
+        .footer-menu {
+            background-color: var(--card-bg);
+            border-top: 1px solid #ddd;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .menu-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--light-text-color);
+            font-size: 0.7em;
+            text-decoration: none;
+            flex: 1;
+            padding: 5px 0;
+        }
+
+        .menu-btn.active {
+            color: var(--primary-color);
+        }
+
+        .menu-btn .icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>MIJO STORE</h1>
+
+        <div class="product-section">
+            <h2>Applications</h2>
+            <div class="product-list">
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png/250x150" alt="Image Mijo apk">
+                    <h3>Mijo apk pro </h3>
+                    <p>Prix : 500 G</p>
+                    <p>Code : Mij-1</p>
+                    <button onclick="buyProduct('Mijo apk', 500, 'Mij-1')">Acheter</button>
+                </div>
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/mrcMcsX3/a-modern-logo-design-featuring-the-text-i-Ves-Kt-CZQnux-BX0-IRGSxj-A-4fwh-Yy-Yv-R-OCPy-Nt-Oo-Cm-Q.jpg/250x150" alt="Image Hai IA">
+                    <h3>Hai IA</h3>
+                    <p>Prix : 200 G</p>
+                    <p>Code : Hai-2</p>
+                    <button onclick="buyProduct('Hai IA', 200, 'Hai-2')">Acheter</button>
+                </div>
+                 <div class="product-item free">
+                    <img src="https://i.postimg.cc/Fssx924p/a-digital-illustration-of-a-stylized-sma-e-Nct-Kg2v-RGmg-UPTRI4-Zs-UA-3q5o-P2yu-Q4yup5-Nnqd9-D-g.jpg/250x150" alt="Image Mijo Pay Apk">
+                    <h3>Mijo Pay Apk</h3>
+                    <p>Prix : Gratuit</p>
+                    <button class="free-btn" onclick="downloadFree('Mijo Pay Apk', 'https://drive.google.com/file/d/1tacJhq3Stm7RTHnrQ-lMrx0EldaLad7N/view?usp=drive_link')">Télécharger</button>
+                </div>
+                <div class="product-item free">
+                    <img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png/250x150" alt="Image Mijo Chat Ai">
+                    <h3>Mijo app</h3>
+                    <p>Prix : Gratuit</p>
+                    <button class="free-btn" onclick="downloadFree('Mijo Chat Ai', 'https://drive.google.com/file/d/14U2tRDtVwHBxWqdCUuQNPn3_ZBnmnO97/view?usp=sharing')">Télécharger</button>
+                </div>
+               <div class="product-item free">
+                    <img src="https://i.postimg.cc/bJGXd85j/a-dynamic-logo-design-featuring-the-text-q-Z2-MOv46-Tu-YTI-JYw836-A-Yujb5-Ew8-Tje-Hy-EP7-MS4t-A.jpg/250x150" alt="Image Mijo Chat Ai">
+                    <h3>Mijo Game arena</h3>
+                    <p>Prix : Gratuit</p>
+                    <button class="free-btn" onclick="downloadFree('Mijo Chat Ai', 'https://drive.google.com/file/d/1sX6XLwpsaaSo9dQpygiv_omWMDEvGQAJ/view?usp=sharing')">Télécharger</button>
+                  </div>
+            </div>
+        </div>
+
+        <div class="product-section">
+            <h2>Ebooks</h2>
+            <div class="product-list">
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/qMtVXW87/a-clean-modern-book-cover-design-blendin-k-Efi-VZax-Rr2-Z6-q2n-HBHf-Q-TU-he66-MQ4-GNnncvt-Br-W8g.jpg/250x150" alt="Image Chimie industrielle">
+                    <h3>Chimie industrielle</h3>
+                    <p>Prix : 250 G</p>
+                    <p>Code : Chi-3</p>
+                    <button onclick="buyProduct('Chimie industrielle', 250, 'Chi-3')">Acheter</button>
+                </div>
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/vHfmQ1cM/a-clean-modern-book-cover-illustration-f-o79-YAln7-Tnao8fxz6p9-Pd-Q-g0-P-NGZVTcu08-SDb-QHh-Yy-Q.jpg/250x150" alt="Image Gestion de Stock">
+                    <h3>Gestion de Stock</h3>
+                    <p>Prix : 200 G</p>
+                    <p>Code : Ges-4</p>
+                    <button onclick="buyProduct('Gestion de Stock', 200, 'Ges-4')">Acheter</button>
+                </div>
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/T3yXc1WF/calculator-385506-640.jpg/250x150" alt="Image Comptabilité 1">
+                    <h3>Comptabilité 1</h3>
+                    <p>Prix : 150 G</p>
+                    <p>Code : Com-5</p>
+                    <button onclick="buyProduct('Comptabilité 1', 150, 'Com-5')">Acheter</button>
+                </div>
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/9X7c7VkJ/later-on-5012455-1280.jpg/250x150" alt="Image Vers soi et au-delà">
+                    <h3>Vers soi et au-delà</h3>
+                    <p>Prix : 150 G</p>
+                    <p>Code : Ver-6</p>
+                    <button onclick="buyProduct('Vers soi et au-delà', 150, 'Ver-6')">Acheter</button>
+                </div>
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/NMCNMn3W/coins-4421639-640.jpg/250x150" alt="Image 30 Idées de Business à Petit Budget">
+                    <h3>30 Idées de Business à Petit Budget</h3>
+                    <p>Prix : 200 G</p>
+                    <p>Code : 301-7</p>
+                    <button onclick="buyProduct('30 Idées de Business à Petit Budget', 200, '301-7')">Acheter</button>
+                </div>
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/DZHbZVgJ/ai-generated-8540913-1280.jpg/250x150" alt="Image Guide des Outils d'Intelligence Artificielle Gratuits pour les Entrepreneurs">
+                    <h3>Guide des Outils d'Intelligence Artificielle Gratuits pour les Entrepreneurs</h3>
+                    <p>Prix : 200 G</p>
+                    <p>Code : Gui-8</p>
+                    <button onclick="buyProduct('Guide des Outils d\'Intelligence Artificielle Gratuits pour les Entrepreneurs', 200, 'Gui-8')">Acheter</button>
+                </div>
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/PfzjTgMP/model-1335984-1920.jpg/250x150" alt="Image Le Charisme Intérieur">
+                    <h3>Le Charisme Intérieur</h3>
+                    <p>Prix : 150 G</p>
+                    <p>Code : LeC-9</p>
+                    <button onclick="buyProduct('Le Charisme Intérieur', 150, 'LeC-9')">Acheter</button>
+                </div>
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/MGMhfNJ2/digital-marketing-5816304-640.jpg/250x150" alt="Image Marketing digital">
+                    <h3>Marketing digital</h3>
+                    <p>Prix : 250 G</p>
+                    <p>Code : Mar-10</p>
+                    <button onclick="buyProduct('Marketing digital', 250, 'Mar-10')">Acheter</button>
+                </div>
+                <div class="product-item free">
+                    <img src="https://i.postimg.cc/SKLvwt3c/empowerment-9633195-1280.jpg/250x150" alt="Image Mon ebook gratuit">
+                    <h3>Creer son entreprise en 7 jours</h3>
+                    <p>Prix : Gratuit</p>
+                    <button class="free-btn" onclick="downloadFree('Mon ebook gratuit', 'https://drive.google.com/file/d/1xst5o5JE-97_U9RqRkoblhJeTod8yp_K/view?usp=sharing')">Télécharger</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="product-section">
+            <h2>Formations</h2>
+            <div class="product-list">
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/SKLvwt3c/empowerment-9633195-1280.jpg/250x150" alt="Image Formation Entrepreneuriat">
+                    <h3>Formation Entrepreneuriat</h3>
+                    <p>Prix : 250 G</p>
+                    <p>Code : FEn-11</p>
+                    <button onclick="buyProduct('Formation Entrepreneuriat', 250, 'FEn-11')">Acheter</button>
+                </div>
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/T3yXc1WF/calculator-385506-640.jpg/250x150" alt="Image Formation Comptabilité 1">
+                    <h3>Formation Comptabilité 1</h3>
+                    <p>Prix : 250 G</p>
+                    <p>Code : FCo-12</p>
+                    <button onclick="buyProduct('Formation Comptabilité 1', 250, 'FCo-12')">Acheter</button>
+                </div>
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/9X7c7VkJ/later-on-5012455-1280.jpg/250x150" alt="Image Formation Développement personel">
+                    <h3>Formation Développement personel</h3>
+                    <p>Prix : 250 G</p>
+                    <p>Code : FDé-13</p>
+                    <button onclick="buyProduct('Formation Développement personel', 250, 'FDé-13')">Acheter</button>
+                </div>
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/MGMhfNJ2/digital-marketing-5816304-640.jpg/250x150" alt="Image Formation Marketing">
+                    <h3>Formation Marketing</h3>
+                    <p>Prix : 300 G</p>
+                    <p>Code : FMa-14</p>
+                    <button onclick="buyProduct('Formation Marketing', 300, 'FMa-14')">Acheter</button>
+                </div>
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/vHfmQ1cM/a-clean-modern-book-cover-illustration-f-o79-YAln7-Tnao8fxz6p9-Pd-Q-g0-P-NGZVTcu08-SDb-QHh-Yy-Q.jpg/250x150" alt="Image Formation Gestion de Stock">
+                    <h3>Formation Gestion de Stock</h3>
+                    <p>Prix : 250 G</p>
+                    <p>Code : FGe15-</p>
+                    <button onclick="buyProduct('Formation Gestion de Stock', 250, 'FGe15-')">Acheter</button>
+                </div>
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/DZHbZVgJ/ai-generated-8540913-1280.jpg/250x150" alt="Image Formation Intelligence artificielle">
+                    <h3>Formation Intelligence artificielle</h3>
+                    <p>Prix : 250 G</p>
+                    <p>Code : Fln16-</p>
+                    <button onclick="buyProduct('Formation Intelligence artificielle', 250, 'Fln16-')">Acheter</button>
+                </div>
+                <div class="product-item free">
+                    <img src="https://via.placeholder.com/250x150" alt="Image Ma Formation gratuite">
+                    <h3>Musique</h3>
+                    <p>Prix : Gratuit</p>
+                    <button class="free-btn" onclick="downloadFree('Ma Formation gratuite', 'https://drive.google.com/drive/folders/1viOi4UD9e9CwnyASD0y2wzOc86Veu4cT?usp=sharing')">Télécharger</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="footer-menu">
+        <a href="home.html" class="menu-btn">
+            <span class="icon">🏠</span>
+            <span>Accueil</span>
+        </a>
+        <a href="historique.html" class="menu-btn">
+            <span class="icon">📜</span>
+            <span>Historique</span>
+        </a>
+        <a href="store.html" class="menu-btn active">
+            <span class="icon">🛒</span>
+            <span>Store</span>
+        </a>
+        <a href="mes-produits.html" class="menu-btn">
+            <span class="icon">📦</span>
+            <span>Mes Produits</span>
+        </a>
+    </nav>
+    <script>
+        const storeScriptUrl = "https://script.google.com/macros/s/AKfycbwYITSD...l9Y-yM/exec"; // Remplacez par votre URL de script Google Apps
+        
+        async function buyProduct(productName, price, productCode) {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                alert("Vous devez être connecté pour effectuer un achat.");
+                window.location.href = "index.html";
+                return;
+            }
+
+            const confirmPurchase = confirm(`Confirmer l'achat de ${productName} pour ${price} G ?`);
+            if (!confirmPurchase) {
+                return;
+            }
+
+            alert("Achat en cours, veuillez patienter...");
+
+            const requestData = {
+                action: "buy_product",
+                userId: user.RecordID,
+                productCode: productCode,
+                amount: price
+            };
+
+            try {
+                const response = await fetch(storeScriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestData)
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert("Achat réussi !");
+                    user.Solde = data.newBalance;
+                    localStorage.setItem('user', JSON.stringify(user));
+
+                    saveToHistory(productName, price);
+                    saveToMyProducts(productName);
+
+                    window.location.href = "home.html";
+
+                } else {
+                    alert(data.error || "Échec de l'achat.");
+                }
+
+            } catch (error) {
+                console.error("Erreur de connexion:", error);
+                alert("Erreur de connexion au serveur. Veuillez réessayer.");
+            }
+        }
+
+        function downloadFree(productName, driveLink) {
+            alert(`Téléchargement de ${productName} démarré.`);
+            saveToHistory(productName, 0, "Produit gratuit");
+            saveToMyProducts(productName);
+            window.open(driveLink, '_blank');
+        }
+
+        function saveToHistory(productName, price, status = "Achat") {
+            let history = JSON.parse(localStorage.getItem('transactions')) || [];
+            const newTransaction = {
+                id: Date.now(),
+                type: status,
+                description: productName,
+                amount: price,
+                date: new Date().toLocaleDateString()
+            };
+            history.push(newTransaction);
+            localStorage.setItem('transactions', JSON.stringify(history));
+        }
+
+        function saveToMyProducts(productName) {
+            let myProducts = JSON.parse(localStorage.getItem('myProducts')) || [];
+            if (!myProducts.includes(productName)) {
+                myProducts.push(productName);
+                localStorage.setItem('myProducts', JSON.stringify(myProducts));
+            }
+        }
+    </script>
+</body>
+</html>
