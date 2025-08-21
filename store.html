@@ -149,21 +149,25 @@
         }
         
         #cart-icon {
-            background-color: var(--secondary-color);
-            color: white;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            position: relative;
+            background-color: transparent; /* Rendre le fond transparent pour ne pas masquer l'image */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: block; /* S'assurer que le conteneur peut bien afficher l'image */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden; /* Assure que l'image ne dépasse pas les bords du conteneur */
+    transition: transform 0.3s;
         }
+        #cart-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Assure que l'image remplit le conteneur sans distorsion */
+}
         
         #cart-icon:hover {
-            background-color: #4CAF50;
+           transform: scale(1.1); /* Effet de survol pour l'icône */
         }
 
         #cart-count {
@@ -176,6 +180,7 @@
             padding: 2px 6px;
             font-size: 0.7em;
             font-weight: bold;
+            z-index: 100; 
         }
 
         #cart-content {
@@ -397,8 +402,8 @@
 
     <div id="cart-container">
         <div id="cart-icon">
-            <span class="icon">🛒</span>
-            <span id="cart-count">0</span>
+            <img src="https://i.postimg.cc/25Knxt2f/shopping-cart-1105049-1280.png" alt="Panier" style="width: 100%; height: 100%;">
+    <span id="cart-count">0</span>
         </div>
         <div id="cart-content">
             <h3>Mon Panier</h3>
