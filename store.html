@@ -386,6 +386,7 @@
                 </div>
                 <div class="product-item">
                     <img src="https://i.postimg.cc/vHfmQ1cM/a-clean-modern-book-cover-illustration-f-o79-YAln7-Tnao8fxz6p9-Pd-Q-g0-P-NGZVTcu08-SDb-QHh-Yy-Q.jpg" alt="Image Formation Gestion de Stock">
+                    <h3>Formation Gestion de Stock">
                     <h3>Formation Gestion de Stock</h3>
                     <p>Prix : 250 G</p>
                     <p>3 vidéos</p>
@@ -501,7 +502,11 @@
                 return;
             }
 
-            const user = JSON.parse(localStorage.getItem('user'));
+            // **Ligne de débogage ajoutée**
+            const userString = localStorage.getItem('user');
+            console.log("Données de l'utilisateur dans localStorage:", userString);
+
+            const user = JSON.parse(userString);
             
             // **Modification clé : Vérification des données de l'utilisateur**
             if (!user || !user.RecordID) {
