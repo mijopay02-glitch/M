@@ -443,153 +443,154 @@
     <script>
         <script>
     // URL de votre script Google Apps Script
-    const storeScriptUrl = "https://store.mijocomplexe.workers.dev/";
+    // URL de votre script Google Apps Script
+const storeScriptUrl = "https://store.mijocomplexe.workers.dev/";
 
-    const cartContent = document.getElementById('cart-content');
-    const cartIcon = document.getElementById('cart-icon');
-    const cartCount = document.getElementById('cart-count');
-    const cartItemsList = document.getElementById('cart-items');
-    const cartTotalDisplay = document.getElementById('cart-total');
-    const checkoutBtn = document.getElementById('checkout-btn');
-    let cart = [];
+const cartContent = document.getElementById('cart-content');
+const cartIcon = document.getElementById('cart-icon');
+const cartCount = document.getElementById('cart-count');
+const cartItemsList = document.getElementById('cart-items');
+const cartTotalDisplay = document.getElementById('cart-total');
+const checkoutBtn = document.getElementById('checkout-btn');
+let cart = [];
 
-    function renderCart() {
-        cartItemsList.innerHTML = '';
-        let total = 0;
-        if (cart.length === 0) {
-            cartItemsList.innerHTML = '<li>Panier vide</li>';
-            checkoutBtn.style.display = 'none';
-        } else {
-            cart.forEach(item => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <span>${item.name}</span>
-                    <span>${item.price} G</span>
-                    <button onclick="removeFromCart('${item.code}')">Retirer</button>
-                `;
-                cartItemsList.appendChild(li);
-                total += item.price;
-            });
-            checkoutBtn.style.display = 'block';
-        }
-        cartCount.innerText = cart.length;
-        cartTotalDisplay.innerText = `Total: ${total} G`;
-    }
-
-    function addToCart(name, price, code, link) {
-        const existingItem = cart.find(item => item.code === code);
-        if (existingItem) {
-            alert("Ce produit est déjà dans votre panier.");
-            return;
-        }
-        cart.push({ name, price, code, link });
-        renderCart();
-        alert(`${name} a été ajouté au panier !`);
-    }
-
-    function removeFromCart(code) {
-        cart = cart.filter(item => item.code !== code);
-        renderCart();
-        alert("Produit retiré du panier.");
-    }
-
-    cartIcon.addEventListener('click', () => {
-        cartContent.classList.toggle('visible');
-    });
-
-    checkoutBtn.addEventListener('click', async () => {
-        if (cart.length === 0) {
-            alert("Votre panier est vide.");
-            return;
-        }
-
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (!user) {
-            alert("Vous devez être connecté pour effectuer un achat.");
-            window.location.href = "index.html";
-            return;
-        }
-        
-        alert("Achat en cours, veuillez patienter...");
-        
-        let successCount = 0;
-        let purchasePromises = cart.map(item => {
-            const requestData = {
-                userId: user.RecordID,
-                productId: item.code
-            };
-
-            return fetch(storeScriptUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    successCount++;
-                    // Gérer les mises à jour en local
-                    saveToHistory(item.name, item.price);
-                    saveToMyProducts(item.name, item.link);
-                    return { success: true, newBalance: data.newBalance };
-                } else {
-                    return { success: false, error: data.error };
-                }
-            })
-            .catch(error => {
-                console.error("Erreur de connexion:", error);
-                return { success: false, error: "Erreur de connexion." };
-            });
+function renderCart() {
+    cartItemsList.innerHTML = '';
+    let total = 0;
+    if (cart.length === 0) {
+        cartItemsList.innerHTML = '<li>Panier vide</li>';
+        checkoutBtn.style.display = 'none';
+    } else {
+        cart.forEach(item => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span>${item.name}</span>
+                <span>${item.price} G</span>
+                <button onclick="removeFromCart('${item.code}')">Retirer</button>
+            `;
+            cartItemsList.appendChild(li);
+            total += item.price;
         });
+        checkoutBtn.style.display = 'block';
+    }
+    cartCount.innerText = cart.length;
+    cartTotalDisplay.innerText = `Total: ${total} G`;
+}
 
-        // Attendre que toutes les promesses soient résolues
-        const results = await Promise.all(purchasePromises);
-        
-        if (successCount > 0) {
-            // Mise à jour du solde de l'utilisateur après tous les achats réussis
-            const lastSuccessfulBalance = results.find(r => r.success)?.newBalance;
-            if (lastSuccessfulBalance !== undefined) {
-                user.Solde = lastSuccessfulBalance;
-                localStorage.setItem('user', JSON.stringify(user));
+function addToCart(name, price, code, link) {
+    const existingItem = cart.find(item => item.code === code);
+    if (existingItem) {
+        alert("Ce produit est déjà dans votre panier.");
+        return;
+    }
+    cart.push({ name, price, code, link });
+    renderCart();
+    alert(`${name} a été ajouté au panier !`);
+}
+
+function removeFromCart(code) {
+    cart = cart.filter(item => item.code !== code);
+    renderCart();
+    alert("Produit retiré du panier.");
+}
+
+cartIcon.addEventListener('click', () => {
+    cartContent.classList.toggle('visible');
+});
+
+checkoutBtn.addEventListener('click', async () => {
+    if (cart.length === 0) {
+        alert("Votre panier est vide.");
+        return;
+    }
+
+    const user = JSON.parse(localStorage.getItem('user'));
+    
+    // **Modification clé : Vérification des données de l'utilisateur**
+    if (!user || !user.RecordID) {
+        alert("Vous devez être connecté et vos données doivent être valides pour effectuer un achat.");
+        window.location.href = "index.html";
+        return;
+    }
+    
+    alert("Achat en cours, veuillez patienter...");
+    
+    let successCount = 0;
+    let purchasePromises = cart.map(item => {
+        const requestData = {
+            userId: user.RecordID,
+            productId: item.code
+        };
+
+        return fetch(storeScriptUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                successCount++;
+                saveToHistory(item.name, item.price);
+                saveToMyProducts(item.name, item.link);
+                return { success: true, newBalance: data.newBalance };
+            } else {
+                return { success: false, error: data.error };
             }
-
-            alert(`Achat de ${successCount} produit(s) réussi !`);
-            cart = [];
-            renderCart();
-            cartContent.classList.remove('visible');
-            // Redirection ou rafraîchissement
-            window.location.href = "home.html";
-        } else {
-            alert("Échec de l'achat. Veuillez vérifier votre solde ou réessayer.");
-        }
+        })
+        .catch(error => {
+            console.error("Erreur de connexion:", error);
+            // Afficher une alerte plus précise pour le debug
+            alert("Erreur de connexion. Veuillez vérifier votre connexion ou le lien du serveur.");
+            return { success: false, error: "Erreur de connexion." };
+        });
     });
 
-    function downloadFree(productName, driveLink) {
-        alert(`Téléchargement de ${productName} démarré.`);
-        saveToHistory(productName, 0, "Produit gratuit");
-        saveToMyProducts(productName, driveLink);
-        window.open(driveLink, '_blank');
-    }
-
-    function saveToHistory(productName, price, status = "Achat") {
-        let history = JSON.parse(localStorage.getItem('transactions')) || [];
-        const newTransaction = {
-            id: Date.now(),
-            type: status,
-            description: productName,
-            amount: price,
-            date: new Date().toLocaleDateString()
-        };
-        history.push(newTransaction);
-        localStorage.setItem('transactions', JSON.stringify(history));
-    }
-
-    function saveToMyProducts(productName, driveLink) {
-        let myProducts = JSON.parse(localStorage.getItem('myProducts')) || [];
-        const productExists = myProducts.some(product => product.name === productName);
-        if (!productExists) {
-            myProducts.push({ name: productName, link: driveLink });
-            localStorage.setItem('myProducts', JSON.stringify(myProducts));
+    const results = await Promise.all(purchasePromises);
+    
+    if (successCount > 0) {
+        const lastSuccessfulBalance = results.find(r => r.success)?.newBalance;
+        if (lastSuccessfulBalance !== undefined) {
+            user.Solde = lastSuccessfulBalance;
+            localStorage.setItem('user', JSON.stringify(user));
         }
+
+        alert(`Achat de ${successCount} produit(s) réussi !`);
+        cart = [];
+        renderCart();
+        cartContent.classList.remove('visible');
+        window.location.href = "home.html";
+    } else {
+        alert("Échec de l'achat. Veuillez vérifier votre solde ou réessayer.");
     }
+});
+
+function downloadFree(productName, driveLink) {
+    alert(`Téléchargement de ${productName} démarré.`);
+    saveToHistory(productName, 0, "Produit gratuit");
+    saveToMyProducts(productName, driveLink);
+    window.open(driveLink, '_blank');
+}
+
+function saveToHistory(productName, price, status = "Achat") {
+    let history = JSON.parse(localStorage.getItem('transactions')) || [];
+    const newTransaction = {
+        id: Date.now(),
+        type: status,
+        description: productName,
+        amount: price,
+        date: new Date().toLocaleDateString()
+    };
+    history.push(newTransaction);
+    localStorage.setItem('transactions', JSON.stringify(history));
+}
+
+function saveToMyProducts(productName, driveLink) {
+    let myProducts = JSON.parse(localStorage.getItem('myProducts')) || [];
+    const productExists = myProducts.some(product => product.name === productName);
+    if (!productExists) {
+        myProducts.push({ name: productName, link: driveLink });
+        localStorage.setItem('myProducts', JSON.stringify(myProducts));
+    }
+}
 </script>
