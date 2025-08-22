@@ -127,6 +127,7 @@
         
         if (user && user.userId) {
             const productsKey = `myProducts_${user.userId}`;
+            console.log("Clé de lecture des produits:", productsKey);
             const myProducts = JSON.parse(localStorage.getItem(productsKey)) || [];
             
             if (myProducts.length === 0) {
