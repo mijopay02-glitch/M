@@ -315,7 +315,6 @@
 <script>
     const topSection = document.querySelector('.top-section');
     const transferUrl = "https://transfert.mijocomplexe.workers.dev/";
-    const fetchUserDataUrl = "https://transfert.mijocomplexe.workers.dev/"; // Utilisez la même URL ou une autre si nécessaire pour récupérer les données utilisateur
 
     function updateUI(user) {
         if (user && user.NomUtilisateur) {
@@ -330,38 +329,6 @@
             }
         } else {
             logout();
-        }
-    }
-
-    async function fetchAndUpdateUserData(recordId) {
-        try {
-            const response = await fetch(fetchUserDataUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    action: "get_user_by_id",
-                    userId: recordId
-                })
-            });
-
-            const data = await response.json();
-            if (data.success && data.user) {
-                localStorage.setItem('user', JSON.stringify(data.user));
-                updateUI(data.user);
-            } else {
-                console.error("Erreur de récupération des données utilisateur:", data.error);
-                // Si la récupération échoue, on affiche les données locales par défaut
-                const storedUser = localStorage.getItem('user');
-                if (storedUser) {
-                    updateUI(JSON.parse(storedUser));
-                }
-            }
-        } catch (error) {
-            console.error("Erreur de connexion au serveur:", error);
-            const storedUser = localStorage.getItem('user');
-            if (storedUser) {
-                updateUI(JSON.parse(storedUser));
-            }
         }
     }
 
@@ -463,15 +430,14 @@
         localStorage.setItem('transactions', JSON.stringify(history));
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    // Ce code s'exécute chaque fois que la page est affichée, même en cas de retour arrière
+    window.addEventListener('pageshow', () => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
             try {
                 const user = JSON.parse(storedUser);
                 if (user && user.NomUtilisateur) {
                     updateUI(user);
-                    // Force la récupération des données les plus récentes
-                    fetchAndUpdateUserData(user.RecordID);
                     document.querySelectorAll('.flyer-item').forEach(item => {
                         item.addEventListener('click', function(event) {
                             event.preventDefault();
@@ -488,23 +454,6 @@
             }
         } else {
             logout();
-        }
-    });
-
-    // Écoute l'événement de retour de page depuis le cache
-    window.addEventListener('pageshow', (event) => {
-        if (event.persisted) {
-            const storedUser = localStorage.getItem('user');
-            if (storedUser) {
-                try {
-                    const user = JSON.parse(storedUser);
-                    if (user && user.RecordID) {
-                        fetchAndUpdateUserData(user.RecordID);
-                    }
-                } catch (e) {
-                    console.error("Erreur de données utilisateur:", e);
-                }
-            }
         }
     });
 </script>
