@@ -352,7 +352,7 @@
         console.log("Réponse du serveur:", data);
         if (data.success) {
             // Mettre à jour l'utilisateur local avec le nouveau solde et l'état Premium
-            user.Solde = data.newSenderBalance; // Assurez-vous que votre script Google renvoie 'newBalance'
+            user.Solde = data.user.Solde // Assurez-vous que votre script Google renvoie 'newBalance'
             user.EstPremium = true;
             localStorage.setItem('user', JSON.stringify(user));
             
