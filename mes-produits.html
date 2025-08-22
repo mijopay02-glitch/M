@@ -120,9 +120,11 @@
     </nav>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const productListDiv = document.getElementById('purchasedProductsList');
-            const myProducts = JSON.parse(localStorage.getItem('myProducts')) || [];
-
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.userId) {
+        const productsKey = `myProducts_${user.userId}`;
+        const myProducts = JSON.parse(localStorage.getItem(productsKey)) || [];
+        
             if (myProducts.length === 0) {
                 productListDiv.innerHTML = "<p style='text-align: center; color: var(--light-text-color);'>Aucun produit acheté pour le moment.</p>";
             } else {
