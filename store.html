@@ -527,7 +527,7 @@
                     userId: user.RecordID,
                     productId: item.code
                 };
-
+            console.log("Données envoyées pour l'achat:", requestData);
                 return fetch(storeScriptUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
