@@ -119,12 +119,16 @@
         </a>
     </nav>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user && user.userId) {
-        const productsKey = `myProducts_${user.userId}`;
-        const myProducts = JSON.parse(localStorage.getItem(productsKey)) || [];
+    document.addEventListener('DOMContentLoaded', () => {
+        // AJOUTEZ CETTE LIGNE
+        const productListDiv = document.getElementById('product-list');
+
+        const user = JSON.parse(localStorage.getItem('user'));
         
+        if (user && user.userId) {
+            const productsKey = `myProducts_${user.userId}`;
+            const myProducts = JSON.parse(localStorage.getItem(productsKey)) || [];
+            
             if (myProducts.length === 0) {
                 productListDiv.innerHTML = "<p style='text-align: center; color: var(--light-text-color);'>Aucun produit acheté pour le moment.</p>";
             } else {
@@ -138,7 +142,11 @@
                     productListDiv.appendChild(productItem);
                 });
             }
-        });
-    </script>
+        } else {
+            // Optionnel : afficher un message si l'utilisateur n'est pas connecté
+            productListDiv.innerHTML = "<p style='text-align: center; color: var(--light-text-color);'>Veuillez vous connecter pour voir vos produits.</p>";
+        }
+    });
+</script>
 </body>
 </html>
