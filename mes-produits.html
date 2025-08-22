@@ -120,16 +120,16 @@
     </nav>
     <script>
    
+    
     document.addEventListener('DOMContentLoaded', () => {
-        // Définissez la variable ici
-        const productListDiv = document.getElementById('product-list'); 
+        // Changez 'product-list' pour 'purchasedProductsList'
+        const productListDiv = document.getElementById('purchasedProductsList');
 
-        // Ajoutez une vérification pour s'assurer que l'élément existe
         if (!productListDiv) {
-            console.error("Élément HTML 'product-list' non trouvé.");
+            console.error("Erreur: L'élément avec l'ID 'purchasedProductsList' est introuvable.");
             return;
         }
-
+        
         const user = JSON.parse(localStorage.getItem('user'));
         
         if (user && user.userId) {
