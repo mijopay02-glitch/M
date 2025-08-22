@@ -496,114 +496,134 @@
             cartContent.classList.toggle('visible');
         });
 
-        checkoutBtn.addEventListener('click', async () => {
-            if (cart.length === 0) {
-                alert("Votre panier est vide.");
-                return;
-            }
+       <script>
+    checkoutBtn.addEventListener('click', async () => {
+        if (cart.length === 0) {
+            alert("Votre panier est vide.");
+            return;
+        }
 
-            const userString = localStorage.getItem('user');
-            
-            let user;
-            try {
-                user = JSON.parse(userString);
-            } catch (e) {
-                console.error("Erreur lors de l'analyse des données utilisateur:", e);
-                alert("Erreur de données utilisateur. Veuillez vous reconnecter.");
-                window.location.href = "index.html";
-                return;
-            }
-            
-              console.log("Données utilisateur lues depuis le localStorage :", user);
-            
-            if (!user || !user.userId) {
-                alert("Vous devez être connecté et vos données doivent être valides pour effectuer un achat.");
-                window.location.href = "index.html";
-                return;
-            }
-            
-            alert("Achat en cours, veuillez patienter...");
-            
-            let successCount = 0;
-            let purchasePromises = cart.map(item => {
-                const requestData = {
-                    userId: user.userId,
-                    productId: item.code
-                };
+        const userString = localStorage.getItem('user');
+        
+        let user;
+        try {
+            user = JSON.parse(userString);
+        } catch (e) {
+            console.error("Erreur lors de l'analyse des données utilisateur:", e);
+            alert("Erreur de données utilisateur. Veuillez vous reconnecter.");
+            window.location.href = "index.html";
+            return;
+        }
+        
+        console.log("Données utilisateur lues depuis le localStorage :", user);
+        
+        if (!user || !user.userId) {
+            alert("Vous devez être connecté et vos données doivent être valides pour effectuer un achat.");
+            window.location.href = "index.html";
+            return;
+        }
+        
+        alert("Achat en cours, veuillez patienter...");
+        
+        let purchasePromises = cart.map(item => {
+            const requestData = {
+                userId: user.userId,
+                productId: item.code
+            };
             console.log("Données envoyées pour l'achat:", requestData);
-                return fetch(storeScriptUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(requestData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        successCount++;
-                        saveToHistory(item.name, item.price);
-                        saveToMyProducts(item.name, item.link, user.userId);
-                        return { success: true, newBalance: data.nouveauSolde };
-                    } else {
-                        return { success: false, error: data.error };
-                    }
-                })
-                .catch(error => {
-                    console.error("Erreur de connexion:", error);
-                    alert("Erreur de connexion. Veuillez vérifier votre connexion ou le lien du serveur.");
-                    return { success: false, error: "Erreur de connexion." };
-                });
-            });
-
-            const results = await Promise.all(purchasePromises);
-            
-            if (successCount > 0) {
-                const lastSuccessfulBalance = results.find(r => r.success)?.newBalance;
-                if (lastSuccessfulBalance !== undefined) {
-                    user.Solde = lastSuccessfulBalance;
-                    localStorage.setItem('user', JSON.stringify(user));
+            return fetch(storeScriptUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    return { success: true, newBalance: data.nouveauSolde, item: item };
+                } else {
+                    return { success: false, error: data.error };
                 }
+            })
+            .catch(error => {
+                console.error("Erreur de connexion:", error);
+                alert("Erreur de connexion. Veuillez vérifier votre connexion ou le lien du serveur.");
+                return { success: false, error: "Erreur de connexion." };
+            });
+        });
 
-                alert(`Achat de ${successCount} produit(s) réussi !`);
-                cart = [];
-                renderCart();
-                cartContent.classList.remove('visible');
-                window.location.href = "home.html?refresh=" + new Date().getTime();
-            } else {
-                alert("Échec de l'achat. Veuillez vérifier votre solde ou réessayer.");
+        const results = await Promise.all(purchasePromises);
+        
+        let successCount = 0;
+        let lastSuccessfulBalance = undefined;
+
+        results.forEach(result => {
+            if (result.success) {
+                successCount++;
+                lastSuccessfulBalance = result.newBalance;
+                
+                // Sauvegardez la transaction et le produit ici, car on sait que l'achat est réussi
+                saveToHistory(result.item.name, result.item.price, "Achat", user.userId);
+                saveToMyProducts(result.item.name, result.item.link, user.userId);
             }
         });
 
-        function downloadFree(productName, driveLink) {
-            alert(`Téléchargement de ${productName} démarré.`);
-            saveToHistory(productName, 0, "Produit gratuit");
-            saveToMyProducts(productName, driveLink);
-            window.open(driveLink, '_blank');
-        }
+        if (successCount > 0) {
+            if (lastSuccessfulBalance !== undefined) {
+                user.Solde = lastSuccessfulBalance;
+                localStorage.setItem('user', JSON.stringify(user));
+            }
 
-        function saveToHistory(productName, price, status = "Achat") {
-            let history = JSON.parse(localStorage.getItem('transactions')) || [];
-            const newTransaction = {
-                id: Date.now(),
-                type: status,
-                description: productName,
-                amount: price,
-                date: new Date().toLocaleDateString()
-            };
-            history.push(newTransaction);
-            localStorage.setItem('transactions', JSON.stringify(history));
+            alert(`Achat de ${successCount} produit(s) réussi !`);
+            cart = [];
+            renderCart();
+            cartContent.classList.remove('visible');
+            window.location.href = "home.html?refresh=" + new Date().getTime();
+        } else {
+            alert("Échec de l'achat. Veuillez vérifier votre solde ou réessayer.");
         }
+    });
 
-           function saveToMyProducts(itemName, itemLink, userId) {
-    const productsKey = `myProducts_${userId}`;
-    let myProducts = JSON.parse(localStorage.getItem(productsKey)) || [];
-    const newProduct = {
-        name: itemName,
-        link: itemLink,
-        date: new Date().toLocaleDateString()
-    };
-    myProducts.push(newProduct);
-    localStorage.setItem(productsKey, JSON.stringify(myProducts));
-}
+    function downloadFree(productName, driveLink) {
+        // Obtenez l'utilisateur pour lier l'historique et les produits
+        const userString = localStorage.getItem('user');
+        if (!userString) {
+            alert("Veuillez vous connecter pour télécharger des produits.");
+            return;
+        }
+        const user = JSON.parse(userString);
+        
+        alert(`Téléchargement de ${productName} démarré.`);
+        saveToHistory(productName, 0, "Produit gratuit", user.userId);
+        saveToMyProducts(productName, driveLink, user.userId);
+        window.open(driveLink, '_blank');
+    }
+
+    // Le reste de vos fonctions sont correctes et n'ont pas besoin d'être modifiées
+    function saveToHistory(productName, price, status, userId) {
+        const historyKey = `transactions_${userId}`;
+        let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+        const newTransaction = {
+            id: Date.now(),
+            type: status,
+            description: productName,
+            amount: price,
+            date: new Date().toLocaleDateString()
+        };
+        history.push(newTransaction);
+        localStorage.setItem(historyKey, JSON.stringify(history));
+    }
+    
+    function saveToMyProducts(itemName, itemLink, userId) {
+        const productsKey = `myProducts_${userId}`;
+        let myProducts = JSON.parse(localStorage.getItem(productsKey)) || [];
+        const newProduct = {
+            name: itemName,
+            link: itemLink,
+            date: new Date().toLocaleDateString()
+        };
+        myProducts.push(newProduct);
+        localStorage.setItem(productsKey, JSON.stringify(myProducts));
+    }
     </script>
 </body>
 </html>
