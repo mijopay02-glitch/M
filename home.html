@@ -312,7 +312,26 @@
             <span>Store</span>
         </a>
     </nav>
+<script>
+    // Fonction pour mettre à jour l'affichage du solde
+    function updateSoldeDisplay() {
+        const soldeElement = document.getElementById('user-solde'); // Assurez-vous que votre balise de solde a l'ID "user-solde"
+        if (soldeElement) {
+            const userString = localStorage.getItem('user');
+            if (userString) {
+                try {
+                    const user = JSON.parse(userString);
+                    soldeElement.textContent = `${user.Solde} G`;
+                } catch (e) {
+                    console.error("Erreur de lecture des données utilisateur :", e);
+                }
+            }
+        }
+    }
 
+    // Appelez la fonction au chargement de la page
+    window.onload = updateSoldeDisplay;
+</script>
     <script>
         const topSection = document.querySelector('.top-section');
         const transferUrl = "https://transfert.mijocomplexe.workers.dev/"; 
