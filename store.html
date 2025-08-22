@@ -441,9 +441,6 @@
         </a>
     </nav>
     <script>
-        // URL de votre script Google Apps Script
-       <script>
-        // URL de votre script Google Apps Script
         const storeScriptUrl = "https://store.mijocomplexe.workers.dev/";
 
         const cartContent = document.getElementById('cart-content');
@@ -504,16 +501,13 @@
                 return;
             }
 
-            // Ligne de débogage pour vérifier les données utilisateur
             const userString = localStorage.getItem('user');
             
             let user;
             try {
                 user = JSON.parse(userString);
-                console.log("Données de l'utilisateur dans localStorage:", user);
             } catch (e) {
                 console.error("Erreur lors de l'analyse des données utilisateur:", e);
-                console.log("Contenu brut du localStorage:", userString);
                 alert("Erreur de données utilisateur. Veuillez vous reconnecter.");
                 window.location.href = "index.html";
                 return;
@@ -605,3 +599,5 @@
             }
         }
     </script>
+</body>
+</html>
