@@ -442,6 +442,8 @@
     </nav>
     <script>
         // URL de votre script Google Apps Script
+       <script>
+        // URL de votre script Google Apps Script
         const storeScriptUrl = "https://store.mijocomplexe.workers.dev/";
 
         const cartContent = document.getElementById('cart-content');
@@ -502,13 +504,21 @@
                 return;
             }
 
-            // **Ligne de débogage ajoutée**
+            // Ligne de débogage pour vérifier les données utilisateur
             const userString = localStorage.getItem('user');
-            console.log("Données de l'utilisateur dans localStorage:", userString);
-
-            const user = JSON.parse(userString);
             
-            // **Modification clé : Vérification des données de l'utilisateur**
+            let user;
+            try {
+                user = JSON.parse(userString);
+                console.log("Données de l'utilisateur dans localStorage:", user);
+            } catch (e) {
+                console.error("Erreur lors de l'analyse des données utilisateur:", e);
+                console.log("Contenu brut du localStorage:", userString);
+                alert("Erreur de données utilisateur. Veuillez vous reconnecter.");
+                window.location.href = "index.html";
+                return;
+            }
+
             if (!user || !user.RecordID) {
                 alert("Vous devez être connecté et vos données doivent être valides pour effectuer un achat.");
                 window.location.href = "index.html";
@@ -542,7 +552,6 @@
                 })
                 .catch(error => {
                     console.error("Erreur de connexion:", error);
-                    // Afficher une alerte plus précise pour le debug
                     alert("Erreur de connexion. Veuillez vérifier votre connexion ou le lien du serveur.");
                     return { success: false, error: "Erreur de connexion." };
                 });
@@ -596,5 +605,3 @@
             }
         }
     </script>
-</body>
-</html>
