@@ -272,9 +272,9 @@
 
     <div class="container middle-section">
         <div class="flyer-list">
-            <a href="#" class="flyer-item" data-page="premium.html">
-                <img src="https://i.postimg.cc/d1zd7P3j/a-dynamic-promotional-poster-for-mijo-pa-O35h-A-9v-Sn-Srwi5-Blvd-PPA-l-NGj-Bdlx-TM6i-XCh8xxmma-A.jpg" alt="MIJO PAY Premium">
-            </a>
+           <a href="#" class="flyer-item" onclick="activatePremium()">
+    <img src="https://i.postimg.cc/d1zd7P3j/a-dynamic-promotional-poster-for-mijo-pa-O35h-A-9v-Sn-Srwi5-Blvd-PPA-l-NGj-Bdlx-TM6i-XCh8xxmma-A.jpg" alt="MIJO PAY Premium">
+</a>
             <a href="#" class="flyer-item" data-page="carte.html">
                 <img src="https://i.postimg.cc/9MtzNzV8/a-sleek-product-shot-advertisement-showc-dn-RNraq-ARUKf5-Ux-FUEwg-Lw-6-Kqvf-UE-SKy-J-f-CNb-OJdnw.jpg" alt="Carte physique MIJO">
             </a>
@@ -313,6 +313,62 @@
         </a>
     </nav>
 <script>
+    async function activatePremium() {
+    const confirmation = confirm("Voulez-vous activer MIJO Premium ? Prix : 150 Gdes/mois.");
+    if (!confirmation) {
+        return; // L'utilisateur a annulé
+    }
+
+    const userString = localStorage.getItem('user');
+    let user;
+    try {
+        user = JSON.parse(userString);
+    } catch (e) {
+        alert("Erreur de données utilisateur. Veuillez vous reconnecter.");
+        window.location.href = "index.html";
+        return;
+    }
+
+    if (!user || !user.userId) {
+        alert("Utilisateur non connecté ou données manquantes.");
+        return;
+    }
+
+    const premiumPrice = 150;
+    const storeScriptUrl = "https://mijopaypremium.mijocomplexe.workers.dev/"; 
+
+    try {
+        const response = await fetch(storeScriptUrl, {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: "pay_premium",
+                senderId: user.userId,
+                amount: premiumPrice
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Mettre à jour l'utilisateur local avec le nouveau solde et l'état Premium
+            user.Solde = data.newSenderBalance; // Assurez-vous que votre script Google renvoie 'newBalance'
+            user.EstPremium = true;
+            localStorage.setItem('user', JSON.stringify(user));
+            
+            // Ajouter la transaction à l'historique
+            saveToHistory("Abonnement Premium", premiumPrice, "Succès", "MIJO PAY");
+
+            alert("Abonnement Premium activé avec succès ! Votre solde a été mis à jour.");
+            updateUI(user); // Met à jour l'affichage de la page
+        } else {
+            alert(data.error || "Échec de l'activation de l'abonnement Premium.");
+        }
+    } catch (error) {
+        console.error("Erreur lors de la requête:", error);
+        alert("Erreur de connexion. Veuillez vérifier votre connexion ou le lien du serveur.");
+    }
+}
     const topSection = document.querySelector('.top-section');
     const transferUrl = "https://transfert.mijocomplexe.workers.dev/";
 
