@@ -362,8 +362,7 @@
         // 2. Mettez à jour l'affichage de la page IMMÉDIATEMENT après
         updateUI(user);
         
-        saveToHistory("Abonnement Premium", premiumPrice, "Succès", "MIJO PAY");
-
+        saveToHistory("Abonnement Premium", premiumPrice, "Succès", "MIJO PAY", user.userId);
         alert("Abonnement Premium activé avec succès ! Votre solde a été mis à jour.");
     } else {
         alert(data.error || "Échec de l'activation de l'abonnement Premium.");
