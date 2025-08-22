@@ -541,7 +541,7 @@
                     if (data.success) {
                         successCount++;
                         saveToHistory(item.name, item.price);
-                        saveToMyProducts(item.name, item.link);
+                        saveToMyProducts(item.name, item.link, user.userId);
                         return { success: true, newBalance: data.nouveauSolde };
                     } else {
                         return { success: false, error: data.error };
@@ -593,14 +593,17 @@
             localStorage.setItem('transactions', JSON.stringify(history));
         }
 
-        function saveToMyProducts(productName, driveLink) {
-            let myProducts = JSON.parse(localStorage.getItem('myProducts')) || [];
-            const productExists = myProducts.some(product => product.name === productName);
-            if (!productExists) {
-                myProducts.push({ name: productName, link: driveLink });
-                localStorage.setItem('myProducts', JSON.stringify(myProducts));
-            }
-        }
+           function saveToMyProducts(itemName, itemLink, userId) {
+    const productsKey = `myProducts_${userId}`;
+    let myProducts = JSON.parse(localStorage.getItem(productsKey)) || [];
+    const newProduct = {
+        name: itemName,
+        link: itemLink,
+        date: new Date().toLocaleDateString()
+    };
+    myProducts.push(newProduct);
+    localStorage.setItem(productsKey, JSON.stringify(myProducts));
+}
     </script>
 </body>
 </html>
