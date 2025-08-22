@@ -431,29 +431,27 @@
     }
 
     // Ce code s'exécute chaque fois que la page est affichée, même en cas de retour arrière
-    window.addEventListener('pageshow', () => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            try {
-                const user = JSON.parse(storedUser);
-                if (user && user.NomUtilisateur) {
-                    updateUI(user);
-                    document.querySelectorAll('.flyer-item').forEach(item => {
-                        item.addEventListener('click', function(event) {
-                            event.preventDefault();
-                            const page = this.getAttribute('data-page');
-                            window.location.href = page;
-                        });
-                    });
-                } else {
-                    logout();
-                }
-            } catch (e) {
-                console.error("Erreur de données utilisateur:", e);
+    
+window.addEventListener('pageshow', () => {
+    const storedUser = localStorage.getItem('user');
+    console.log("Contenu localStorage:", storedUser); // 👈 vérifie ce qu'il y a
+    if (storedUser) {
+        try {
+            const user = JSON.parse(storedUser);
+            if (user && user.NomUtilisateur) {
+                console.log("Utilisateur détecté:", user); // 👈 log l'objet
+                updateUI(user);
+            } else {
                 logout();
             }
-        } else {
+        } catch (e) {
+            console.error("Erreur de données utilisateur:", e);
             logout();
         }
-    });
+    } else {
+        logout();
+    }
+});
+
+
 </script>
