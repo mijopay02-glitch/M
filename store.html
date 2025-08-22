@@ -474,7 +474,7 @@
             cartCount.innerText = cart.length;
             cartTotalDisplay.innerText = `Total: ${total} G`;
         }
-
+<script>
         function addToCart(name, price, code, link) {
             const existingItem = cart.find(item => item.code === code);
             if (existingItem) {
