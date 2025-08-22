@@ -119,15 +119,21 @@
         </a>
     </nav>
     <script>
+   
     document.addEventListener('DOMContentLoaded', () => {
-        // AJOUTEZ CETTE LIGNE
-        const productListDiv = document.getElementById('product-list');
+        // Définissez la variable ici
+        const productListDiv = document.getElementById('product-list'); 
+
+        // Ajoutez une vérification pour s'assurer que l'élément existe
+        if (!productListDiv) {
+            console.error("Élément HTML 'product-list' non trouvé.");
+            return;
+        }
 
         const user = JSON.parse(localStorage.getItem('user'));
         
         if (user && user.userId) {
             const productsKey = `myProducts_${user.userId}`;
-            console.log("Clé de lecture des produits:", productsKey);
             const myProducts = JSON.parse(localStorage.getItem(productsKey)) || [];
             
             if (myProducts.length === 0) {
@@ -144,10 +150,10 @@
                 });
             }
         } else {
-            // Optionnel : afficher un message si l'utilisateur n'est pas connecté
             productListDiv.innerHTML = "<p style='text-align: center; color: var(--light-text-color);'>Veuillez vous connecter pour voir vos produits.</p>";
         }
     });
+
 </script>
 </body>
 </html>
