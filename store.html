@@ -515,7 +515,7 @@
             
               console.log("Données utilisateur lues depuis le localStorage :", user);
             
-            if (!user || !user.RecordID) {
+            if (!user || !user.userId) {
                 alert("Vous devez être connecté et vos données doivent être valides pour effectuer un achat.");
                 window.location.href = "index.html";
                 return;
@@ -526,7 +526,7 @@
             let successCount = 0;
             let purchasePromises = cart.map(item => {
                 const requestData = {
-                    userId: user.RecordID,
+                    userId: user.userId,
                     productId: item.code
                 };
             console.log("Données envoyées pour l'achat:", requestData);
