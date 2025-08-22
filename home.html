@@ -338,36 +338,40 @@
     const storeScriptUrl = "https://mijopaypremium.mijocomplexe.workers.dev/"; 
 
     try {
-        const response = await fetch(storeScriptUrl, {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: "pay_premium",
-                senderId: user.userId,
-                amount: premiumPrice
-            })
-        });
+    const response = await fetch(storeScriptUrl, {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            action: "pay_premium",
+            senderId: user.userId,
+            amount: premiumPrice
+        })
+    });
 
-        const data = await response.json();
-        console.log("Réponse du serveur:", data);
-        if (data.success) {
-            // Mettre à jour l'utilisateur local avec le nouveau solde et l'état Premium
-            user.Solde = data.user.Solde // Assurez-vous que votre script Google renvoie 'newBalance'
-            user.EstPremium = true;
-            localStorage.setItem('user', JSON.stringify(user));
-            
-            // Ajouter la transaction à l'historique
-            saveToHistory("Abonnement Premium", premiumPrice, "Succès", "MIJO PAY");
+    const data = await response.json();
 
-            alert("Abonnement Premium activé avec succès ! Votre solde a été mis à jour.");
-            updateUI(user); // Met à jour l'affichage de la page
-        } else {
-            alert(data.error || "Échec de l'activation de l'abonnement Premium.");
-        }
-    } catch (error) {
-        console.error("Erreur lors de la requête:", error);
-        alert("Erreur de connexion. Veuillez vérifier votre connexion ou le lien du serveur.");
+    console.log("Réponse du serveur:", data);
+
+    if (data.success && data.user && data.user.Solde !== undefined) {
+        user.Solde = data.user.Solde; 
+        user.EstPremium = true;
+        
+        // 1. Mettez à jour le localStorage
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        // 2. Mettez à jour l'affichage de la page IMMÉDIATEMENT après
+        updateUI(user);
+        
+        saveToHistory("Abonnement Premium", premiumPrice, "Succès", "MIJO PAY");
+
+        alert("Abonnement Premium activé avec succès ! Votre solde a été mis à jour.");
+    } else {
+        alert(data.error || "Échec de l'activation de l'abonnement Premium.");
     }
+} catch (error) {
+    console.error("Erreur lors de la requête:", error);
+    alert("Erreur de connexion. Veuillez vérifier votre connexion ou le lien du serveur.");
+}
 }
     const topSection = document.querySelector('.top-section');
     const transferUrl = "https://transfert.mijocomplexe.workers.dev/";
