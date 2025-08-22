@@ -442,61 +442,60 @@
         </a>
     </nav>
     <script>
-        const storeScriptUrl = "https://store.mijocomplexe.workers.dev/";
+    const storeScriptUrl = "https://store.mijocomplexe.workers.dev/";
 
-        const cartContent = document.getElementById('cart-content');
-        const cartIcon = document.getElementById('cart-icon');
-        const cartCount = document.getElementById('cart-count');
-        const cartItemsList = document.getElementById('cart-items');
-        const cartTotalDisplay = document.getElementById('cart-total');
-        const checkoutBtn = document.getElementById('checkout-btn');
-        let cart = [];
+    const cartContent = document.getElementById('cart-content');
+    const cartIcon = document.getElementById('cart-icon');
+    const cartCount = document.getElementById('cart-count');
+    const cartItemsList = document.getElementById('cart-items');
+    const cartTotalDisplay = document.getElementById('cart-total');
+    const checkoutBtn = document.getElementById('checkout-btn');
+    let cart = [];
 
-        function renderCart() {
-            cartItemsList.innerHTML = '';
-            let total = 0;
-            if (cart.length === 0) {
-                cartItemsList.innerHTML = '<li>Panier vide</li>';
-                checkoutBtn.style.display = 'none';
-            } else {
-                cart.forEach(item => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <span>${item.name}</span>
-                        <span>${item.price} G</span>
-                        <button onclick="removeFromCart('${item.code}')">Retirer</button>
-                    `;
-                    cartItemsList.appendChild(li);
-                    total += item.price;
-                });
-                checkoutBtn.style.display = 'block';
-            }
-            cartCount.innerText = cart.length;
-            cartTotalDisplay.innerText = `Total: ${total} G`;
+    function renderCart() {
+        cartItemsList.innerHTML = '';
+        let total = 0;
+        if (cart.length === 0) {
+            cartItemsList.innerHTML = '<li>Panier vide</li>';
+            checkoutBtn.style.display = 'none';
+        } else {
+            cart.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${item.name}</span>
+                    <span>${item.price} G</span>
+                    <button onclick="removeFromCart('${item.code}')">Retirer</button>
+                `;
+                cartItemsList.appendChild(li);
+                total += item.price;
+            });
+            checkoutBtn.style.display = 'block';
         }
-<script>
-        function addToCart(name, price, code, link) {
-            const existingItem = cart.find(item => item.code === code);
-            if (existingItem) {
-                alert("Ce produit est déjà dans votre panier.");
-                return;
-            }
-            cart.push({ name, price, code, link });
-            renderCart();
-            alert(`${name} a été ajouté au panier !`);
+        cartCount.innerText = cart.length;
+        cartTotalDisplay.innerText = `Total: ${total} G`;
+    }
+
+    function addToCart(name, price, code, link) {
+        const existingItem = cart.find(item => item.code === code);
+        if (existingItem) {
+            alert("Ce produit est déjà dans votre panier.");
+            return;
         }
+        cart.push({ name, price, code, link });
+        renderCart();
+        alert(`${name} a été ajouté au panier !`);
+    }
 
-        function removeFromCart(code) {
-            cart = cart.filter(item => item.code !== code);
-            renderCart();
-            alert("Produit retiré du panier.");
-        }
+    function removeFromCart(code) {
+        cart = cart.filter(item => item.code !== code);
+        renderCart();
+        alert("Produit retiré du panier.");
+    }
 
-        cartIcon.addEventListener('click', () => {
-            cartContent.classList.toggle('visible');
-        });
+    cartIcon.addEventListener('click', () => {
+        cartContent.classList.toggle('visible');
+    });
 
-       <script>
     checkoutBtn.addEventListener('click', async () => {
         if (cart.length === 0) {
             alert("Votre panier est vide.");
@@ -598,7 +597,6 @@
         window.open(driveLink, '_blank');
     }
 
-    // Le reste de vos fonctions sont correctes et n'ont pas besoin d'être modifiées
     function saveToHistory(productName, price, status, userId) {
         const historyKey = `transactions_${userId}`;
         let history = JSON.parse(localStorage.getItem(historyKey)) || [];
@@ -624,6 +622,4 @@
         myProducts.push(newProduct);
         localStorage.setItem(productsKey, JSON.stringify(myProducts));
     }
-    </script>
-</body>
-</html>
+</script>
