@@ -6,6 +6,12 @@
     <title>MIJO PAY - Historique</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        #clearHistoryBtn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    /* Ajoutez d'autres styles pour un meilleur look */
+}
         :root {
             --primary-color: #2196F3;
             --text-color: #333;
@@ -125,8 +131,9 @@
 <body>
 
     <div class="header">
-        <h2>Historique des transactions</h2>
-    </div>
+    <h2>Historique des transactions</h2>
+    <button id="clearHistoryBtn" style="background:none; border:none; color:white; font-size:1.5em; cursor:pointer;">&#x2716;</button>
+</div>
 
     <div class="container">
         <div id="transactionList" class="transaction-list">
@@ -148,50 +155,78 @@
         </a>
     </nav>
 <script>
+    
     document.addEventListener('DOMContentLoaded', () => {
         const transactionList = document.getElementById('transactionList');
-        const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-
-        if (transactions.length > 0) {
-            transactions.forEach(transaction => {
-                const item = document.createElement('div');
-                item.classList.add('transaction-item');
-
-                const details = document.createElement('div');
-                details.classList.add('transaction-details');
-
-                const type = document.createElement('span');
-                type.classList.add('transaction-type');
-                type.innerText = transaction.type;
-
-                const date = document.createElement('span');
-                date.classList.add('transaction-date');
-                date.innerText = transaction.date;
-
-                details.appendChild(type);
-                details.appendChild(date);
-                
-                if (transaction.recipient) {
-                    const recipient = document.createElement('span');
-                    recipient.innerText = `Destinataire: ${transaction.recipient}`;
-                    recipient.style.fontSize = '0.8em';
-                    recipient.style.color = 'var(--light-text-color)';
-                    details.appendChild(recipient);
-                }
-
-                const amount = document.createElement('span');
-                amount.classList.add('transaction-amount');
-                amount.innerText = `${transaction.amount} G`;
-
-                item.appendChild(details);
-                item.appendChild(amount);
-
-                transactionList.appendChild(item);
-            });
-        } else {
-            transactionList.innerHTML = '<p class="no-transactions">Aucune transaction.</p>';
+        const clearBtn = document.getElementById('clearHistoryBtn');
+        
+        const user = JSON.parse(localStorage.getItem('user'));
+        
+        if (!user || !user.userId) {
+            transactionList.innerHTML = '<p class="no-transactions">Veuillez vous connecter pour voir l\'historique.</p>';
+            return;
         }
+
+        const historyKey = `transactions_${user.userId}`;
+
+        function renderTransactions() {
+            const transactions = JSON.parse(localStorage.getItem(historyKey)) || [];
+            transactionList.innerHTML = ''; // Efface la liste actuelle
+
+            if (transactions.length > 0) {
+                transactions.reverse().forEach(transaction => {
+                    const item = document.createElement('div');
+                    item.classList.add('transaction-item');
+
+                    const details = document.createElement('div');
+                    details.classList.add('transaction-details');
+
+                    const type = document.createElement('span');
+                    type.classList.add('transaction-type');
+                    type.innerText = transaction.type;
+
+                    const date = document.createElement('span');
+                    date.classList.add('transaction-date');
+                    date.innerText = transaction.date;
+
+                    details.appendChild(type);
+                    details.appendChild(date);
+                    
+                    if (transaction.recipient) {
+                        const recipient = document.createElement('span');
+                        recipient.innerText = `Destinataire: ${transaction.recipient}`;
+                        recipient.style.fontSize = '0.8em';
+                        recipient.style.color = 'var(--light-text-color)';
+                        details.appendChild(recipient);
+                    }
+
+                    const amount = document.createElement('span');
+                    amount.classList.add('transaction-amount');
+                    amount.innerText = `${transaction.amount} G`;
+
+                    item.appendChild(details);
+                    item.appendChild(amount);
+
+                    transactionList.appendChild(item);
+                });
+            } else {
+                transactionList.innerHTML = '<p class="no-transactions">Aucune transaction.</p>';
+            }
+        }
+        
+        renderTransactions(); // Affiche les transactions au chargement de la page
+
+        // Événement au clic du bouton de suppression
+        clearBtn.addEventListener('click', () => {
+            const confirmation = confirm("Êtes-vous sûr de vouloir effacer tout l'historique des transactions ?");
+            if (confirmation) {
+                localStorage.removeItem(historyKey);
+                renderTransactions(); // Met à jour l'affichage immédiatement
+                alert("Historique des transactions effacé.");
+            }
+        });
     });
+
 </script>
 </body>
 </html>
