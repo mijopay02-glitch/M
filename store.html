@@ -614,6 +614,7 @@
     
     function saveToMyProducts(itemName, itemLink, userId) {
         const productsKey = `myProducts_${userId}`;
+        console.log("Clé de lecture des produits:", productsKey);
         let myProducts = JSON.parse(localStorage.getItem(productsKey)) || [];
         const newProduct = {
             name: itemName,
