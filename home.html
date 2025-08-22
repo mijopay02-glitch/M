@@ -476,8 +476,9 @@
         }
     }
 
-    function saveToHistory(type, amount, status, recipient) {
-        let history = JSON.parse(localStorage.getItem('transactions')) || [];
+    function saveToHistory(type, amount, status, recipient, userId) {
+        const historyKey = `transactions_${userId}`;
+        let history = JSON.parse(localStorage.getItem(historyKey)) || [];
         const newTransaction = {
             id: Date.now(),
             type: type,
@@ -487,7 +488,7 @@
             date: new Date().toLocaleDateString()
         };
         history.push(newTransaction);
-        localStorage.setItem('transactions', JSON.stringify(history));
+        localStorage.setItem(historyKey, JSON.stringify(history));
     }
 
     // Ce code s'exécute chaque fois que la page est affichée, même en cas de retour arrière
