@@ -541,7 +541,7 @@
                         successCount++;
                         saveToHistory(item.name, item.price);
                         saveToMyProducts(item.name, item.link);
-                        return { success: true, newBalance: data.newBalance };
+                        return { success: true, newBalance: data.nouveauSolde };
                     } else {
                         return { success: false, error: data.error };
                     }
