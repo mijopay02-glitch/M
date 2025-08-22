@@ -400,7 +400,7 @@
                     <button onclick="addToCart('Formation Intelligence artificielle', 250, 'FIn-16', 'https://drive.google.com/drive/folders/1V62SzvV8l1cIKJGLFyoqXuZ6QUnUuffR?usp=sharing')">Ajouter au panier</button>
                 </div>
                 <div class="product-item free">
-                    <img src="https://via.placeholder.com/250x150" alt="Image Ma Formation gratuite">
+                    <img src="https://i.postimg.cc/qv1w6VMx/piano-1655558-1280.jpg" alt="Image Ma Formation gratuite">
                     <h3>Musique</h3>
                     <p>Prix : Gratuit</p>
                     <button class="free-btn" onclick="downloadFree('Musique', 'https://drive.google.com/drive/folders/1viOi4UD9e9CwnyASD0y2wzOc86Veu4cT?usp=sharing')">Télécharger</button>
@@ -512,7 +512,9 @@
                 window.location.href = "index.html";
                 return;
             }
-
+            
+              console.log("Données utilisateur lues depuis le localStorage :", user);
+            
             if (!user || !user.RecordID) {
                 alert("Vous devez être connecté et vos données doivent être valides pour effectuer un achat.");
                 window.location.href = "index.html";
