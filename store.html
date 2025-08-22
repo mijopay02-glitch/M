@@ -566,7 +566,7 @@
                 cart = [];
                 renderCart();
                 cartContent.classList.remove('visible');
-                window.location.href = "home.html";
+                window.location.href = "home.html?refresh=" + new Date().getTime();
             } else {
                 alert("Échec de l'achat. Veuillez vérifier votre solde ou réessayer.");
             }
