@@ -277,6 +277,22 @@ function closeModal() {
         } catch (error) {
             alert("Erreur de connexion. Veuillez réessayer plus tard.");
         }
+
+        
+        function saveToHistory(type, description, amount, status, userId) {
+    const historyKey = `transactions_${userId}`;
+    let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+    const newTransaction = {
+        id: Date.now(),
+        type: type, // Par exemple, "Achat", "Transfert", "Affiliation"
+        description: description, // Le nom du produit ou du service
+        amount: amount,
+        status: status, // Par exemple, "Succès", "Échec", "Envoyé"
+        date: new Date().toLocaleDateString()
+    };
+    history.push(newTransaction);
+    localStorage.setItem(historyKey, JSON.stringify(history));
+}
     });
 
     </script>
