@@ -263,10 +263,10 @@
                 <span class="icon"><img src="https://i.postimg.cc/jdtwB5rb/icons8-transfert-50.png" alt="Transfert" style="width: 24px; height: 24px;"></span>
                 <span>Transfert</span>
             </a>
-            <a href="#" class="action-button" onclick="alert('MAF')">
-                <span class="icon"><img src="https://i.postimg.cc/KjXqmTDQ/icons8-l-argent-avec-des-ailes-50.png" alt="Mijo Affiliate promo" style="width: 24px; height: 24px;"></span>
-                <span>Mijo Affiliate promo</span>
-            </a>
+            <a href="#" class="action-button" onclick="checkAffiliateStatus()">
+    <span class="icon"><img src="https://i.postimg.cc/KjXqmTDQ/icons8-l-argent-avec-des-ailes-50.png" alt="Mijo Affiliate promo" style="width: 24px; height: 24px;"></span>
+    <span>Mijo Affiliate promo</span>
+</a>
         </div>
     </div>
 
@@ -313,6 +313,23 @@
         </a>
     </nav>
 <script>
+    function checkAffiliateStatus() {
+    const userString = localStorage.getItem('user');
+    if (!userString) {
+        alert("Veuillez vous connecter d'abord.");
+        window.location.href = 'index.html';
+        return;
+    }
+
+    const user = JSON.parse(userString);
+    if (user.Estafilia) {
+        window.location.href = 'mijo-affiliate-promo.html';
+    } else {
+        window.location.href = 'mijo-affiliate-inscription.html';
+    }
+}
+
+    
     async function activatePremium() {
     const confirmation = confirm("Voulez-vous activer MIJO Premium ? Prix : 150 Gdes/mois.");
     if (!confirmation) {
