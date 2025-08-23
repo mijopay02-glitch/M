@@ -105,6 +105,13 @@
             <p>Téléchargez les ressources pour promouvoir MIJO.</p>
             <a href="URL_DE_VOTRE_FLYER" download class="copy-btn">Télécharger le Flyer</a>
         </div>
+        <div class="card">
+    <h2>Classement des Top Affiliés</h2>
+    <div id="leaderboardList">
+        <p>Chargement du classement...</p>
+    </div>
+</div>
+
     </div>
     
     <script>
@@ -144,14 +151,69 @@
             }
         });
 
-        function copyCode() {
-            const affiliateCode = document.getElementById('affiliateCode').innerText;
-            navigator.clipboard.writeText(affiliateCode).then(() => {
-                alert("Code copié dans le presse-papiers !");
-            }).catch(err => {
-                console.error("Erreur lors de la copie du code:", err);
-            });
+       // Nouvelle fonction pour récupérer le classement depuis le backend
+async function fetchLeaderboard() {
+    const leaderboardUrl = "https://classment.mijocomplexe.workers.dev/"; // REMPLACEZ PAR VOTRE URL
+
+    try {
+        const response = await fetch(leaderboardUrl, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!response.ok) {
+            throw new Error('Échec du chargement du classement.');
         }
+
+        const leaderboardData = await response.json();
+        displayLeaderboard(leaderboardData);
+
+    } catch (error) {
+        console.error("Erreur lors de la récupération du classement:", error);
+        const leaderboardList = document.getElementById('leaderboardList');
+        leaderboardList.innerHTML = "<p>Impossible de charger le classement pour le moment.</p>";
+    }
+}
+
+// Fonction pour afficher le classement dans l'HTML
+function displayLeaderboard(data) {
+    const leaderboardList = document.getElementById('leaderboardList');
+    leaderboardList.innerHTML = ''; // Efface le message de chargement
+
+    if (data.length === 0) {
+        leaderboardList.innerHTML = "<p>Aucun classement disponible.</p>";
+        return;
+    }
+
+    const list = document.createElement('ol');
+    data.forEach((entry, index) => {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+            <strong>${entry.NomUtilisateur}</strong> - ${entry.nbreaffilie} affiliés
+        `;
+        list.appendChild(listItem);
+    });
+    leaderboardList.appendChild(list);
+}
+
+// Appeler la fonction au chargement de la page
+document.addEventListener('DOMContentLoaded', () => {
+    // ... votre code existant (vérification d'utilisateur, etc.) ...
+    
+    // Après avoir mis à jour les informations de l'utilisateur, appelez ceci
+    fetchLeaderboard();
+});
+
+// Assurez-vous d'avoir toujours la fonction copyCode()
+function copyCode() {
+    const affiliateCode = document.getElementById('affiliateCode').innerText;
+    navigator.clipboard.writeText(affiliateCode).then(() => {
+        alert("Code copié dans le presse-papiers !");
+    }).catch(err => {
+        console.error("Erreur lors de la copie du code:", err);
+    });
+}
+        
     </script>
 </body>
 </html>
