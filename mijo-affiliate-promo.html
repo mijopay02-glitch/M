@@ -6,68 +6,103 @@
     <title>Mon compte Affilié - MIJO</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .affiliate-dashboard {
+        body {
+            background-color: #f7f9fc;
+            color: #333;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .dashboard-header {
             text-align: center;
-            padding: 20px;
+            margin-bottom: 30px;
         }
-        .user-info, .affiliate-info, .tools-section {
-            background-color: #f0f0f0;
-            padding: 20px;
-            border-radius: 10px;
+        .card {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
+            text-align: center;
         }
-        .affiliate-code {
-            font-size: 20px;
+        .card h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 1.5em;
+        }
+        .card p {
+            color: #7f8c8d;
+            font-size: 1em;
+        }
+        .affiliate-code-display {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        .affiliate-code-text {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.2em;
+            color: #2980b9;
             font-weight: bold;
-            color: #4CAF50;
-            margin: 10px 0;
-            word-wrap: break-word; /* Permet au code de s'enrouler s'il est trop long */
         }
         .copy-btn {
-            background-color: #007BFF;
+            background-color: #3498db;
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 10px 18px;
             border-radius: 5px;
             cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .copy-btn:hover {
+            background-color: #2980b9;
         }
         .category-badge {
             display: inline-block;
-            padding: 5px 10px;
-            border-radius: 15px;
+            padding: 8px 15px;
+            border-radius: 20px;
             color: white;
             font-weight: bold;
-            margin-top: 10px;
+            font-size: 0.9em;
+            margin-top: 15px;
         }
-        .bronze { background-color: #cd7f32; }
-        .silver { background-color: #c0c0c0; }
-        .gold { background-color: #ffd700; }
+        .bronze { background-color: #a56121; }
+        .silver { background-color: #95a5a6; }
+        .gold { background-color: #f1c40f; }
     </style>
 </head>
 <body>
-
-    <div class="affiliate-dashboard">
-        <h1>Mon Compte Affilié</h1>
-        <div class="user-info">
-            <h2 id="userName"></h2>
-            <p><strong>Affiliation :</strong> <span id="affiliateStatus"></span></p>
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>Tableau de Bord Affilié</h1>
+            <p>Bienvenue, <span id="userName" style="font-weight:bold;"></span> !</p>
         </div>
 
-        <div class="affiliate-info">
-            <h2>Mon Code de Parrainage</h2>
-            <p class="affiliate-code" id="affiliateCode"></p>
-            <button class="copy-btn" onclick="copyCode()">Copier le code</button>
+        <div class="card">
+            <h2>Votre Code de Parrainage</h2>
+            <div class="affiliate-code-display">
+                <span id="affiliateCode" class="affiliate-code-text">Non disponible</span>
+                <button class="copy-btn" onclick="copyCode()">Copier</button>
+            </div>
         </div>
         
-        <div class="affiliate-info">
-            <h2>Catégorie d'Affiliation</h2>
-            <p>Nombre d'affiliés : <span id="affiliatesCount"></span></p>
-            <span id="categoryBadge" class="category-badge"></span>
+        <div class="card">
+            <h2>Votre Statut</h2>
+            <p>Nombre d'affiliés : <span id="affiliatesCount">0</span></p>
+            <span id="categoryBadge" class="category-badge">Bronze</span>
         </div>
 
-        <div class="tools-section">
+        <div class="card">
             <h2>Outils Marketing</h2>
-            <p>Téléchargez les ressources pour promouvoir MIJO Affiliate Promo.</p>
+            <p>Téléchargez les ressources pour promouvoir MIJO.</p>
             <a href="URL_DE_VOTRE_FLYER" download class="copy-btn">Télécharger le Flyer</a>
         </div>
     </div>
@@ -83,32 +118,29 @@
 
             const user = JSON.parse(userString);
 
-            // Vérifier si l'utilisateur est un affilié
             if (!user.Estafilia) {
                 alert("Vous n'êtes pas un affilié. Veuillez vous inscrire d'abord.");
                 window.location.href = "mijo-affiliate-inscription.html";
                 return;
             }
 
-            // Mettre à jour les informations de l'utilisateur
+            // Mise à jour des informations utilisateur
             document.getElementById('userName').innerText = user.NomUtilisateur || "Utilisateur";
-            document.getElementById('affiliateStatus').innerText = "Activé";
             document.getElementById('affiliateCode').innerText = user.LienAffiliation || "Non disponible";
             document.getElementById('affiliatesCount').innerText = user.nbreaffilie || 0;
 
-            // Déterminer et afficher la catégorie
             const affiliateCount = user.nbreaffilie || 0;
             const categoryBadge = document.getElementById('categoryBadge');
             
             if (affiliateCount >= 50) {
                 categoryBadge.innerText = "Or";
-                categoryBadge.classList.add('gold');
+                categoryBadge.className = 'category-badge gold';
             } else if (affiliateCount >= 10) {
                 categoryBadge.innerText = "Argent";
-                categoryBadge.classList.add('silver');
+                categoryBadge.className = 'category-badge silver';
             } else {
                 categoryBadge.innerText = "Bronze";
-                categoryBadge.classList.add('bronze');
+                categoryBadge.className = 'category-badge bronze';
             }
         });
 
