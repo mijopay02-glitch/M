@@ -54,6 +54,52 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+        .info-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.info-btn {
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    text-decoration: none;
+    color: black;
+}
+.whatsapp-btn {
+    background-color: #25D366;
+    color: white;
+    border: none;
+}
+.modal {
+    display: none; /* Caché par défaut */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+}
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 80%;
+}
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
     </style>
 </head>
 <body>
@@ -61,6 +107,43 @@
         <h1>MIJO Affiliate Promo</h1>
         <div class="flyer-container">
     <img src="https://i.postimg.cc/zD2qnm1G/a-vibrant-lifestyle-advertisement-for-th-1-VHg-Mv6-PQV-y-fa-I6d-XWi-A-31-Eg-LM5-MT3-Cf-E5-Rp-Cw0v-ZA.jpg" alt="Flyer de promotion MIJO Affiliate">
+</div>
+        <div class="info-buttons">
+    <button id="info-btn" class="info-btn">Infos sur le programme</button>
+    <a href="https://wa.me/50944990203?text=J'ai besoin d'aide pour m'inscrire au programme d'affiliation MIJO." target="_blank" class="info-btn whatsapp-btn">
+        Besoin d'aide ?
+    </a>
+</div>
+
+<div id="infoModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2>MIJO Affiliate Promo</h2>
+        <p> Fè Lajan ak MIJO Affiliate Promo! </p>
+        <p>Èske w ta renmen fè lajan fasil, san w pa bezwen yon gwo envèstisman? MIJO Affiliate Promo se chwa pou ou! Se yon pwogram kote ou vin yon patnè ofisyèl MIJO epi ou touche komisyon chak fwa yon moun enskri ak kòd pa w.
+
+Kòman sa Fonksyone?
+
+Enskripsyon: Enskri nan pwogram nan pou w vin yon afilye. Pri a varye ant 750 Gdes ak 1000 Gdes, selon si w gen yon parrain oubyen ou enskri poukont ou.
+
+Jwenn Kòd Pa w: Yon fwa w enskri, n ap ba w yon kòd parrainage pèsonèl.
+
+Pataje Kòd la: Pataje kòd sa a ak fanmi w, zanmi w ak sou rezo sosyal yo. Ankouraje moun enskri ak kòd pa w pou yo ka jwenn aksè nan tout sèvis MIJO.
+
+Touche Komisyon: Chak fwa yon moun enskri ak kòd pa w, ou touche yon gwo komisyon! Nou ba w 60% sou kòb enskripsyon an. Sa vle di, ou ka touche jiska 600 Gdes sou chak moun!
+
+Poukisa pou w Chwazi MIJO Affiliate Promo?
+
+Fasil: Pa gen anyen konplike! Se jis pataje kòd ou epi gade kòb antre.
+
+Gwo Komisyon: Nou ba w pi gwo pousantaj komisyon sou mache a.
+
+Zouti Marketing: N ap ba w tout zouti ou bezwen pou w byen vann: flyer, afich, tèks piblisite, ak lòt resous pou w pataje sou WhatsApp ak rezo sosyal yo.
+
+Kategori: Selon kantite moun ou afilye, w ap monte nan kategori (Bronze, Argent, Gold) epi w ap jwenn plis avantaj.
+
+Pa pèdi tan! Vin yon afilye MIJO jodi a epi kòmanse fè lajan an gwo!</p>
+    </div>
 </div>
 
         <div class="inscription-options">
@@ -80,6 +163,15 @@
     </div>
     
     <script>
+        // Affichez la modale
+document.getElementById('info-btn').addEventListener('click', () => {
+    document.getElementById('infoModal').style.display = 'flex';
+});
+
+// Cachez la modale
+function closeModal() {
+    document.getElementById('infoModal').style.display = 'none';
+}
         
     const parrainBtn = document.getElementById('parrain-btn');
     const noParrainBtn = document.getElementById('no-parrain-btn');
@@ -129,7 +221,8 @@
                 user.Estafilia = true;
                 user.LienAffiliation = result.LienAffiliation;
                 localStorage.setItem('user', JSON.stringify(user));
-                
+                saveToHistory("Affiliation avec parrain", 750, "Succès", user.userId); 
+    
                 alert("Inscription avec parrain réussie ! Vous êtes maintenant un affilié.");
                 window.location.href = 'mijo-affiliate-promo.html';
             } else {
@@ -174,7 +267,8 @@
                 user.Estafilia = true;
                 user.LienAffiliation = result.LienAffiliation;
                 localStorage.setItem('user', JSON.stringify(user));
-
+                saveToHistory("Affiliation sans parrain", 1000, "Succès", user.userId);
+                
                 alert("Inscription sans parrain réussie ! Vous êtes maintenant un affilié.");
                 window.location.href = 'mijo-affiliate-promo.html';
             } else {
