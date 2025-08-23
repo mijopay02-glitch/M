@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Affilié MIJO</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+        .flyer-container {
+            margin-bottom: 20px;
+        }
+        .flyer-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        .inscription-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .option-box {
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+        .option-box h2 {
+            margin-top: 0;
+        }
+        .option-box button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #parrain-section button {
+            background-color: #4CAF50; /* Vert */
+        }
+        #no-parrain-section button {
+            background-color: #2196F3; /* Bleu */
+        }
+        #parrain-code-input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MIJO Affiliate Promo</h1>
+        <div class="flyer-container">
+    <img src="https://i.postimg.cc/zD2qnm1G/a-vibrant-lifestyle-advertisement-for-th-1-VHg-Mv6-PQV-y-fa-I6d-XWi-A-31-Eg-LM5-MT3-Cf-E5-Rp-Cw0v-ZA.jpg" alt="Flyer de promotion MIJO Affiliate">
+</div>
+
+        <div class="inscription-options">
+            <div class="option-box" id="parrain-section">
+                <h2>Inscription avec parrain</h2>
+                <p>Coût : 750 Gdes</p>
+                <input type="text" id="parrain-code-input" placeholder="Entrez le code de parrainage">
+                <button id="parrain-btn">S'inscrire avec ce parrain</button>
+            </div>
+            
+            <div class="option-box" id="no-parrain-section">
+                <h2>Inscription sans parrain</h2>
+                <p>Coût : 1000 Gdes</p>
+                <button id="no-parrain-btn">S'inscrire sans parrain</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        
+    const parrainBtn = document.getElementById('parrain-btn');
+    const noParrainBtn = document.getElementById('no-parrain-btn');
+    const parrainCodeInput = document.getElementById('parrain-code-input');
+    // REMPLACEZ LES URL CI-DESSOUS PAR CELLES DE VOS WORKERS
+    const parrainUrl = "https://inscriptionavecparain.mijocomplexe.workers.dev/"; 
+    const noParrainUrl = "https://noparrain.mijocomplexe.workers.dev/"; 
+
+    // Gérer l'inscription avec parrain
+    parrainBtn.addEventListener('click', async () => {
+        const parrainCode = parrainCodeInput.value.trim();
+        if (parrainCode === "") {
+            alert("Veuillez entrer le code de parrainage.");
+            return;
+        }
+
+        const userString = localStorage.getItem('user');
+        const user = JSON.parse(userString);
+        
+        if (!user || !user.userId) {
+            alert("Utilisateur non connecté ou données manquantes.");
+            return;
+        }
+        
+        if (user.Solde < 750) {
+            alert("Solde insuffisant pour une inscription avec parrain (750 Gdes).");
+            return;
+        }
+
+        alert("Traitement en cours... Veuillez patienter.");
+
+        const dataToSend = {
+            userId: user.userId,
+            lienAffiliation: parrainCode
+        };
+
+        try {
+            const response = await fetch(parrainUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dataToSend)
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                user.Solde = result.nouveauSolde;
+                user.Estafilia = true;
+                user.LienAffiliation = result.LienAffiliation;
+                localStorage.setItem('user', JSON.stringify(user));
+                
+                alert("Inscription avec parrain réussie ! Vous êtes maintenant un affilié.");
+                window.location.href = 'mijo-affiliate-promo.html';
+            } else {
+                alert(result.error || "Échec de l'inscription avec parrain. Le code est peut-être invalide.");
+            }
+        } catch (error) {
+            alert("Erreur de connexion. Veuillez réessayer plus tard.");
+        }
+    });
+
+    // Gérer l'inscription sans parrain
+    noParrainBtn.addEventListener('click', async () => {
+        const userString = localStorage.getItem('user');
+        const user = JSON.parse(userString);
+
+        if (!user || !user.userId) {
+            alert("Utilisateur non connecté ou données manquantes.");
+            return;
+        }
+
+        if (user.Solde < 1000) {
+            alert("Solde insuffisant pour une inscription sans parrain (1000 Gdes).");
+            return;
+        }
+
+        alert("Traitement en cours... Veuillez patienter.");
+
+        const dataToSend = {
+            userId: user.userId
+        };
+        
+        try {
+            const response = await fetch(noParrainUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dataToSend)
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                user.Solde = result.nouveauSolde;
+                user.Estafilia = true;
+                user.LienAffiliation = result.LienAffiliation;
+                localStorage.setItem('user', JSON.stringify(user));
+
+                alert("Inscription sans parrain réussie ! Vous êtes maintenant un affilié.");
+                window.location.href = 'mijo-affiliate-promo.html';
+            } else {
+                alert(result.error || "Échec de l'inscription sans parrain.");
+            }
+        } catch (error) {
+            alert("Erreur de connexion. Veuillez réessayer plus tard.");
+        }
+    });
+
+    </script>
+</body>
+</html>
