@@ -442,7 +442,7 @@
             return;
         }
 
-        if (!currentUserData || !currentUserData.RecordID) {
+        if (!user || !user.userId) {
             transferMessage.innerText = "Utilisateur non connecté ou données manquantes.";
             transferMessage.style.color = 'red';
             logout(); 
