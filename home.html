@@ -432,9 +432,10 @@
             return;
         }
         
-        let currentUserData = null;
+        const currentUserData = localStorage.getItem('user');
+        let user;
         try {
-            currentUserData = JSON.parse(localStorage.getItem('user'));
+            user = JSON.parse(currentUserData);
         } catch (e) {
             console.error("Erreur de données utilisateur:", e);
             transferMessage.innerText = "Erreur de données utilisateur. Veuillez vous reconnecter.";
