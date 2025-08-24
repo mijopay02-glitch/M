@@ -454,7 +454,7 @@
         
         const requestData = {
             action: "automatic_transfer",
-            senderId: currentUserData.RecordID,
+            senderId: user.userId,
             recipientEmail: recipientEmail,
             amount: parseFloat(amount)
         };
@@ -474,7 +474,7 @@
                 localStorage.setItem('user', JSON.stringify(currentUserData));
                 
                 updateUI(currentUserData);
-                saveToHistory('Transfert', parseFloat(amount), 'Envoyé', recipientEmail);
+                saveToHistory('Transfert', parseFloat(amount), 'Envoyé', recipientEmail, user.userId);
 
                 transferMessage.innerText = "Transfert réussi !";
                 transferMessage.style.color = 'green';
