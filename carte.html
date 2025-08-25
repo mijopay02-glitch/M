@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demande de carte MIJO PAY</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn-submit:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Demande de carte MIJO PAY</h2>
+    <form id="cardForm">
+        <div class="form-group">
+            <label for="name">Nom</label>
+            <input type="text" id="name" required>
+        </div>
+        <div class="form-group">
+            <label for="cardNumber">Numéro de carte</label>
+            <input type="text" id="cardNumber" required>
+        </div>
+        <div class="form-group">
+            <label for="cin">CIN</label>
+            <input type="text" id="cin" required>
+        </div>
+        <div class="form-group">
+            <label for="deliveryAddress">Adresse de livraison</label>
+            <input type="text" id="deliveryAddress" required>
+        </div>
+        <button type="submit" class="btn-submit">Soumettre</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('cardForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const name = document.getElementById('name').value;
+        const cardNumber = document.getElementById('cardNumber').value;
+        const cin = document.getElementById('cin').value;
+        const deliveryAddress = document.getElementById('deliveryAddress').value;
+
+        // Validation des champs
+        if (!name || !cardNumber || !cin || !deliveryAddress) {
+            alert("Données manquantes dans la requête");
+            return;
+        }
+
+        alert("Envoi en cours.. Veuillez patienter");
+
+        // Format the data to match the App Script's expected URL parameters
+        const params = new URLSearchParams({
+            nom: name,
+            numeroCarte: cardNumber,
+            cin: cin,
+            adresseLivraison: deliveryAddress
+        });
+        
+        const URL = 'https://script.google.com/macros/s/AKfycbwe_A_LIX9r0nHB5cECZyv7sKPVS1OSRJ__uFiKjx3hi8etvKv87R2k9Jlh8DBLNg/exec'; 
+        try {
+            const response = await fetch(URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded' // Change the content type
+                },
+                body: params.toString() // Send the URL-encoded data
+            });
+
+            // The App Script returns "OK" as a text response
+            const result = await response.text();
+            
+            if (result === 'OK') {
+                alert("Votre demande de carte a été soumise avec succès !");
+                // Clear the form
+                document.getElementById('cardForm').reset();
+            } else {
+                alert("Échec de la soumission de la demande. Réponse du serveur : " + result);
+            }
+        } catch (error) {
+            alert("Erreur de connexion. Veuillez réessayer.");
+            console.error('Error:', error);
+        }
+    });
+</script>
+
+</body>
+</html>
