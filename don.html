@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faire un don - MIJO</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f7f9fc;
+            color: #333;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .header {
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+        .donation-info {
+            background-color: #ecf0f1;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        .donation-info h2 {
+            margin-top: 0;
+            color: #34495e;
+        }
+        .donation-info ul {
+            list-style: none;
+            padding: 0;
+        }
+        .donation-info li {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232ecc71'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E") no-repeat left center;
+            background-size: 20px;
+            padding-left: 30px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        .donation-form {
+            text-align: center;
+        }
+        .donation-form label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: #34495e;
+        }
+        .donation-form input[type="number"] {
+            width: 80%;
+            padding: 12px 15px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 1.1em;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+        .donation-form input[type="number"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        .btn-donate {
+            width: 100%;
+            padding: 15px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-donate:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Faites un don et faites la différence</h1>
+        <p>
+            Chaque don que vous faites nous aide à soutenir les entrepreneurs locaux et à offrir des formations essentielles aux jeunes. Votre générosité est un investissement dans l'avenir.
+        </p>
+    </div>
+    
+    <div class="donation-info">
+        <h2>À quoi servira votre don ?</h2>
+        <ul>
+            <li>Financer des **micro-prêts** pour les jeunes entrepreneurs.</li>
+            <li>Organiser des **ateliers de formation** sur le développement d'entreprise et les compétences financières.</li>
+            <li>Fournir des **ressources et un soutien** aux startups pour les aider à grandir.</li>
+        </ul>
+    </div>
+    
+    <div class="donation-form">
+        <form id="donationForm">
+            <div class="form-group">
+                <label for="montant">Entrez le montant de votre don (HTG)</label>
+                <input type="number" id="montant" placeholder="Ex: 500" required>
+            </div>
+            <button type="submit" class="btn-donate">Donner</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('donationForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        // Afficher un message de chargement
+        const notifier = (message, title) => alert(`${title}\n\n${message}`);
+        notifier("Chargement en cours...", "Veuillez patienter");
+
+        // Récupérer le montant du don
+        const montant = parseFloat(document.getElementById('montant').value);
+
+        // Récupérer l'ID de l'utilisateur depuis localStorage
+        const userString = localStorage.getItem('user');
+        if (!userString) {
+            alert("Veuillez vous connecter pour faire un don.");
+            window.location.href = "index.html"; // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
+            return;
+        }
+        const user = JSON.parse(userString);
+        const userId = user.userId;
+
+        // Validation du montant
+        if (isNaN(montant) || montant <= 0) {
+            alert("Veuillez entrer un montant valide.");
+            return;
+        }
+        
+        // La structure de données pour la requête (basée sur les blocs)
+        const requestData = {
+            userId: userId,
+            montant: montant
+        };
+        
+       
+        const URL = "https://dons.mijocomplexe.workers.dev/"; 
+
+        try {
+            const response = await fetch(URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur réseau ou réponse du serveur invalide.");
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert("Merci pour votre don ! Il a été traité avec succès.");
+               if (result.nouveauSoldeUser !== undefined) {
+                    user.Solde = result.nouveauSoldeUser;
+                    localStorage.setItem('user', JSON.stringify(user));
+
+                    // Mettre à jour l'affichage du solde sur la page (si vous en avez un)
+                    // Par exemple : document.getElementById('userBalance').innerText = user.Solde + " HTG";
+                }
+                document.getElementById('montant').value = ''; // Réinitialiser le champ
+            } else {
+                alert("Échec du don : " + result.error);
+            }
+        } catch (error) {
+            console.error('Erreur lors de la requête:', error);
+            alert("Erreur de connexion. Veuillez réessayer.");
+        }
+    });
+</script>
+
+</body>
+</html>
