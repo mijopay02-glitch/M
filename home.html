@@ -480,7 +480,7 @@
                 transferMessage.innerText = "Transfert réussi !";
                 transferMessage.style.color = 'green';
                 setTimeout(() => {
-                    hideTransferModal();
+                    window.location.href = 'home.html'
                 }, 2000);
             } else {
                 transferMessage.innerText = data.error || "Échec du transfert.";
