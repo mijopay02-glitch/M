@@ -432,10 +432,10 @@
             return;
         }
         
-        const currentUserData = localStorage.getItem('user');
+        const currentUserDataString = localStorage.getItem('user');
         let user;
         try {
-            user = JSON.parse(currentUserData);
+            user = JSON.parse(currentUserDataString);
         } catch (e) {
             console.error("Erreur de données utilisateur:", e);
             transferMessage.innerText = "Erreur de données utilisateur. Veuillez vous reconnecter.";
@@ -446,7 +446,6 @@
         if (!user || !user.userId) {
             transferMessage.innerText = "Utilisateur non connecté ou données manquantes.";
             transferMessage.style.color = 'red';
-         
             return;
         }
 
@@ -471,15 +470,17 @@
 
             if (data.success) {
                 const newBalance = data.newBalance;
-                currentUserData.Solde = newBalance;
-                localStorage.setItem('user', JSON.stringify(currentUserData));
                 
-                updateUI(currentUserData);
+                // --- C'EST LA LIGNE CLÉ QUI A ÉTÉ CORRIGÉE ---
+                user.Solde = newBalance;
+                localStorage.setItem('user', JSON.stringify(user));
+                
+                updateUI(user);
                 saveToHistory('Transfert', parseFloat(amount), 'Envoyé', recipientEmail, user.userId);
 
                 transferMessage.innerText = "Transfert réussi !";
                 transferMessage.style.color = 'green';
-               
+                
             } else {
                 transferMessage.innerText = data.error || "Échec du transfert.";
                 transferMessage.style.color = 'red';
@@ -490,7 +491,6 @@
             transferMessage.style.color = 'red';
         }
     }
-
     function saveToHistory(type, amount, status, recipient, userId) {
         const historyKey = `transactions_${userId}`;
         let history = JSON.parse(localStorage.getItem(historyKey)) || [];
