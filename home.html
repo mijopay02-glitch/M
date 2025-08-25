@@ -479,9 +479,7 @@
 
                 transferMessage.innerText = "Transfert réussi !";
                 transferMessage.style.color = 'green';
-                setTimeout(() => {
-                    window.location.href = 'home.html'
-                }, 2000);
+               
             } else {
                 transferMessage.innerText = data.error || "Échec du transfert.";
                 transferMessage.style.color = 'red';
