@@ -177,26 +177,33 @@
                 throw new Error("Erreur réseau ou réponse du serveur invalide.");
             }
 
-            const result = await response.json();
-
-            if (result.success) {
-                alert("Merci pour votre don ! Il a été traité avec succès.");
-               if (result.nouveauSoldeUser !== undefined) {
-                    user.Solde = result.nouveauSoldeUser;
-                    localStorage.setItem('user', JSON.stringify(user));
-
-                    // Mettre à jour l'affichage du solde sur la page (si vous en avez un)
-                    // Par exemple : document.getElementById('userBalance').innerText = user.Solde + " HTG";
-                }
-                document.getElementById('montant').value = ''; // Réinitialiser le champ
-            } else {
-                alert("Échec du don : " + result.error);
-            }
-        } catch (error) {
-            console.error('Erreur lors de la requête:', error);
-            alert("Erreur de connexion. Veuillez réessayer.");
+            const responseText = await response.text();
+        
+        let result;
+        try {
+            result = JSON.parse(responseText);
+        } catch (jsonError) {
+            console.error("Erreur de parsing JSON:", jsonError);
+            console.error("Réponse du serveur (non-JSON):", responseText);
+            throw new Error("Réponse du serveur invalide. Le serveur n'a pas renvoyé de données JSON.");
         }
-    });
+
+        if (result.success) {
+            alert("Merci pour votre don ! Il a été traité avec succès.");
+            if (result.nouveauSoldeUser !== undefined) {
+                user.Solde = result.nouveauSoldeUser;
+                localStorage.setItem('user', JSON.stringify(user));
+                // Mettre à jour l'affichage du solde
+            }
+            document.getElementById('montant').value = '';
+        } else {
+            alert("Échec du don : " + result.message);
+        }
+    } catch (error) {
+        console.error('Erreur lors de la requête:', error);
+        alert("Erreur de connexion. Veuillez réessayer. Détails: " + error.message);
+    }
+});
 </script>
 
 </body>
