@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dépôt MIJO PAY</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .deposit-method {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .deposit-method:hover {
+            transform: scale(1.05);
+        }
+        .code {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #007BFF;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Dépôt MIJO PAY</h1>
+
+<div id="agentDeposit" class="deposit-method">
+    Dépôt par Agent MIJO PAY
+    <div id="agentCode" class="code"></div>
+</div>
+
+<div id="whatsappDeposit" class="deposit-method">
+    Dépôt par Contact Direct WhatsApp
+</div>
+
+<div id="moncashDeposit" class="deposit-method">
+    Dépôt par MonCash
+</div>
+
+<script>
+    // Récupérer le numéro de carte depuis localStorage
+    const numeroCarte = localStorage.getItem('NumeroCarte');
+
+    // Fonction pour obtenir les 4 derniers chiffres
+    function getLastFourDigits(numero) {
+        if(!numero) return '';
+        return numero.slice(-4);
+    }
+
+    // Dépôt par Agent MIJO PAY
+    const agentDeposit = document.getElementById('agentDeposit');
+    const agentCode = document.getElementById('agentCode');
+    agentDeposit.addEventListener('click', () => {
+        const code = getLastFourDigits(numeroCarte);
+        agentCode.textContent = `Votre code de dépôt : ${code}`;
+    });
+
+    // Dépôt par WhatsApp
+    const whatsappDeposit = document.getElementById('whatsappDeposit');
+    whatsappDeposit.addEventListener('click', () => {
+        const message = encodeURIComponent('Bonjour, je souhaite effectuer un dépôt sur MIJO PAY.');
+        const phoneNumber = '+509xxxxxxxx'; // Remplace par le numéro WhatsApp officiel MIJO PAY
+        window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+    });
+
+    // Dépôt par MonCash
+    const moncashDeposit = document.getElementById('moncashDeposit');
+    moncashDeposit.addEventListener('click', () => {
+        alert('Pour effectuer un dépôt via MonCash, entrez votre numéro MonCash et le montant dans votre application MonCash.');
+        // Ici tu pourras plus tard intégrer l'API MonCash si disponible
+    });
+</script>
+
+</body>
+</html>
