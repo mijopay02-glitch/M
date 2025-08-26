@@ -57,31 +57,34 @@
 
 <script>
   window.addEventListener("DOMContentLoaded", () => {
+    // 1. On récupère et on analyse l'objet 'user'
     const userString = localStorage.getItem('user');
     let user = null;
-
     if (userString) {
         try {
             user = JSON.parse(userString);
         } catch (e) {
             console.error("Erreur de données utilisateur:", e);
-            // Gérer l'erreur si les données ne sont pas au bon format JSON
         }
     }
 
+    // 2. On récupère le numéro de carte et les 4 derniers chiffres
     const numeroCarte = user ? user.NumeroCarte : null;
     const lastFourDigits = numeroCarte ? numeroCarte.slice(-4) : '';
-    document.getElementById("agentCode").textContent = lastFourDigits;
 
-    // Dépôt par Agent MIJO PAY
+    // 3. On sélectionne les éléments HTML nécessaires
     const agentDeposit = document.getElementById('agentDeposit');
     const agentCode = document.getElementById('agentCode');
     
+    // 4. On ajoute l'écouteur d'événement 'click'
     agentDeposit.addEventListener('click', () => {
+        // C'est ICI qu'on met le code à jour
         agentCode.textContent = `Votre code de dépôt : ${lastFourDigits}`;
     });
-});
 
+    // On s'assure que le contenu initial de agentCode est vide.
+    agentCode.textContent = '';
+});
     // Dépôt par WhatsApp
     const whatsappDeposit = document.getElementById('whatsappDeposit');
     whatsappDeposit.addEventListener('click', () => {
