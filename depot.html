@@ -56,9 +56,20 @@
 </div>
 
 <script>
+  window.addEventListener("DOMContentLoaded", () => {
     const userString = localStorage.getItem('user');
-window.addEventListener("DOMContentLoaded", () => {
-    const numeroCarte = user.NumeroCarte
+    let user = null;
+
+    if (userString) {
+        try {
+            user = JSON.parse(userString);
+        } catch (e) {
+            console.error("Erreur de données utilisateur:", e);
+            // Gérer l'erreur si les données ne sont pas au bon format JSON
+        }
+    }
+
+    const numeroCarte = user ? user.NumeroCarte : null;
     const lastFourDigits = numeroCarte ? numeroCarte.slice(-4) : '';
     document.getElementById("agentCode").textContent = lastFourDigits;
 
@@ -67,7 +78,6 @@ window.addEventListener("DOMContentLoaded", () => {
     const agentCode = document.getElementById('agentCode');
     
     agentDeposit.addEventListener('click', () => {
-        // On utilise directement la variable "lastFourDigits" qui est déjà calculée.
         agentCode.textContent = `Votre code de dépôt : ${lastFourDigits}`;
     });
 });
