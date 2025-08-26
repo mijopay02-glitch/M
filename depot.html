@@ -57,13 +57,15 @@
 
 <script>
     // Récupérer le numéro de carte depuis localStorage
-    const numeroCarte = localStorage.getItem('NumeroCarte');
+  const numeroCarte = localStorage.getItem('NumeroCarte');
+console.log("Numéro récupéré :", numeroCarte);
+    
+function getLastFourDigits() {
+    if (!numeroCarte) return '';
+    return numeroCarte.slice(-4);
+}
 
-    // Fonction pour obtenir les 4 derniers chiffres
-    function getLastFourDigits(numero) {
-        if(!numero) return '';
-        return numero.slice(-4);
-    }
+document.getElementById("last4").textContent = getLastFourDigits();
 
     // Dépôt par Agent MIJO PAY
     const agentDeposit = document.getElementById('agentDeposit');
