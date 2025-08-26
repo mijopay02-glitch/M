@@ -276,77 +276,75 @@
 <body>
 
     <div class="top-section">
-        <div class="user-header">
-            <div class="user-profile">
-                <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY Logo">
-                <div class="user-info">
-                    <span class="username" id="username">Chargement...</span>
-                    <span class="email" id="email"></span>
-                </div>
+    <div class="user-header">
+        <div class="user-profile">
+            <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY Logo">
+            <div class="user-info">
+                <span class="username" id="username">Chargement...</span>
+                <span class="email" id="email"></span>
             </div>
-            <a href="#" class="icon-link" onclick="logout()">
-                <img src="https://i.postimg.cc/43mBtP8B/icons8-exporter-48.png" alt="Déconnexion" style="width: 24px;">
+        </div>
+        <a href="#" class="icon-link" onclick="logout()">
+            <img src="https://i.postimg.cc/43mBtP8B/icons8-exporter-48.png" alt="Déconnexion" style="width: 24px;">
+        </a>
+    </div>
+    <div class="balance-display">
+        <div class="balance-label">Solde MIJO</div>
+        <div class="balance-value" id="balance">0 G</div>
+    </div>
+    
+    <div class="action-buttons-container">
+        <div class="action-item">
+            <a href="depot.html" class="action-button">
+                <span class="icon">
+                    <img src="https://i.postimg.cc/Gp8HvTvk/icons8-t-l-charger-24.png" alt="Dépôt">
+                </span>
             </a>
+            <span>Dépôt</span>
         </div>
-        <div class="balance-display">
-            <div class="balance-label">Solde MIJO</div>
-            <div class="balance-value" id="balance">0 G</div>
+        <div class="action-item">
+            <a href="https://wa.me/50944990203?text=Bonjour,%20je%20souhaite%20faire%20un%20Retrait." class="action-button">
+                <span class="icon">
+                    <img src="https://i.postimg.cc/KjLPfsLD/icons8-d-p-t-50.png" alt="Retrait">
+                </span>
+            </a>
+            <span>Retrait</span>
         </div>
- <div class="action-buttons-container">
-    <div class="action-item">
-        <a href="depot.html" class="action-button">
-            <span class="icon">
-                <img src="https://i.postimg.cc/Gp8HvTvk/icons8-t-l-charger-24.png" alt="Dépôt">
-            </span>
-        </a>
-        <span>Dépôt</span>
-    </div>
-
-    <div class="action-item">
-        <a href="https://wa.me/50944990203?text=Bonjour,%20je%20souhaite%20faire%20un%20Retrait." class="action-button">
-            <span class="icon">
-                <img src="https://i.postimg.cc/KjLPfsLD/icons8-d-p-t-50.png" alt="Retrait">
-            </span>
-        </a>
-        <span>Retrait</span>
-    </div>
-
-    <div class="action-item">
-        <a href="#" class="action-button" onclick="showTransferModal()">
-            <span class="icon">
-                <img src="https://i.postimg.cc/jdtwB5rb/icons8-transfert-50.png" alt="Transfert">
-            </span>
-        </a>
-        <span>Transfert</span>
-    </div>
-
-    <div class="action-item">
-        <a href="#" class="action-button" onclick="checkAffiliateStatus()">
-            <span class="icon">
-                <img src="https://i.postimg.cc/KjXqmTDQ/icons8-l-argent-avec-des-ailes-50.png" alt="Mijo Affiliate promo">
-            </span>
-        </a>
-        <span>Mijo Affiliate</span>
+        <div class="action-item">
+            <a href="#" class="action-button" onclick="showTransferModal()">
+                <span class="icon">
+                    <img src="https://i.postimg.cc/jdtwB5rb/icons8-transfert-50.png" alt="Transfert">
+                </span>
+            </a>
+            <span>Transfert</span>
+        </div>
+        <div class="action-item">
+            <a href="#" class="action-button" onclick="checkAffiliateStatus()">
+                <span class="icon">
+                    <img src="https://i.postimg.cc/KjXqmTDQ/icons8-l-argent-avec-des-ailes-50.png" alt="Mijo Affiliate promo">
+                </span>
+            </a>
+            <span>Mijo Affiliate</span>
+        </div>
     </div>
 </div>
 
-    <div class="container middle-section">
-        <div class="flyer-list">
-           <a href="#" class="flyer-item" onclick="activatePremium()">
-    <img src="https://i.postimg.cc/d1zd7P3j/a-dynamic-promotional-poster-for-mijo-pa-O35h-A-9v-Sn-Srwi5-Blvd-PPA-l-NGj-Bdlx-TM6i-XCh8xxmma-A.jpg" alt="MIJO PAY Premium">
-</a>
-            <a href="carte.html" class="flyer-item">
-    <img src="https://i.postimg.cc/9MtzNzV8/a-sleek-product-shot-advertisement-showc-dn-RNraq-ARUKf5-Ux-FUEwg-Lw-6-Kqvf-UE-SKy-J-f-CNb-OJdnw.jpg" alt="Carte physique MIJO">
-</a>
-            <a href="#" class="flyer-item" data-page="netflix.html">
-                <img src="https://i.postimg.cc/nhcshcTt/a-wide-cinematic-image-featuring-the-tex-r6ul-KVM9-RVO84q-Qfpl-TJWA-vf-u3-W9-LT1-WIIub3-Nm-J-Qg.jpg" alt="Abonnement Netflix">
-            </a>
-            <a href="don.html" class="flyer-item">
-                <img src="https://i.postimg.cc/BbWhW5Sj/a-heartwarming-digital-flyer-advertiseme-spq1z-TDTRQu8-Sq7x-Ylr6-Q-wiy-Jeq-U-QQi-RWIPp-E5-VCyw.jpg" alt="Faire un don">
-            </a>
-        </div>
+<div class="container middle-section">
+    <div class="flyer-list">
+        <a href="#" class="flyer-item" onclick="activatePremium()">
+            <img src="https://i.postimg.cc/d1zd7P3j/a-dynamic-promotional-poster-for-mijo-pa-O35h-A-9v-Sn-Srwi5-Blvd-PPA-l-NGj-Bdlx-TM6i-XCh8xxmma-A.jpg" alt="MIJO PAY Premium">
+        </a>
+        <a href="carte.html" class="flyer-item">
+            <img src="https://i.postimg.cc/9MtzNzV8/a-sleek-product-shot-advertisement-showc-dn-RNraq-ARUKf5-Ux-FUEwg-Lw-6-Kqvf-UE-SKy-J-f-CNb-OJdnw.jpg" alt="Carte physique MIJO">
+        </a>
+        <a href="#" class="flyer-item" data-page="netflix.html">
+            <img src="https://i.postimg.cc/nhcshcTt/a-wide-cinematic-image-featuring-the-tex-r6ul-KVM9-RVO84q-Qfpl-TJWA-vf-u3-W9-LT1-WIIub3-Nm-J-Qg.jpg" alt="Abonnement Netflix">
+        </a>
+        <a href="don.html" class="flyer-item">
+            <img src="https://i.postimg.cc/BbWhW5Sj/a-heartwarming-digital-flyer-advertiseme-spq1z-TDTRQu8-Sq7x-Ylr6-Q-wiy-Jeq-U-QQi-RWIPp-E5-VCyw.jpg" alt="Faire un don">
+        </a>
     </div>
-
+</div>
     <div id="transferModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="hideTransferModal()">&times;</span>
