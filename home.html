@@ -123,47 +123,48 @@
         opacity: 0.8;
     }
 
-    .action-buttons {
-        display: flex;
-        justify-content: space-around;
-        position: absolute;
-        bottom: -30px;
-        width: 100%;
-        left: 0;
-    }
+    /* Adaptation du style pour l'alignement vertical */
+.action-buttons {
+    display: flex;
+    flex-direction: column; /* Aligner les boutons en colonne */
+    align-items: flex-start; /* Aligner les boutons à gauche */
+    gap: 15px; /* Espacement vertical entre les boutons */
+    position: absolute;
+    bottom: -30px;
+    left: 20px; /* Positionner la liste à gauche */
+    width: auto;
+}
 
-    /* Styles pour les boutons d'action sur la photo */
-    .action-button {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 80px; /* Taille augmentée */
-        height: 80px; /* Taille augmentée */
-        border-radius: 20px; /* Bords légèrement arrondis */
-        background-color: var(--card-bg);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        text-decoration: none;
-        color: var(--text-color);
-        transition: transform 0.2s;
-    }
+.action-button {
+    display: flex;
+    flex-direction: row; /* Aligner l'icône et le texte sur la même ligne */
+    align-items: center;
+    width: 140px; /* Largeur augmentée pour le bouton */
+    height: 40px; /* Hauteur ajustée */
+    border-radius: 20px;
+    background-color: var(--card-bg);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    color: var(--text-color);
+    transition: transform 0.2s;
+    justify-content: flex-start;
+    padding-left: 15px; /* Ajouter de l'espace à gauche */
+}
 
-    .action-button:active {
-        transform: scale(0.95);
-    }
+.action-button:active {
+    transform: scale(0.95);
+}
 
-    .action-button .icon img {
-        width: 30px; /* Taille de l'icône augmentée */
-        height: 30px; /* Taille de l'icône augmentée */
-        margin-bottom: 5px;
-    }
-    
-    .action-button span {
-        font-size: 0.8em; /* Taille du texte augmentée */
-        font-weight: 500; /* Poids de la police pour un meilleur contraste */
-        margin-top: 5px;
-        text-align: center;
-    }
+.action-button .icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px; /* Espacement entre l'icône et le texte */
+}
+
+.action-button span {
+    font-size: 0.9em;
+    font-weight: 500;
+}
     
     .middle-section {
         padding: 50px 20px 20px;
@@ -255,25 +256,24 @@
             <div class="balance-value" id="balance">0 G</div>
         </div>
         
-            <a href="depot.html" class="action-button">
-        <span class="icon">
-            <img src="https://i.postimg.cc/Gp8HvTvk/icons8-t-l-charger-24.png" alt="Dépôt" style="width: 24px; height: 24px;">
-        </span>
+<div class="action-buttons">
+    <a href="depot.html" class="action-button">
+        <img class="icon" src="https://i.postimg.cc/Gp8HvTvk/icons8-t-l-charger-24.png" alt="Dépôt">
         <span>Dépôt</span>
     </a>
-            <a href="https://wa.me/50944990203?text=Bonjour,%20je%20souhaite%20faire%20un%20Retrait." class="action-button">
-                <span class="icon"><img src="https://i.postimg.cc/KjLPfsLD/icons8-d-p-t-50.png" alt="Retrait" style="width: 24px; height: 24px;"></span>
-                <span>Retrait</span>
-            </a>
-            <a href="#" class="action-button" onclick="showTransferModal()">
-                <span class="icon"><img src="https://i.postimg.cc/jdtwB5rb/icons8-transfert-50.png" alt="Transfert" style="width: 24px; height: 24px;"></span>
-                <span>Transfert</span>
-            </a>
-            <a href="#" class="action-button" onclick="checkAffiliateStatus()">
-    <span class="icon"><img src="https://i.postimg.cc/KjXqmTDQ/icons8-l-argent-avec-des-ailes-50.png" alt="Mijo Affiliate promo" style="width: 24px; height: 24px;"></span>
-    <span>Mijo Affiliate promo</span>
-</a>
-        </div>
+    <a href="https://wa.me/50944990203?text=Bonjour,%20je%20souhaite%20faire%20un%20Retrait." class="action-button">
+        <img class="icon" src="https://i.postimg.cc/KjLPfsLD/icons8-d-p-t-50.png" alt="Retrait">
+        <span>Retrait</span>
+    </a>
+    <a href="#" class="action-button" onclick="showTransferModal()">
+        <img class="icon" src="https://i.postimg.cc/jdtwB5rb/icons8-transfert-50.png" alt="Transfert">
+        <span>Transfert</span>
+    </a>
+    <a href="#" class="action-button" onclick="checkAffiliateStatus()">
+        <img class="icon" src="https://i.postimg.cc/KjXqmTDQ/icons8-l-argent-avec-des-ailes-50.png" alt="Mijo Affiliate promo">
+        <span>Mijo Affiliate promo</span>
+    </a>
+</div>
     </div>
 
     <div class="container middle-section">
