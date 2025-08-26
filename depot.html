@@ -56,9 +56,11 @@
 </div>
 
 <script>
-    // Récupérer le numéro de carte depuis localStorage
-  const numeroCarte = localStorage.getItem('NumeroCarte');
-console.log("Numéro récupéré :", numeroCarte);
+    window.addEventListener("DOMContentLoaded", () => {
+   const numeroCarte = localStorage.getItem('NumeroCarte');
+   document.getElementById("last4").textContent = numeroCarte ? numeroCarte.slice(-4) : '';
+});
+ 
     
 function getLastFourDigits() {
     if (!numeroCarte) return '';
