@@ -1,234 +1,116 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIJO PAY - Accueil</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #2196F3;
-            --text-color: #333;
-            --light-text-color: #999;
-            --bg-color: #f0f2f5;
-            --card-bg: #fff;
-        }
+    <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MIJO PAY - Accueil</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --primary-color:#2196F3;
+      --secondary-color:#1769aa;   /* ajout pour le dégradé */
+      --text-color:#333;
+      --light-text-color:#999;
+      --bg-color:#f5f6fa;          /* plus clair, style app */
+      --card-bg:#fff;
+    }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            background-color: var(--bg-color);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+    *{box-sizing:border-box}
+    body{
+      font-family:'Poppins',sans-serif;
+      margin:0;
+      background-color:var(--bg-color);
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+      color:var(--text-color);
+    }
 
-        .container {
-            flex-grow: 1;
-            padding: 20px;
-        }
+    .container{flex-grow:1;padding:20px}
 
-        .modal {
-            position: fixed;
-            z-index: 10;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
+    /* --------- MODAL --------- */
+    .modal{
+      position:fixed;z-index:10;left:0;top:0;width:100%;height:100%;
+      overflow:auto;background:rgba(0,0,0,.4);display:none;justify-content:center;align-items:center;
+    }
+    .modal-content{
+      background:#fff;margin:auto;padding:20px;border-radius:14px;
+      box-shadow:0 5px 15px rgba(0,0,0,.2);width:90%;max-width:400px;position:relative;
+    }
+    .close-btn{color:#aaa;position:absolute;right:12px;top:8px;font-size:28px;cursor:pointer}
 
-        .modal-content {
-            background-color: #fefefe;
-            margin: auto;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            width: 90%;
-            max-width: 400px;
-            position: relative;
-        }
+    /* --------- HEADER / TOP SECTION --------- */
+    .top-section{
+      background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));
+      color:#fff;text-align:center;position:relative;
+      padding:28px 18px 95px; /* espace en bas pour les boutons flottants */
+      border-bottom-left-radius:28px;border-bottom-right-radius:28px;
+      box-shadow:0 6px 18px rgba(0,0,0,.18);
+    }
+    .top-section.premium{
+      background:linear-gradient(135deg,#f7a62d,#ffc977);
+    }
 
-        .close-btn {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .top-section {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 30px 20px 80px;
-            text-align: center;
-            border-bottom-left-radius: 25px;
-            border-bottom-right-radius: 25px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            position: relative;
-        }
+    .user-header{
+      display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;
+    }
+    .user-profile{display:flex;align-items:center}
+    .user-profile img{
+      width:46px;height:46px;border-radius:50%;margin-right:12px;border:2px solid #fff;
+    }
+    .user-info{display:flex;flex-direction:column;text-align:left}
+    .username{font-size:1.05em;font-weight:600}
+    .email{font-size:.8em;opacity:.9}
 
-        .user-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
+    .balance-display{margin-top:12px}
+    .balance-value{font-size:2.8em;line-height:1;font-weight:700}
+    .balance-label{font-size:1em;opacity:.95}
 
-        .user-profile {
-            display: flex;
-            align-items: center;
-        }
+    /* --------- BOUTONS RONDS FLOTTANTS --------- */
+    .action-buttons{
+      position:absolute;left:0;bottom:-38px;width:100%;
+      display:flex;justify-content:space-around;padding:0 18px;
+    }
+    .action-button{
+      width:76px;height:76px;border-radius:50%;background:var(--card-bg);
+      box-shadow:0 8px 16px rgba(0,0,0,.15);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      text-decoration:none;color:var(--text-color);transition:transform .18s ease, box-shadow .18s ease;
+    }
+    .action-button:hover{transform:scale(1.06);box-shadow:0 10px 20px rgba(0,0,0,.18)}
+    .action-button:active{transform:scale(.95)}
+    .action-button .icon{font-size:1.6em;display:flex;align-items:center;justify-content:center}
+    .action-button span{font-size:.74em;margin-top:4px}
 
-        .user-profile img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-            border: 2px solid white;
-        }
+    /* --------- CONTENU / LISTE STYLE “CARDS” --------- */
+    .middle-section{padding:72px 18px 100px} /* 72px pour laisser respirer sous les boutons flottants */
+    .flyer-list{
+      display:flex;flex-direction:column;gap:14px;
+    }
+    .flyer-item{
+      display:block;background:var(--card-bg);
+      border-radius:16px;overflow:hidden;
+      box-shadow:0 4px 12px rgba(0,0,0,.08);
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+    .flyer-item:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,0,0,.12)}
+    .flyer-item img{width:100%;height:auto;display:block}
 
-        .user-info {
-            display: flex;
-            flex-direction: column;
-            text-align: left;
-        }
-
-        .username {
-            font-size: 1.1em;
-            font-weight: 500;
-        }
-        
-        .email {
-            font-size: 0.8em;
-            opacity: 0.8;
-            margin-top: -5px;
-        }
-
-        .balance-display {
-            margin-top: 20px;
-        }
-
-        .balance-value {
-            font-size: 2.8em;
-            font-weight: 700;
-        }
-
-        .balance-label {
-            font-size: 1.1em;
-            opacity: 0.8;
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: space-around;
-            position: absolute;
-            bottom: -20px;
-            width: 100%;
-            left: 0;
-            padding: 0 10px;
-        }
-
-        .action-button {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background-color: var(--card-bg);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-decoration: none;
-            color: var(--text-color);
-            transition: transform 0.2s;
-            justify-content: center;
-        }
-
-        .action-button:active {
-            transform: scale(0.95);
-        }
-
-        .action-button .icon {
-            font-size: 1.5em;
-        }
-        
-        .action-button span {
-            font-size: 0.7em;
-            margin-top: 5px;
-            text-align: center;
-        }
-
-        .middle-section {
-            padding: 50px 20px 20px;
-        }
-        
-        .flyer-list {
-            display: grid;
-            gap: 15px;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        }
-        
-        .flyer-item {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-            display: block;
-            overflow: hidden;
-            text-decoration: none;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .flyer-item:active {
-            transform: scale(0.98);
-        }
-        
-        .flyer-item img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        .footer-menu {
-            background-color: var(--card-bg);
-            border-top: 1px solid #ddd;
-            padding: 10px 0;
-            display: flex;
-            justify-content: space-around;
-            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-
-        .menu-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--light-text-color);
-            font-size: 0.7em;
-            text-decoration: none;
-            flex: 1;
-            padding: 5px 0;
-        }
-
-        .menu-btn.active {
-            color: var(--primary-color);
-        }
-
-        .menu-btn .icon {
-            font-size: 1.5em;
-            margin-bottom: 5px;
-        }
-        
-        .top-section.premium {
-            background-color: #f7a62d; 
-            background-image: linear-gradient(135deg, #f7a62d, #ffc977);
-        }
+    /* --------- FOOTER --------- */
+    .footer-menu{
+      position:fixed;bottom:0;width:100%;
+      background:var(--card-bg);border-top:1px solid #eee;
+      padding:10px 0;display:flex;justify-content:space-around;
+      box-shadow:0 -6px 14px rgba(0,0,0,.08);
+      border-top-left-radius:16px;border-top-right-radius:16px;
+      backdrop-filter:saturate(140%) blur(4px);
+    }
+    .menu-btn{
+      display:flex;flex-direction:column;align-items:center;gap:4px;
+      color:var(--light-text-color);font-size:.78em;text-decoration:none;flex:1;padding:6px 0;
+    }
+    .menu-btn .icon{font-size:1.5em}
+    .menu-btn.active{color:var(--primary-color)}
     </style>
 </head>
 <body>
