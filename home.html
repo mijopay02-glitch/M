@@ -67,20 +67,40 @@
     .balance-label{font-size:1em;opacity:.95}
 
     /* --------- BOUTONS RONDS FLOTTANTS --------- */
-    .action-buttons{
-      position:absolute;left:0;bottom:-38px;width:100%;
-      display:flex;justify-content:space-around;padding:0 18px;
-    }
-    .action-button{
-      width:76px;height:76px;border-radius:50%;background:var(--card-bg);
-      box-shadow:0 8px 16px rgba(0,0,0,.15);
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      text-decoration:none;color:var(--text-color);transition:transform .18s ease, box-shadow .18s ease;
-    }
-    .action-button:hover{transform:scale(1.06);box-shadow:0 10px 20px rgba(0,0,0,.18)}
-    .action-button:active{transform:scale(.95)}
-    .action-button .icon{font-size:1.6em;display:flex;align-items:center;justify-content:center}
-    .action-button span{font-size:.74em;margin-top:4px}
+    .action-buttons {
+    position: absolute;
+    top: 120px; /* ajuste la distance depuis le haut */
+    left: 15px; /* colle à gauche */
+    display: flex;
+    flex-direction: column; /* empile verticalement */
+    gap: 15px; /* espace entre les boutons */
+}
+
+.action-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background-color: var(--card-bg);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 0.8em;
+    font-weight: 500;
+    transition: transform 0.2s;
+}
+
+.action-button img {
+    width: 24px;
+    height: 24px;
+}
+
+.action-button:active {
+    transform: scale(0.95);
+}
+
 
     /* --------- CONTENU / LISTE STYLE “CARDS” --------- */
     .middle-section{padding:72px 18px 100px} /* 72px pour laisser respirer sous les boutons flottants */
