@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Payer avec MonCash Sandbox</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f7f7f7; text-align: center; padding: 50px; }
+    h1 { color: #333; }
+    form { background: #fff; padding: 20px; border-radius: 10px; display: inline-block; }
+    input, button { padding: 10px; margin: 10px; width: 250px; }
+    button { background: #0099ff; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #007acc; }
+  </style>
+</head>
+<body>
+
+  <h1>Payer avec MonCash Sandbox</h1>
+
+  <form id="moncashForm" method="POST" action="https://sandbox.moncashbutton.digicelgroup.com/Moncash-middleware/Payment/Redirect">
+    <input type="text" name="orderId" placeholder="Numéro de commande" required><br>
+    <input type="number" name="amount" placeholder="Montant (HTG)" required><br>
+    
+    <!-- Tes identifiants Sandbox -->
+    <input type="hidden" name="client_id" value="TON_CLIENT_ID">
+
+    <!-- URLs -->
+    <input type="hidden" name="returnUrl" value="https://moncashreturn.mijocomplexe.workers.dev/">
+    <input type="hidden" name="cancelUrl" value="https://tonpseudo.github.io/mijopay/merci.html">
+
+    <button type="submit">Payer avec MonCash</button>
+  </form>
+
+  <script>
+    const form = document.getElementById("moncashForm");
+
+    form.addEventListener("submit", () => {
+      alert("Vous allez être redirigé vers MonCash Sandbox pour le paiement.");
+    });
+  </script>
+
+</body>
+</html>
