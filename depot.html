@@ -56,8 +56,9 @@
 </div>
 
 <script>
+    const userString = localStorage.getItem('user');
 window.addEventListener("DOMContentLoaded", () => {
-    const numeroCarte = localStorage.getItem('user.NumeroCarte');
+    const numeroCarte = user.NumeroCarte
     const lastFourDigits = numeroCarte ? numeroCarte.slice(-4) : '';
     document.getElementById("agentCode").textContent = lastFourDigits;
 
