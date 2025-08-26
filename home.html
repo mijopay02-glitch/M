@@ -123,47 +123,39 @@
         opacity: 0.8;
     }
 
-    /* Adaptation du style pour l'alignement vertical */
 .action-buttons {
     display: flex;
-    flex-direction: column; /* Aligner les boutons en colonne */
-    align-items: flex-start; /* Aligner les boutons à gauche */
-    gap: 15px; /* Espacement vertical entre les boutons */
+    justify-content: space-around; /* Distribué uniformément */
     position: absolute;
     bottom: -30px;
-    left: 20px; /* Positionner la liste à gauche */
-    width: auto;
+    left: 0;
+    width: 100%;
 }
 
 .action-button {
     display: flex;
-    flex-direction: row; /* Aligner l'icône et le texte sur la même ligne */
+    flex-direction: column; /* Icône et texte en colonne */
     align-items: center;
-    width: 140px; /* Largeur augmentée pour le bouton */
-    height: 40px; /* Hauteur ajustée */
-    border-radius: 20px;
+    width: 70px; /* Taille du bouton */
+    height: 70px;
+    border-radius: 50%; /* Boutons ronds */
     background-color: var(--card-bg);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-decoration: none;
     color: var(--text-color);
     transition: transform 0.2s;
-    justify-content: flex-start;
-    padding-left: 15px; /* Ajouter de l'espace à gauche */
-}
-
-.action-button:active {
-    transform: scale(0.95);
+    justify-content: center;
 }
 
 .action-button .icon {
-    width: 24px;
-    height: 24px;
-    margin-right: 10px; /* Espacement entre l'icône et le texte */
+    font-size: 1.5em; /* Taille de l'icône */
+    margin-bottom: 5px; /* Espace entre l'icône et le texte */
 }
 
 .action-button span {
-    font-size: 0.9em;
-    font-weight: 500;
+    font-size: 0.7em; /* Taille du texte */
+    margin-top: 5px;
+    text-align: center;
 }
     
     .middle-section {
