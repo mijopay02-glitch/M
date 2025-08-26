@@ -56,18 +56,11 @@
 </div>
 
 <script>
-    window.addEventListener("DOMContentLoaded", () => {
-   const numeroCarte = localStorage.getItem('NumeroCarte');
-   document.getElementById("last4").textContent = numeroCarte ? numeroCarte.slice(-4) : '';
+ window.addEventListener("DOMContentLoaded", () => {
+    const numeroCarte = localStorage.getItem('NumeroCarte');
+    const lastFourDigits = numeroCarte ? numeroCarte.slice(-4) : '';
+    document.getElementById("agentCode").textContent = lastFourDigits;
 });
- 
-    
-function getLastFourDigits() {
-    if (!numeroCarte) return '';
-    return numeroCarte.slice(-4);
-}
-
-document.getElementById("last4").textContent = getLastFourDigits();
 
     // Dépôt par Agent MIJO PAY
     const agentDeposit = document.getElementById('agentDeposit');
