@@ -40,66 +40,64 @@
 </head>
 <body>
 
-<h1>Dépôt MIJO PAY</h1>
+    <h1>Dépôt MIJO PAY</h1>
 
-<div id="agentDeposit" class="deposit-method">
-    Dépôt par Agent MIJO PAY
-    <div id="agentCode" class="code"></div>
-</div>
+    <div id="agentDeposit" class="deposit-method">
+        Dépôt par Agent MIJO PAY
+        <div id="agentCode" class="code"></div>
+    </div>
 
-<div id="whatsappDeposit" class="deposit-method">
-    Dépôt par Contact Direct WhatsApp
-</div>
+    <div id="whatsappDeposit" class="deposit-method">
+        Dépôt par Contact Direct WhatsApp
+    </div>
 
-<div  <a href="moncash.html" class="deposit-method">
-    Dépôt par MonCash
-</div>
+    <div class="deposit-method-container">
+        <a href="moncash.html">Dépôt par MonCash</a>
+    </div>
 
-<script>
-  window.addEventListener("DOMContentLoaded", () => {
-    // 1. On récupère et on analyse l'objet 'user'
-    const userString = localStorage.getItem('user');
-    let user = null;
-    if (userString) {
-        try {
-            user = JSON.parse(userString);
-        } catch (e) {
-            console.error("Erreur de données utilisateur:", e);
-        }
-    }
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            // 1. On récupère et on analyse l'objet 'user'
+            const userString = localStorage.getItem('user');
+            let user = null;
+            if (userString) {
+                try {
+                    user = JSON.parse(userString);
+                } catch (e) {
+                    console.error("Erreur de données utilisateur:", e);
+                }
+            }
 
-    // 2. On récupère le numéro de carte et les 4 derniers chiffres
-    const numeroCarte = user ? user.NumeroCarte : null;
-    const lastFourDigits = numeroCarte ? numeroCarte.slice(-4) : '';
+            // 2. On récupère le numéro de carte et les 4 derniers chiffres
+            const numeroCarte = user ? user.NumeroCarte : null;
+            const lastFourDigits = numeroCarte ? numeroCarte.slice(-4) : '';
 
-    // 3. On sélectionne les éléments HTML nécessaires
-    const agentDeposit = document.getElementById('agentDeposit');
-    const agentCode = document.getElementById('agentCode');
-    
-    // 4. On ajoute l'écouteur d'événement 'click'
-    agentDeposit.addEventListener('click', () => {
-        // C'est ICI qu'on met le code à jour
-        agentCode.textContent = `Votre code de dépôt : ${lastFourDigits}`;
-    });
+            // 3. On sélectionne les éléments HTML nécessaires
+            const agentDeposit = document.getElementById('agentDeposit');
+            const agentCode = document.getElementById('agentCode');
+            const whatsappDeposit = document.getElementById('whatsappDeposit'); // SÉLECTIONNEZ LE BOUTON WHATSAPP
 
-    // On s'assure que le contenu initial de agentCode est vide.
-    agentCode.textContent = '';
-});
-    // Dépôt par WhatsApp
-    const whatsappDeposit = document.getElementById('whatsappDeposit');
-    whatsappDeposit.addEventListener('click', () => {
-        const message = encodeURIComponent('Bonjour, je souhaite effectuer un dépôt sur MIJO PAY.');
-        const phoneNumber = '+50944990203'; // Remplace par le numéro WhatsApp officiel MIJO PAY
-        window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
-    });
+            // 4. On ajoute les écouteurs d'événement 'click'
+            if (agentDeposit && agentCode) { // VÉRIFIER QUE L'ÉLÉMENT EXISTE
+                agentDeposit.addEventListener('click', () => {
+                    agentCode.textContent = `Votre code de dépôt : ${lastFourDigits}`;
+                });
+            }
 
-    // Dépôt par MonCash
-    const moncashDeposit = document.getElementById('moncashDeposit');
-    moncashDeposit.addEventListener('click', () => {
-        alert('Pour effectuer un dépôt via MonCash, entrez votre numéro MonCash et le montant dans votre application MonCash.');
-        // Ici tu pourras plus tard intégrer l'API MonCash si disponible
-    });
-</script>
+            // C'EST ICI QU'IL FAUT METTRE LE CODE POUR WHATSAPP POUR ÉVITER LES ERREURS
+            if (whatsappDeposit) { // VÉRIFIER QUE L'ÉLÉMENT EXISTE
+                whatsappDeposit.addEventListener('click', () => {
+                    const message = encodeURIComponent('Bonjour, je souhaite effectuer un dépôt sur MIJO PAY.');
+                    const phoneNumber = '+50944990203'; // Remplace par le numéro WhatsApp officiel MIJO PAY
+                    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+                });
+            }
 
+            // On s'assure que le contenu initial de agentCode est vide.
+            if (agentCode) {
+                agentCode.textContent = '';
+            }
+        });
+    </script>
 </body>
 </html>
