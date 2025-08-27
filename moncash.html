@@ -4,11 +4,31 @@
   <meta charset="UTF-8">
   <title>Payer avec MonCash Sandbox</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f7f7f7; text-align: center; padding: 50px; }
+    body { 
+      font-family: Arial, sans-serif; 
+      background: #f7f7f7; 
+      text-align: center; 
+      padding: 50px; 
+    }
     h1 { color: #333; }
-    form { background: #fff; padding: 20px; border-radius: 10px; display: inline-block; }
-    input, button { padding: 10px; margin: 10px; width: 250px; }
-    button { background: #0099ff; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
+    form { 
+      background: #fff; 
+      padding: 20px; 
+      border-radius: 10px; 
+      display: inline-block; 
+    }
+    input, button { 
+      padding: 10px; 
+      margin: 10px; 
+      width: 250px; 
+    }
+    button { 
+      background: #0099ff; 
+      color: #fff; 
+      border: none; 
+      border-radius: 5px; 
+      cursor: pointer; 
+    }
     button:hover { background: #007acc; }
   </style>
 </head>
@@ -16,16 +36,9 @@
 
   <h1>Payer avec MonCash Sandbox</h1>
 
-  <form id="moncashForm" method="POST" action="https://sandbox.moncashbutton.digicelgroup.com/Moncash-middleware/Payment/Redirect">
-    <input type="text" name="orderId" placeholder="Numéro de commande" required><br>
-    <input type="number" name="amount" placeholder="Montant (HTG)" required><br>
-    
-    <!-- Tes identifiants Sandbox -->
-    <input type="hidden" name="client_id" value="fd6e7198987a448a6b55c51aaaf35919">
-
-    <!-- URLs -->
-    <input type="hidden" name="returnUrl" value="https://moncashreturn.mijocomplexe.workers.dev/">
-    <input type="hidden" name="cancelUrl" value="https://mijopay02-glitch.github.io/M/merci.html">
+  <form id="moncashForm">
+    <input type="text" id="orderId" placeholder="Numéro de commande" required><br>
+    <input type="number" id="amount" placeholder="Montant (HTG)" required><br>
 
     <button type="submit">Payer avec MonCash</button>
   </form>
@@ -33,8 +46,41 @@
   <script>
     const form = document.getElementById("moncashForm");
 
-    form.addEventListener("submit", () => {
-      alert("Vous allez être redirigé vers MonCash Sandbox pour le paiement.");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const orderId = document.getElementById("orderId").value.trim();
+      const amount = parseFloat(document.getElementById("amount").value);
+
+      if(!orderId || !amount) {
+        alert("Veuillez remplir tous les champs correctement.");
+        return;
+      }
+
+      try {
+        alert("Vous allez être redirigé vers MonCash Sandbox pour le paiement...");
+
+        // Appel du Worker Cloudflare
+        const response = await fetch("https://tonworker.mijocomplexe.workers.dev/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: orderId,
+            amount: amount,
+            account: "50944990203"  // numéro Sandbox MonCash
+          })
+        });
+
+        if(response.redirected) {
+          window.location.href = response.url; // redirection vers merci.html
+        } else {
+          const text = await response.text();
+          alert("Erreur : " + text);
+        }
+
+      } catch (err) {
+        alert("Erreur de paiement : " + err.message);
+      }
     });
   </script>
 
