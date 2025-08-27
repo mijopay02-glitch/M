@@ -61,7 +61,7 @@
         alert("Vous allez être redirigé vers MonCash Sandbox pour le paiement...");
 
         // Appel du Worker Cloudflare
-        const response = await fetch("https://tonworker.mijocomplexe.workers.dev/", {
+        const response = await fetch("https://moncashreturn.mijocomplexe.workers.dev/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
