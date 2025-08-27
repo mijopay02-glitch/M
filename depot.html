@@ -36,6 +36,11 @@
             font-weight: bold;
             color: #007BFF;
         }
+        .deposit-method a {
+    text-decoration: none; /* Enlève la ligne sous le texte du lien */
+    color: #333; /* Définit la couleur du texte */
+    font-weight: bold; /* Donne un peu de gras au texte */
+}
     </style>
 </head>
 <body>
@@ -51,9 +56,9 @@
         Dépôt par Contact Direct WhatsApp
     </div>
 
-    <a href="moncash.html" class="deposit-method">
-        Dépôt par MonCash
-    </a>
+    <div id="moncashDeposit" class="deposit-method">
+    <a href="moncash.html">Dépôt par MonCash</a>
+</div>
 
     <script>
         // Le code ici s'exécute après que tous les éléments HTML sont chargés
