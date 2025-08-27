@@ -54,50 +54,51 @@
     <div class="deposit-method-container">
         <a href="moncash.html">Dépôt par MonCash</a>
     </div>
-
-    <script>
-        window.addEventListener("DOMContentLoaded", () => {
-            // 1. On récupère et on analyse l'objet 'user'
-            const userString = localStorage.getItem('user');
-            let user = null;
-            if (userString) {
-                try {
-                    user = JSON.parse(userString);
-                } catch (e) {
-                    console.error("Erreur de données utilisateur:", e);
-                }
+<script>
+    // Le code à l'intérieur de cette fonction ne s'exécutera que lorsque la page sera entièrement chargée
+    window.addEventListener("DOMContentLoaded", () => {
+        // 1. On récupère et on analyse l'objet 'user'
+        const userString = localStorage.getItem('user');
+        let user = null;
+        if (userString) {
+            try {
+                user = JSON.parse(userString);
+            } catch (e) {
+                console.error("Erreur de données utilisateur:", e);
             }
+        }
 
-            // 2. On récupère le numéro de carte et les 4 derniers chiffres
-            const numeroCarte = user ? user.NumeroCarte : null;
-            const lastFourDigits = numeroCarte ? numeroCarte.slice(-4) : '';
+        // 2. On récupère le numéro de carte et les 4 derniers chiffres
+        const numeroCarte = user ? user.NumeroCarte : null;
+        const lastFourDigits = numeroCarte ? numeroCarte.slice(-4) : '';
 
-            // 3. On sélectionne les éléments HTML nécessaires
-            const agentDeposit = document.getElementById('agentDeposit');
-            const agentCode = document.getElementById('agentCode');
-            const whatsappDeposit = document.getElementById('whatsappDeposit'); // SÉLECTIONNEZ LE BOUTON WHATSAPP
+        // 3. On sélectionne les éléments HTML nécessaires
+        const agentDeposit = document.getElementById('agentDeposit');
+        const agentCode = document.getElementById('agentCode');
+        const whatsappDeposit = document.getElementById('whatsappDeposit');
 
-            // 4. On ajoute les écouteurs d'événement 'click'
-            if (agentDeposit && agentCode) { // VÉRIFIER QUE L'ÉLÉMENT EXISTE
-                agentDeposit.addEventListener('click', () => {
-                    agentCode.textContent = `Votre code de dépôt : ${lastFourDigits}`;
-                });
-            }
+        // 4. On ajoute les écouteurs d'événement 'click'
+        // On vérifie d'abord si l'élément existe avant d'ajouter l'écouteur
+        if (agentDeposit && agentCode) {
+            agentDeposit.addEventListener('click', () => {
+                agentCode.textContent = `Votre code de dépôt : ${lastFourDigits}`;
+            });
+        }
 
-            // C'EST ICI QU'IL FAUT METTRE LE CODE POUR WHATSAPP POUR ÉVITER LES ERREURS
-            if (whatsappDeposit) { // VÉRIFIER QUE L'ÉLÉMENT EXISTE
-                whatsappDeposit.addEventListener('click', () => {
-                    const message = encodeURIComponent('Bonjour, je souhaite effectuer un dépôt sur MIJO PAY.');
-                    const phoneNumber = '+50944990203'; // Remplace par le numéro WhatsApp officiel MIJO PAY
-                    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
-                });
-            }
-
-            // On s'assure que le contenu initial de agentCode est vide.
-            if (agentCode) {
-                agentCode.textContent = '';
-            }
-        });
-    </script>
+        if (whatsappDeposit) {
+            whatsappDeposit.addEventListener('click', () => {
+                const message = encodeURIComponent('Bonjour, je souhaite effectuer un dépôt sur MIJO PAY.');
+                const phoneNumber = '+50944990203'; // Remplace par le numéro WhatsApp officiel MIJO PAY
+                window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+            });
+        }
+        
+        // On s'assure que le contenu initial de agentCode est vide.
+        if (agentCode) {
+            agentCode.textContent = '';
+        }
+    });
+</script>
+   
 </body>
 </html>
