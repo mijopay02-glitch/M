@@ -74,20 +74,26 @@
                     redirect: 'manual'
                 });
 
-                // Gérer la réponse de l'API
-                // Le Worker renvoie un statut 302, qui est un "opaqueredirect" dans le contexte de fetch.
+                // Gérer la réponse de l'API de manière plus robuste
                 if (response.status === 302) {
-                    // C'est le cas de la redirection réussie.
-                    // On extrait l'URL de redirection de la réponse et on redirige l'utilisateur.
+                    // Cas 1: Le Worker renvoie un statut de redirection (302).
+                    // C'est la méthode la plus propre et la plus rapide.
                     const redirectUrl = response.url;
                     window.location.href = redirectUrl;
-                } else if (!response.ok) {
-                    // Si la réponse n'est pas OK (par exemple, 401 ou 500)
-                    throw new Error(`Erreur HTTP: ${response.status}`);
+                } else if (response.ok) {
+                    // Cas 2: Le Worker renvoie un statut OK (200), avec l'URL dans le corps de la réponse JSON.
+                    // C'est ce qui semble se passer d'après le message d'erreur.
+                    const data = await response.json();
+                    if (data.redirectUrl) {
+                        window.location.href = data.redirectUrl;
+                    } else {
+                        // Le Worker a répondu OK, mais l'URL de redirection est manquante.
+                        throw new Error('URL de redirection manquante dans la réponse du serveur.');
+                    }
                 } else {
-                    // Si le Worker renvoie une réponse inattendue (ne devrait pas arriver avec votre Worker)
-                    document.getElementById('statusMessage').textContent = 'Réponse inattendue du serveur.';
-                    console.error('Réponse inattendue:', await response.text());
+                    // Cas 3: La requête a échoué avec un autre statut HTTP (400, 500, etc.).
+                    const errorData = await response.json();
+                    throw new Error(`Erreur HTTP: ${response.status}. Message: ${errorData.error || 'Inconnu'}`);
                 }
 
             } catch (err) {
