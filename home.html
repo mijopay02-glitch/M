@@ -334,6 +334,10 @@
         <a href="#" class="flyer-item" onclick="activatePremium()">
             <img src="https://i.postimg.cc/d1zd7P3j/a-dynamic-promotional-poster-for-mijo-pa-O35h-A-9v-Sn-Srwi5-Blvd-PPA-l-NGj-Bdlx-TM6i-XCh8xxmma-A.jpg" alt="MIJO PAY Premium">
         </a>
+    
+  <a href="#" id="flyer-helper" class="flyer-item">
+    <img src="https://i.postimg.cc/P5M6b1Sp/a-clean-modern-digital-flyer-advertiseme-U-h-NVf-UQp2-Gce-Fap-Boa-Bw-kt-LI72-WMR1e3f16-TBRJCi-Q.jpg" alt="MIJO Business Helper">
+  </a>
         <a href="carte.html" class="flyer-item">
             <img src="https://i.postimg.cc/9MtzNzV8/a-sleek-product-shot-advertisement-showc-dn-RNraq-ARUKf5-Ux-FUEwg-Lw-6-Kqvf-UE-SKy-J-f-CNb-OJdnw.jpg" alt="Carte physique MIJO">
         </a>
@@ -371,6 +375,26 @@
         </a>
     </nav>
 <script>
+    // Fonction pour gérer le clic sur le flyer MIJO Business Helper
+document.getElementById('flyer-helper').addEventListener('click', function(event) {
+  event.preventDefault(); // Empêche la redirection par défaut
+
+  const userString = localStorage.getItem('user');
+  if (!userString) {
+    alert("Veuillez vous connecter d'abord.");
+    window.location.href = 'index.html';
+    return;
+  }
+  
+  const user = JSON.parse(userString);
+  const isPremium = user.EstPremium; // Accède directement à la propriété EstPremium
+
+  if (isPremium) {
+    window.location.href = "helper.html";
+  } else {
+    alert("Vous devez avoir un abonnement Premium pour accéder à MIJO Business Helper.");
+  }
+});
     function checkAffiliateStatus() {
     const userString = localStorage.getItem('user');
     if (!userString) {
