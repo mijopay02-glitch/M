@@ -84,6 +84,7 @@
         <input type="text" id="nomcomplet" placeholder="Nom complet">
         <input type="text" id="pays" placeholder="Pays">
         <input type="email" id="adresseemail" placeholder="Adresse email">
+        <input type="tel" id="telephone" placeholder="Numéro de téléphone">
         <button id="inscriptionButton" onclick="inscrire()">Valider inscription</button>
         <button onclick="hideInscription()">Annuler</button>
         <div id="inscriptionMessage"></div>
@@ -157,12 +158,14 @@
             }
         }
 
+        // FONCTION MODIFIÉE CI-DESSOUS
         async function inscrire() {
             const nom = document.getElementById("nomcomplet").value.trim();
             const pays = document.getElementById("pays").value.trim();
             const email = document.getElementById("adresseemail").value.trim();
+            const telephone = document.getElementById("telephone").value.trim(); // Récupération du numéro
 
-            if (!nom || !pays || !email) {
+            if (!nom || !pays || !email || !telephone) { // Ajout du téléphone à la vérification
                 inscriptionMessageDiv.innerText = "Veuillez remplir tous les champs.";
                 return;
             }
@@ -176,6 +179,7 @@
                 params.append('nomcomplet', nom);
                 params.append('pays', pays);
                 params.append('adresseemail', email);
+                params.append('telephone', telephone); // Ajout du téléphone aux données envoyées
 
                 const response = await fetch(inscriptionUrl, {
                     method: "POST",
