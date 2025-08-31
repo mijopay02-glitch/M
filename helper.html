@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIJO Business Helper</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --text-color: #333;
+            --bg-color: #f0f2f5;
+            --card-bg: #fff;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 2.5em;
+        }
+        .section {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #1a7bb9;
+        }
+        .btn-whatsapp {
+            background-color: #25D366;
+        }
+        .btn-whatsapp:hover {
+            background-color: #128C7E;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            text-align: center;
+        }
+        .grid-item {
+            text-decoration: none;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        .grid-item:hover {
+            transform: translateY(-5px);
+        }
+        .grid-item img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header class="header">
+        <h1>MIJO Business Helper</h1>
+        <p>Votre partenaire pour le succès de votre entreprise.</p>
+    </header>
+
+    <div id="business-form-section" class="section">
+        <h2>Créer une entreprise</h2>
+        <p>
+            Remplissez ce formulaire pour nous aider à mieux comprendre vos besoins. Laissez vide si vous n'avez pas encore d'entreprise.
+        </p>
+        <form id="business-form">
+            <div class="form-group">
+                <label for="nomEntreprise">Nom de l'entreprise</label>
+                <input type="text" id="nomEntreprise" name="nomEntreprise">
+            </div>
+            <div class="form-group">
+                <label for="secteur">Secteur d'activité</label>
+                <input type="text" id="secteur" name="secteur">
+            </div>
+            <div class="form-group">
+                <label for="dateLancement">Date de lancement</label>
+                <input type="date" id="dateLancement" name="dateLancement">
+            </div>
+            <div class="form-group">
+                <label for="faiblesses">Vos principales faiblesses</label>
+                <textarea id="faiblesses" name="faiblesses" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="objectifs">Ce que vous voulez obtenir de MIJO</label>
+                <textarea id="objectifs" name="objectifs" rows="4"></textarea>
+            </div>
+            <button type="submit" class="btn">Soumettre</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Nos Outils</h2>
+        <div class="grid-container">
+            <a href="flyer.html" class="grid-item">
+                <img src="https://i.postimg.cc/mD0Yt19Z/icons8-flyer-64.png" alt="Flyer Outils">
+                <span>Outils</span>
+            </a>
+            <a href="#" class="grid-item" onclick="redirectToWhatsApp('expert')">
+                <img src="https://i.postimg.cc/t4G2q1p4/icons8-question-96.png" alt="Question">
+                <span>Posez une question à un expert</span>
+            </a>
+            <a href="#" class="grid-item" onclick="redirectToWhatsApp('partenariat')">
+                <img src="https://i.postimg.cc/HnW25N6v/icons8-poign-e-de-main-50.png" alt="Partenariat">
+                <span>Demande de Partenariat</span>
+            </a>
+            </div>
+    </div>
+</div>
+
+<script>
+    // URL de votre App Script pour recevoir les données
+    const appScriptUrl = 'URL_DE_VOTRE_APP_SCRIPT_ICI';
+    const whatsappNumber = '50944990203';
+
+    // Fonction pour rediriger vers WhatsApp avec un message pré-écrit
+    function redirectToWhatsApp(type) {
+        let message = "";
+        if (type === 'expert') {
+            message = encodeURIComponent("Bonjour, je suis un client MIJO Business Helper et j'ai une question pour un expert : ");
+        } else if (type === 'partenariat') {
+            message = encodeURIComponent("Bonjour, je suis un client MIJO Business Helper et je voudrais faire une demande de partenariat. ");
+        }
+        window.location.href = `https://wa.me/${whatsappNumber}?text=${message}`;
+    }
+
+    // Gestion du formulaire d'entreprise
+    document.getElementById('business-form').addEventListener('submit', function(e) {
+        e.preventDefault(); // Empêche le rechargement de la page
+
+        const form = e.target;
+        const formData = new FormData(form);
+        const data = {};
+        for (let [key, value] of formData.entries()) {
+            data[key] = value;
+        }
+
+        // Crée une chaîne de requête URL encodée
+        const queryString = new URLSearchParams(data).toString();
+
+        // Envoie les données à l'App Script
+        fetch(appScriptUrl, {
+            method: 'POST',
+            body: queryString,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                alert("Votre formulaire a été envoyé avec succès !");
+                form.reset(); // Réinitialise le formulaire
+            } else {
+                alert("Une erreur s'est produite lors de l'envoi. Veuillez réessayer.");
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert("Erreur de connexion. Vérifiez votre connexion internet.");
+        });
+    });
+</script>
+
+</body>
+</html>
