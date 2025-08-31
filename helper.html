@@ -120,6 +120,50 @@
     </style>
 </head>
 <body>
+    <div id="partnershipModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close-btn" onclick="hidePartnershipModal()">&times;</span>
+        <h2>Demande de Partenariat</h2>
+        <p>
+            Veuillez remplir ce formulaire pour que notre équipe puisse évaluer votre proposition.
+        </p>
+        <form id="partnership-form">
+            <div class="form-group">
+                <label for="p-nom">Nom et Prénom</label>
+                <input type="text" id="p-nom" name="nom" required>
+            </div>
+            <div class="form-group">
+                <label for="p-email">Adresse e-mail</label>
+                <input type="email" id="p-email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="p-tel">Numéro de téléphone</label>
+                <input type="tel" id="p-tel" name="telephone">
+            </div>
+            <div class="form-group">
+                <label for="p-entreprise">Nom de votre entreprise/projet</label>
+                <input type="text" id="p-entreprise" name="entreprise" required>
+            </div>
+            <div class="form-group">
+                <label for="p-secteur">Secteur d'activité</label>
+                <input type="text" id="p-secteur" name="secteur" required>
+            </div>
+            <div class="form-group">
+                <label for="p-services">Produits ou services offerts</label>
+                <textarea id="p-services" name="services" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="p-objectifs">Vos objectifs pour ce partenariat</label>
+                <textarea id="p-objectifs" name="objectifs" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="p-valeur">Ce que vous apportez à MIJO</label>
+                <textarea id="p-valeur" name="valeur" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn">Envoyer</button>
+        </form>
+    </div>
+</div>
 
 <div class="container">
     <header class="header">
@@ -175,7 +219,7 @@
                 <img src="https://i.postimg.cc/28WWM3WY/icons8-questions-48.png" alt="Question">
                 <span>Posez une question à un expert</span>
             </a>
-            <a href="#" class="grid-item" onclick="redirectToWhatsApp('partenariat')">
+            <a href="#" class="grid-item" onclick="showPartnershipModal()">
                 <img src="https://i.postimg.cc/N0d2mH36/icons8-partenariat-64.png" alt="Partenariat">
                 <span>Demande de Partenariat</span>
             </a>
@@ -291,6 +335,85 @@
 
     // Appel initial au chargement de la page
     window.onload = loadUserBusiness;
+    // ... (votre code JavaScript existant) ...
+
+// URL de votre App Script pour les demandes de partenariat
+const partnershipAppScriptUrl = 'URL_DE_VOTRE_APP_SCRIPT_PARTENARIAT';
+
+// Cache les modales au clic en dehors
+window.onclick = function(event) {
+    const partnershipModal = document.getElementById('partnershipModal');
+    if (event.target == partnershipModal) {
+        hidePartnershipModal();
+    }
+};
+
+// Fonction pour afficher le formulaire de partenariat
+function showPartnershipModal() {
+    document.getElementById('partnershipModal').style.display = 'flex';
+}
+
+// Fonction pour cacher le formulaire de partenariat
+function hidePartnershipModal() {
+    document.getElementById('partnershipModal').style.display = 'none';
+}
+
+// Modification de la fonction redirectToWhatsApp
+function redirectToWhatsApp(type) {
+    if (type === 'partenariat') {
+        showPartnershipModal(); // Affiche la modale de partenariat
+        return;
+    }
+    
+    let message = "";
+    const companyData = localStorage.getItem('mijoBusinessData');
+    const companyName = companyData ? JSON.parse(companyData).nomEntreprise : "une entreprise";
+    
+    if (type === 'expert') {
+        message = `Bonjour, je suis un client MIJO Business Helper et je gère ${companyName}. J'ai une question pour un expert : `;
+    }
+    window.location.href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+}
+
+// Gestion de la soumission du formulaire de partenariat
+document.getElementById('partnership-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+    const data = {};
+    for (let [key, value] of formData.entries()) {
+        data[key] = value;
+    }
+    
+    // Crée une chaîne de requête URL encodée
+    const queryString = new URLSearchParams(data).toString();
+
+    // Envoie les données à l'App Script
+    fetch(partnershipAppScriptUrl, {
+        method: 'POST',
+        body: queryString,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert("Votre demande de partenariat a été envoyée avec succès !");
+            hidePartnershipModal();
+            form.reset(); // Réinitialise le formulaire
+        } else {
+            alert("Une erreur s'est produite. Veuillez réessayer.");
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        alert("Erreur de connexion. Vérifiez votre connexion internet.");
+    });
+});
+
+// ... (votre code JavaScript existant) ...
 </script>
 
 </body>
