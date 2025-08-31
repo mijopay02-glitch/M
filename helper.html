@@ -101,6 +101,14 @@
             height: 50px;
             margin-bottom: 8px;
         }
+        #company-display {
+            text-align: center;
+            display: none;
+        }
+        #company-display h2 {
+            font-size: 1.8em;
+            color: var(--text-color);
+        }
     </style>
 </head>
 <body>
@@ -111,34 +119,40 @@
         <p>Votre partenaire pour le succès de votre entreprise.</p>
     </header>
 
-    <div id="business-form-section" class="section">
-        <h2>Créer une entreprise</h2>
-        <p>
-            Remplissez ce formulaire pour nous aider à mieux comprendre vos besoins. Laissez vide si vous n'avez pas encore d'entreprise.
-        </p>
-        <form id="business-form">
-            <div class="form-group">
-                <label for="nomEntreprise">Nom de l'entreprise</label>
-                <input type="text" id="nomEntreprise" name="nomEntreprise">
-            </div>
-            <div class="form-group">
-                <label for="secteur">Secteur d'activité</label>
-                <input type="text" id="secteur" name="secteur">
-            </div>
-            <div class="form-group">
-                <label for="dateLancement">Date de lancement</label>
-                <input type="date" id="dateLancement" name="dateLancement">
-            </div>
-            <div class="form-group">
-                <label for="faiblesses">Vos principales faiblesses</label>
-                <textarea id="faiblesses" name="faiblesses" rows="4"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="objectifs">Ce que vous voulez obtenir de MIJO</label>
-                <textarea id="objectifs" name="objectifs" rows="4"></textarea>
-            </div>
-            <button type="submit" class="btn">Soumettre</button>
-        </form>
+    <div id="main-content">
+        <div id="company-display" class="section">
+            <h2 id="company-name-display"></h2>
+        </div>
+        
+        <div id="create-business-section" class="section">
+            <h2>Créer une entreprise</h2>
+            <p>
+                Remplissez ce formulaire pour nous aider à mieux comprendre vos besoins. Laissez vide si vous n'avez pas encore d'entreprise.
+            </p>
+            <form id="business-form">
+                <div class="form-group">
+                    <label for="nomEntreprise">Nom de l'entreprise</label>
+                    <input type="text" id="nomEntreprise" name="nomEntreprise">
+                </div>
+                <div class="form-group">
+                    <label for="secteur">Secteur d'activité</label>
+                    <input type="text" id="secteur" name="secteur">
+                </div>
+                <div class="form-group">
+                    <label for="dateLancement">Date de lancement</label>
+                    <input type="date" id="dateLancement" name="dateLancement">
+                </div>
+                <div class="form-group">
+                    <label for="faiblesses">Vos principales faiblesses</label>
+                    <textarea id="faiblesses" name="faiblesses" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="objectifs">Ce que vous voulez obtenir de MIJO</label>
+                    <textarea id="objectifs" name="objectifs" rows="4"></textarea>
+                </div>
+                <button type="submit" class="btn">Soumettre</button>
+            </form>
+        </div>
     </div>
 
     <div class="section">
@@ -156,62 +170,63 @@
                 <img src="https://i.postimg.cc/HnW25N6v/icons8-poign-e-de-main-50.png" alt="Partenariat">
                 <span>Demande de Partenariat</span>
             </a>
-            </div>
+        </div>
     </div>
 </div>
 
 <script>
-    // URL de votre App Script pour recevoir les données
-    const appScriptUrl = 'URL_DE_VOTRE_APP_SCRIPT_ICI';
     const whatsappNumber = '50944990203';
+    const companyFormSection = document.getElementById('create-business-section');
+    const companyDisplaySection = document.getElementById('company-display');
+    const companyNameDisplay = document.getElementById('company-name-display');
 
     // Fonction pour rediriger vers WhatsApp avec un message pré-écrit
     function redirectToWhatsApp(type) {
         let message = "";
+        const companyName = localStorage.getItem('companyName') || "une entreprise";
+        
         if (type === 'expert') {
-            message = encodeURIComponent("Bonjour, je suis un client MIJO Business Helper et j'ai une question pour un expert : ");
+            message = `Bonjour, je suis un client MIJO Business Helper et je gère ${companyName}. J'ai une question pour un expert : `;
         } else if (type === 'partenariat') {
-            message = encodeURIComponent("Bonjour, je suis un client MIJO Business Helper et je voudrais faire une demande de partenariat. ");
+            message = `Bonjour, je suis un client MIJO Business Helper et je gère ${companyName}. Je voudrais faire une demande de partenariat.`;
         }
-        window.location.href = `https://wa.me/${whatsappNumber}?text=${message}`;
+        window.location.href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     }
 
-    // Gestion du formulaire d'entreprise
+    // Gestion de l'affichage initial
+    function loadUserBusiness() {
+        const companyData = localStorage.getItem('mijoBusinessData');
+        if (companyData) {
+            const business = JSON.parse(companyData);
+            companyNameDisplay.innerText = business.nomEntreprise;
+            companyDisplaySection.style.display = 'block';
+            companyFormSection.style.display = 'none';
+        } else {
+            companyDisplaySection.style.display = 'none';
+            companyFormSection.style.display = 'block';
+        }
+    }
+
+    // Gestion de la soumission du formulaire
     document.getElementById('business-form').addEventListener('submit', function(e) {
-        e.preventDefault(); // Empêche le rechargement de la page
+        e.preventDefault();
 
         const form = e.target;
         const formData = new FormData(form);
-        const data = {};
+        const businessData = {};
         for (let [key, value] of formData.entries()) {
-            data[key] = value;
+            businessData[key] = value;
         }
 
-        // Crée une chaîne de requête URL encodée
-        const queryString = new URLSearchParams(data).toString();
+        // Enregistrement des données dans le localStorage
+        localStorage.setItem('mijoBusinessData', JSON.stringify(businessData));
 
-        // Envoie les données à l'App Script
-        fetch(appScriptUrl, {
-            method: 'POST',
-            body: queryString,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        })
-        .then(response => response.json())
-        .then(result => {
-            if (result.success) {
-                alert("Votre formulaire a été envoyé avec succès !");
-                form.reset(); // Réinitialise le formulaire
-            } else {
-                alert("Une erreur s'est produite lors de l'envoi. Veuillez réessayer.");
-            }
-        })
-        .catch(error => {
-            console.error('Erreur:', error);
-            alert("Erreur de connexion. Vérifiez votre connexion internet.");
-        });
+        alert("Votre entreprise a été enregistrée !");
+        loadUserBusiness(); // Mettre à jour l'interface
     });
+
+    // Appel initial au chargement de la page
+    window.onload = loadUserBusiness;
 </script>
 
 </body>
