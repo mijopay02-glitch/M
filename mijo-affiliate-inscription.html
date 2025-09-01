@@ -198,152 +198,98 @@ Pa pèdi tan! Vin yon afilye MIJO jodi a epi kòmanse fè lajan an gwo!</p>
     </div>
     
     <script>
-         function saveToHistory(type, description, amount, status, userId) {
+         <script>
+function saveToHistory(type, description, amount, status, userId) {
     const historyKey = `transactions_${userId}`;
     let history = JSON.parse(localStorage.getItem(historyKey)) || [];
     const newTransaction = {
         id: Date.now(),
-        type: type,
-        description: description,
-        amount: amount,
-        status: status,
+        type,
+        description,
+        amount,
+        status,
         date: new Date().toLocaleDateString()
     };
     history.push(newTransaction);
     localStorage.setItem(historyKey, JSON.stringify(history));
 }
-        
-        // Fonctions pour afficher et masquer le spinner
-function showSpinner() {
-    document.getElementById('spinner').style.display = 'flex';
-}
 
-function hideSpinner() {
-    document.getElementById('spinner').style.display = 'none';
-}
+function showSpinner() { document.getElementById('spinner').style.display = 'flex'; }
+function hideSpinner() { document.getElementById('spinner').style.display = 'none'; }
+function closeModal() { document.getElementById('infoModal').style.display = 'none'; }
+
 document.getElementById('info-btn').addEventListener('click', () => {
     document.getElementById('infoModal').style.display = 'flex';
 });
 
-// Cachez la modale
-function closeModal() {
-    document.getElementById('infoModal').style.display = 'none';
-}
-        
-    const parrainBtn = document.getElementById('parrain-btn');
-    const noParrainBtn = document.getElementById('no-parrain-btn');
-    const parrainCodeInput = document.getElementById('parrain-code-input');
-    // REMPLACEZ LES URL CI-DESSOUS PAR CELLES DE VOS WORKERS
-    const parrainUrl = "https://inscriptionavecparain.mijocomplexe.workers.dev/"; 
-    const noParrainUrl = "https://noparrain.mijocomplexe.workers.dev/"; 
+const parrainBtn = document.getElementById('parrain-btn');
+const noParrainBtn = document.getElementById('no-parrain-btn');
+const parrainCodeInput = document.getElementById('parrain-code-input');
+const parrainUrl = "https://inscriptionavecparain.mijocomplexe.workers.dev/";
+const noParrainUrl = "https://noparrain.mijocomplexe.workers.dev/";
 
-    // Gérer l'inscription avec parrain
-    parrainBtn.addEventListener('click', async () => {
+// Listener parrain
+parrainBtn.addEventListener('click', async () => {
     const parrainCode = parrainCodeInput.value.trim();
     if (!parrainCode) return alert("Veuillez entrer le code de parrainage.");
-
     const userString = localStorage.getItem('user');
-if (!userString) {
-    alert("Utilisateur non connecté. Veuillez vous connecter d'abord.");
-    hideSpinner();
-    return;
-}
-
-let user;
-try {
-    user = JSON.parse(userString);
-} catch (e) {
-    alert("Erreur de lecture des données utilisateur.");
-    hideSpinner();
-    return;
-}
-
-if (!user || typeof user.Solde !== 'number') {
-    alert("Données utilisateur invalides. Veuillez vous reconnecter.");
-    hideSpinner();
-    return;
-}
-
+    if (!userString) { alert("Utilisateur non connecté."); return; }
+    let user;
+    try { user = JSON.parse(userString); } catch { alert("Erreur lecture données."); return; }
     showSpinner();
-
     try {
-    const response = await fetch(parrainUrl, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ userId: user.userId, lienAffiliation: parrainCode })
-    });
-
-    const result = await response.json();
-    hideSpinner();
-
-   if (result.success) {
-    user.Solde = result.nouveauSolde ?? user.Solde;
-    user.Estafilia = result.Estafilia ?? user.Estafilia;
-    user.LienAffiliation = result.LienAffiliation ?? user.LienAffiliation;
-    localStorage.setItem('user', JSON.stringify(user));
-    saveToHistory("Affiliation avec parrain", 750, "Succès", user.userId);
-    alert(result.message || "Inscription avec parrain réussie !");
-    window.location.href = 'mijo-affiliate-promo.html';
-} else {
-    alert(result.error || "Échec de l'inscription avec parrain. Le code est peut-être invalide.");
-}
-
-
-} catch (error) {
-    hideSpinner();
-    alert("Erreur de connexion. Veuillez réessayer plus tard.");
-    console.error("Erreur de fetch:", error);
-}
+        const response = await fetch(parrainUrl, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ userId: user.userId, lienAffiliation: parrainCode })
         });
-
-    // Gérer l'inscription sans parrain
-    noParrainBtn.addEventListener('click', async () => {
-        const userString = localStorage.getItem('user');
-        const user = JSON.parse(userString);
-
-        if (!user || !user.userId) {
-            alert("Utilisateur non connecté ou données manquantes.");
-            return;
+        const result = await response.json();
+        hideSpinner();
+        if (result.success) {
+            user.Solde = result.nouveauSolde ?? user.Solde;
+            user.Estafilia = result.Estafilia ?? user.Estafilia;
+            user.LienAffiliation = result.LienAffiliation ?? user.LienAffiliation;
+            localStorage.setItem('user', JSON.stringify(user));
+            saveToHistory("Affiliation avec parrain", 750, "Succès", user.userId);
+            alert(result.message || "Inscription réussie !");
+            window.location.href = 'mijo-affiliate-promo.html';
+        } else {
+            alert(result.error || "Échec de l'inscription avec parrain.");
         }
+    } catch (err) {
+        hideSpinner();
+        alert("Erreur de connexion.");
+        console.error(err);
+    }
+});
 
-        if (user.Solde < 1000) {
-            alert("Solde insuffisant pour une inscription sans parrain (1000 Gdes).");
-            return;
-        }
-
-        alert("Traitement en cours... Veuillez patienter.");
-
-        const dataToSend = {
-            userId: user.userId
-        };
-        
-        try {
-            const response = await fetch(noParrainUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dataToSend)
-            });
-            const result = await response.json();
-
-            if (result.success) {
-                user.Solde = result.nouveauSolde;
-                user.Estafilia = true;
-                user.LienAffiliation = result.LienAffiliation;
-                localStorage.setItem('user', JSON.stringify(user));
-                saveToHistory("Affiliation sans parrain", 1000, "Succès", user.userId);
-                
-                alert("Inscription sans parrain réussie ! Vous êtes maintenant un affilié.");
-                window.location.href = 'mijo-affiliate-promo.html';
-            } else {
-                alert(result.error || "Échec de l'inscription sans parrain.");
-            }
-        } catch (error) {
-            alert("Erreur de connexion. Veuillez réessayer plus tard.");
-        }
-
-        
-       
+// Listener sans parrain
+noParrainBtn.addEventListener('click', async () => {
+    const userString = localStorage.getItem('user');
+    if (!userString) { alert("Utilisateur non connecté."); return; }
+    let user = JSON.parse(userString);
+    if (user.Solde < 1000) { alert("Solde insuffisant."); return; }
+    alert("Traitement en cours...");
+    try {
+        const response = await fetch(noParrainUrl, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ userId: user.userId })
         });
+        const result = await response.json();
+        if (result.success) {
+            user.Solde = result.nouveauSolde;
+            user.Estafilia = true;
+            user.LienAffiliation = result.LienAffiliation;
+            localStorage.setItem('user', JSON.stringify(user));
+            saveToHistory("Affiliation sans parrain", 1000, "Succès", user.userId);
+            alert("Inscription sans parrain réussie !");
+            window.location.href = 'mijo-affiliate-promo.html';
+        } else { alert(result.error || "Échec de l'inscription sans parrain."); }
+    } catch (err) { alert("Erreur de connexion."); console.error(err); }
+});
+</script>
+
     </script>
 </body>
 </html>
