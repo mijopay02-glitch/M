@@ -182,43 +182,42 @@ function closeModal() {
 
     // Gérer l'inscription avec parrain
     parrainBtn.addEventListener('click', async () => {
-        const parrainCode = parrainCodeInput.value.trim();
-        if (parrainCode === "") {
-            alert("Veuillez entrer le code de parrainage.");
-            return;
-        }
+    const parrainCode = parrainCodeInput.value.trim();
+    if (parrainCode === "") {
+        alert("Veuillez entrer le code de parrainage.");
+        return;
+    }
 
-        const userString = localStorage.getItem('user');
-        const user = JSON.parse(userString);
-        
-        if (!user || !user.userId) {
-            alert("Utilisateur non connecté ou données manquantes.");
-            return;
-        }
-        
-        if (user.Solde < 750) {
-            alert("Solde insuffisant pour une inscription avec parrain (750 Gdes).");
-            return;
-        }
+    const userString = localStorage.getItem('user');
+    const user = JSON.parse(userString);
+    
+    if (!user || !user.userId) {
+        alert("Utilisateur non connecté ou données manquantes.");
+        return;
+    }
+    
+    if (user.Solde < 750) {
+        alert("Solde insuffisant pour une inscription avec parrain (750 Gdes).");
+        return;
+    }
 
-        alert("Traitement en cours... Veuillez patienter.");
+    alert("Traitement en cours... Veuillez patienter.");
 
-        const dataToSend = {
-            userId: user.userId,
-            lienAffiliation: parrainCode
-        };
-
-        // Convertir les données en format x-www-form-urlencoded
-    const formData = new URLSearchParams(dataToSend).toString();
+    // Créer un objet de données à envoyer
+    const dataToSend = {
+        userId: user.userId,
+        lienAffiliation: parrainCode
+    };
 
     try {
         const response = await fetch(parrainUrl, {
             method: 'POST',
             headers: { 
-                // Définir le bon Content-Type pour le format de données
-                'Content-Type': 'application/x-www-form-urlencoded' 
+                // Définir le Content-Type pour le format de données JSON
+                'Content-Type': 'application/json' 
             },
-            body: formData
+            // Convertir les données en chaîne JSON pour l'envoi
+            body: JSON.stringify(dataToSend)
         });
         const result = await response.json();
 
