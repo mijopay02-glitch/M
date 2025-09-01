@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription Affilié MIJO</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="M/style.css">
+
     <style>
         .container {
             text-align: center;
@@ -228,9 +229,26 @@ function closeModal() {
     if (!parrainCode) return alert("Veuillez entrer le code de parrainage.");
 
     const userString = localStorage.getItem('user');
-    const user = JSON.parse(userString);
-    if (!user?.userId) return alert("Utilisateur non connecté ou données manquantes.");
-    if (user.Solde < 750) return alert("Solde insuffisant pour une inscription avec parrain (750 Gdes).");
+if (!userString) {
+    alert("Utilisateur non connecté. Veuillez vous connecter d'abord.");
+    hideSpinner();
+    return;
+}
+
+let user;
+try {
+    user = JSON.parse(userString);
+} catch (e) {
+    alert("Erreur de lecture des données utilisateur.");
+    hideSpinner();
+    return;
+}
+
+if (!user || typeof user.Solde !== 'number') {
+    alert("Données utilisateur invalides. Veuillez vous reconnecter.");
+    hideSpinner();
+    return;
+}
 
     showSpinner();
 
