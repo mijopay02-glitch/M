@@ -333,17 +333,15 @@ if (!user || typeof user.Solde !== 'number') {
     let history = JSON.parse(localStorage.getItem(historyKey)) || [];
     const newTransaction = {
         id: Date.now(),
-        type: type, // Par exemple, "Achat", "Transfert", "Affiliation"
-        description: description, // Le nom du produit ou du service
+        type: type,
+        description: description,
         amount: amount,
-        status: status, // Par exemple, "Succès", "Échec", "Envoyé"
+        status: status,
         date: new Date().toLocaleDateString()
     };
     history.push(newTransaction);
     localStorage.setItem(historyKey, JSON.stringify(history));
 }
-    });
-
     </script>
 </body>
 </html>
