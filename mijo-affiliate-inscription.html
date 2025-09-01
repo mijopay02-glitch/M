@@ -253,34 +253,33 @@ if (!user || typeof user.Solde !== 'number') {
     showSpinner();
 
     try {
-        const response = await fetch(parrainUrl, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ userId: user.userId, lienAffiliation: parrainCode })
-        });
+    const response = await fetch(parrainUrl, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ userId: user.userId, lienAffiliation: parrainCode })
+    });
 
-        const result = await response.json();
-        hideSpinner();
+    const result = await response.json();
+    hideSpinner();
 
-        if (result.success && result.user) {
-    user.Solde = result.user.Solde ?? user.Solde;
-    user.Estafilia = result.user.Estafilia ?? user.Estafilia;
-    user.LienAffiliation = result.user.LienAffiliation ?? user.LienAffiliation;
-    localStorage.setItem('user', JSON.stringify(user));
-    saveToHistory("Affiliation avec parrain", 750, "Succès", user.userId);
-    alert(result.message || "Inscription avec parrain réussie !");
-    window.location.href = 'mijo-affiliate-promo.html';
-} else {
-    alert(result.error || "Échec de l'inscription avec parrain. Le code est peut-être invalide.");
+    if (result.success && result.user) {
+        user.Solde = result.user.Solde ?? user.Solde;
+        user.Estafilia = result.user.Estafilia ?? user.Estafilia;
+        user.LienAffiliation = result.user.LienAffiliation ?? user.LienAffiliation;
+        localStorage.setItem('user', JSON.stringify(user));
+        saveToHistory("Affiliation avec parrain", 750, "Succès", user.userId);
+        alert(result.message || "Inscription avec parrain réussie !");
+        window.location.href = 'mijo-affiliate-promo.html';
+    } else {
+        alert(result.error || "Échec de l'inscription avec parrain. Le code est peut-être invalide.");
+    }
+
+} catch (error) {
+    hideSpinner();
+    alert("Erreur de connexion. Veuillez réessayer plus tard.");
+    console.error("Erreur de fetch:", error);
 }
 
-        }
-    } catch (error) {
-        hideSpinner();
-        alert("Erreur de connexion. Veuillez réessayer plus tard.");
-        console.error("Erreur de fetch:", error);
-    }
-});
     // Gérer l'inscription sans parrain
     noParrainBtn.addEventListener('click', async () => {
         const userString = localStorage.getItem('user');
