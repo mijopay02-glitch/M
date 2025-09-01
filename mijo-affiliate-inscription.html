@@ -262,17 +262,18 @@ if (!user || typeof user.Solde !== 'number') {
     const result = await response.json();
     hideSpinner();
 
-    if (result.success && result.user) {
-        user.Solde = result.user.Solde ?? user.Solde;
-        user.Estafilia = result.user.Estafilia ?? user.Estafilia;
-        user.LienAffiliation = result.user.LienAffiliation ?? user.LienAffiliation;
-        localStorage.setItem('user', JSON.stringify(user));
-        saveToHistory("Affiliation avec parrain", 750, "Succès", user.userId);
-        alert(result.message || "Inscription avec parrain réussie !");
-        window.location.href = 'mijo-affiliate-promo.html';
-    } else {
-        alert(result.error || "Échec de l'inscription avec parrain. Le code est peut-être invalide.");
-    }
+   if (result.success) {
+    user.Solde = result.nouveauSolde ?? user.Solde;
+    user.Estafilia = result.Estafilia ?? user.Estafilia;
+    user.LienAffiliation = result.LienAffiliation ?? user.LienAffiliation;
+    localStorage.setItem('user', JSON.stringify(user));
+    saveToHistory("Affiliation avec parrain", 750, "Succès", user.userId);
+    alert(result.message || "Inscription avec parrain réussie !");
+    window.location.href = 'mijo-affiliate-promo.html';
+} else {
+    alert(result.error || "Échec de l'inscription avec parrain. Le code est peut-être invalide.");
+}
+
 
 } catch (error) {
     hideSpinner();
