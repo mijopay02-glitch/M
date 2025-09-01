@@ -225,85 +225,38 @@ function closeModal() {
     // Gérer l'inscription avec parrain
     parrainBtn.addEventListener('click', async () => {
     const parrainCode = parrainCodeInput.value.trim();
-    if (parrainCode === "") {
-        alert("Veuillez entrer le code de parrainage.");
-        return;
-    }
+    if (!parrainCode) return alert("Veuillez entrer le code de parrainage.");
 
     const userString = localStorage.getItem('user');
     const user = JSON.parse(userString);
-    
-    if (!user || !user.userId) {
-        alert("Utilisateur non connecté ou données manquantes.");
-        return;
-    }
-    
-    if (user.Solde < 750) {
-        alert("Solde insuffisant pour une inscription avec parrain (750 Gdes).");
-        return;
-    }
+    if (!user?.userId) return alert("Utilisateur non connecté ou données manquantes.");
+    if (user.Solde < 750) return alert("Solde insuffisant pour une inscription avec parrain (750 Gdes).");
 
-    // Afficher le spinner et le message de chargement
     showSpinner();
-    alert("Traitement en cours... Veuillez patienter.");
-
-    // Créer un objet de données à envoyer
-    const dataToSend = {
-        userId: user.userId,
-        lienAffiliation: parrainCode
-    };
 
     try {
         const response = await fetch(parrainUrl, {
             method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json' 
-            },
-            body: JSON.stringify(dataToSend)
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ userId: user.userId, lienAffiliation: parrainCode })
         });
 
-        hideSpinner(); // Masquer le spinner après la réponse du serveur
-
-        if (!response.ok) {
-            let errorText = `Erreur du serveur: ${response.status} ${response.statusText}`;
-            try {
-                const errorData = await response.json();
-                errorText = errorData.error || errorText;
-            } catch (e) {
-                // Si la réponse n'est pas en JSON, on utilise le message par défaut
-            }
-            alert(errorText);
-            return;
-        }
-
-        const responseText = await response.text();
-        if (!responseText) {
-            alert("Erreur: La réponse du serveur est vide.");
-            return;
-        }
-
-        let result;
-        try {
-            result = JSON.parse(responseText);
-        } catch (e) {
-            alert("Erreur: La réponse du serveur n'est pas au format JSON.");
-            return;
-        }
+        const result = await response.json();
+        hideSpinner();
 
         if (result.success) {
-            user.Solde = result.nouveauSolde;
-            user.Estafilia = true;
-            user.LienAffiliation = result.LienAffiliation;
+            user.Solde = result.user.Solde;
+            user.Estafilia = result.user.Estafilia;
+            user.LienAffiliation = result.user.LienAffiliation;
             localStorage.setItem('user', JSON.stringify(user));
             saveToHistory("Affiliation avec parrain", 750, "Succès", user.userId);
-            
-            alert(result.message || "Inscription avec parrain réussie ! Vous êtes maintenant un affilié.");
+            alert(result.message || "Inscription avec parrain réussie !");
             window.location.href = 'mijo-affiliate-promo.html';
         } else {
             alert(result.error || "Échec de l'inscription avec parrain. Le code est peut-être invalide.");
         }
     } catch (error) {
-        hideSpinner(); // Masquer le spinner en cas d'erreur de connexion
+        hideSpinner();
         alert("Erreur de connexion. Veuillez réessayer plus tard.");
         console.error("Erreur de fetch:", error);
     }
