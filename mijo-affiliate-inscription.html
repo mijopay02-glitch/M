@@ -198,6 +198,20 @@ Pa pèdi tan! Vin yon afilye MIJO jodi a epi kòmanse fè lajan an gwo!</p>
     </div>
     
     <script>
+         function saveToHistory(type, description, amount, status, userId) {
+    const historyKey = `transactions_${userId}`;
+    let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+    const newTransaction = {
+        id: Date.now(),
+        type: type,
+        description: description,
+        amount: amount,
+        status: status,
+        date: new Date().toLocaleDateString()
+    };
+    history.push(newTransaction);
+    localStorage.setItem(historyKey, JSON.stringify(history));
+}
         
         // Fonctions pour afficher et masquer le spinner
 function showSpinner() {
@@ -328,20 +342,7 @@ if (!user || typeof user.Solde !== 'number') {
         }
 
         
-        function saveToHistory(type, description, amount, status, userId) {
-    const historyKey = `transactions_${userId}`;
-    let history = JSON.parse(localStorage.getItem(historyKey)) || [];
-    const newTransaction = {
-        id: Date.now(),
-        type: type,
-        description: description,
-        amount: amount,
-        status: status,
-        date: new Date().toLocaleDateString()
-    };
-    history.push(newTransaction);
-    localStorage.setItem(historyKey, JSON.stringify(history));
-}
+       
         });
     </script>
 </body>
