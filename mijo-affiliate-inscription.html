@@ -213,14 +213,40 @@ function closeModal() {
         const response = await fetch(parrainUrl, {
             method: 'POST',
             headers: { 
-                // Définir le Content-Type pour le format de données JSON
                 'Content-Type': 'application/json' 
             },
-            // Convertir les données en chaîne JSON pour l'envoi
             body: JSON.stringify(dataToSend)
         });
-        const result = await response.json();
 
+        // 1. Gérer les erreurs de statut HTTP (400, 500, etc.)
+        if (!response.ok) {
+            let errorText = `Erreur du serveur: ${response.status} ${response.statusText}`;
+            try {
+                const errorData = await response.json();
+                errorText = errorData.error || errorText;
+            } catch (e) {
+                // Si la réponse n'est pas en JSON, on utilise le message par défaut
+            }
+            alert(errorText);
+            return;
+        }
+
+        // 2. Tenter d'analyser la réponse comme du JSON
+        const responseText = await response.text();
+        if (!responseText) {
+            alert("Erreur: La réponse du serveur est vide.");
+            return;
+        }
+
+        let result;
+        try {
+            result = JSON.parse(responseText);
+        } catch (e) {
+            alert("Erreur: La réponse du serveur n'est pas au format JSON.");
+            return;
+        }
+
+        // 3. Gérer le résultat final de l'opération
         if (result.success) {
             user.Solde = result.nouveauSolde;
             user.Estafilia = true;
@@ -228,13 +254,15 @@ function closeModal() {
             localStorage.setItem('user', JSON.stringify(user));
             saveToHistory("Affiliation avec parrain", 750, "Succès", user.userId);
             
-            alert("Inscription avec parrain réussie ! Vous êtes maintenant un affilié.");
+            alert(result.message || "Inscription avec parrain réussie ! Vous êtes maintenant un affilié.");
             window.location.href = 'mijo-affiliate-promo.html';
         } else {
             alert(result.error || "Échec de l'inscription avec parrain. Le code est peut-être invalide.");
         }
     } catch (error) {
+        // Gérer les erreurs de connexion réseau (pas de réponse du tout)
         alert("Erreur de connexion. Veuillez réessayer plus tard.");
+        console.error("Erreur de fetch:", error);
     }
 });
     // Gérer l'inscription sans parrain
