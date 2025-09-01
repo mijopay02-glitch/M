@@ -99,6 +99,12 @@
             <p>Nombre d'affiliés : <span id="affiliatesCount">0</span></p>
             <span id="categoryBadge" class="category-badge">Bronze</span>
         </div>
+        <div class="card">
+    <h2>Bonus</h2>
+    <p>Cliquez pour accéder à vos bonus !</p>
+    <button id="bonusBtn" class="copy-btn">Voir le Bonus</button>
+</div>
+
 
         <div class="card">
             <h2>Outils Marketing</h2>
@@ -115,6 +121,10 @@
     </div>
     
     <script>
+        document.getElementById('bonusBtn').addEventListener('click', () => {
+    window.location.href = 'bonus.html';
+});
+
         document.addEventListener('DOMContentLoaded', () => {
             const userString = localStorage.getItem('user');
             if (!userString) {
