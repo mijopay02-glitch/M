@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bonus d'Affiliation</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+        .bonus-container { max-width: 400px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        #claimBonusBtn { padding: 10px 20px; font-size: 16px; cursor: pointer; margin-top: 20px; }
+        .hidden { display: none; }
+        .bonus-list { list-style-type: none; padding: 0; }
+        .bonus-item { margin-bottom: 10px; padding: 10px; border: 1px solid #eee; border-radius: 5px; }
+        .bonus-item.reached { background-color: #d4edda; color: #155724; }
+    </style>
+</head>
+<body>
+
+    <div class="bonus-container">
+        <h2>Votre Bonus d'Affiliation</h2>
+        <p>Votre nombre d'affiliés: <strong id="nbreAffilie">0</strong></p>
+        
+        <h3>Objectifs de Bonus</h3>
+        <ul id="bonusList" class="bonus-list"></ul>
+        
+        <button id="claimBonusBtn" class="hidden">Réclamer un Bonus Disponible</button>
+        <p id="bonusMessage"></p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userString = localStorage.getItem('user');
+            if (!userString) {
+                alert("Utilisateur non connecté.");
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const user = JSON.parse(userString);
+            
+            // Tableau des objectifs de bonus
+            const bonusObjectives = [
+                { id: 1, affiliates: 5, amount: 250 },
+                { id: 2, affiliates: 10, amount: 750 },
+                { id: 3, affiliates: 20, amount: 1500 },
+                { id: 4, affiliates: 50, amount: 5000 },
+                { id: 5, affiliates: 100, amount: 10000 }
+            ];
+
+            const nbreAffilieElement = document.getElementById('nbreAffilie');
+            const bonusListElement = document.getElementById('bonusList');
+            const claimBonusBtn = document.getElementById('claimBonusBtn');
+            
+            // Afficher le nombre d'affiliés actuel
+            nbreAffilieElement.textContent = user.nbreaffilie || 0;
+
+            // Afficher la liste des objectifs
+            let bonusAvailable = false;
+            let firstUnclaimedBonus = null;
+
+            bonusObjectives.forEach(obj => {
+                const li = document.createElement('li');
+                li.className = 'bonus-item';
+                li.textContent = `${obj.affiliates} affiliés: ${obj.amount} Gdes`;
+                
+                // Si l'utilisateur a atteint cet objectif
+                if (user.nbreaffilie >= obj.affiliates) {
+                    li.classList.add('reached');
+                    // Vérifier si le bonus a déjà été réclamé
+                    if (!user.claimedBonuses || !user.claimedBonuses.includes(obj.id)) {
+                        bonusAvailable = true;
+                        if (!firstUnclaimedBonus) {
+                            firstUnclaimedBonus = obj;
+                        }
+                    }
+                }
+                bonusListElement.appendChild(li);
+            });
+
+            // Afficher le bouton si un bonus est disponible
+            if (bonusAvailable) {
+                claimBonusBtn.classList.remove('hidden');
+                document.getElementById('bonusMessage').textContent = `Bonus disponible: ${firstUnclaimedBonus.amount} Gdes pour ${firstUnclaimedBonus.affiliates} affiliés.`;
+            } else {
+                document.getElementById('bonusMessage').textContent = `Continuez pour votre prochain bonus !`;
+            }
+
+            claimBonusBtn.addEventListener('click', async () => {
+                if (!firstUnclaimedBonus) return;
+
+                // L'URL de votre nouvelle fonction Apps Script pour les bonus
+                const bonusUrl = 'https://script.google.com/macros/s/VOTRE_ID_DE_NOUVEL_APPS_SCRIPT/exec';
+
+                try {
+                    const response = await fetch(bonusUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 
+                            userId: user.userId, 
+                            bonusId: firstUnclaimedBonus.id, 
+                            bonusAmount: firstUnclaimedBonus.amount 
+                        })
+                    });
+                    
+                    const result = await response.json();
+
+                    if (result.success) {
+                        // Mettre à jour les données utilisateur
+                        user.Solde = result.nouveauSolde;
+                        user.claimedBonuses = user.claimedBonuses || [];
+                        user.claimedBonuses.push(firstUnclaimedBonus.id);
+                        localStorage.setItem('user', JSON.stringify(user));
+
+                        alert(result.message || "Bonus réclamé avec succès !");
+                        window.location.reload();
+                    } else {
+                        alert(result.error || "Échec de la réclamation du bonus.");
+                    }
+                } catch (error) {
+                    alert("Erreur de connexion lors de la réclamation du bonus.");
+                    console.error(error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
