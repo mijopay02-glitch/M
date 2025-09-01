@@ -208,31 +208,36 @@ function closeModal() {
             lienAffiliation: parrainCode
         };
 
-        try {
-            const response = await fetch(parrainUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dataToSend)
-            });
-            const result = await response.json();
+        // Convertir les données en format x-www-form-urlencoded
+    const formData = new URLSearchParams(dataToSend).toString();
 
-            if (result.success) {
-                user.Solde = result.nouveauSolde;
-                user.Estafilia = true;
-                user.LienAffiliation = result.LienAffiliation;
-                localStorage.setItem('user', JSON.stringify(user));
-                saveToHistory("Affiliation avec parrain", 750, "Succès", user.userId); 
-    
-                alert("Inscription avec parrain réussie ! Vous êtes maintenant un affilié.");
-                window.location.href = 'mijo-affiliate-promo.html';
-            } else {
-                alert(result.error || "Échec de l'inscription avec parrain. Le code est peut-être invalide.");
-            }
-        } catch (error) {
-            alert("Erreur de connexion. Veuillez réessayer plus tard.");
+    try {
+        const response = await fetch(parrainUrl, {
+            method: 'POST',
+            headers: { 
+                // Définir le bon Content-Type pour le format de données
+                'Content-Type': 'application/x-www-form-urlencoded' 
+            },
+            body: formData
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            user.Solde = result.nouveauSolde;
+            user.Estafilia = true;
+            user.LienAffiliation = result.LienAffiliation;
+            localStorage.setItem('user', JSON.stringify(user));
+            saveToHistory("Affiliation avec parrain", 750, "Succès", user.userId);
+            
+            alert("Inscription avec parrain réussie ! Vous êtes maintenant un affilié.");
+            window.location.href = 'mijo-affiliate-promo.html';
+        } else {
+            alert(result.error || "Échec de l'inscription avec parrain. Le code est peut-être invalide.");
         }
-    });
-
+    } catch (error) {
+        alert("Erreur de connexion. Veuillez réessayer plus tard.");
+    }
+});
     // Gérer l'inscription sans parrain
     noParrainBtn.addEventListener('click', async () => {
         const userString = localStorage.getItem('user');
