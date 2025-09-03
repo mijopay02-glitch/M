@@ -51,10 +51,10 @@
     function updateBalanceFromUrl() {
       // Récupérer le solde de l'URL
       const urlParams = new URLSearchParams(window.location.search);
-      const newBalance = urlParams.get('newBalance');
+      const newBalance = urlParams.get('newSolde');
       const statusMessageElement = document.getElementById('statusMessage');
 
-      if (newBalance) {
+      if (newSolde) {
         try {
           // Récupérer les données utilisateur de localStorage
           const user = JSON.parse(localStorage.getItem('user'));
@@ -67,7 +67,7 @@
             console.log("Nouveau solde mis à jour dans localStorage:", user.solde);
 
             // Afficher le nouveau solde à l'utilisateur
-            statusMessageElement.textContent = `Votre nouveau solde est de : ${parseFloat(newBalance).toFixed(2)} HTG`;
+            statusMessageElement.textContent = `Votre nouveau solde est de : ${parseFloat(newSolde).toFixed(2)} HTG`;
             
             // Nettoyer l'URL pour une meilleure expérience utilisateur
             history.replaceState({}, document.title, window.location.pathname);
