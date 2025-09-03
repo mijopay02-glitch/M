@@ -60,7 +60,7 @@
           const user = JSON.parse(localStorage.getItem('user'));
           if (user) {
             // Mettre à jour le solde
-            user.solde = parseFloat(newBalance);
+            user.Solde = parseFloat(newSolde);
             // Sauvegarder dans localStorage
             localStorage.setItem('user', JSON.stringify(user));
 
