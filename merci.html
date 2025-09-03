@@ -59,8 +59,7 @@
           // Récupérer les données utilisateur de localStorage
           const user = JSON.parse(localStorage.getItem('user'));
           if (user) {
-            // Mettre à jour le solde en utilisant le nom de variable correct
-            // MODIFICATION ICI: de user.solde à user.Solde
+            // Mettre à jour le solde
             user.Solde = parseFloat(newBalance);
             // Sauvegarder dans localStorage
             localStorage.setItem('user', JSON.stringify(user));
