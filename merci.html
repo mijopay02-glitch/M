@@ -49,6 +49,9 @@
 
   <script>
     function updateBalanceFromUrl() {
+      console.log("Données envoyées par l'URL :", window.location.search);
+
+      // Récupérer le solde de l'URL
       // Récupérer le solde de l'URL
       const urlParams = new URLSearchParams(window.location.search);
       const newBalance = urlParams.get('newBalance');
