@@ -91,13 +91,14 @@
     </div>
 
     <script>
-        window.addEventListener("DOMContentLoaded", () => {
+       window.addEventListener("DOMContentLoaded", () => {
     const savedUser = JSON.parse(localStorage.getItem("user"));
-    if (savedUser) {
+    console.log("Loaded from localStorage:", savedUser); // <-- Vérifie ici
+    if (savedUser && savedUser.NumeroCarte) { // <- la clé doit correspondre exactement
         document.getElementById("cardNumber").value = savedUser.NumeroCarte;
-        // si tu as un système côté serveur pour le CIN ou token, tu peux gérer la reconnexion automatiquement
     }
 });
+
 
         // C'est la seule ligne qui change. Utilisez l'URL de votre proxy Vercel.
         // Remplacez 'votre-nom-de-projet' par le nom de votre projet sur Vercel.
