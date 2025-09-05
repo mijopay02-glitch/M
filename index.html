@@ -145,6 +145,11 @@
                 const data = await response.json();
 
                 if (data.success) {
+                    const userToStore = {
+          // ID unique depuis Airtable ou serveur
+        cardNumber: document.getElementById("cardNumber").value.trim()
+        // ne mets jamais le CIN ici pour la sécurité
+    };
                     localStorage.setItem("user", JSON.stringify(data.user));
                     messageDiv.style.color = "green";
                     messageDiv.innerText = "Connexion réussie ! Redirection...";
