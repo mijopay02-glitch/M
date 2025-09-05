@@ -94,7 +94,7 @@
         window.addEventListener("DOMContentLoaded", () => {
     const savedUser = JSON.parse(localStorage.getItem("user"));
     if (savedUser) {
-        document.getElementById("NumeroCarte").value = savedUser.cardNumber;
+        document.getElementById("cardNumber").value = savedUser.NumeroCarte;
         // si tu as un système côté serveur pour le CIN ou token, tu peux gérer la reconnexion automatiquement
     }
 });
