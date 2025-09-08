@@ -47,7 +47,7 @@
   // 📌 Charger l'utilisateur depuis localStorage
   const userString = localStorage.getItem("user");
   let nbreAffilie = 0;
-  let userId = null;
+  const userId = user.userId;
 
   if (userString) {
     try {
@@ -92,7 +92,7 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "bonus",
-          userId: user.userId;
+          userId: userId;
           montant: bonusTrouve.montant
         })
       });
