@@ -84,42 +84,48 @@
 
   // 📌 Action du bouton : envoie la demande au backend
   btnBonus.addEventListener("click", async () => {
-    if (!bonusTrouve) return alert("Aucun bonus disponible");
-    if (!userId) return alert("Erreur: utilisateur non identifié");
+  if (!bonusTrouve) return alert("Aucun bonus disponible");
+  if (!userId) return alert("Erreur: utilisateur non identifié");
 
-    try {
-      const res = await fetch("https://bonus.mijocomplexe.workers.dev/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "bonus",
-          userId: userId,
-          montant: bonusTrouve.montant
-        })
-      });
+  // ✅ Afficher message de chargement
+  btnBonus.textContent = "⏳ Transaction en cours...";
+  btnBonus.disabled = true;
 
-      const data = await res.json();
-      if (data.status === "success") {
-        alert(`🎉 Bonus de ${bonusTrouve.montant} HTG crédité sur ton compte !`);
+  try {
+    const res = await fetch("https://bonus.mijocomplexe.workers.dev/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "bonus",
+        userId: userId,
+        montant: bonusTrouve.montant
+      })
+    });
 
-        // ✅ Désactiver le bouton pour éviter de réclamer plusieurs fois
-        btnBonus.disabled = true;
+    const data = await res.json();
+    if (data.status === "success") {
+      alert(`🎉 Bonus de ${bonusTrouve.montant} HTG crédité sur ton compte !`);
 
-        // ✅ Mettre à jour le solde dans localStorage
-        userObj.Solde = data.newSolde;
-        userObj.bonusPris = true; // flag pour indiquer que le bonus a été pris
-        localStorage.setItem("user", JSON.stringify(userObj));
+      // Mettre à jour localStorage
+      userObj.Solde = data.newSolde;
+      userObj.bonusPris = true;
+      localStorage.setItem("user", JSON.stringify(userObj));
 
-        // Mettre à jour l'affichage
-        document.getElementById("bonusMontant").textContent = "Aucun";
-
-      } else {
-        alert("Erreur: " + data.message);
-      }
-    } catch (err) {
-      alert("Erreur réseau: " + err.message);
+      // Mettre à jour l'affichage
+      document.getElementById("bonusMontant").textContent = "Aucun";
+      btnBonus.textContent = "Réclamer mon bonus";
+    } else {
+      alert("Erreur: " + data.message);
+      btnBonus.disabled = false;
+      btnBonus.textContent = "Réclamer mon bonus";
     }
-  });
+  } catch (err) {
+    alert("Erreur réseau: " + err.message);
+    btnBonus.disabled = false;
+    btnBonus.textContent = "Réclamer mon bonus";
+  }
+});
+
 
 
   </script>
