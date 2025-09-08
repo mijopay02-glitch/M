@@ -34,7 +34,7 @@
   </div>
 
   <script>
-  
+
   // 🎯 Grille des bonus
   const bonusPaliers = [
     { seuil: 5, montant: 250 },
@@ -46,22 +46,19 @@
 
   // 📌 Charger l'utilisateur depuis localStorage
   const userString = localStorage.getItem("user");
-let nbreAffilie = 0;
-let userId = null;
+  let nbreAffilie = 0;
+  let userId = null;
+  let userObj = null;
 
-if (userString) {
-  try {
-    const user = JSON.parse(userString);
-    nbreAffilie = parseInt(user.nbreaffilie || "0", 10);
-    // Vérifier toutes les possibles clés pour l'ID
-    userId = user.userId || user.id || user.userid || null;
-  } catch (e) {
-    console.error("Erreur parsing user:", e);
+  if (userString) {
+    try {
+      userObj = JSON.parse(userString);
+      nbreAffilie = parseInt(userObj.nbreaffilie || "0", 10);
+      userId = userObj.userId || userObj.id || userObj.userid || null;
+    } catch (e) {
+      console.error("Erreur parsing user:", e);
+    }
   }
-}
-
-console.log("userId récupéré:", userId, "nbreAffilie:", nbreAffilie);
-
 
   document.getElementById("nbreAffiche").textContent = nbreAffilie;
 
@@ -71,7 +68,7 @@ console.log("userId récupéré:", userId, "nbreAffilie:", nbreAffilie);
   bonusPaliers.forEach(palier => {
     const row = document.createElement("tr");
     if (nbreAffilie >= palier.seuil) {
-      bonusTrouve = palier; // on garde le dernier palier atteint
+      bonusTrouve = palier;
       row.classList.add("highlight");
     }
     row.innerHTML = `<td>${palier.seuil}</td><td>${palier.montant} HTG</td>`;
@@ -79,15 +76,15 @@ console.log("userId récupéré:", userId, "nbreAffilie:", nbreAffilie);
   });
 
   // 📌 Mettre à jour le bonus disponible
-  if (bonusTrouve) {
+  const btnBonus = document.getElementById("btnBonus");
+  if (bonusTrouve && !userObj.bonusPris) {
     document.getElementById("bonusMontant").textContent = bonusTrouve.montant + " HTG";
-    document.getElementById("btnBonus").disabled = false;
+    btnBonus.disabled = false;
   }
 
   // 📌 Action du bouton : envoie la demande au backend
-  document.getElementById("btnBonus").addEventListener("click", async () => {
+  btnBonus.addEventListener("click", async () => {
     if (!bonusTrouve) return alert("Aucun bonus disponible");
-
     if (!userId) return alert("Erreur: utilisateur non identifié");
 
     try {
@@ -103,7 +100,19 @@ console.log("userId récupéré:", userId, "nbreAffilie:", nbreAffilie);
 
       const data = await res.json();
       if (data.status === "success") {
-        alert("🎉 Bonus de " + bonusTrouve.montant + " HTG crédité sur ton compte !");
+        alert(`🎉 Bonus de ${bonusTrouve.montant} HTG crédité sur ton compte !`);
+
+        // ✅ Désactiver le bouton pour éviter de réclamer plusieurs fois
+        btnBonus.disabled = true;
+
+        // ✅ Mettre à jour le solde dans localStorage
+        userObj.Solde = data.newSolde;
+        userObj.bonusPris = true; // flag pour indiquer que le bonus a été pris
+        localStorage.setItem("user", JSON.stringify(userObj));
+
+        // Mettre à jour l'affichage
+        document.getElementById("bonusMontant").textContent = "Aucun";
+
       } else {
         alert("Erreur: " + data.message);
       }
