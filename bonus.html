@@ -91,7 +91,7 @@ console.log("userId récupéré:", userId, "nbreAffilie:", nbreAffilie);
     if (!userId) return alert("Erreur: utilisateur non identifié");
 
     try {
-      const res = await fetch("https://script.google.com/macros/s/TON_SCRIPT_ID/exec", {
+      const res = await fetch("https://bonus.mijocomplexe.workers.dev/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
