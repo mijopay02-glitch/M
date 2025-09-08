@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent MIJO - Connexion</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f9fc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #28a745;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:disabled {
+      background: gray;
+      cursor: not-allowed;
+    }
+    .message {
+      margin-top: 10px;
+      text-align: center;
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Agent MIJO - Connexion</h2>
+    <input type="tel" id="numeroTel" placeholder="Numéro de téléphone">
+    <input type="password" id="motDePasse" placeholder="Mot de passe">
+    <button id="btnLogin">Se connecter</button>
+    <div class="message" id="loginMessage"></div>
+  </div>
+
+  <script>
+    const btnLogin = document.getElementById('btnLogin');
+    const messageDiv = document.getElementById('loginMessage');
+
+    btnLogin.addEventListener('click', async () => {
+      const numero = document.getElementById('numeroTel').value.trim();
+      const mdp = document.getElementById('motDePasse').value.trim();
+
+      if (!numero || !mdp) {
+        messageDiv.textContent = "Veuillez remplir tous les champs.";
+        return;
+      }
+
+      btnLogin.disabled = true;
+      messageDiv.textContent = "Vérification en cours...";
+
+      try {
+        // 🔑 Envoi vers Worker / Apps Script qui interroge Airtable
+        const res = await fetch('https://bonus.mijocomplexe.workers.dev/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'login',
+            numero: numero,
+            password: mdp
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.status === 'success') {
+          // ✅ Sauvegarde utilisateur dans localStorage
+          localStorage.setItem('user', JSON.stringify(data.user));
+
+          messageDiv.style.color = 'green';
+          messageDiv.textContent = "Connexion réussie ! Redirection...";
+          
+          setTimeout(() => {
+            window.location.href = 'dashboard.html'; // ou page de dépôt/retrait
+          }, 1000);
+        } else {
+          messageDiv.style.color = 'red';
+          messageDiv.textContent = data.message || "Numéro ou mot de passe incorrect.";
+          btnLogin.disabled = false;
+        }
+      } catch (err) {
+        messageDiv.style.color = 'red';
+        messageDiv.textContent = "Erreur réseau: " + err.message;
+        btnLogin.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
