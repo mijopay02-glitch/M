@@ -92,7 +92,7 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "bonus",
-          userId: userId,
+          userId: user.userId;
           montant: bonusTrouve.montant
         })
       });
