@@ -5,10 +5,14 @@
   <title>Réclamer Bonus</title>
   <style>
     body { font-family: Arial, sans-serif; background:#f7f9fc; padding:20px; }
-    .card { background:white; padding:20px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.1); max-width:400px; margin:auto; }
-    h2 { color:#333; }
+    .card { background:white; padding:20px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.1); max-width:500px; margin:auto; }
+    h2 { color:#333; text-align:center; }
     p { font-size:16px; }
-    button { padding:10px 20px; border:none; border-radius:8px; background:#28a745; color:white; cursor:pointer; font-size:16px; }
+    table { width:100%; border-collapse:collapse; margin:15px 0; }
+    th, td { border:1px solid #ddd; padding:8px; text-align:center; }
+    th { background:#28a745; color:white; }
+    tr.highlight { background:#d4edda; font-weight:bold; }
+    button { width:100%; padding:12px; border:none; border-radius:8px; background:#28a745; color:white; cursor:pointer; font-size:16px; margin-top:10px; }
     button:disabled { background:gray; cursor:not-allowed; }
   </style>
 </head>
@@ -16,6 +20,15 @@
   <div class="card">
     <h2>🎁 Bonus Affilié</h2>
     <p>Nombre d’affiliés : <span id="nbreAffiche">0</span></p>
+
+    <h3>📊 Grille des Bonus</h3>
+    <table id="bonusTable">
+      <tr>
+        <th>Affiliés requis</th>
+        <th>Montant du Bonus</th>
+      </tr>
+    </table>
+
     <p>Bonus disponible : <span id="bonusMontant">Aucun</span></p>
     <button id="btnBonus" disabled>Réclamer mon bonus</button>
   </div>
@@ -31,17 +44,23 @@
     ];
 
     // 📌 Récupérer nombre affiliés depuis localStorage
-    const nbreAffilie = parseInt(localStorage.getItem("nbreaffilie")) || 0;
+    const nbreAffilie = parseInt(localStorage.getItem("nbreaffilie") || "0", 10);
     document.getElementById("nbreAffiche").textContent = nbreAffilie;
 
-    // 📌 Vérifier quel bonus correspond
+    // 📌 Remplir le tableau des paliers
+    const table = document.getElementById("bonusTable");
     let bonusTrouve = null;
-    for (let palier of bonusPaliers) {
+    bonusPaliers.forEach(palier => {
+      const row = document.createElement("tr");
       if (nbreAffilie >= palier.seuil) {
-        bonusTrouve = palier;
+        bonusTrouve = palier; // on garde le dernier palier atteint
+        row.classList.add("highlight");
       }
-    }
+      row.innerHTML = `<td>${palier.seuil}</td><td>${palier.montant} HTG</td>`;
+      table.appendChild(row);
+    });
 
+    // 📌 Mettre à jour le bonus disponible
     if (bonusTrouve) {
       document.getElementById("bonusMontant").textContent = bonusTrouve.montant + " HTG";
       document.getElementById("btnBonus").disabled = false;
@@ -55,8 +74,9 @@
       if (!userId) return alert("Erreur: utilisateur non identifié");
 
       try {
-        const res = await fetch("https://script.google.com/macros/s/AKfycbzXFZI2ZNxuf5GmdOkAk2kxerfmNyooBTQ8K7KRnQoNSBdORovxDG66BIiXaSivaBSV/exec", {
+        const res = await fetch("https://script.google.com/macros/s/TON_SCRIPT_ID/exec", {
           method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             action: "bonus",
             userId: userId,
