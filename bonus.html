@@ -34,66 +34,81 @@
   </div>
 
   <script>
-    // 🎯 Grille des bonus
-    const bonusPaliers = [
-      { seuil: 5, montant: 250 },
-      { seuil: 10, montant: 600 },
-      { seuil: 20, montant: 1500 },
-      { seuil: 40, montant: 4000 },
-      { seuil: 100, montant: 10000 }
-    ];
+  
+  // 🎯 Grille des bonus
+  const bonusPaliers = [
+    { seuil: 5, montant: 250 },
+    { seuil: 10, montant: 600 },
+    { seuil: 20, montant: 1500 },
+    { seuil: 40, montant: 4000 },
+    { seuil: 100, montant: 10000 }
+  ];
 
-    // 📌 Récupérer nombre affiliés depuis localStorage
-    const nbreAffilie = parseInt(localStorage.getItem("nbreaffilie") || "0", 10);
-    document.getElementById("nbreAffiche").textContent = nbreAffilie;
+  // 📌 Charger l'utilisateur depuis localStorage
+  const userString = localStorage.getItem("user");
+  let nbreAffilie = 0;
+  let userId = null;
 
-    // 📌 Remplir le tableau des paliers
-    const table = document.getElementById("bonusTable");
-    let bonusTrouve = null;
-    bonusPaliers.forEach(palier => {
-      const row = document.createElement("tr");
-      if (nbreAffilie >= palier.seuil) {
-        bonusTrouve = palier; // on garde le dernier palier atteint
-        row.classList.add("highlight");
-      }
-      row.innerHTML = `<td>${palier.seuil}</td><td>${palier.montant} HTG</td>`;
-      table.appendChild(row);
-    });
-
-    // 📌 Mettre à jour le bonus disponible
-    if (bonusTrouve) {
-      document.getElementById("bonusMontant").textContent = bonusTrouve.montant + " HTG";
-      document.getElementById("btnBonus").disabled = false;
+  if (userString) {
+    try {
+      const user = JSON.parse(userString);
+      nbreAffilie = parseInt(user.nbreaffilie || "0", 10);
+      userId = user.id || null;
+    } catch (e) {
+      console.error("Erreur parsing user:", e);
     }
+  }
 
-    // 📌 Action du bouton : envoie la demande au backend
-    document.getElementById("btnBonus").addEventListener("click", async () => {
-      if (!bonusTrouve) return alert("Aucun bonus disponible");
+  document.getElementById("nbreAffiche").textContent = nbreAffilie;
 
-      const userId = localStorage.getItem("userId"); // identifiant unique affilié
-      if (!userId) return alert("Erreur: utilisateur non identifié");
+  // 📌 Remplir le tableau des paliers
+  const table = document.getElementById("bonusTable");
+  let bonusTrouve = null;
+  bonusPaliers.forEach(palier => {
+    const row = document.createElement("tr");
+    if (nbreAffilie >= palier.seuil) {
+      bonusTrouve = palier; // on garde le dernier palier atteint
+      row.classList.add("highlight");
+    }
+    row.innerHTML = `<td>${palier.seuil}</td><td>${palier.montant} HTG</td>`;
+    table.appendChild(row);
+  });
 
-      try {
-        const res = await fetch("https://script.google.com/macros/s/TON_SCRIPT_ID/exec", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "bonus",
-            userId: userId,
-            montant: bonusTrouve.montant
-          })
-        });
+  // 📌 Mettre à jour le bonus disponible
+  if (bonusTrouve) {
+    document.getElementById("bonusMontant").textContent = bonusTrouve.montant + " HTG";
+    document.getElementById("btnBonus").disabled = false;
+  }
 
-        const data = await res.json();
-        if (data.status === "success") {
-          alert("🎉 Bonus de " + bonusTrouve.montant + " HTG crédité sur ton compte !");
-        } else {
-          alert("Erreur: " + data.message);
-        }
-      } catch (err) {
-        alert("Erreur réseau: " + err.message);
+  // 📌 Action du bouton : envoie la demande au backend
+  document.getElementById("btnBonus").addEventListener("click", async () => {
+    if (!bonusTrouve) return alert("Aucun bonus disponible");
+
+    if (!userId) return alert("Erreur: utilisateur non identifié");
+
+    try {
+      const res = await fetch("https://script.google.com/macros/s/TON_SCRIPT_ID/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "bonus",
+          userId: userId,
+          montant: bonusTrouve.montant
+        })
+      });
+
+      const data = await res.json();
+      if (data.status === "success") {
+        alert("🎉 Bonus de " + bonusTrouve.montant + " HTG crédité sur ton compte !");
+      } else {
+        alert("Erreur: " + data.message);
       }
-    });
+    } catch (err) {
+      alert("Erreur réseau: " + err.message);
+    }
+  });
+
+
   </script>
 </body>
 </html>
