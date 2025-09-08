@@ -1,129 +1,79 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bonus d'Affiliation</title>
-    <style>
-        body { font-family: sans-serif; text-align: center; margin-top: 50px; }
-        .bonus-container { max-width: 400px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
-        #claimBonusBtn { padding: 10px 20px; font-size: 16px; cursor: pointer; margin-top: 20px; }
-        .hidden { display: none; }
-        .bonus-list { list-style-type: none; padding: 0; }
-        .bonus-item { margin-bottom: 10px; padding: 10px; border: 1px solid #eee; border-radius: 5px; }
-        .bonus-item.reached { background-color: #d4edda; color: #155724; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Réclamer Bonus</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f7f9fc; padding:20px; }
+    .card { background:white; padding:20px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.1); max-width:400px; margin:auto; }
+    h2 { color:#333; }
+    p { font-size:16px; }
+    button { padding:10px 20px; border:none; border-radius:8px; background:#28a745; color:white; cursor:pointer; font-size:16px; }
+    button:disabled { background:gray; cursor:not-allowed; }
+  </style>
 </head>
 <body>
+  <div class="card">
+    <h2>🎁 Bonus Affilié</h2>
+    <p>Nombre d’affiliés : <span id="nbreAffiche">0</span></p>
+    <p>Bonus disponible : <span id="bonusMontant">Aucun</span></p>
+    <button id="btnBonus" disabled>Réclamer mon bonus</button>
+  </div>
 
-    <div class="bonus-container">
-        <h2>Votre Bonus d'Affiliation</h2>
-        <p>Votre nombre d'affiliés: <strong id="nbreAffilie">0</strong></p>
-        
-        <h3>Objectifs de Bonus</h3>
-        <ul id="bonusList" class="bonus-list"></ul>
-        
-        <button id="claimBonusBtn" class="hidden">Réclamer un Bonus Disponible</button>
-        <p id="bonusMessage"></p>
-    </div>
+  <script>
+    // 🎯 Grille des bonus
+    const bonusPaliers = [
+      { seuil: 5, montant: 250 },
+      { seuil: 10, montant: 600 },
+      { seuil: 20, montant: 1500 },
+      { seuil: 40, montant: 4000 },
+      { seuil: 100, montant: 10000 }
+    ];
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const userString = localStorage.getItem('user');
-            if (!userString) {
-                alert("Utilisateur non connecté.");
-                window.location.href = 'index.html';
-                return;
-            }
+    // 📌 Récupérer nombre affiliés depuis localStorage
+    const nbreAffilie = parseInt(localStorage.getItem("nbreaffilie")) || 0;
+    document.getElementById("nbreAffiche").textContent = nbreAffilie;
 
-            const user = JSON.parse(userString);
-            
-            // Tableau des objectifs de bonus
-            const bonusObjectives = [
-                { id: 1, affiliates: 5, amount: 250 },
-                { id: 2, affiliates: 10, amount: 750 },
-                { id: 3, affiliates: 20, amount: 1500 },
-                { id: 4, affiliates: 50, amount: 5000 },
-                { id: 5, affiliates: 100, amount: 10000 }
-            ];
+    // 📌 Vérifier quel bonus correspond
+    let bonusTrouve = null;
+    for (let palier of bonusPaliers) {
+      if (nbreAffilie >= palier.seuil) {
+        bonusTrouve = palier;
+      }
+    }
 
-            const nbreAffilieElement = document.getElementById('nbreAffilie');
-            const bonusListElement = document.getElementById('bonusList');
-            const claimBonusBtn = document.getElementById('claimBonusBtn');
-            
-            // Afficher le nombre d'affiliés actuel
-            nbreAffilieElement.textContent = user.nbreaffilie || 0;
+    if (bonusTrouve) {
+      document.getElementById("bonusMontant").textContent = bonusTrouve.montant + " HTG";
+      document.getElementById("btnBonus").disabled = false;
+    }
 
-            // Afficher la liste des objectifs
-            let bonusAvailable = false;
-            let firstUnclaimedBonus = null;
+    // 📌 Action du bouton : envoie la demande au backend
+    document.getElementById("btnBonus").addEventListener("click", async () => {
+      if (!bonusTrouve) return alert("Aucun bonus disponible");
 
-            bonusObjectives.forEach(obj => {
-                const li = document.createElement('li');
-                li.className = 'bonus-item';
-                li.textContent = `${obj.affiliates} affiliés: ${obj.amount} Gdes`;
-                
-                // Si l'utilisateur a atteint cet objectif
-                if (user.nbreaffilie >= obj.affiliates) {
-                    li.classList.add('reached');
-                    // Vérifier si le bonus a déjà été réclamé
-                    if (!user.claimedBonuses || !user.claimedBonuses.includes(obj.id)) {
-                        bonusAvailable = true;
-                        if (!firstUnclaimedBonus) {
-                            firstUnclaimedBonus = obj;
-                        }
-                    }
-                }
-                bonusListElement.appendChild(li);
-            });
+      const userId = localStorage.getItem("userId"); // identifiant unique affilié
+      if (!userId) return alert("Erreur: utilisateur non identifié");
 
-            // Afficher le bouton si un bonus est disponible
-            if (bonusAvailable) {
-                claimBonusBtn.classList.remove('hidden');
-                document.getElementById('bonusMessage').textContent = `Bonus disponible: ${firstUnclaimedBonus.amount} Gdes pour ${firstUnclaimedBonus.affiliates} affiliés.`;
-            } else {
-                document.getElementById('bonusMessage').textContent = `Continuez pour votre prochain bonus !`;
-            }
-
-            claimBonusBtn.addEventListener('click', async () => {
-                if (!firstUnclaimedBonus) return;
-
-                // L'URL de votre nouvelle fonction Apps Script pour les bonus
-                const bonusUrl = 'https://bonus.mijocomplexe.workers.dev/';
-
-                try {
-                    const response = await fetch(bonusUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ 
-                            userId: user.userId, 
-                            bonusId: firstUnclaimedBonus.id, 
-                            bonusAmount: firstUnclaimedBonus.amount 
-                        })
-                    });
-                    
-                    const result = await response.json();
-
-                    if (result.success) {
-                        // Mettre à jour les données utilisateur
-                        user.Solde = result.nouveauSolde;
-                        user.claimedBonuses = user.claimedBonuses || [];
-                        user.claimedBonuses.push(firstUnclaimedBonus.id);
-                        localStorage.setItem('user', JSON.stringify(user));
-
-                        alert(result.message || "Bonus réclamé avec succès !");
-                        window.location.reload();
-                    } else {
-                        alert(result.error || "Échec de la réclamation du bonus.");
-                    }
-                } catch (error) {
-                    alert("Erreur de connexion lors de la réclamation du bonus.");
-                    console.error(error);
-                }
-            });
+      try {
+        const res = await fetch("https://script.google.com/macros/s/TON_SCRIPT_ID/exec", {
+          method: "POST",
+          body: JSON.stringify({
+            action: "bonus",
+            userId: userId,
+            montant: bonusTrouve.montant
+          })
         });
-    </script>
+
+        const data = await res.json();
+        if (data.status === "success") {
+          alert("🎉 Bonus de " + bonusTrouve.montant + " HTG crédité sur ton compte !");
+        } else {
+          alert("Erreur: " + data.message);
+        }
+      } catch (err) {
+        alert("Erreur réseau: " + err.message);
+      }
+    });
+  </script>
 </body>
 </html>
