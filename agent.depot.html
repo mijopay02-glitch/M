@@ -31,7 +31,7 @@
         
         <div class="agent-info">
             <p>Connecté en tant que : <span id="agent-name"></span></p>
-            <p>Solde de votre compte : <span id="agent-solde"></span> USD</p>
+            <p>Solde de votre compte : <span id="agent-solde"></span> Gourdes</p>
         </div>
 
         <form id="depot-form">
@@ -49,7 +49,7 @@
         </form>
 
         <div class="confirmation-box" id="confirmation-box">
-            <p>Voulez-vous faire un dépôt de <span id="montant-confirm"></span> USD à :</p>
+            <p>Voulez-vous faire un dépôt de <span id="montant-confirm"></span> Gourdes à :</p>
             <p><strong id="client-name-confirm"></strong></p>
             <div class="confirmation-buttons">
                 <button id="confirm-yes-btn" class="action-button">Oui, confirmer</button>
@@ -71,34 +71,24 @@
         const montantConfirmSpan = document.getElementById('montant-confirm');
         const statusMessage = document.getElementById('status-message');
 
-        const API_URL = 'https://agentdepot.mijocomplexe.workers.dev/'; // << REMPLACER AVEC L'URL RÉELLE >>
+        const API_URL = 'https://agentdepot.mijocomplexe.workers.dev/';
 
-        const user = JSON.parse(localStorage.getItem('user'));
+        let user = JSON.parse(localStorage.getItem('user'));
         let clientRecordId = null;
 
-        // Fonction pour récupérer le solde de l'agent
-        async function fetchAgentData() {
-            if (!user || !user.numero) {
-                window.location.href = 'agent.html';
-                return;
+        // Fonction pour afficher le solde de l'agent
+        function displayAgentData() {
+            if (user && user.solde) {
+                agentNameSpan.textContent = user.nom;
+                agentSoldeSpan.textContent = user.solde.toFixed(2);
+                statusMessage.textContent = "";
+            } else {
+                // Rediriger si l'utilisateur n'est pas connecté ou les données manquent
+                window.location.href = 'index.html'; 
             }
-            agentNameSpan.textContent = user.nom;
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'getAgentSolde', agentId: user.id })
-                });
-                const result = await response.json();
-                if (result.status === "success") {
-                    agentSoldeSpan.textContent = result.solde.toFixed(2);
-                } else {
-                    agentSoldeSpan.textContent = "Erreur";
-                    statusMessage.textContent = "Erreur de solde agent."; statusMessage.style.color = "red";
-                }
-            } catch (error) { agentSoldeSpan.textContent = "Erreur"; statusMessage.textContent = "Erreur de connexion à l'API."; statusMessage.style.color = "red"; }
         }
         
-        fetchAgentData();
+        displayAgentData(); // Afficher les données de l'agent au chargement de la page
 
         // Étape 1 : Recherche du client avec spinner
         searchBtn.addEventListener('click', async function() {
@@ -110,7 +100,7 @@
                 statusMessage.style.color = "red";
                 return;
             }
-            if (montant > parseFloat(agentSoldeSpan.textContent)) {
+            if (montant > parseFloat(user.solde)) {
                 statusMessage.textContent = "Solde de l'agent insuffisant pour ce dépôt.";
                 statusMessage.style.color = "red";
                 return;
@@ -122,9 +112,15 @@
 
             try {
                 const response = await fetch(API_URL, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'rechercherClient', numeroCarte: numeroCarte })
                 });
+
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+
                 const result = await response.json();
 
                 if (result.status === "success") {
@@ -138,7 +134,8 @@
                     statusMessage.style.color = "red";
                 }
             } catch (error) {
-                statusMessage.textContent = "Erreur de connexion au serveur.";
+                console.error('Erreur de recherche:', error);
+                statusMessage.textContent = `Erreur de connexion au serveur. ${error.message}`;
                 statusMessage.style.color = "red";
             } finally {
                 searchSpinner.style.display = 'none';
@@ -155,22 +152,36 @@
 
             try {
                 const response = await fetch(API_URL, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'depot', agentId: user.id, clientId: clientRecordId, montant: montant })
                 });
+
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    statusMessage.textContent = `Dépôt de ${montant} USD réussi.`;
+                    // Mettre à jour le solde dans localStorage et sur la page
+                    user.solde = user.solde - montant;
+                    localStorage.setItem('user', JSON.stringify(user));
+                    displayAgentData();
+
+                    statusMessage.textContent = `Dépôt de ${montant} Gourdes réussi.`;
                     statusMessage.style.color = "green";
                     form.reset();
                     clientRecordId = null;
-                    fetchAgentData();
                 } else {
                     statusMessage.textContent = `Erreur : ${result.message}`;
                     statusMessage.style.color = "red";
                 }
-            } catch (error) { statusMessage.textContent = "Erreur de connexion au serveur."; statusMessage.style.color = "red"; }
+            } catch (error) {
+                console.error('Erreur de dépôt:', error);
+                statusMessage.textContent = `Erreur de connexion au serveur. ${error.message}`;
+                statusMessage.style.color = "red";
+            }
         });
 
         // Bouton d'annulation
