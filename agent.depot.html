@@ -6,139 +6,178 @@
     <title>Dépôt Agent MIJO</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        .form-container { background-color: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); text-align: center; width: 90%; max-width: 400px; }
+        .container { background-color: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); text-align: center; width: 90%; max-width: 500px; }
         h1 { color: #333; }
+        .agent-info { font-size: 1.2em; margin-bottom: 20px; }
+        #agent-solde { font-weight: bold; color: #28a745; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
         .form-group input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
         .action-button { width: 100%; padding: 15px; font-size: 1em; color: #fff; background-color: #007BFF; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease; }
         .action-button:hover { background-color: #0056b3; }
         #status-message { margin-top: 20px; font-weight: bold; }
-        #user-info { margin-top: 15px; font-size: 1.1em; font-weight: bold; color: #28a745; display: none; }
-        #confirm-btn { background-color: #28a745; }
-        #confirm-btn:hover { background-color: #218838; }
+        /* Style pour le spinner */
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 24px; height: 24px; animation: spin 2s linear infinite; display: none; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Style pour la confirmation */
+        .confirmation-box { display: none; margin-top: 20px; border: 1px solid #ddd; padding: 15px; border-radius: 5px; background-color: #f9f9f9; }
+        .confirmation-box p { margin: 0 0 10px; }
+        .confirmation-buttons button { padding: 10px; margin: 0 5px; }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h1>Dépôt d'argent</h1>
+    <div class="container">
+        <h1>Dépôt Agent MIJO</h1>
+        
+        <div class="agent-info">
+            <p>Connecté en tant que : <span id="agent-name"></span></p>
+            <p>Solde de votre compte : <span id="agent-solde"></span> USD</p>
+        </div>
+
         <form id="depot-form">
             <div class="form-group">
-                <label for="numero-carte">Numéro de Carte du client</label>
+                <label for="numero-carte">Numéro de carte du client</label>
                 <input type="text" id="numero-carte" required>
             </div>
             <div class="form-group">
                 <label for="montant">Montant à déposer</label>
                 <input type="number" id="montant" required>
             </div>
+            <div class="loader" id="search-spinner"></div>
             <button type="button" id="search-btn" class="action-button">Rechercher le client</button>
-            
-            <div id="user-info" style="display: none;">
-                <p>Nom du client : <span id="client-name"></span></p>
-                <button type="submit" id="confirm-btn" class="action-button" style="margin-top: 15px;">Confirmer le dépôt</button>
-            </div>
+            <div id="status-message"></div>
         </form>
-        <div id="status-message"></div>
+
+        <div class="confirmation-box" id="confirmation-box">
+            <p>Voulez-vous faire un dépôt de <span id="montant-confirm"></span> USD à :</p>
+            <p><strong id="client-name-confirm"></strong></p>
+            <div class="confirmation-buttons">
+                <button id="confirm-yes-btn" class="action-button">Oui, confirmer</button>
+                <button id="confirm-no-btn" class="action-button" style="background-color: #dc3545;">Non, annuler</button>
+            </div>
+        </div>
     </div>
 
     <script>
         const form = document.getElementById('depot-form');
         const searchBtn = document.getElementById('search-btn');
-        const confirmBtn = document.getElementById('confirm-btn');
-        const userInfoDiv = document.getElementById('user-info');
-        const clientNameSpan = document.getElementById('client-name');
+        const searchSpinner = document.getElementById('search-spinner');
+        const confirmBox = document.getElementById('confirmation-box');
+        const confirmYesBtn = document.getElementById('confirm-yes-btn');
+        const confirmNoBtn = document.getElementById('confirm-no-btn');
+        const agentNameSpan = document.getElementById('agent-name');
+        const agentSoldeSpan = document.getElementById('agent-solde');
+        const clientNameConfirmSpan = document.getElementById('client-name-confirm');
+        const montantConfirmSpan = document.getElementById('montant-confirm');
         const statusMessage = document.getElementById('status-message');
 
+        const API_URL = 'URL_DE_VOTRE_API_GOOGLE_APPS_SCRIPT'; // << REMPLACER AVEC L'URL RÉELLE >>
+
         const user = JSON.parse(localStorage.getItem('user'));
-        if (!user || !user.numero) {
-            window.location.href = 'agent.html';
+        let clientRecordId = null;
+
+        // Fonction pour récupérer le solde de l'agent
+        async function fetchAgentData() {
+            if (!user || !user.numero) {
+                window.location.href = 'agent.html';
+                return;
+            }
+            agentNameSpan.textContent = user.nom;
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'getAgentSolde', agentId: user.id })
+                });
+                const result = await response.json();
+                if (result.status === "success") {
+                    agentSoldeSpan.textContent = result.solde.toFixed(2);
+                } else {
+                    agentSoldeSpan.textContent = "Erreur";
+                    statusMessage.textContent = "Erreur de solde agent."; statusMessage.style.color = "red";
+                }
+            } catch (error) { agentSoldeSpan.textContent = "Erreur"; statusMessage.textContent = "Erreur de connexion à l'API."; statusMessage.style.color = "red"; }
         }
+        
+        fetchAgentData();
 
-        let clientRecordId = null; // Variable pour stocker l'ID du client
-
+        // Étape 1 : Recherche du client avec spinner
         searchBtn.addEventListener('click', async function() {
             const numeroCarte = document.getElementById('numero-carte').value;
-            if (!numeroCarte) {
-                statusMessage.textContent = "Veuillez entrer un numéro de carte.";
+            const montant = parseFloat(document.getElementById('montant').value);
+
+            if (!numeroCarte || isNaN(montant) || montant <= 0) {
+                statusMessage.textContent = "Veuillez remplir tous les champs correctement.";
+                statusMessage.style.color = "red";
+                return;
+            }
+            if (montant > parseFloat(agentSoldeSpan.textContent)) {
+                statusMessage.textContent = "Solde de l'agent insuffisant pour ce dépôt.";
                 statusMessage.style.color = "red";
                 return;
             }
 
-            statusMessage.textContent = "Recherche en cours...";
-            statusMessage.style.color = "blue";
-            userInfoDiv.style.display = 'none';
+            statusMessage.textContent = "";
+            searchBtn.style.display = 'none';
+            searchSpinner.style.display = 'block';
 
             try {
-                const response = await fetch('URL_DE_VOTRE_API_DE_RECHERCHE_CLIENT', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                const response = await fetch(API_URL, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'rechercherClient', numeroCarte: numeroCarte })
                 });
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    clientNameSpan.textContent = result.client.nomUtilisateur;
-                    userInfoDiv.style.display = 'block';
-                    clientRecordId = result.client.id; // Stocker l'ID pour la confirmation
-                    statusMessage.textContent = "Client trouvé. Veuillez confirmer le nom.";
-                    statusMessage.style.color = "green";
+                    clientRecordId = result.client.id;
+                    clientNameConfirmSpan.textContent = result.client.nomUtilisateur;
+                    montantConfirmSpan.textContent = montant;
+                    confirmBox.style.display = 'block';
+                    statusMessage.textContent = "";
                 } else {
                     statusMessage.textContent = `Erreur : ${result.message}`;
                     statusMessage.style.color = "red";
-                    userInfoDiv.style.display = 'none';
                 }
             } catch (error) {
                 statusMessage.textContent = "Erreur de connexion au serveur.";
                 statusMessage.style.color = "red";
+            } finally {
+                searchSpinner.style.display = 'none';
+                searchBtn.style.display = 'block';
             }
         });
 
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault();
+        // Étape 2 : Confirmer la transaction (dépôt)
+        confirmYesBtn.addEventListener('click', async function() {
             const montant = parseFloat(document.getElementById('montant').value);
-
-            if (!clientRecordId) {
-                statusMessage.textContent = "Veuillez d'abord rechercher et confirmer le client.";
-                statusMessage.style.color = "red";
-                return;
-            }
-
-            if (isNaN(montant) || montant <= 0) {
-                statusMessage.textContent = "Veuillez entrer un montant valide.";
-                statusMessage.style.color = "red";
-                return;
-            }
-
             statusMessage.textContent = "Traitement du dépôt en cours...";
             statusMessage.style.color = "blue";
+            confirmBox.style.display = 'none';
 
             try {
-                const response = await fetch('URL_DE_VOTRE_API_DE_DÉPÔT', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'depot',
-                        agentId: user.id,
-                        clientId: clientRecordId,
-                        montant: montant
-                    })
+                const response = await fetch(API_URL, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'depot', agentId: user.id, clientId: clientRecordId, montant: montant })
                 });
-
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    statusMessage.textContent = `Dépôt de ${montant} USD sur le compte de ${clientNameSpan.textContent} réussi.`;
+                    statusMessage.textContent = `Dépôt de ${montant} USD réussi.`;
                     statusMessage.style.color = "green";
                     form.reset();
-                    userInfoDiv.style.display = 'none';
+                    clientRecordId = null;
+                    fetchAgentData();
                 } else {
                     statusMessage.textContent = `Erreur : ${result.message}`;
                     statusMessage.style.color = "red";
                 }
-            } catch (error) {
-                statusMessage.textContent = "Erreur de connexion au serveur.";
-                statusMessage.style.color = "red";
-            }
+            } catch (error) { statusMessage.textContent = "Erreur de connexion au serveur."; statusMessage.style.color = "red"; }
+        });
+
+        // Bouton d'annulation
+        confirmNoBtn.addEventListener('click', function() {
+            confirmBox.style.display = 'none';
+            statusMessage.textContent = "Dépôt annulé.";
+            statusMessage.style.color = "red";
         });
     </script>
 </body>
