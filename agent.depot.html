@@ -100,7 +100,7 @@
                 statusMessage.style.color = "red";
                 return;
             }
-            if (montant > parseFloat(user.solde)) {
+            if (montant > parseFloat(user.Solde)) {
                 statusMessage.textContent = "Solde de l'agent insuffisant pour ce dépôt.";
                 statusMessage.style.color = "red";
                 return;
@@ -165,7 +165,7 @@
 
                 if (result.status === "success") {
                     // Mettre à jour le solde dans localStorage et sur la page
-                    user.solde = user.solde - montant;
+                    user.solde = user.Solde - montant;
                     localStorage.setItem('user', JSON.stringify(user));
                     displayAgentData();
 
