@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Agent MIJO</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .dashboard-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+        }
+        h1 {
+            color: #333;
+        }
+        p#agent-name {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .action-button {
+            padding: 15px;
+            font-size: 1em;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .action-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>Dashboard Agent MIJO</h1>
+        <p id="agent-name"></p>
+        <div class="button-group">
+            <button id="depot-btn" class="action-button">Dépôt</button>
+            <button id="retrait-btn" class="action-button">Retrait</button>
+            <button id="historique-btn" class="action-button">Historique des transactions</button>
+        </div>
+    </div>
+
+    <script>
+        // Récupérer les informations de l'agent en utilisant la clé 'user'
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        // Sécurité : Si l'utilisateur n'est pas connecté, le rediriger vers la page de login
+        if (!user || !user.nom) {
+            window.location.href = 'index.html'; // Redirige vers la page de login
+        } else {
+            // Afficher le nom de l'agent
+            document.getElementById('agent-name').textContent = `Bienvenue, ${user.nom}`;
+        }
+
+        // Ajouter des écouteurs d'événements pour la redirection
+        document.getElementById('depot-btn').addEventListener('click', function() {
+            window.location.href = 'agent.depot.html';
+        });
+
+        document.getElementById('retrait-btn').addEventListener('click', function() {
+            window.location.href = 'agent.retrait.html';
+        });
+
+        document.getElementById('historique-btn').addEventListener('click', function() {
+            window.location.href = 'agent.historique.html';
+        });
+    </script>
+</body>
+</html>
