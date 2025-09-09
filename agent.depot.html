@@ -78,9 +78,9 @@
 
         // Fonction pour afficher le solde de l'agent
         function displayAgentData() {
-            if (user && user.solde) {
+            if (user && user.Solde) {
                 agentNameSpan.textContent = user.nom;
-                agentSoldeSpan.textContent = user.solde.toFixed(2);
+                agentSoldeSpan.textContent = user.Solde.toFixed(2);
                 statusMessage.textContent = "";
             } else {
                 // Rediriger si l'utilisateur n'est pas connecté ou les données manquent
