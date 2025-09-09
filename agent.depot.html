@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dépôt Agent MIJO</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .form-container { background-color: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); text-align: center; width: 90%; max-width: 400px; }
+        h1 { color: #333; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
+        .form-group input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .action-button { width: 100%; padding: 15px; font-size: 1em; color: #fff; background-color: #007BFF; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease; }
+        .action-button:hover { background-color: #0056b3; }
+        #status-message { margin-top: 20px; font-weight: bold; }
+        #user-info { margin-top: 15px; font-size: 1.1em; font-weight: bold; color: #28a745; display: none; }
+        #confirm-btn { background-color: #28a745; }
+        #confirm-btn:hover { background-color: #218838; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Dépôt d'argent</h1>
+        <form id="depot-form">
+            <div class="form-group">
+                <label for="numero-carte">Numéro de Carte du client</label>
+                <input type="text" id="numero-carte" required>
+            </div>
+            <div class="form-group">
+                <label for="montant">Montant à déposer</label>
+                <input type="number" id="montant" required>
+            </div>
+            <button type="button" id="search-btn" class="action-button">Rechercher le client</button>
+            
+            <div id="user-info" style="display: none;">
+                <p>Nom du client : <span id="client-name"></span></p>
+                <button type="submit" id="confirm-btn" class="action-button" style="margin-top: 15px;">Confirmer le dépôt</button>
+            </div>
+        </form>
+        <div id="status-message"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('depot-form');
+        const searchBtn = document.getElementById('search-btn');
+        const confirmBtn = document.getElementById('confirm-btn');
+        const userInfoDiv = document.getElementById('user-info');
+        const clientNameSpan = document.getElementById('client-name');
+        const statusMessage = document.getElementById('status-message');
+
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || !user.numero) {
+            window.location.href = 'agent.html';
+        }
+
+        let clientRecordId = null; // Variable pour stocker l'ID du client
+
+        searchBtn.addEventListener('click', async function() {
+            const numeroCarte = document.getElementById('numero-carte').value;
+            if (!numeroCarte) {
+                statusMessage.textContent = "Veuillez entrer un numéro de carte.";
+                statusMessage.style.color = "red";
+                return;
+            }
+
+            statusMessage.textContent = "Recherche en cours...";
+            statusMessage.style.color = "blue";
+            userInfoDiv.style.display = 'none';
+
+            try {
+                const response = await fetch('URL_DE_VOTRE_API_DE_RECHERCHE_CLIENT', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'rechercherClient', numeroCarte: numeroCarte })
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    clientNameSpan.textContent = result.client.nomUtilisateur;
+                    userInfoDiv.style.display = 'block';
+                    clientRecordId = result.client.id; // Stocker l'ID pour la confirmation
+                    statusMessage.textContent = "Client trouvé. Veuillez confirmer le nom.";
+                    statusMessage.style.color = "green";
+                } else {
+                    statusMessage.textContent = `Erreur : ${result.message}`;
+                    statusMessage.style.color = "red";
+                    userInfoDiv.style.display = 'none';
+                }
+            } catch (error) {
+                statusMessage.textContent = "Erreur de connexion au serveur.";
+                statusMessage.style.color = "red";
+            }
+        });
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const montant = parseFloat(document.getElementById('montant').value);
+
+            if (!clientRecordId) {
+                statusMessage.textContent = "Veuillez d'abord rechercher et confirmer le client.";
+                statusMessage.style.color = "red";
+                return;
+            }
+
+            if (isNaN(montant) || montant <= 0) {
+                statusMessage.textContent = "Veuillez entrer un montant valide.";
+                statusMessage.style.color = "red";
+                return;
+            }
+
+            statusMessage.textContent = "Traitement du dépôt en cours...";
+            statusMessage.style.color = "blue";
+
+            try {
+                const response = await fetch('URL_DE_VOTRE_API_DE_DÉPÔT', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'depot',
+                        agentId: user.id,
+                        clientId: clientRecordId,
+                        montant: montant
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    statusMessage.textContent = `Dépôt de ${montant} USD sur le compte de ${clientNameSpan.textContent} réussi.`;
+                    statusMessage.style.color = "green";
+                    form.reset();
+                    userInfoDiv.style.display = 'none';
+                } else {
+                    statusMessage.textContent = `Erreur : ${result.message}`;
+                    statusMessage.style.color = "red";
+                }
+            } catch (error) {
+                statusMessage.textContent = "Erreur de connexion au serveur.";
+                statusMessage.style.color = "red";
+            }
+        });
+    </script>
+</body>
+</html>
