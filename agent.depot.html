@@ -165,7 +165,7 @@
 
                 if (result.status === "success") {
                     // Mettre à jour le solde dans localStorage et sur la page
-                    user.solde = user.Solde - montant;
+                    user.Solde = user.Solde - montant;
                     localStorage.setItem('user', JSON.stringify(user));
                     displayAgentData();
 
