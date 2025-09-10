@@ -165,9 +165,9 @@
 
                 if (result.status === "success") {
                     // Mettre à jour le solde dans localStorage et sur la page
-                    user.Solde = user.Solde - montant;
-                    localStorage.setItem('user', JSON.stringify(user));
-                    displayAgentData();
+                    user.Solde = result.newAgentSolde;
+    localStorage.setItem('user', JSON.stringify(user));
+    displayAgentData();
 
                     statusMessage.textContent = `Dépôt de ${montant} Gourdes réussi.`;
                     statusMessage.style.color = "green";
