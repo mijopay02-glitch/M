@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIJO - Toutes les transactions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --text-color: #333;
+            --light-text-color: #999;
+            --bg-color: #f0f2f5;
+            --card-bg: #fff;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .container {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .transaction-item {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .transaction-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .transaction-type {
+            font-weight: 600;
+        }
+        
+        .transaction-date {
+            font-size: 0.8em;
+            color: var(--light-text-color);
+        }
+        
+        .transaction-agent {
+            font-size: 0.9em;
+            color: var(--light-text-color);
+            margin-top: 5px;
+        }
+        
+        .transaction-amount {
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        .no-transactions {
+            text-align: center;
+            color: var(--light-text-color);
+            margin-top: 50px;
+        }
+        
+        #clearAllHistoryBtn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>Toutes les transactions</h2>
+        <button id="clearAllHistoryBtn" title="Effacer tout l'historique">&#x2716;</button>
+    </div>
+
+    <div class="container">
+        <div id="transactionList" class="transaction-list">
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const transactionList = document.getElementById('transactionList');
+            const clearAllBtn = document.getElementById('clearAllHistoryBtn');
+            const historyKey = 'all_transactions';
+
+            function renderTransactions() {
+                const transactions = JSON.parse(localStorage.getItem(historyKey)) || [];
+                transactionList.innerHTML = '';
+
+                if (transactions.length > 0) {
+                    transactions.reverse().forEach(transaction => {
+                        const item = document.createElement('div');
+                        item.classList.add('transaction-item');
+
+                        const details = document.createElement('div');
+                        details.classList.add('transaction-details');
+
+                        const typeAndRecipient = document.createElement('span');
+                        typeAndRecipient.classList.add('transaction-type');
+                        typeAndRecipient.innerText = `${transaction.type} à ${transaction.recipient}`;
+                        
+                        const agent = document.createElement('span');
+                        agent.classList.add('transaction-agent');
+                        agent.innerText = `Agent: ${transaction.agentName}`;
+
+                        const date = document.createElement('span');
+                        date.classList.add('transaction-date');
+                        date.innerText = transaction.date;
+
+                        details.appendChild(typeAndRecipient);
+                        details.appendChild(agent);
+                        details.appendChild(date);
+                        
+                        const amount = document.createElement('span');
+                        amount.classList.add('transaction-amount');
+                        amount.innerText = `${transaction.montant} G`;
+
+                        item.appendChild(details);
+                        item.appendChild(amount);
+
+                        transactionList.appendChild(item);
+                    });
+                } else {
+                    transactionList.innerHTML = '<p class="no-transactions">Aucune transaction globale.</p>';
+                }
+            }
+            
+            renderTransactions();
+
+            clearAllBtn.addEventListener('click', () => {
+                const confirmation = confirm("Êtes-vous sûr de vouloir effacer tout l'historique global des transactions ?");
+                if (confirmation) {
+                    localStorage.removeItem(historyKey);
+                    renderTransactions();
+                    alert("Historique global des transactions effacé.");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
