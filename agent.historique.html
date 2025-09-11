@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent MIJO - Historique</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --text-color: #333;
+            --light-text-color: #999;
+            --bg-color: #f0f2f5;
+            --card-bg: #fff;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            position: relative; /* Pour positionner le bouton de suppression */
+        }
+
+        .container {
+            flex-grow: 1;
+            padding: 20px;
+            margin-bottom: 70px;
+        }
+        
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .transaction-item {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .transaction-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .transaction-type {
+            font-weight: 600;
+        }
+        
+        .transaction-date {
+            font-size: 0.8em;
+            color: var(--light-text-color);
+        }
+        
+        .transaction-amount {
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        .status-success {
+            color: green;
+        }
+        
+        .status-failed {
+            color: red;
+        }
+
+        .no-transactions {
+            text-align: center;
+            color: var(--light-text-color);
+            margin-top: 50px;
+        }
+        
+        /* Menu de pied de page dupliqué pour la cohérence */
+        .footer-menu {
+            background-color: var(--card-bg);
+            border-top: 1px solid #ddd;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .menu-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--light-text-color);
+            font-size: 0.7em;
+            text-decoration: none;
+            flex: 1;
+            padding: 5px 0;
+        }
+
+        .menu-btn.active {
+            color: var(--primary-color);
+        }
+
+        .menu-btn .icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+        #clearHistoryBtn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>Historique des transactions</h2>
+        <button id="clearHistoryBtn" title="Effacer l'historique">&#x2716;</button>
+    </div>
+
+    <div class="container">
+        <div id="transactionList" class="transaction-list">
+        </div>
+    </div>
+
+    <nav class="footer-menu">
+        <a href="agent.html" class="menu-btn">
+            <span class="icon">🏠</span>
+            <span>Accueil</span>
+        </a>
+        <a href="#" class="menu-btn active">
+            <span class="icon">📜</span>
+            <span>Historique</span>
+        </a>
+        <a href="agent.depot.html" class="menu-btn">
+            <span class="icon">➕</span>
+            <span>Dépôt</span>
+        </a>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const transactionList = document.getElementById('transactionList');
+            const clearBtn = document.getElementById('clearHistoryBtn');
+            
+            // Récupère les données de l'agent depuis le localStorage
+            const user = JSON.parse(localStorage.getItem('user'));
+            
+            if (!user || !user.id) {
+                transactionList.innerHTML = '<p class="no-transactions">Veuillez vous connecter pour voir l\'historique.</p>';
+                return;
+            }
+
+            // Clé de stockage spécifique à l'agent
+            const historyKey = `transactions_${user.id}`;
+
+            function renderTransactions() {
+                const transactions = JSON.parse(localStorage.getItem(historyKey)) || [];
+                transactionList.innerHTML = ''; // Efface la liste actuelle
+
+                if (transactions.length > 0) {
+                    transactions.reverse().forEach(transaction => {
+                        const item = document.createElement('div');
+                        item.classList.add('transaction-item');
+
+                        const details = document.createElement('div');
+                        details.classList.add('transaction-details');
+
+                        // Ligne 1: Type et destinataire
+                        const typeAndRecipient = document.createElement('span');
+                        typeAndRecipient.classList.add('transaction-type');
+                        typeAndRecipient.innerText = `${transaction.type} à ${transaction.recipient}`;
+                        
+                        // Ligne 2: Date
+                        const date = document.createElement('span');
+                        date.classList.add('transaction-date');
+                        date.innerText = transaction.date;
+
+                        details.appendChild(typeAndRecipient);
+                        details.appendChild(date);
+                        
+                        const amount = document.createElement('span');
+                        amount.classList.add('transaction-amount');
+                        amount.innerText = `${transaction.montant} G`;
+
+                        item.appendChild(details);
+                        item.appendChild(amount);
+
+                        transactionList.appendChild(item);
+                    });
+                } else {
+                    transactionList.innerHTML = '<p class="no-transactions">Aucune transaction.</p>';
+                }
+            }
+            
+            renderTransactions(); // Affiche les transactions au chargement de la page
+
+            // Événement au clic du bouton de suppression
+            clearBtn.addEventListener('click', () => {
+                const confirmation = confirm("Êtes-vous sûr de vouloir effacer tout l'historique des transactions ?");
+                if (confirmation) {
+                    localStorage.removeItem(historyKey);
+                    renderTransactions(); // Met à jour l'affichage immédiatement
+                    alert("Historique des transactions effacé.");
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
