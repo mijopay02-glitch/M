@@ -2,10 +2,10 @@
 <html lang="fr">
 <head>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3573655486794825"
-     crossorigin="anonymous"></script>
+      crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retrai MIJO PAY</title>
+    <title>Retrait MIJO PAY</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -39,19 +39,22 @@
             color: #007BFF;
         }
         .deposit-method a {
-    text-decoration: none; /* Enlève la ligne sous le texte du lien */
-    color: #333; /* Définit la couleur du texte */
-    font-weight: bold; /* Donne un peu de gras au texte */
-}
+            text-decoration: none; /* Enlève la ligne sous le texte du lien */
+            color: #333; /* Définit la couleur du texte */
+            font-weight: bold; /* Donne un peu de gras au texte */
+            display: block; /* S'assure que le lien couvre toute la zone du div */
+        }
     </style>
 </head>
 <body>
 
     <h1>Retrait MIJO PAY</h1>
 
+    <span>Retrait</span>
     <div id="agentDeposit" class="deposit-method">
-        Retrait par Agent MIJO PAY
-        <div id="agentCode" class="code"></div>
+        <a href="retrait.html">
+            Retrait par Agent MIJO PAY
+        </a>
     </div>
 
     <div id="whatsappDeposit" class="deposit-method">
@@ -59,10 +62,10 @@
     </div>
 
     <div id="moncashDeposit" class="deposit-method">
-    <a href="#" onclick="alert('Le retrait MonCash n’est pas disponible actuellement. Veuillez utiliser une autre méthode.'); return false;">
-        Retrait par MonCash
-    </a>
-</div>
+        <a href="#" onclick="alert('Le retrait MonCash n’est pas disponible actuellement. Veuillez utiliser une autre méthode.'); return false;">
+            Retrait par MonCash
+        </a>
+    </div>
     <script>
         
         // Dépôt par WhatsApp
@@ -74,7 +77,7 @@
             });
         }
         
-       
+        
     </script>
 
 </body>
