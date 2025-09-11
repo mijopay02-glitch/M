@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retrait Agent MIJO</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .container { background-color: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); text-align: center; width: 90%; max-width: 500px; }
+        h1 { color: #333; }
+        .agent-info { font-size: 1.2em; margin-bottom: 20px; }
+        #agent-solde { font-weight: bold; color: #28a745; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
+        .form-group input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .action-button { width: 100%; padding: 15px; font-size: 1em; color: #fff; background-color: #007BFF; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease; }
+        .action-button:hover { background-color: #0056b3; }
+        #status-message { margin-top: 20px; font-weight: bold; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 24px; height: 24px; animation: spin 2s linear infinite; display: none; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .transaction-details { display: none; margin-top: 20px; border: 1px solid #ddd; padding: 15px; border-radius: 5px; background-color: #f9f9f9; }
+        .transaction-details p { margin: 0 0 10px; }
+        .transaction-details strong { color: #333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Retrait Agent MIJO</h1>
+        <div class="agent-info">
+            <p>Connecté en tant que : <span id="agent-name"></span></p>
+            <p>Solde de votre compte : <span id="agent-solde"></span> Gourdes</p>
+        </div>
+        <form id="retrait-form">
+            <div class="form-group">
+                <label for="transaction-code">Code de retrait du client</label>
+                <input type="text" id="transaction-code" required>
+            </div>
+            <button type="submit" class="action-button">Valider le code</button>
+            <div class="loader" id="loader"></div>
+            <div id="status-message"></div>
+        </form>
+
+        <div class="transaction-details" id="transaction-details-box">
+            <h3>Détails du retrait</h3>
+            <p>Montant: <strong id="montant-info"></strong> Gourdes</p>
+            <p>Client: <strong id="client-name-info"></strong></p>
+            <button id="confirm-retrait-btn" class="action-button" style="margin-top: 15px;">Confirmer et Débourser</button>
+        </div>
+    </div>
+    <script>
+        const form = document.getElementById('retrait-form');
+        const loader = document.getElementById('loader');
+        const statusMessage = document.getElementById('status-message');
+        const detailsBox = document.getElementById('transaction-details-box');
+        const montantInfoSpan = document.getElementById('montant-info');
+        const clientNameInfoSpan = document.getElementById('client-name-info');
+        const confirmRetraitBtn = document.getElementById('confirm-retrait-btn');
+        const agentNameSpan = document.getElementById('agent-name');
+        const agentSoldeSpan = document.getElementById('agent-solde');
+
+        const API_URL = 'https://agentdepot.mijocomplexe.workers.dev/';
+        let user = JSON.parse(localStorage.getItem('user'));
+        let transactionData = {};
+
+        function displayAgentData() {
+            if (user && user.Solde) {
+                agentNameSpan.textContent = user.nom;
+                agentSoldeSpan.textContent = user.Solde.toFixed(2);
+                statusMessage.textContent = "";
+            } else {
+                window.location.href = 'agent.html';
+            }
+        }
+        displayAgentData();
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const transactionCode = document.getElementById('transaction-code').value;
+
+            if (!transactionCode) {
+                statusMessage.textContent = "Veuillez entrer un code de transaction.";
+                statusMessage.style.color = "red";
+                return;
+            }
+
+            statusMessage.textContent = "Vérification du code en cours...";
+            statusMessage.style.color = "blue";
+            loader.style.display = 'block';
+            detailsBox.style.display = 'none';
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'verifierCodeRetrait', transactionCode: transactionCode, agentId: user.id })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.status === "success") {
+                    transactionData = result.transactionDetails;
+                    const totalAmount = transactionData.montant + transactionData.frais;
+                    
+                    if (totalAmount > user.Solde) {
+                        statusMessage.textContent = "Solde de l'agent insuffisant pour effectuer ce retrait. Rechargez votre compte.";
+                        statusMessage.style.color = "red";
+                    } else {
+                        montantInfoSpan.textContent = transactionData.montant;
+                        clientNameInfoSpan.textContent = transactionData.clientName;
+                        detailsBox.style.display = 'block';
+                        statusMessage.textContent = `Code validé. Montant à débourser : ${transactionData.montant} G.`;
+                        statusMessage.style.color = "green";
+                    }
+                } else {
+                    statusMessage.textContent = `Erreur : ${result.message}`;
+                    statusMessage.style.color = "red";
+                }
+            } catch (error) {
+                console.error('Erreur de validation:', error);
+                statusMessage.textContent = `Erreur de connexion au serveur. ${error.message}`;
+                statusMessage.style.color = "red";
+            } finally {
+                loader.style.display = 'none';
+            }
+        });
+
+        confirmRetraitBtn.addEventListener('click', async function() {
+            statusMessage.textContent = "Confirmation du retrait en cours...";
+            statusMessage.style.color = "blue";
+            detailsBox.style.display = 'none';
+            loader.style.display = 'block';
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        action: 'confirmerRetrait',
+                        transactionCode: transactionData.code,
+                        agentId: user.id
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.status === "success") {
+                    user.Solde = result.newAgentSolde;
+                    localStorage.setItem('user', JSON.stringify(user));
+                    displayAgentData();
+
+                    statusMessage.textContent = `Retrait de ${transactionData.montant} Gourdes effectué avec succès.`;
+                    statusMessage.style.color = "green";
+                    form.reset();
+                } else {
+                    statusMessage.textContent = `Erreur lors de la confirmation : ${result.message}`;
+                    statusMessage.style.color = "red";
+                }
+            } catch (error) {
+                console.error('Erreur de confirmation:', error);
+                statusMessage.textContent = `Erreur de connexion au serveur. ${error.message}`;
+                statusMessage.style.color = "red";
+            } finally {
+                loader.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
