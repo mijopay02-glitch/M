@@ -63,7 +63,7 @@
         let transactionData = {};
 
         function displayAgentData() {
-            if (user && user.Nom && user.Solde) {
+            if (user && user.nom && user.Solde) {
                 agentNameSpan.textContent = user.nom;
                 agentSoldeSpan.textContent = user.Solde.toFixed(2);
                 statusMessage.textContent = "";
