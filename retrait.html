@@ -124,7 +124,7 @@
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'genererCodeRetrait', clientId: user.id, montant: montant })
+                    body: JSON.stringify({ action: 'genererCodeRetrait', clientId: user.userId, montant: montant })
                 });
 
                 if (!response.ok) {
