@@ -140,9 +140,11 @@
 
                     transactionCodeSpan.textContent = result.transactionCode;
                     codeBox.style.display = 'block';
+                    clearInterval(countdownInterval);
+                    countdownTimer.textContent = "";
                     statusMessage.textContent = "Code de retrait généré. Montrez-le à l'agent.";
                     statusMessage.style.color = "green";
-                    startCountdown();
+                    
                 } else {
                     statusMessage.textContent = `Erreur : ${result.message}`;
                     statusMessage.style.color = "red";
