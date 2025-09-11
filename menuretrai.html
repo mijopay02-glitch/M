@@ -50,16 +50,32 @@
     <h1>Retrait MIJO PAY</h1>
 
     <div id="agentDeposit" class="deposit-method">
-        Dépôt par Agent MIJO PAY
+        Retrait par Agent MIJO PAY
         <div id="agentCode" class="code"></div>
     </div>
 
     <div id="whatsappDeposit" class="deposit-method">
-        Dépôt par Contact Direct WhatsApp
+        Retrait par Contact Direct WhatsApp
     </div>
 
     <div id="moncashDeposit" class="deposit-method">
     <a href="#" onclick="alert('Le retrait MonCash n’est pas disponible actuellement. Veuillez utiliser une autre méthode.'); return false;">
-        Dépôt par MonCash
+        Retrait par MonCash
     </a>
 </div>
+    <script>
+        
+        // Dépôt par WhatsApp
+        if (whatsappDeposit) {
+            whatsappDeposit.addEventListener('click', () => {
+                const message = encodeURIComponent('Bonjour, je souhaite effectuer un Retrait sur MIJO PAY.');
+                const phoneNumber = '50944990203';
+                window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+            });
+        }
+        
+       
+    </script>
+
+</body>
+</html>
