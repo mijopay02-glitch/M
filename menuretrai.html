@@ -1,1 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3573655486794825"
+     crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retrai MIJO PAY</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .deposit-method {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .deposit-method:hover {
+            transform: scale(1.05);
+        }
+        .code {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #007BFF;
+        }
+        .deposit-method a {
+    text-decoration: none; /* Enlève la ligne sous le texte du lien */
+    color: #333; /* Définit la couleur du texte */
+    font-weight: bold; /* Donne un peu de gras au texte */
+}
+    </style>
+</head>
+<body>
 
+    <h1>Retrait MIJO PAY</h1>
+
+    <div id="agentDeposit" class="deposit-method">
+        Dépôt par Agent MIJO PAY
+        <div id="agentCode" class="code"></div>
+    </div>
+
+    <div id="whatsappDeposit" class="deposit-method">
+        Dépôt par Contact Direct WhatsApp
+    </div>
+
+    <div id="moncashDeposit" class="deposit-method">
+    <a href="#" onclick="alert('Le retrait MonCash n’est pas disponible actuellement. Veuillez utiliser une autre méthode.'); return false;">
+        Dépôt par MonCash
+    </a>
+</div>
