@@ -13,7 +13,6 @@
             --bg-color: #f0f2f5;
             --card-bg: #fff;
         }
-
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
@@ -22,7 +21,6 @@
             display: flex;
             flex-direction: column;
         }
-
         .header {
             background-color: var(--primary-color);
             color: white;
@@ -33,18 +31,15 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             position: relative;
         }
-
         .container {
             flex-grow: 1;
             padding: 20px;
         }
-        
         .transaction-list {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-
         .transaction-item {
             background-color: var(--card-bg);
             padding: 15px;
@@ -54,72 +49,107 @@
             justify-content: space-between;
             align-items: center;
         }
-
         .transaction-details {
             display: flex;
             flex-direction: column;
         }
-
         .transaction-type {
             font-weight: 600;
         }
-        
         .transaction-date {
             font-size: 0.8em;
             color: var(--light-text-color);
         }
-        
         .transaction-agent {
             font-size: 0.9em;
             color: var(--light-text-color);
             margin-top: 5px;
         }
-        
         .transaction-amount {
             font-size: 1.2em;
             font-weight: 700;
         }
-
         .no-transactions {
             text-align: center;
             color: var(--light-text-color);
             margin-top: 50px;
         }
-        
+        /* Cache le bouton de suppression */
         #clearAllHistoryBtn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
+            display: none;
+        }
+        /* Style pour la pop-up de mot de passe */
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .password-prompt {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .password-prompt input {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .password-prompt button {
+            padding: 10px 20px;
             border: none;
+            background-color: var(--primary-color);
             color: white;
-            font-size: 1.5em;
+            border-radius: 5px;
             cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h2>Toutes les transactions</h2>
-        <button id="clearAllHistoryBtn" title="Effacer tout l'historique">&#x2716;</button>
+    <div id="password-overlay" class="password-overlay">
+        <div class="password-prompt">
+            <h2>Accès restreint</h2>
+            <p>Veuillez entrer le mot de passe pour voir les transactions globales.</p>
+            <input type="password" id="passwordInput">
+            <button id="loginBtn">Entrer</button>
+            <p id="password-error" style="color: red; margin-top: 10px;"></p>
+        </div>
     </div>
-
-    <div class="container">
-        <div id="transactionList" class="transaction-list">
+    <div id="content" style="display: none;">
+        <div class="header">
+            <h2>Toutes les transactions</h2>
+            <button id="clearAllHistoryBtn" title="Effacer tout l'historique">&#x2716;</button>
+        </div>
+        <div class="container">
+            <div id="transactionList" class="transaction-list">
+            </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const transactionList = document.getElementById('transactionList');
-            const clearAllBtn = document.getElementById('clearAllHistoryBtn');
+            const passwordOverlay = document.getElementById('password-overlay');
+            const passwordInput = document.getElementById('passwordInput');
+            const loginBtn = document.getElementById('loginBtn');
+            const passwordError = document.getElementById('password-error');
+            const content = document.getElementById('content');
             const historyKey = 'all_transactions';
+            const ADMIN_PASSWORD = "Ma17ma17"; 
 
             function renderTransactions() {
                 const transactions = JSON.parse(localStorage.getItem(historyKey)) || [];
                 transactionList.innerHTML = '';
-
                 if (transactions.length > 0) {
                     transactions.reverse().forEach(transaction => {
                         const item = document.createElement('div');
@@ -150,22 +180,28 @@
 
                         item.appendChild(details);
                         item.appendChild(amount);
-
                         transactionList.appendChild(item);
                     });
                 } else {
                     transactionList.innerHTML = '<p class="no-transactions">Aucune transaction globale.</p>';
                 }
             }
-            
-            renderTransactions();
 
-            clearAllBtn.addEventListener('click', () => {
-                const confirmation = confirm("Êtes-vous sûr de vouloir effacer tout l'historique global des transactions ?");
-                if (confirmation) {
-                    localStorage.removeItem(historyKey);
+            loginBtn.addEventListener('click', () => {
+                if (passwordInput.value === ADMIN_PASSWORD) {
+                    passwordOverlay.style.display = 'none';
+                    content.style.display = 'block';
                     renderTransactions();
-                    alert("Historique global des transactions effacé.");
+                } else {
+                    passwordError.textContent = 'Mot de passe incorrect.';
+                    passwordInput.value = '';
+                }
+            });
+
+            // Permet aussi de valider avec la touche "Entrée"
+            passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    loginBtn.click();
                 }
             });
         });
