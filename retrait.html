@@ -50,115 +50,150 @@
             <p class="qr-code-text">Présentez ce code à l'agent.</p>
         </div>
     </div>
-    <script>
-        const form = document.getElementById('retrait-form');
-        const loader = document.getElementById('loader');
-        const statusMessage = document.getElementById('status-message');
-        const codeBox = document.getElementById('code-box');
-        const transactionCodeSpan = document.getElementById('transaction-code');
-        const countdownTimer = document.getElementById('countdown-timer');
-        const clientNameSpan = document.getElementById('client-name');
-        const clientSoldeSpan = document.getElementById('client-solde');
+   <script>
+    const form = document.getElementById('retrait-form');
+    const loader = document.getElementById('loader');
+    const statusMessage = document.getElementById('status-message');
+    const codeBox = document.getElementById('code-box');
+    const transactionCodeSpan = document.getElementById('transaction-code');
+    const countdownTimer = document.getElementById('countdown-timer');
+    const clientNameSpan = document.getElementById('client-name');
+    const clientSoldeSpan = document.getElementById('client-solde');
 
-        const API_URL = 'https://retrait.mijocomplexe.workers.dev/';
-        const EXPIRATION_TIME = 120; // 2 minutes en secondes
+    const API_URL = 'https://retrait.mijocomplexe.workers.dev/';
+    const EXPIRATION_TIME = 120; // 2 minutes en secondes
 
-        let user = JSON.parse(localStorage.getItem('user'));
-        let countdownInterval;
+    let user = JSON.parse(localStorage.getItem('user'));
+    let countdownInterval;
+    let statusCheckInterval; // Nouveau minuteur
 
-        function displayClientData() {
-            if (user && user.NomUtilisateur) {
-                clientNameSpan.textContent = user.NomUtilisateur;
-                clientSoldeSpan.textContent = user.Solde ? user.Solde.toFixed(2) : '0.00';
-            } else {
-                window.location.href = 'index.html';
-            }
+    function displayClientData() {
+        if (user && user.NomUtilisateur) {
+            clientNameSpan.textContent = user.NomUtilisateur;
+            clientSoldeSpan.textContent = user.Solde ? user.Solde.toFixed(2) : '0.00';
+        } else {
+            window.location.href = 'index.html';
         }
-        displayClientData();
+    }
+    displayClientData();
 
-        function startCountdown() {
-            let timeLeft = EXPIRATION_TIME;
-            countdownTimer.style.color = '#dc3545';
-            
-            countdownInterval = setInterval(() => {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                countdownTimer.textContent = `Expire dans ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    function startCountdown() {
+        let timeLeft = EXPIRATION_TIME;
+        countdownTimer.style.color = '#dc3545';
+        
+        countdownInterval = setInterval(() => {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            countdownTimer.textContent = `Expire dans ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
-                if (timeLeft <= 0) {
-                    clearInterval(countdownInterval);
-                    transactionCodeSpan.textContent = "Code expiré";
-                    countdownTimer.textContent = "";
-                    statusMessage.textContent = "Le code de transaction a expiré. Veuillez générer un nouveau code.";
-                    statusMessage.style.color = "red";
-                }
-                timeLeft--;
-            }, 1000);
-        }
-
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const montant = parseFloat(document.getElementById('montant').value);
-
-            if (isNaN(montant) || montant <= 0) {
-                statusMessage.textContent = "Veuillez entrer un montant valide.";
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval);
+                transactionCodeSpan.textContent = "Code expiré";
+                countdownTimer.textContent = "";
+                statusMessage.textContent = "Le code de transaction a expiré. Veuillez générer un nouveau code.";
                 statusMessage.style.color = "red";
-                return;
+                clearInterval(statusCheckInterval); // Arrêter la vérification de statut
             }
-            const frais = montant * 0.04;
-            const montantTotal = montant + frais;
+            timeLeft--;
+        }, 1000);
+    }
+    
+    // NOUVELLE FONCTION pour vérifier le statut de la transaction
+    async function checkTransactionStatus(transactionCode) {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'verifierStatut', transactionCode: transactionCode })
+            });
 
-            if (montantTotal > user.Solde) {
-                statusMessage.textContent = "Solde insuffisant pour ce retrait, y compris les frais.";
-                statusMessage.style.color = "red";
-                return;
-            }
+            const result = await response.json();
 
-            statusMessage.textContent = "Génération du code en cours...";
-            statusMessage.style.color = "blue";
-            loader.style.display = 'block';
-            codeBox.style.display = 'none';
-            clearInterval(countdownInterval);
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'genererCodeRetrait', clientId: user.userId, montant: montant })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Erreur HTTP: ${response.status}`);
-                }
+            if (result.status === "success") {
+                // Arrêter les deux minuteurs
+                clearInterval(countdownInterval);
+                clearInterval(statusCheckInterval);
                 
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    user.Solde = user.Solde - montantTotal;
-                    localStorage.setItem('user', JSON.stringify(user));
-                    clientSoldeSpan.textContent = user.Solde.toFixed(2);
-
-                    transactionCodeSpan.textContent = result.transactionCode;
-                    codeBox.style.display = 'block';
-                    clearInterval(countdownInterval);
-                    countdownTimer.textContent = "";
-                    statusMessage.textContent = "Code de retrait généré. Montrez-le à l'agent.";
-                    statusMessage.style.color = "green";
-                    startCountdown();
-                    
-                } else {
-                    statusMessage.textContent = `Erreur : ${result.message}`;
-                    statusMessage.style.color = "red";
-                }
-
-            } catch (error) {
-                console.error('Erreur de génération de code:', error);
-                statusMessage.textContent = `Erreur de connexion au serveur. ${error.message}`;
-                statusMessage.style.color = "red";
-            } finally {
-                loader.style.display = 'none';
+                // Mettre à jour l'interface utilisateur
+                transactionCodeSpan.textContent = "Transaction réussie!";
+                countdownTimer.textContent = "";
+                statusMessage.textContent = "Votre retrait a été confirmé par l'agent.";
+                statusMessage.style.color = "green";
+                
+                // Rediriger après un court délai pour que l'utilisateur lise le message
+                setTimeout(() => {
+                    window.location.href = 'menuretrai.html';
+                }, 3000);
             }
-        });
-    </script>
+        } catch (error) {
+            console.error('Erreur de vérification de statut:', error);
+        }
+    }
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const montant = parseFloat(document.getElementById('montant').value);
+
+        if (isNaN(montant) || montant <= 0) {
+            statusMessage.textContent = "Veuillez entrer un montant valide.";
+            statusMessage.style.color = "red";
+            return;
+        }
+        const frais = montant * 0.04;
+        const montantTotal = montant + frais;
+
+        if (montantTotal > user.Solde) {
+            statusMessage.textContent = "Solde insuffisant pour ce retrait, y compris les frais.";
+            statusMessage.style.color = "red";
+            return;
+        }
+
+        statusMessage.textContent = "Génération du code en cours...";
+        statusMessage.style.color = "blue";
+        loader.style.display = 'block';
+        codeBox.style.display = 'none';
+        clearInterval(countdownInterval); // S'assurer que le minuteur est arrêté
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'genererCodeRetrait', clientId: user.userId, montant: montant })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP: ${response.status}`);
+            }
+            
+            const result = await response.json();
+
+            if (result.status === "success") {
+                user.Solde = user.Solde - montantTotal;
+                localStorage.setItem('user', JSON.stringify(user));
+                clientSoldeSpan.textContent = user.Solde.toFixed(2);
+                transactionCodeSpan.textContent = result.transactionCode;
+                codeBox.style.display = 'block';
+                statusMessage.textContent = "Code de retrait généré. Montrez-le à l'agent.";
+                statusMessage.style.color = "green";
+                startCountdown();
+                
+                // Démarrer la vérification de statut toutes les 5 secondes
+                statusCheckInterval = setInterval(() => {
+                    checkTransactionStatus(result.transactionCode);
+                }, 5000);
+            } else {
+                statusMessage.textContent = `Erreur : ${result.message}`;
+                statusMessage.style.color = "red";
+            }
+
+        } catch (error) {
+            console.error('Erreur de génération de code:', error);
+            statusMessage.textContent = `Erreur de connexion au serveur. ${error.message}`;
+            statusMessage.style.color = "red";
+        } finally {
+            loader.style.display = 'none';
+        }
+    });
+</script>
 </body>
 </html>
