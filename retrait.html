@@ -60,7 +60,7 @@
         const clientNameSpan = document.getElementById('client-name');
         const clientSoldeSpan = document.getElementById('client-solde');
 
-        const API_URL = 'https://agentdepot.mijocomplexe.workers.dev/';
+        const API_URL = 'https://retrait.mijocomplexe.workers.dev/';
         const EXPIRATION_TIME = 120; // 2 minutes en secondes
 
         let user = JSON.parse(localStorage.getItem('user'));
@@ -105,8 +105,11 @@
                 statusMessage.style.color = "red";
                 return;
             }
-            if (montant > user.Solde) {
-                statusMessage.textContent = "Solde insuffisant pour ce retrait.";
+            const frais = montant * 0.04;
+            const montantTotal = montant + frais;
+
+            if (montantTotal > user.Solde) {
+                statusMessage.textContent = "Solde insuffisant pour ce retrait, y compris les frais.";
                 statusMessage.style.color = "red";
                 return;
             }
@@ -115,7 +118,7 @@
             statusMessage.style.color = "blue";
             loader.style.display = 'block';
             codeBox.style.display = 'none';
-            clearInterval(countdownInterval); // Assure que le précédent timer est arrêté
+            clearInterval(countdownInterval);
 
             try {
                 const response = await fetch(API_URL, {
@@ -131,11 +134,15 @@
                 const result = await response.json();
 
                 if (result.status === "success") {
+                    user.Solde = user.Solde - montantTotal;
+                    localStorage.setItem('user', JSON.stringify(user));
+                    clientSoldeSpan.textContent = user.Solde.toFixed(2);
+
                     transactionCodeSpan.textContent = result.transactionCode;
                     codeBox.style.display = 'block';
                     statusMessage.textContent = "Code de retrait généré. Montrez-le à l'agent.";
                     statusMessage.style.color = "green";
-                    startCountdown(); // Démarre le compte à rebours
+                    startCountdown();
                 } else {
                     statusMessage.textContent = `Erreur : ${result.message}`;
                     statusMessage.style.color = "red";
