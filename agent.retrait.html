@@ -58,12 +58,12 @@
         const agentNameSpan = document.getElementById('agent-name');
         const agentSoldeSpan = document.getElementById('agent-solde');
 
-        const API_URL = 'https://agentdepot.mijocomplexe.workers.dev/';
+        const API_URL = 'https://retrait.mijocomplexe.workers.dev/';
         let user = JSON.parse(localStorage.getItem('user'));
         let transactionData = {};
 
         function displayAgentData() {
-            if (user && user.Solde) {
+            if (user && user.Nom && user.Solde) {
                 agentNameSpan.textContent = user.nom;
                 agentSoldeSpan.textContent = user.Solde.toFixed(2);
                 statusMessage.textContent = "";
@@ -103,18 +103,13 @@
                 
                 if (result.status === "success") {
                     transactionData = result.transactionDetails;
-                    const totalAmount = transactionData.montant + transactionData.frais;
                     
-                    if (totalAmount > user.Solde) {
-                        statusMessage.textContent = "Solde de l'agent insuffisant pour effectuer ce retrait. Rechargez votre compte.";
-                        statusMessage.style.color = "red";
-                    } else {
-                        montantInfoSpan.textContent = transactionData.montant;
-                        clientNameInfoSpan.textContent = transactionData.clientName;
-                        detailsBox.style.display = 'block';
-                        statusMessage.textContent = `Code validé. Montant à débourser : ${transactionData.montant} G.`;
-                        statusMessage.style.color = "green";
-                    }
+                    // Le solde de l'agent est vérifié côté worker, pas besoin de le refaire ici.
+                    montantInfoSpan.textContent = transactionData.montant;
+                    clientNameInfoSpan.textContent = transactionData.clientName;
+                    detailsBox.style.display = 'block';
+                    statusMessage.textContent = `Code validé. Montant à débourser : ${transactionData.montant} G.`;
+                    statusMessage.style.color = "green";
                 } else {
                     statusMessage.textContent = `Erreur : ${result.message}`;
                     statusMessage.style.color = "red";
@@ -156,7 +151,7 @@
                     localStorage.setItem('user', JSON.stringify(user));
                     displayAgentData();
 
-                    statusMessage.textContent = `Retrait de ${transactionData.montant} Gourdes effectué avec succès.`;
+                    statusMessage.textContent = `Retrait de ${transactionData.montant} Gourdes effectué avec succès. Votre nouveau solde est de ${user.Solde.toFixed(2)} G.`;
                     statusMessage.style.color = "green";
                     form.reset();
                 } else {
