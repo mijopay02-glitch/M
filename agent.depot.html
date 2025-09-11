@@ -145,44 +145,83 @@
 
         // Étape 2 : Confirmer la transaction (dépôt)
         confirmYesBtn.addEventListener('click', async function() {
-            const montant = parseFloat(document.getElementById('montant').value);
-            statusMessage.textContent = "Traitement du dépôt en cours...";
-            statusMessage.style.color = "blue";
-            confirmBox.style.display = 'none';
+    const montant = parseFloat(document.getElementById('montant').value);
+    // Récupérer le nom du client qui est déjà dans le DOM
+    const clientName = clientNameConfirmSpan.textContent;
+    
+    statusMessage.textContent = "Traitement du dépôt en cours...";
+    statusMessage.style.color = "blue";
+    confirmBox.style.display = 'none';
 
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'depot', agentId: user.id, clientId: clientRecordId, montant: montant })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Erreur HTTP: ${response.status}`);
-                }
-
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    // Mettre à jour le solde dans localStorage et sur la page
-                    user.Solde = result.newAgentSolde;
-    localStorage.setItem('user', JSON.stringify(user));
-    displayAgentData();
-
-                    statusMessage.textContent = `Dépôt de ${montant} Gourdes réussi.`;
-                    statusMessage.style.color = "green";
-                    form.reset();
-                    clientRecordId = null;
-                } else {
-                    statusMessage.textContent = `Erreur : ${result.message}`;
-                    statusMessage.style.color = "red";
-                }
-            } catch (error) {
-                console.error('Erreur de dépôt:', error);
-                statusMessage.textContent = `Erreur de connexion au serveur. ${error.message}`;
-                statusMessage.style.color = "red";
-            }
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                action: 'depot', 
+                agentId: user.id, 
+                clientId: clientRecordId, 
+                montant: montant 
+            })
         });
+
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+            // Mettre à jour le solde dans localStorage et sur la page
+            user.Solde = result.newAgentSolde;
+            localStorage.setItem('user', JSON.stringify(user));
+            displayAgentData();
+
+            // === NOUVEAU CODE POUR ENREGISTRER L'HISTORIQUE ===
+            const transactionDetails = {
+                type: "Dépôt",
+                montant: result.transactionDetails.montant,
+                recipient: clientName, // Utilise le nom du client récupéré plus tôt
+                date: new Date().toLocaleDateString('fr-FR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            };
+
+            // Stocker la transaction dans le localStorage de l'agent
+            const historyKey = `transactions_${user.id}`;
+            const history = JSON.parse(localStorage.getItem(historyKey)) || [];
+            history.push(transactionDetails);
+            localStorage.setItem(historyKey, JSON.stringify(history));
+
+            // Stocker la transaction dans le localStorage général pour mijo
+            const globalHistory = JSON.parse(localStorage.getItem('all_transactions')) || [];
+            globalHistory.push({
+                ...transactionDetails,
+                agentName: user.nom
+            });
+            localStorage.setItem('all_transactions', JSON.stringify(globalHistory));
+            // === FIN DU NOUVEAU CODE ===
+
+            statusMessage.textContent = `Dépôt de ${montant} Gourdes réussi.`;
+            statusMessage.style.color = "green";
+            form.reset();
+            clientRecordId = null;
+        } else {
+            statusMessage.textContent = `Erreur : ${result.message}`;
+            statusMessage.style.color = "red";
+        }
+    } catch (error) {
+        console.error('Erreur de dépôt:', error);
+        statusMessage.textContent = `Erreur de connexion au serveur. ${error.message}`;
+        statusMessage.style.color = "red";
+    }
+});
+
+// ... (votre code
 
         // Bouton d'annulation
         confirmNoBtn.addEventListener('click', function() {
