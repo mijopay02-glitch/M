@@ -456,6 +456,17 @@
         </a>
     </nav>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    const premiumFreeSection = document.getElementById('premium-free-section');
+    if (premiumFreeSection) {
+        const container = premiumFreeSection.querySelector('.product-list');
+        if (container) {
+            loadPremiumFreeProducts(container);
+        }
+    }
+    // Ajoutez ici d'autres initialisations comme renderCart() si nécessaire
+    renderCart();
+});
     const storeScriptUrl = "https://store.mijocomplexe.workers.dev/";
 
     const cartContent = document.getElementById('cart-content');
