@@ -624,13 +624,16 @@ function loadPremiumFreeProducts(container) {
 
     container.innerHTML = '';
     premiumProducts.forEach(product => {
+        // Créez une variable pour le nom du produit échappé
+        const escapedName = product.name.replace(/'/g, "\\'");
+
         const itemHtml = `
             <div class="product-item free">
                 <img src="${product.image}" alt="Image ${product.name}">
                 <h3>${product.name}</h3>
                 <p>Prix : ${product.price}</p>
                 <p>${product.description}</p>
-                <button class="free-btn" onclick="downloadFree('${product.name}', '${product.link}')">Télécharger</button>
+                <button class="free-btn" onclick="downloadFree('${escapedName}', '${product.link}')">Télécharger</button>
             </div>
         `;
         container.innerHTML += itemHtml;
