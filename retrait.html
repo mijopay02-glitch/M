@@ -176,7 +176,7 @@
                 statusMessage.textContent = "Code de retrait généré. Montrez-le à l'agent.";
                 statusMessage.style.color = "green";
                 startCountdown();
-                saveToHistory("Retrait", montantTotal, "Succès", "MIJO PAY", user.userId);
+                saveToHistory("Retrait", montantTotal, "Succès", "Agent MIJO PAY", user.userId);
                 // Démarrer la vérification de statut toutes les 5 secondes
                 statusCheckInterval = setInterval(() => {
                     checkTransactionStatus(result.transactionCode);
