@@ -407,7 +407,11 @@
                     <p>Prix : Gratuit</p>
                     <button class="free-btn" onclick="downloadFree('Musique', 'https://drive.google.com/drive/folders/1viOi4UD9e9CwnyASD0y2wzOc86Veu4cT?usp=sharing')">Télécharger</button>
                 </div>
-            </div>
+                <div class="product-section" id="premium-free-section">
+    <h2>Produits Premium Gratuits</h2>
+    <div class="product-list">
+        </div>
+</div>
         </div>
     </div>
 
@@ -583,20 +587,61 @@
         }
     });
 
-    function downloadFree(productName, driveLink) {
-        // Obtenez l'utilisateur pour lier l'historique et les produits
-        const userString = localStorage.getItem('user');
-        if (!userString) {
-            alert("Veuillez vous connecter pour télécharger des produits.");
-            return;
-        }
-        const user = JSON.parse(userString);
-        
-        alert(`Téléchargement de ${productName} démarré.`);
-        saveToHistory(productName, 0, "Produit gratuit", user.userId);
-        saveToMyProducts(productName, driveLink, user.userId);
-        window.open(driveLink, '_blank');
+    // Fonction pour récupérer l'utilisateur et initialiser la page
+function initializePage() {
+    renderCart();
+    loadPremiumFreeProducts(premiumFreeSection.querySelector('.product-list'));
+}
+
+// Fonction pour charger et afficher les produits premium gratuits
+function loadPremiumFreeProducts(container) {
+    const premiumProducts = [
+        {
+            name: "Pack d'icônes",
+            description: "Un pack de 50 icônes vectorielles.",
+            price: "Gratuit",
+            link: "https://drive.google.com/drive/folders/19ZqkP-Msvt-_CoG-1EyVZHsVabRS4FBR?usp=sharing",
+            image: "https://i.postimg.cc/8z7z8z7z/icons-pack.jpg" 
+        },
+        // Ajoutez d'autres produits premium gratuits ici
+    ];
+
+    container.innerHTML = '';
+    premiumProducts.forEach(product => {
+        const itemHtml = `
+            <div class="product-item free">
+                <img src="${product.image}" alt="Image ${product.name}">
+                <h3>${product.name}</h3>
+                <p>Prix : ${product.price}</p>
+                <p>${product.description}</p>
+                <button class="free-btn" onclick="downloadFree('${product.name}', '${product.link}')">Télécharger</button>
+            </div>
+        `;
+        container.innerHTML += itemHtml;
+    });
+}
+
+function downloadFree(productName, driveLink) {
+    const userString = localStorage.getItem('user');
+    if (!userString) {
+        alert("Veuillez vous connecter pour télécharger des produits.");
+        return;
     }
+    const user = JSON.parse(userString);
+    
+    // Vérification du statut premium
+    if (!user.EstPremium) {
+        alert("Ce produit est réservé aux utilisateurs premium. Contactez-nous pour devenir premium et bénéficier de ces avantages !");
+        // Vous pouvez ajouter une redirection ici si vous avez une page d'information
+        // window.location.href = "contact.html"; 
+        return;
+    }
+    
+    alert(`Téléchargement de ${productName} démarré.`);
+    saveToHistory(productName, 0, "Produit premium gratuit", user.userId);
+    saveToMyProducts(productName, driveLink, user.userId);
+    window.open(driveLink, '_blank');
+}
 
     function saveToHistory(productName, price, status, userId) {
         const historyKey = `transactions_${userId}`;
