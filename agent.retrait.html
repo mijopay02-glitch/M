@@ -154,6 +154,32 @@
                     statusMessage.textContent = `Retrait de ${transactionData.montant} Gourdes effectué avec succès. Votre nouveau solde est de ${user.Solde.toFixed(2)} G.`;
                     statusMessage.style.color = "green";
                     form.reset();
+                    const transactionDetails = {
+                type: "Retrait",
+                montant: result.transactionDetails.montant,
+                recipient: clientName, // Utilise le nom du client récupéré plus tôt
+                date: new Date().toLocaleDateString('fr-FR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            };
+
+            // Stocker la transaction dans le localStorage de l'agent
+            const historyKey = `transactions_${user.id}`;
+            const history = JSON.parse(localStorage.getItem(historyKey)) || [];
+            history.push(transactionDetails);
+            localStorage.setItem(historyKey, JSON.stringify(history));
+
+            // Stocker la transaction dans le localStorage général pour mijo
+            const globalHistory = JSON.parse(localStorage.getItem('all_transactions')) || [];
+            globalHistory.push({
+                ...transactionDetails,
+                agentName: user.nom
+            });
+            localStorage.setItem('all_transactions', JSON.stringify(globalHistory));
                 } else {
                     statusMessage.textContent = `Erreur lors de la confirmation : ${result.message}`;
                     statusMessage.style.color = "red";
