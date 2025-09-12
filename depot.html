@@ -84,11 +84,12 @@
         const whatsappDeposit = document.getElementById('whatsappDeposit');
         
         // Dépôt par Agent
-        if (agentDeposit && agentCode) {
-            agentDeposit.addEventListener('click', () => {
-                agentCode.textContent = `Votre code de dépôt : ${lastFourDigits}`;
-            });
-        }
+       // Dépôt par Agent
+if (agentDeposit) {
+    agentDeposit.addEventListener('click', () => {
+        window.location.href = 'depot-agents.html';
+    });
+}
         
         // Dépôt par WhatsApp
         if (whatsappDeposit) {
