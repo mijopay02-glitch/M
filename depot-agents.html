@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choisir un Agent - MIJO PAY</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #5b21b6;
+            text-align: center;
+        }
+        .agent-list {
+            list-style: none;
+            padding: 0;
+        }
+        .agent-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f9fafb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .agent-item:hover {
+            background-color: #eef2ff;
+        }
+        .agent-info {
+            flex-grow: 1;
+        }
+        .agent-name {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .agent-whatsapp {
+            color: #4CAF50;
+            font-size: 0.9em;
+        }
+        .whatsapp-icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 15px;
+        }
+        .back-button {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #5b21b6;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Choisissez un Agent pour le Dépôt</h1>
+        <ul id="agent-list" class="agent-list">
+            </ul>
+        <a href="depot.html" class="back-button">← Retour</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const agentListContainer = document.getElementById('agent-list');
+
+            // Vous pouvez ajouter d'autres agents ici.
+            // Assurez-vous d'avoir leur nom et leur numéro de téléphone.
+            const agents = [
+                { name: 'MIJO Complexe', phone: '50944990203' },
+                { name: 'Jonathan Pierre', phone: '50942028591' },
+                
+            ];
+
+            agents.forEach(agent => {
+                const li = document.createElement('li');
+                li.className = 'agent-item';
+                li.innerHTML = `
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" class="whatsapp-icon">
+                    <div class="agent-info">
+                        <div class="agent-name">${agent.name}</div>
+                        <div class="agent-whatsapp">${agent.phone}</div>
+                    </div>
+                `;
+                li.addEventListener('click', () => {
+                    const message = encodeURIComponent('Bonjour, je souhaite effectuer un dépôt via MIJO PAY.');
+                    window.open(`https://wa.me/${agent.phone}?text=${message}`, '_blank');
+                });
+                agentListContainer.appendChild(li);
+            });
+        });
+    </script>
+</body>
+</html>
