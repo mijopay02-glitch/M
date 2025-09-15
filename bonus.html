@@ -1,180 +1,246 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Réclamer Bonus</title>
-    <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            background: #f7f9fc; 
-            padding: 20px; 
-            margin: 0;
-        }
-        .card { 
-            background: white; 
-            padding: 20px; 
-            border-radius: 12px; 
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
-            max-width: 500px; 
-            margin: 0 auto; 
-        }
-        h2 { 
-            color: #333; 
-            text-align: center; 
-            margin-top: 0;
-        }
-        p { 
-            font-size: 16px; 
-            text-align: center;
-        }
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin: 15px 0; 
-        }
-        th, td { 
-            border: 1px solid #ddd; 
-            padding: 12px 8px; 
-            text-align: center; 
-        }
-        th { 
-            background: #28a745; 
-            color: white; 
-        }
-        tr.highlight { 
-            background: #d4edda; 
-            font-weight: bold; 
-        }
-        button { 
-            width: 100%; 
-            padding: 12px; 
-            border: none; 
-            border-radius: 8px; 
-            background: #28a745; 
-            color: white; 
-            cursor: pointer; 
-            font-size: 16px; 
-            margin-top: 10px; 
-        }
-        button:disabled { 
-            background: gray; 
-            cursor: not-allowed; 
-        }
-    </style>
+    <title>Réclamer Bonus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #28a745;
+            --text-color: #333;
+            --light-bg: #f8f9fa;
+            --card-bg: #fff;
+            --border-color: #e9ecef;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        p {
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-color);
+        }
+        th {
+            background: var(--secondary-color);
+            color: white;
+            font-weight: 500;
+            border: none;
+        }
+        th:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+        th:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+        tr {
+            transition: transform 0.2s ease-in-out;
+        }
+        tr:hover {
+            transform: scale(1.02);
+        }
+        tr.highlight td {
+            background-color: #e6f3e9;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        tr:not(.highlight) td {
+            background-color: #fcfcfc;
+        }
+        td:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+        td:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+        .bonus-dispo {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background-image: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 123, 255, 0.4);
+        }
+        button:disabled {
+            background-image: linear-gradient(45deg, #ccc, #aaa);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+    </style>
 </head>
 <body>
-  <div class="card">
-    <h2>🎁 Bonus Affilié</h2>
-    <p>Nombre d’affiliés : <span id="nbreAffiche">0</span></p>
+    <div class="card">
+        <h2>🎁 Bonus Affilié</h2>
+        <p>Nombre d’affiliés : <span id="nbreAffiche">0</span></p>
 
-    <h3>📊 Grille des Bonus</h3>
-    <table id="bonusTable">
-      <tr>
-        <th>Affiliés requis</th>
-        <th>Montant du Bonus</th>
-      </tr>
-    </table>
+        <h3>📊 Grille des Bonus</h3>
+        <table id="bonusTable">
+            <thead>
+                <tr>
+                    <th>Affiliés requis</th>
+                    <th>Montant du Bonus</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
 
-    <p>Bonus disponible : <span id="bonusMontant">Aucun</span></p>
-    <button id="btnBonus" disabled>Réclamer mon bonus</button>
-  </div>
+        <p class="bonus-dispo">Bonus disponible : <span id="bonusMontant">Aucun</span></p>
+        <button id="btnBonus" disabled>Réclamer mon bonus</button>
+    </div>
 
-  <script>
+    <script>
+        // 🎯 Grille des bonus
+        const bonusPaliers = [
+            { seuil: 5, montant: 250 },
+            { seuil: 10, montant: 600 },
+            { seuil: 20, montant: 1500 },
+            { seuil: 40, montant: 4000 },
+            { seuil: 100, montant: 10000 }
+        ];
 
-  // 🎯 Grille des bonus
-  const bonusPaliers = [
-    { seuil: 5, montant: 250 },
-    { seuil: 10, montant: 600 },
-    { seuil: 20, montant: 1500 },
-    { seuil: 40, montant: 4000 },
-    { seuil: 100, montant: 10000 }
-  ];
+        // 📌 Charger l'utilisateur depuis localStorage
+        const userString = localStorage.getItem("user");
+        let nbreAffilie = 0;
+        let dernierBonusReclame = 0; // Nouveau: pour stocker le dernier bonus réclamé
+        let userId = null;
+        let userObj = null;
 
-  // 📌 Charger l'utilisateur depuis localStorage
-  const userString = localStorage.getItem("user");
-  let nbreAffilie = 0;
-  let userId = null;
-  let userObj = null;
+        if (userString) {
+            try {
+                userObj = JSON.parse(userString);
+                nbreAffilie = parseInt(userObj.nbreaffilie || "0", 10);
+                dernierBonusReclame = parseInt(userObj.dernierBonusReclame || "0", 10); // Récupère le dernier bonus
+                userId = userObj.userId || userObj.id || userObj.userid || null;
+            } catch (e) {
+                console.error("Erreur parsing user:", e);
+            }
+        }
 
-  if (userString) {
-    try {
-      userObj = JSON.parse(userString);
-      nbreAffilie = parseInt(userObj.nbreaffilie || "0", 10);
-      userId = userObj.userId || userObj.id || userObj.userid || null;
-    } catch (e) {
-      console.error("Erreur parsing user:", e);
-    }
-  }
+        document.getElementById("nbreAffiche").textContent = nbreAffilie;
 
-  document.getElementById("nbreAffiche").textContent = nbreAffilie;
+        // 📌 Remplir le tableau des paliers et déterminer le bonus disponible
+        const tableBody = document.querySelector("#bonusTable tbody");
+        let bonusDisponible = null;
 
-  // 📌 Remplir le tableau des paliers
-  const table = document.getElementById("bonusTable");
-  let bonusTrouve = null;
-  bonusPaliers.forEach(palier => {
-    const row = document.createElement("tr");
-    if (nbreAffilie >= palier.seuil) {
-      bonusTrouve = palier;
-      row.classList.add("highlight");
-    }
-    row.innerHTML = `<td>${palier.seuil}</td><td>${palier.montant} HTG</td>`;
-    table.appendChild(row);
-  });
+        bonusPaliers.forEach(palier => {
+            const row = document.createElement("tr");
+            row.innerHTML = `<td>${palier.seuil}</td><td>${palier.montant} HTG</td>`;
+            tableBody.appendChild(row);
 
-  // 📌 Mettre à jour le bonus disponible
-  const btnBonus = document.getElementById("btnBonus");
-  if (bonusTrouve && !userObj.bonusPris) {
-    document.getElementById("bonusMontant").textContent = bonusTrouve.montant + " HTG";
-    btnBonus.disabled = false;
-  }
+            // Déterminer le palier que l'utilisateur peut réclamer
+            if (nbreAffilie >= palier.seuil && palier.montant > dernierBonusReclame) {
+                row.classList.add("highlight");
+                bonusDisponible = palier;
+            }
+        });
 
-  // 📌 Action du bouton : envoie la demande au backend
-  btnBonus.addEventListener("click", async () => {
-  if (!bonusTrouve) return alert("Aucun bonus disponible");
-  if (!userId) return alert("Erreur: utilisateur non identifié");
+        // 📌 Mettre à jour l'affichage du bonus et l'état du bouton
+        const btnBonus = document.getElementById("btnBonus");
+        const bonusMontantSpan = document.getElementById("bonusMontant");
+        
+        if (bonusDisponible) {
+            bonusMontantSpan.textContent = bonusDisponible.montant + " HTG";
+            btnBonus.disabled = false;
+        } else {
+            bonusMontantSpan.textContent = "Aucun";
+            btnBonus.disabled = true;
+        }
 
-  // ✅ Afficher message de chargement
-  btnBonus.textContent = "⏳ Transaction en cours...";
-  btnBonus.disabled = true;
+        // 📌 Action du bouton : envoie la demande au backend
+        btnBonus.addEventListener("click", async () => {
+            if (!bonusDisponible) return alert("Aucun bonus disponible.");
+            if (!userId) return alert("Erreur: utilisateur non identifié.");
 
-  try {
-    const res = await fetch("https://bonus.mijocomplexe.workers.dev/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "bonus",
-        userId: userId,
-        montant: bonusTrouve.montant
-      })
-    });
+            btnBonus.textContent = "⏳ Transaction en cours...";
+            btnBonus.disabled = true;
 
-    const data = await res.json();
-    if (data.status === "success") {
-      alert(`🎉 Bonus de ${bonusTrouve.montant} HTG crédité sur ton compte !`);
+            try {
+                const res = await fetch("https://bonus.mijocomplexe.workers.dev/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        userId: userId,
+                        montant: bonusDisponible.montant
+                    })
+                });
 
-      // Mettre à jour localStorage
-      userObj.Solde = data.newSolde;
-      userObj.bonusPris = true;
-      localStorage.setItem("user", JSON.stringify(userObj));
+                const data = await res.json();
+                if (data.status === "success") {
+                    alert(`🎉 Bonus de ${bonusDisponible.montant} HTG crédité sur votre compte !`);
 
-      // Mettre à jour l'affichage
-      document.getElementById("bonusMontant").textContent = "Aucun";
-      btnBonus.textContent = "Réclamer mon bonus";
-    } else {
-      alert("Erreur: " + data.message);
-      btnBonus.disabled = false;
-      btnBonus.textContent = "Réclamer mon bonus";
-    }
-  } catch (err) {
-    alert("Erreur réseau: " + err.message);
-    btnBonus.disabled = false;
-    btnBonus.textContent = "Réclamer mon bonus";
-  }
-});
+                    // Mettre à jour localStorage avec le nouveau bonus
+                    userObj.Solde = data.newSolde;
+                    userObj.dernierBonusReclame = bonusDisponible.montant;
+                    localStorage.setItem("user", JSON.stringify(userObj));
 
-
-
-  </script>
+                    // Mettre à jour l'affichage
+                    location.reload(); // Recharger la page pour une mise à jour visuelle simple
+                } else {
+                    alert("Erreur: " + data.message);
+                    btnBonus.disabled = false;
+                    btnBonus.textContent = "Réclamer mon bonus";
+                }
+            } catch (err) {
+                alert("Erreur réseau: " + err.message);
+                btnBonus.disabled = false;
+                btnBonus.textContent = "Réclamer mon bonus";
+            }
+        });
+    </script>
 </body>
 </html>
