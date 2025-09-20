@@ -69,13 +69,14 @@
     <script>
         
         // Dépôt par WhatsApp
-        if (whatsappDeposit) {
-            whatsappDeposit.addEventListener('click', () => {
-                const message = encodeURIComponent('Bonjour, je souhaite effectuer un Retrait sur MIJO PAY.');
-                const phoneNumber = '50944990203';
-                window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
-            });
-        }
+       if (whatsappDeposit) {
+    whatsappDeposit.addEventListener('click', () => {
+        const message = encodeURIComponent('Bonjour, je souhaite effectuer un Retrait sur MIJO PAY.');
+        const phoneNumber = '50944990203'; // format international sans +
+        window.open(`https://api.whatsapp.com/send?phone=${phoneNumber}&text=${message}`, '_blank');
+    });
+}
+
         
         
     </script>
