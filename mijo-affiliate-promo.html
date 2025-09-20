@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mon compte Affilié - MIJO</title>
-    <link rel="stylesheet" href="style.css">
     <style>
+        /* Styles existants (inchangés) */
         body {
-            background-color: #f7f9fc;
+            background-color: #0d1a3e; /* Fond plus sombre pour correspondre au classement */
             color: #333;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
         }
         .container {
             max-width: 600px;
@@ -19,6 +21,7 @@
         .dashboard-header {
             text-align: center;
             margin-bottom: 30px;
+            color: #fff;
         }
         .card {
             background-color: #fff;
@@ -77,6 +80,87 @@
         .bronze { background-color: #a56121; }
         .silver { background-color: #95a5a6; }
         .gold { background-color: #f1c40f; }
+
+        /* --- NOUVEAUX STYLES POUR LE CLASSEMENT --- */
+        .leaderboard-card {
+            background: linear-gradient(145deg, #1e3a8a, #2563eb);
+            border: 2px solid #3b82f6;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            text-align: left;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        .leaderboard-card::before, .leaderboard-card::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
+            border-radius: 50%;
+        }
+        .leaderboard-card::before {
+            top: -50px;
+            right: -50px;
+        }
+        .leaderboard-card::after {
+            bottom: -80px;
+            left: -30px;
+            opacity: 0.7;
+        }
+        .leaderboard-card h2 {
+            text-align: center;
+            color: #fff;
+            font-size: 1.8em;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+        }
+        .leaderboard-entry {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        .leaderboard-entry:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        .rank {
+            font-size: 1.4em;
+            font-weight: bold;
+            width: 40px;
+            text-align: center;
+            flex-shrink: 0;
+            color: #a7c5ff;
+        }
+        .avatar {
+            font-size: 2em;
+            margin: 0 10px;
+        }
+        .player-info {
+            flex-grow: 1;
+        }
+        .player-name {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .stars {
+            color: #f1c40f;
+            font-size: 0.9em;
+        }
+        .score {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #fff;
+            padding-left: 15px;
+        }
+
     </style>
 </head>
 <body>
@@ -99,42 +183,40 @@
             <p>Nombre d'affiliés : <span id="affiliatesCount">0</span></p>
             <span id="categoryBadge" class="category-badge">Bronze</span>
         </div>
-        <div class="card">
-    <h2>Bonus</h2>
-    <p>Cliquez pour accéder à vos bonus !</p>
-    <button id="bonusBtn" class="copy-btn">Voir les Bonus</button>
-</div>
 
+        <div class="card">
+            <h2>Bonus</h2>
+            <p>Cliquez pour accéder à vos bonus !</p>
+            <button id="bonusBtn" class="copy-btn">Voir les Bonus</button>
+        </div>
 
         <div class="card">
             <h2>Outils Marketing</h2>
             <p>Téléchargez les ressources pour promouvoir MIJO.</p>
             <a href="URL_DE_VOTRE_FLYER" download class="copy-btn">Télécharger le Flyer</a>
         </div>
-       <div class="card">
-    <h2>Classement des Top Affiliés</h2>
-    <button id="loadLeaderboardBtn" class="copy-btn">Voir le Classement</button>
-    <div id="leaderboardList" style="margin-top:15px; display:none;">
-        <p>Chargement du classement...</p>
-    </div>
-</div>
 
-
-
+        <div class="card leaderboard-card">
+            <button id="loadLeaderboardBtn" class="copy-btn" style="display:block; margin: 0 auto 20px auto;">Voir le Classement</button>
+            <div id="leaderboardList" style="display:none;">
+                </div>
+        </div>
     </div>
     
     <script>
-        // Quand on clique sur le bouton, on charge le classement
-document.getElementById('loadLeaderboardBtn').addEventListener('click', () => {
-    const leaderboardList = document.getElementById('leaderboardList');
-    leaderboardList.style.display = 'block'; // afficher la zone
-    leaderboardList.innerHTML = "<p>Chargement du classement...</p>"; 
-    fetchLeaderboard();
-});
+        document.getElementById('loadLeaderboardBtn').addEventListener('click', () => {
+            const leaderboardList = document.getElementById('leaderboardList');
+            const button = document.getElementById('loadLeaderboardBtn');
+            
+            button.style.display = 'none'; // Cacher le bouton après le clic
+            leaderboardList.style.display = 'block';
+            leaderboardList.innerHTML = "<p style='text-align:center;'>Chargement du classement...</p>";  
+            fetchLeaderboard();
+        });
 
         document.getElementById('bonusBtn').addEventListener('click', () => {
-    window.location.href = 'bonus.html';
-});
+            window.location.href = 'bonus.html';
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
             const userString = localStorage.getItem('user');
@@ -152,7 +234,6 @@ document.getElementById('loadLeaderboardBtn').addEventListener('click', () => {
                 return;
             }
 
-            // Mise à jour des informations utilisateur
             document.getElementById('userName').innerText = user.NomUtilisateur || "Utilisateur";
             document.getElementById('affiliateCode').innerText = user.LienAffiliation || "Non disponible";
             document.getElementById('affiliatesCount').innerText = user.nbreaffilie || 0;
@@ -172,62 +253,88 @@ document.getElementById('loadLeaderboardBtn').addEventListener('click', () => {
             }
         });
 
-       // Nouvelle fonction pour récupérer le classement depuis le backend
-async function fetchLeaderboard() {
-    const leaderboardUrl = "https://classment.mijocomplexe.workers.dev/"; // REMPLACEZ PAR VOTRE URL
+        async function fetchLeaderboard() {
+            const leaderboardUrl = "https://classment.mijocomplexe.workers.dev/";
 
-    try {
-        const response = await fetch(leaderboardUrl, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        });
+            try {
+                const response = await fetch(leaderboardUrl, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                });
 
-        if (!response.ok) {
-            throw new Error('Échec du chargement du classement.');
+                if (!response.ok) {
+                    throw new Error('Échec du chargement du classement.');
+                }
+
+                const leaderboardData = await response.json();
+                displayLeaderboard(leaderboardData);
+
+            } catch (error) {
+                console.error("Erreur lors de la récupération du classement:", error);
+                const leaderboardList = document.getElementById('leaderboardList');
+                leaderboardList.innerHTML = "<p style='text-align:center;'>Impossible de charger le classement pour le moment.</p>";
+            }
         }
 
-        const leaderboardData = await response.json();
-        displayLeaderboard(leaderboardData);
+        // Fonction pour afficher le classement (MISE À JOUR)
+        function displayLeaderboard(data) {
+            const leaderboardList = document.getElementById('leaderboardList');
+            leaderboardList.innerHTML = '<h2>LEADERBOARD</h2>'; // Efface le message et ajoute le titre
 
-    } catch (error) {
-        console.error("Erreur lors de la récupération du classement:", error);
-        const leaderboardList = document.getElementById('leaderboardList');
-        leaderboardList.innerHTML = "<p>Impossible de charger le classement pour le moment.</p>";
-    }
-}
+            if (data.length === 0) {
+                leaderboardList.innerHTML += "<p style='text-align:center;'>Aucun classement disponible.</p>";
+                return;
+            }
 
-// Fonction pour afficher le classement dans l'HTML
-function displayLeaderboard(data) {
-    const leaderboardList = document.getElementById('leaderboardList');
-    leaderboardList.innerHTML = ''; // Efface le message de chargement
+            data.forEach((entry, index) => {
+                const rank = index + 1;
+                let rankDisplay;
 
-    if (data.length === 0) {
-        leaderboardList.innerHTML = "<p>Aucun classement disponible.</p>";
-        return;
-    }
+                // Attribue les médailles pour le top 3
+                if (rank === 1) rankDisplay = '🥇';
+                else if (rank === 2) rankDisplay = '🥈';
+                else if (rank === 3) rankDisplay = '🥉';
+                else rankDisplay = rank;
 
-    const list = document.createElement('ol');
-    data.forEach((entry, index) => {
-        const listItem = document.createElement('li');
-        listItem.innerHTML = `
-            <strong>${entry.NomUtilisateur}</strong> - ${entry.nbreaffilie} affiliés
-        `;
-        list.appendChild(listItem);
-    });
-    leaderboardList.appendChild(list);
-}
+                // Détermine les étoiles et la catégorie basées sur le score
+                let starsHTML = '';
+                const affiliateCount = entry.nbreaffilie || 0;
 
+                if (affiliateCount >= 50) { // Or
+                    starsHTML = '★★★★★';
+                } else if (affiliateCount >= 10) { // Argent
+                    starsHTML = '★★★★☆';
+                } else if (affiliateCount > 0) { // Bronze
+                    starsHTML = '★★★☆☆';
+                } else {
+                    starsHTML = '★☆☆☆☆';
+                }
+                
+                // Crée l'élément HTML pour chaque affilié
+                const entryHTML = `
+                    <div class="leaderboard-entry">
+                        <div class="rank">${rankDisplay}</div>
+                        <div class="avatar">👤</div>
+                        <div class="player-info">
+                            <div class="player-name">${entry.NomUtilisateur}</div>
+                            <div class="stars">${starsHTML}</div>
+                        </div>
+                        <div class="score">${affiliateCount}</div>
+                    </div>
+                `;
 
-// Assurez-vous d'avoir toujours la fonction copyCode()
-function copyCode() {
-    const affiliateCode = document.getElementById('affiliateCode').innerText;
-    navigator.clipboard.writeText(affiliateCode).then(() => {
-        alert("Code copié dans le presse-papiers !");
-    }).catch(err => {
-        console.error("Erreur lors de la copie du code:", err);
-    });
-}
-        
+                leaderboardList.innerHTML += entryHTML;
+            });
+        }
+
+        function copyCode() {
+            const affiliateCode = document.getElementById('affiliateCode').innerText;
+            navigator.clipboard.writeText(affiliateCode).then(() => {
+                alert("Code copié dans le presse-papiers !");
+            }).catch(err => {
+                console.error("Erreur lors de la copie du code:", err);
+            });
+        }
     </script>
 </body>
 </html>
