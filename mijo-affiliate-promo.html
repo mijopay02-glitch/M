@@ -111,16 +111,27 @@
             <p>Téléchargez les ressources pour promouvoir MIJO.</p>
             <a href="URL_DE_VOTRE_FLYER" download class="copy-btn">Télécharger le Flyer</a>
         </div>
-        <div class="card">
+       <div class="card">
     <h2>Classement des Top Affiliés</h2>
-    <div id="leaderboardList">
+    <button id="loadLeaderboardBtn" class="copy-btn">Voir le Classement</button>
+    <div id="leaderboardList" style="margin-top:15px; display:none;">
         <p>Chargement du classement...</p>
     </div>
 </div>
 
+
+
     </div>
     
     <script>
+        // Quand on clique sur le bouton, on charge le classement
+document.getElementById('loadLeaderboardBtn').addEventListener('click', () => {
+    const leaderboardList = document.getElementById('leaderboardList');
+    leaderboardList.style.display = 'block'; // afficher la zone
+    leaderboardList.innerHTML = "<p>Chargement du classement...</p>"; 
+    fetchLeaderboard();
+});
+
         document.getElementById('bonusBtn').addEventListener('click', () => {
     window.location.href = 'bonus.html';
 });
@@ -206,13 +217,6 @@ function displayLeaderboard(data) {
     leaderboardList.appendChild(list);
 }
 
-// Appeler la fonction au chargement de la page
-document.addEventListener('DOMContentLoaded', () => {
-    // ... votre code existant (vérification d'utilisateur, etc.) ...
-    
-    // Après avoir mis à jour les informations de l'utilisateur, appelez ceci
-    fetchLeaderboard();
-});
 
 // Assurez-vous d'avoir toujours la fonction copyCode()
 function copyCode() {
