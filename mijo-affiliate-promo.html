@@ -297,18 +297,23 @@
                 else rankDisplay = rank;
 
                 // Détermine les étoiles et la catégorie basées sur le score
-                let starsHTML = '';
-                const affiliateCount = entry.nbreaffilie || 0;
+               // NOUVELLE LOGIQUE POUR LES ÉTOILES À 5 PALIERS
+const affiliateCount = entry.nbreaffilie || 0;
+let starsHTML = '';
 
-                if (affiliateCount >= 50) { // Or
-                    starsHTML = '★★★★★';
-                } else if (affiliateCount >= 10) { // Argent
-                    starsHTML = '★★★★☆';
-                } else if (affiliateCount > 0) { // Bronze
-                    starsHTML = '★★★☆☆';
-                } else {
-                    starsHTML = '★☆☆☆☆';
-                }
+if (affiliateCount >= 50) {
+    starsHTML = '★★★★★';
+} else if (affiliateCount >= 25) {
+    starsHTML = '★★★★☆';
+} else if (affiliateCount >= 10) {
+    starsHTML = '★★★☆☆';
+} else if (affiliateCount >= 5) {
+    starsHTML = '★★☆☆☆';
+} else if (affiliateCount >= 1) {
+    starsHTML = '★☆☆☆☆';
+} else {
+    starsHTML = '☆☆☆☆☆'; // Cas pour 0 affilié
+}
                 
                 // Crée l'élément HTML pour chaque affilié
                 const entryHTML = `
