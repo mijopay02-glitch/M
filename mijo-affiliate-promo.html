@@ -253,7 +253,7 @@
             }
         });
 
-        async function fetchLeaderboard() {
+       async function fetchLeaderboard() {
             const leaderboardUrl = "https://classment.mijocomplexe.workers.dev/";
 
             try {
@@ -267,6 +267,10 @@
                 }
 
                 const leaderboardData = await response.json();
+                
+                // ➡️ AJOUTEZ CETTE LIGNE POUR TRIER LE CLASSEMENT
+                leaderboardData.sort((a, b) => b.nbreaffilie - a.nbreaffilie);
+
                 displayLeaderboard(leaderboardData);
 
             } catch (error) {
