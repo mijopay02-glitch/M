@@ -70,19 +70,25 @@
 
         /* Carte de Film (Le poster) */
         .movie-card {
-            flex: 0 0 auto; /* Empêche les cartes de s'étirer */
-            width: 300px; /* Largeur fixe pour la carte */
-            margin-right: 10px;
-            transition: transform 0.2s ease-in-out;
-            cursor: pointer;
-            position: relative;
-        }
+    flex: 0 0 auto;
+    width: 300px; 
+    /* AJOUTER UNE HAUTEUR FIXE POUR TOUTES LES CARTES */
+    height: 169px; /* Par exemple, pour un ratio 16:9 (300px / 169px ≈ 1.77) */
+    margin-right: 10px;
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+    position: relative;
+    /* AJOUTER CELA POUR COUPER CE QUI DÉPASSE DE LA CARTE */
+    overflow: hidden; 
+}
 
         .movie-card img {
-            width: 100%;
-            border-radius: 4px; /* Petits coins arrondis */
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-        }
+    width: 100%;
+    height: 100%; /* L'image remplit la hauteur de la carte (169px) */
+    object-fit: cover; /* ESSENTIEL : Assure que l'image couvre l'espace sans être déformée, quitte à couper les bords. */
+    border-radius: 4px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
         
         .movie-card:hover {
             transform: scale(1.05); /* Zoom au survol */
