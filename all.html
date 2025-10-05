@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>All of Us Are Dead - Série</title>
+    <style>
+        .episode-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 30px;
+        }
+        .episode-item {
+            background-color: #282828; /* Gris foncé pour chaque épisode */
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .episode-item:hover {
+            background-color: #404040; /* Effet de survol netflix */
+        }
+        .episode-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #E50914; /* Un peu de rouge pour le style (comme Netflix) */
+        }
+        .episode-summary {
+            font-size: 0.9em;
+            color: #AAAAAA;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body style="background-color: #141414; color: white; padding: 50px;">
+    
+    <h1>All of Us Are Dead (Saison 1)</h1>
+    <p style="font-style: italic;">"Les élèves d'un lycée doivent lutter pour leur survie après qu'un virus zombie ait transformé leurs amis et leurs professeurs en monstres sanguinaires."</p>
+    <p>Catégorie : **Horreur / K-Drama / Action** - Nombre d'épisodes : **12**</p>
+
+    <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden; max-width: 800px; margin-top: 20px;">
+        <iframe id="main-video-player"
+            src="https://geo.dailymotion.com/player.html?video=x9ghjbc" 
+            style="width:100%; height:100%; position:absolute; left:0px; top:0px; overflow:hidden; border:none;"
+            allowfullscreen 
+            title="All of Us Are Dead - Épisode en cours"
+            allow="web-share; autoplay; fullscreen">
+        </iframe>
+    </div>
+
+    <h2>Liste des Épisodes</h2>
+    <ul class="episode-list">
+        <li class="episode-item" data-video-id="x9ghjbc">
+            <div class="episode-title">Épisode 1 : Échantillons</div>
+            <div class="episode-summary">Une expérience scientifique dans le laboratoire de l'école tourne horriblement mal, transformant une partie du corps étudiant.</div>
+        </li>
+        <li class="episode-item" data-video-id="x96tj86">
+            <div class="episode-title">Épisode 2 : C'est ici que commence le cauchemar</div>
+            <div class="episode-summary">Le lycée Hyosan est submergé. Un petit groupe se réfugie dans la salle de classe, réalisant l'ampleur de la crise.</div>
+        </li>
+        <li class="episode-item" data-video-id="E03-Dailymotion-ID">
+            <div class="episode-title">Épisode 3 : Qui est responsable ?</div>
+            <div class="episode-summary">Tandis que le chaos s'étend à la ville, les survivants luttent pour trouver un chemin sûr vers l'extérieur.</div>
+        </li>
+        </ul>
+    
+    <a href="cine.html" style="color: #A52A2A; margin-top: 20px; display: block;">Retour à l'accueil</a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const videoPlayer = document.getElementById('main-video-player');
+            const episodeItems = document.querySelectorAll('.episode-item');
+
+            // Fonction pour charger la nouvelle vidéo
+            function loadEpisode(videoId) {
+                // Assurez-vous que l'ID est bien un identifiant Dailymotion
+                const newSrc = `https://geo.dailymotion.com/player.html?video=${videoId}`;
+                videoPlayer.src = newSrc;
+            }
+
+            // Écoute les clics sur les épisodes
+            episodeItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const videoId = this.getAttribute('data-video-id');
+                    loadEpisode(videoId);
+                    alert(`Chargement de l'épisode: ${this.querySelector('.episode-title').textContent} !`);
+                    // Ici, l'alerte est pour l'exemple. En réalité, la vidéo chargerait.
+                });
+            });
+
+            // Charge le premier épisode au démarrage
+            loadEpisode(episodeItems[0].getAttribute('data-video-id'));
+        });
+    </script>
+</body>
+</html>
