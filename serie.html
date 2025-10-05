@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIJO CINÉ - Séries</title>
+    <style>
+        /* Nettoyage et Fond Sombre (comme Netflix) */
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #141414; /* Noir très sombre */
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* En-tête (Navigation simple) */
+        header {
+            background-color: #141414;
+            padding: 15px 4%;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .logo {
+            color: #A52A2A; /* Le rouge MIJO CINÉ */
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-right: 30px;
+        }
+        
+        /* Conteneur de navigation */
+        nav {
+            display: flex;
+            align-items: center;
+        }
+
+        /* --- Style des Boutons Film/Série --- */
+        .nav-link {
+            color: #ccc;
+            text-decoration: none;
+            margin-right: 20px;
+            font-size: 1.1em;
+            padding: 5px 0;
+            transition: color 0.2s, font-weight 0.2s;
+        }
+        .nav-link:hover {
+            color: #fff;
+        }
+        
+        /* État ACTIF pour le bouton (vous êtes sur la page Série) */
+        .nav-link.active {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* --- Style du Menu Déroulant --- */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            margin-right: 20px;
+        }
+        .dropbtn {
+            background-color: transparent;
+            color: #ccc;
+            padding: 5px 0;
+            font-size: 1.1em;
+            border: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .dropbtn:hover {
+            color: #fff;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #000; /* Fond noir pour le menu */
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
+            z-index: 1;
+            padding: 5px 0;
+            border-radius: 4px;
+            top: 100%; /* S'affiche sous le bouton */
+            left: 0;
+        }
+        .dropdown-content a {
+            color: #ccc;
+            padding: 8px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 1em;
+        }
+        .dropdown-content a:hover {
+            background-color: #2a2a2a; /* Changement de couleur au survol */
+            color: #fff;
+        }
+        /* Affiche le menu déroulant au survol du conteneur */
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* Conteneurs de Catégories (Le coeur du style Netflix) */
+        .category-row {
+            padding: 20px 0;
+        }
+        .category-row h2 {
+            font-size: 1.5em;
+            margin-left: 4%;
+            margin-bottom: 15px;
+            color: #e5e5e5;
+        }
+
+        /* Ligne de Films Défilante */
+        .movie-list {
+            display: flex;
+            overflow-x: scroll; /* Permet le défilement horizontal */
+            padding: 0 4% 10px 4%; /* Padding pour les bords et la barre de défilement */
+        }
+        
+        /* Cache la barre de défilement pour un look plus propre (optionnel) */
+        .movie-list::-webkit-scrollbar {
+            display: none;
+        }
+        .movie-list {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        /* Carte de Film (Le poster) - Dimensions adaptées aux séries si besoin, mais réutilise le format 16:9 des films */
+        .movie-card {
+            flex: 0 0 auto;
+            width: 300px; 
+            height: 169px; 
+            margin-right: 10px;
+            transition: transform 0.2s ease-in-out;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden; 
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 100%; 
+            object-fit: cover; 
+            border-radius: 4px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .movie-card:hover {
+            transform: scale(1.05); /* Zoom au survol */
+            z-index: 5;
+        }
+        
+        /* Conteneur pour la lecture (caché par défaut) */
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border-radius: 4px;
+        }
+        .movie-card:hover .play-overlay {
+            opacity: 1;
+        }
+        .play-button {
+            background-color: white;
+            color: black;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">MIJO CINÉ</div>
+        <nav>
+            <a href="MIJO CINE.html" class="nav-link">Accueil</a>
+            
+            <a href="MIJO CINE.html" class="nav-link">Films</a> 
+            <a href="#" class="nav-link active">Séries</a> 
+
+            <div class="dropdown">
+                <button class="dropbtn">Genres ▼</button>
+                <div class="dropdown-content">
+                    <a href="#action-series">Action</a>
+                    <a href="#mystere-thriller">Mystère & Thriller</a>
+                    <a href="#comedie-series">Comédie</a>
+                    <a href="#fantastique">Fantastique</a>
+                    <a href="#drama-romance">Drama & Romance</a>
+                    <a href="#animation">Animation</a>
+                </div>
+            </div>
+            
+        </nav>
+    </header>
+
+    <main>
+        
+        <div class="category-row" id="action-series">
+            <h2>Séries d'Action & Aventure</h2>
+            <div class="movie-list">
+                
+                <div class="movie-card">
+                    <img src="https://via.placeholder.com/300x169?text=Poster+Serie+Action+1" alt="Série Action 1">
+                    <a href="serie1-saison1.html" class="play-overlay">
+                        <span class="play-button">Voir la série</span>
+                    </a>
+                </div>
+                <div class="movie-card">
+                    <img src="https://via.placeholder.com/300x169?text=Poster+Serie+Action+2" alt="Série Action 2">
+                    <a href="serie2-saison1.html" class="play-overlay">
+                        <span class="play-button">Voir la série</span>
+                    </a>
+                </div>
+                <div class="movie-card">
+                    <img src="https://via.placeholder.com/300x169?text=Poster+Serie+Action+3" alt="Série Action 3">
+                    <a href="serie3-saison1.html" class="play-overlay">
+                        <span class="play-button">Voir la série</span>
+                    </a>
+                </div>
+                </div>
+        </div>
+        
+        <div class="category-row" id="mystere-thriller">
+            <h2>Mystère & Thriller</h2>
+            <div class="movie-list">
+                
+                <div class="movie-card">
+                    <img src="https://via.placeholder.com/300x169?text=Poster+Serie+Thriller+1" alt="Série Thriller 1">
+                    <a href="serie4-saison1.html" class="play-overlay">
+                        <span class="play-button">Voir la série</span>
+                    </a>
+                </div>
+                <div class="movie-card">
+                    <img src="https://via.placeholder.com/300x169?text=Poster+Serie+Thriller+2" alt="Série Thriller 2">
+                    <a href="serie5-saison1.html" class="play-overlay">
+                        <span class="play-button">Voir la série</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+        
+        <div class="category-row" id="comedie-series">
+            <h2>Séries Comiques</h2>
+            <div class="movie-list">
+                
+                <div class="movie-card">
+                    <img src="https://via.placeholder.com/300x169?text=Poster+Serie+Comedie+1" alt="Série Comédie 1">
+                    <a href="serie6-saison1.html" class="play-overlay">
+                        <span class="play-button">Voir la série</span>
+                    </a>
+                </div>
+                <div class="movie-card">
+                    <img src="https://via.placeholder.com/300x169?text=Poster+Serie+Comedie+2" alt="Série Comédie 2">
+                    <a href="serie7-saison1.html" class="play-overlay">
+                        <span class="play-button">Voir la série</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+
+        <div class="category-row" id="fantastique">
+            <h2>Fantastique & Science-Fiction</h2>
+            <div class="movie-list">
+                
+                <div class="movie-card">
+                    <img src="https://via.placeholder.com/300x169?text=Poster+Serie+SF+1" alt="Série SF 1">
+                    <a href="serie8-saison1.html" class="play-overlay">
+                        <span class="play-button">Voir la série</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+
+        <div class="category-row" id="drama-romance">
+            <h2>Drama & Romance</h2>
+            <div class="movie-list">
+                
+                <div class="movie-card">
+                    <img src="https://via.placeholder.com/300x169?text=Poster+Serie+Drama+1" alt="Série Drama 1">
+                    <a href="serie9-saison1.html" class="play-overlay">
+                        <span class="play-button">Voir la série</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+        
+    </main>
+
+</body>
+</html>
