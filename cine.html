@@ -331,7 +331,7 @@
 
                     // 1. Mettez à jour le localStorage
                     localStorage.setItem('user', JSON.stringify(user));
-
+ saveToHistory("Abonnement Premium", premiumPrice, "Succès", "MIJO PAY", user.userId);
                     // 2. Cachez le message de blocage IMMÉDIATEMENT
                     if (blocker) {
                         blocker.style.display = 'none';
