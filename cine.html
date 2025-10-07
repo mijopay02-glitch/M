@@ -357,6 +357,21 @@
         }
 
     });
+        function saveToHistory(type, amount, status, recipient, userId) {
+        const historyKey = `transactions_${userId}`;
+        let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+        const newTransaction = {
+            id: Date.now(),
+            type: type,
+            amount: amount,
+            status: status,
+            recipient: recipient,
+            date: new Date().toLocaleDateString()
+        };
+        history.push(newTransaction);
+        localStorage.setItem(historyKey, JSON.stringify(history));
+    }
+
 </script>
 <body>
 
