@@ -181,8 +181,183 @@
             text-decoration: none;
             font-size: 1.1em;
         }
+        /* --- Style pour le blocage Premium --- */
+#premium-blocker {
+    position: fixed; /* Reste en place même si on défile */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); /* Fond noir semi-transparent */
+    z-index: 1000; /* Doit être au-dessus de tout le reste */
+    display: none; /* Caché par défaut */
+    justify-content: center;
+    align-items: center;
+}
+
+#premium-message {
+    background-color: #1f1f1f;
+    padding: 30px 40px;
+    border-radius: 8px;
+    text-align: center;
+    color: #e5e5e5;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    max-width: 400px;
+}
+
+#premium-message h3 {
+    font-size: 1.6em;
+    color: #fff;
+    margin-top: 0;
+}
+
+#premium-message .buttons-container {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* Espace entre les boutons */
+}
+
+.premium-btn {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: filter 0.2s;
+}
+
+.premium-btn:hover {
+    filter: brightness(0.9);
+}
+
+/* Bouton Retour (Blanc) */
+#btn-retour {
+    background-color: #e5e5e5;
+    color: #141414;
+}
+
+/* Bouton Activer (Rouge) */
+#btn-activer-premium {
+    background-color: #A52A2A; /* Votre rouge MIJO CINÉ */
+    color: #fff;
+}
     </style>
 </head>
+    <div id="premium-blocker">
+    <div id="premium-message">
+        <h3>Accès Premium Requis</h3>
+        <p>Pour regarder les films et séries, vous devez activer votre abonnement Premium.</p>
+        <div class="buttons-container">
+            <a href="home.html" id="btn-retour" class="premium-btn">Retour</a>
+            <button id="btn-activer-premium" class="premium-btn">Activer Premium</button>
+        </div>
+    </div>
+</div>
+    <script>
+    // Attend que toute la page soit chargée avant d'exécuter le script
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // --- 1. FONCTION POUR AFFICHER LE MESSAGE DE BLOCAGE ---
+        const blocker = document.getElementById('premium-blocker');
+        function showPremiumBlocker() {
+            if (blocker) {
+                blocker.style.display = 'flex';
+            }
+        }
+
+        // --- 2. VÉRIFICATION DE L'UTILISATEUR ---
+        const userString = localStorage.getItem('user');
+
+        if (!userString) {
+            // Si l'utilisateur n'est pas du tout connecté
+            showPremiumBlocker();
+            return; // Arrête le script ici
+        }
+
+        try {
+            const user = JSON.parse(userString);
+            // Si l'utilisateur est connecté MAIS que EstPremium n'est pas true
+            if (!user.EstPremium) {
+                showPremiumBlocker();
+            }
+            // Si user.EstPremium est true, la fonction n'est pas appelée et l'utilisateur voit la page normalement.
+        } catch (e) {
+            // Si les données dans localStorage sont corrompues
+            console.error("Erreur de parsing des données utilisateur:", e);
+            showPremiumBlocker();
+        }
+
+        // --- 3. LOGIQUE POUR LE BOUTON "ACTIVER PREMIUM" ---
+        // Votre script de paiement, maintenant dans une fonction `async`
+        async function activatePremium() {
+            const userString = localStorage.getItem('user');
+            let user;
+            try {
+                user = JSON.parse(userString);
+            } catch (e) {
+                alert("Erreur de données utilisateur. Veuillez vous reconnecter.");
+                window.location.href = "index.html";
+                return;
+            }
+
+            if (!user || !user.userId) {
+                alert("Utilisateur non connecté ou données manquantes.");
+                return;
+            }
+
+            const premiumPrice = 150;
+            const storeScriptUrl = "https://mijopaypremium.mijocomplexe.workers.dev/";
+
+            try {
+                const response = await fetch(storeScriptUrl, {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: "pay_premium",
+                        senderId: user.userId,
+                        amount: premiumPrice
+                    })
+                });
+
+                const data = await response.json();
+                console.log("Réponse du serveur:", data);
+
+                if (data.success && data.user && data.user.Solde !== undefined) {
+                    user.Solde = data.user.Solde;
+                    user.EstPremium = true;
+
+                    // 1. Mettez à jour le localStorage
+                    localStorage.setItem('user', JSON.stringify(user));
+
+                    // 2. Cachez le message de blocage IMMÉDIATEMENT
+                    if (blocker) {
+                        blocker.style.display = 'none';
+                    }
+                    
+                    alert("Abonnement Premium activé avec succès ! Vous pouvez maintenant profiter des films.");
+                    // Optionnel : Vous pouvez recharger la page pour être sûr que tout est à jour.
+                    // window.location.reload();
+
+                } else {
+                    alert(data.error || "Échec de l'activation de l'abonnement Premium.");
+                }
+            } catch (error) {
+                console.error("Erreur lors de la requête:", error);
+                alert("Erreur de connexion. Veuillez vérifier votre connexion ou le lien du serveur.");
+            }
+        }
+
+        // Attache la fonction au clic du bouton
+        const activateButton = document.getElementById('btn-activer-premium');
+        if (activateButton) {
+            activateButton.addEventListener('click', activatePremium);
+        }
+
+    });
+</script>
 <body>
 
     <header>
