@@ -465,203 +465,147 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </a>
     </nav>
     <script>
-          // ...
+  
+// ===============================================
+// 1. DÉCLARATIONS GLOBALES (Une seule fois !)
+// ===============================================
+
+// --- DÉFINITIONS CLÉS (Workers et Agents) ---
+const WORKER_URL = "https://transaction.mijocomplexe.workers.dev/"; 
+const AGENT_NAME = "MIJO STORE"; 
+const storeScriptUrl = "https://store.mijocomplexe.workers.dev/";
+
+// --- Éléments du DOM ---
 const checkoutBtn = document.getElementById('checkout-btn');
-let cart = [];
+const cartContent = document.getElementById('cart-content');
+const cartIcon = document.getElementById('cart-icon');
+const cartCount = document.getElementById('cart-count');
+const cartItemsList = document.getElementById('cart-items');
+const cartTotalDisplay = document.getElementById('cart-total');
 
-// --- DÉFINITIONS CLÉS ---
-const WORKER_URL = "https://transaction.mijocomplexe.workers.dev/"; // Assurez-vous que cette URL est correcte !
-const AGENT_NAME = "MIJO STORE"; // Nom de l'entité qui effectue le transfert
+// --- État de l'application ---
+let cart = []; // Le panier d'achat
 
+// ===============================================
+// 2. DÉFINITIONS DES FONCTIONS (Doivent être globales)
+// ===============================================
 
-// ...
-        document.addEventListener('DOMContentLoaded', () => {
-    const premiumFreeSection = document.getElementById('premium-free-section');
-    if (premiumFreeSection) {
-        const container = premiumFreeSection.querySelector('.product-list');
-        if (container) {
-            loadPremiumFreeProducts(container);
-        }
+// Fonction pour mettre à jour l'affichage du panier
+function renderCart() {
+    cartItemsList.innerHTML = '';
+    let total = 0;
+    if (cart.length === 0) {
+        cartItemsList.innerHTML = '<li>Panier vide</li>';
+        checkoutBtn.style.display = 'none';
+    } else {
+        cart.forEach(item => {
+            const li = document.createElement('li');
+            // Remarque: Utiliser innerHTML avec des données utilisateur est risqué (XSS).
+            // Pour l'amélioration, il faudrait utiliser li.appendChild(span/button).
+            li.innerHTML = `
+                <span>${item.name}</span>
+                <span>${item.price} G</span>
+                <button onclick="removeFromCart('${item.code}')">Retirer</button>
+            `;
+            cartItemsList.appendChild(li);
+            total += item.price;
+        });
+        checkoutBtn.style.display = 'block';
     }
-    // Ajoutez ici d'autres initialisations comme renderCart() si nécessaire
+    cartCount.innerText = cart.length;
+    cartTotalDisplay.innerText = `Total: ${total} G`;
+}
+
+function addToCart(name, price, code, link) {
+    const existingItem = cart.find(item => item.code === code);
+    if (existingItem) {
+        alert("Ce produit est déjà dans votre panier.");
+        return;
+    }
+    cart.push({ name, price, code, link });
     renderCart();
-});
-    const storeScriptUrl = "https://store.mijocomplexe.workers.dev/";
+    alert(`${name} a été ajouté au panier !`);
+}
 
-    const cartContent = document.getElementById('cart-content');
-    const cartIcon = document.getElementById('cart-icon');
-    const cartCount = document.getElementById('cart-count');
-    const cartItemsList = document.getElementById('cart-items');
-    const cartTotalDisplay = document.getElementById('cart-total');
-    const checkoutBtn = document.getElementById('checkout-btn');
-    let cart = [];
+function removeFromCart(code) {
+    cart = cart.filter(item => item.code !== code);
+    renderCart();
+    alert("Produit retiré du panier.");
+}
 
-    function renderCart() {
-        cartItemsList.innerHTML = '';
-        let total = 0;
-        if (cart.length === 0) {
-            cartItemsList.innerHTML = '<li>Panier vide</li>';
-            checkoutBtn.style.display = 'none';
-        } else {
-            cart.forEach(item => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <span>${item.name}</span>
-                    <span>${item.price} G</span>
-                    <button onclick="removeFromCart('${item.code}')">Retirer</button>
-                `;
-                cartItemsList.appendChild(li);
-                total += item.price;
-            });
-            checkoutBtn.style.display = 'block';
-        }
-        cartCount.innerText = cart.length;
-        cartTotalDisplay.innerText = `Total: ${total} G`;
-    }
+// Fonction pour l'historique local (localStorage)
+function saveToHistory(productName, price, status, userId) {
+    const historyKey = `transactions_${userId}`;
+    let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+    const newTransaction = {
+        id: Date.now(),
+        type: status,
+        description: productName,
+        amount: price,
+        date: new Date().toLocaleDateString()
+    };
+    history.push(newTransaction);
+    localStorage.setItem(historyKey, JSON.stringify(history));
+}
 
-    function addToCart(name, price, code, link) {
-        const existingItem = cart.find(item => item.code === code);
-        if (existingItem) {
-            alert("Ce produit est déjà dans votre panier.");
-            return;
-        }
-        cart.push({ name, price, code, link });
-        renderCart();
-        alert(`${name} a été ajouté au panier !`);
-    }
+// Fonction pour enregistrer les produits de l'utilisateur (localStorage)
+function saveToMyProducts(itemName, itemLink, userId) {
+    const productsKey = `myProducts_${userId}`;
+    let myProducts = JSON.parse(localStorage.getItem(productsKey)) || [];
+    const newProduct = {
+        name: itemName,
+        link: itemLink,
+        date: new Date().toLocaleDateString()
+    };
+    myProducts.push(newProduct);
+    localStorage.setItem(productsKey, JSON.stringify(myProducts));
+}
 
-    function removeFromCart(code) {
-        cart = cart.filter(item => item.code !== code);
-        renderCart();
-        alert("Produit retiré du panier.");
-    }
-
-    cartIcon.addEventListener('click', () => {
-        cartContent.classList.toggle('visible');
-    });
-
-    checkoutBtn.addEventListener('click', async () => {
-        if (cart.length === 0) {
-            alert("Votre panier est vide.");
-            return;
-        }
-
-        const userString = localStorage.getItem('user');
-        
-        let user;
-        try {
-            user = JSON.parse(userString);
-        } catch (e) {
-            console.error("Erreur lors de l'analyse des données utilisateur:", e);
-            alert("Erreur de données utilisateur. Veuillez vous reconnecter.");
-            window.location.href = "index.html";
-            return;
-        }
-        
-        console.log("Données utilisateur lues depuis le localStorage :", user);
-        
-        if (!user || !user.userId) {
-            alert("Vous devez être connecté et vos données doivent être valides pour effectuer un achat.");
-            window.location.href = "index.html";
-            return;
-        }
-        
-        alert("Achat en cours, veuillez patienter...");
-        
-        let purchasePromises = cart.map(item => {
-            const requestData = {
-                userId: user.userId,
-                productId: item.code
-            };
-            console.log("Données envoyées pour l'achat:", requestData);
-            return fetch(storeScriptUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    return { success: true, newBalance: data.nouveauSolde, item: item };
-                } else {
-                    return { success: false, error: data.error };
-                }
-            })
-            .catch(error => {
-                console.error("Erreur de connexion:", error);
-                alert("Erreur de connexion. Veuillez vérifier votre connexion ou le lien du serveur.");
-                return { success: false, error: "Erreur de connexion." };
-            });
+// Fonction pour l'enregistrement dans le KV Global via le Worker
+async function saveToGlobalKV(productName, price, status, userId) {
+    // Note: 'agentId' est rebaptisé 'userId' car vous envoyez l'ID de l'acheteur
+    const userString = localStorage.getItem('user');
+    let user;
+    try { user = JSON.parse(userString); } catch (e) { return; }
+    
+    const transactionData = {
+        action: "transfer_money", 
+        amount: price,
+        senderId: userId, // L'ID de l'acheteur (pour le débit)
+        senderName: user ? user.nom : 'Inconnu',
+        recipientCardNumber: productName, // L'identifiant du produit/service
+        recipientName: AGENT_NAME, // Le destinataire réel de l'argent
+        type: status 
+    };
+    
+    try {
+        const response = await fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(transactionData)
         });
 
-        const results = await Promise.all(purchasePromises);
-        
-        let successCount = 0;
-        let lastSuccessfulBalance = undefined;
-
-        results.forEach(result => {
-            if (result.success) {
-                successCount++;
-                lastSuccessfulBalance = result.newBalance;
-                
-                // Sauvegardez la transaction et le produit ici, car on sait que l'achat est réussi
-                saveToHistory(result.item.name, result.item.price, "Achat", user.userId);
-                saveToMyProducts(result.item.name, result.item.link, user.userId);
-                  saveToGlobalKV(result.item.name, result.item.price, "Achat", user.userId);
-            }
-        });
-
-        if (successCount > 0) {
-            if (lastSuccessfulBalance !== undefined) {
-                user.Solde = lastSuccessfulBalance;
-                localStorage.setItem('user', JSON.stringify(user));
-            }
-
-            alert(`Achat de ${successCount} produit(s) réussi !`);
-            cart = [];
-            renderCart();
-            cartContent.classList.remove('visible');
-            window.location.href = "home.html?refresh=" + new Date().getTime();
+        if (response.ok) {
+            console.log("Transaction globale enregistrée dans le KV avec succès.");
         } else {
-            alert("Échec de l'achat. Veuillez vérifier votre solde ou réessayer.");
+            console.error("Échec de l'enregistrement KV global:", await response.text());
         }
-    });
-
-    // Fonction pour récupérer l'utilisateur et initialiser la page
-
+    } catch (error) {
+        console.error("Erreur de connexion lors de l'enregistrement KV global:", error);
+    }
+}
 
 // Fonction pour charger et afficher les produits premium gratuits
 function loadPremiumFreeProducts(container) {
     const premiumProducts = [
-        {
-            name: "Pack d'icônes",
-            description: "Un pack de 50 icônes vectorielles.",
-            price: "Gratuit",
-            link: "https://drive.google.com/drive/folders/19ZqkP-Msvt-_CoG-1EyVZHsVabRS4FBR?usp=sharing",
-            image: "https://i.postimg.cc/C5X4tHkg/icons-logos-social-media-2023.jpg" 
-        },
-        {
-            name: "Jeux PSP",
-            description: "Fichier PSP",
-            price: "Gratuit",
-            link: "https://drive.google.com/drive/folders/16SSeHcUqyTfLkITFL2xPrfP0OKhYAnKr?usp=drive_link",
-            image: "https://i.postimg.cc/1zhj4PgQ/appshunter-io-z-BB30u-D8-unsplash.jpg" 
-        },
-        {
-            name: "Pack fond vert",
-            description: "+50 files",
-            price: "Gratuit",
-            link: "https://drive.google.com/drive/folders/1oqiMrYPzJO3ro_7pNbYl39dHHkPTbiKs?usp=drive_link",
-            image: "https://i.postimg.cc/rsmZSVXY/3181989.jpg" 
-        },
-        // Ajoutez d'autres produits premium gratuits ici
+        { name: "Pack d'icônes", description: "Un pack de 50 icônes vectorielles.", price: "Gratuit", link: "https://drive.google.com/drive/folders/19ZqkP-Msvt-_CoG-1EyVZHsVabRS4FBR?usp=sharing", image: "https://i.postimg.cc/C5X4tHkg/icons-logos-social-media-2023.jpg" },
+        { name: "Jeux PSP", description: "Fichier PSP", price: "Gratuit", link: "https://drive.google.com/drive/folders/16SSeHcUqyTfLkITFL2xPrfP0OKhYAnKr?usp=drive_link", image: "https://i.postimg.cc/1zhj4PgQ/appshunter-io-z-BB30u-D8-unsplash.jpg" },
+        { name: "Pack fond vert", description: "+50 files", price: "Gratuit", link: "https://drive.google.com/drive/folders/1oqiMrYPzJO3ro_7pNbYl39dHHkPTbiKs?usp=drive_link", image: "https://i.postimg.cc/rsmZSVXY/3181989.jpg" },
     ];
 
     container.innerHTML = '';
     premiumProducts.forEach(product => {
-        // Créez une variable pour le nom du produit échappé
         const escapedName = product.name.replace(/'/g, "\\'");
-
         const itemHtml = `
             <div class="product-item free">
                 <img src="${product.image}" alt="Image ${product.name}">
@@ -683,77 +627,131 @@ function downloadFree(productName, driveLink) {
     }
     const user = JSON.parse(userString);
     
-    // Vérification du statut premium
     if (!user.EstPremium) {
         alert("Ce produit est réservé aux utilisateurs premium. Contactez-nous pour devenir premium et bénéficier de ces avantages !");
-        // Vous pouvez ajouter une redirection ici si vous avez une page d'information
-        // window.location.href = "contact.html"; 
         return;
     }
     
     alert(`Téléchargement de ${productName} démarré.`);
     saveToHistory(productName, 0, "Produit premium gratuit", user.userId);
     saveToMyProducts(productName, driveLink, user.userId);
-      saveToGlobalKV(productName, 0, "Produit premium gratuit", user.userId);
+    saveToGlobalKV(productName, 0, "Produit premium gratuit", user.userId);
     window.open(driveLink, '_blank');
 }
 
-    function saveToHistory(productName, price, status, userId) {
-        const historyKey = `transactions_${userId}`;
-        let history = JSON.parse(localStorage.getItem(historyKey)) || [];
-        const newTransaction = {
-            id: Date.now(),
-            type: status,
-            description: productName,
-            amount: price,
-            date: new Date().toLocaleDateString()
-        };
-        history.push(newTransaction);
-        localStorage.setItem(historyKey, JSON.stringify(history));
+
+// ===============================================
+// 3. ÉCOUTEURS D'ÉVÉNEMENTS (Initialisation du script)
+// ===============================================
+
+// Assure que le script s'exécute une fois que le DOM est prêt.
+document.addEventListener('DOMContentLoaded', () => {
+    const premiumFreeSection = document.getElementById('premium-free-section');
+    if (premiumFreeSection) {
+        const container = premiumFreeSection.querySelector('.product-list');
+        if (container) {
+            loadPremiumFreeProducts(container);
+        }
     }
-    
-    function saveToMyProducts(itemName, itemLink, userId) {
-        const productsKey = `myProducts_${userId}`;
-        console.log("Clé de lecture des produits:", productsKey);
-        let myProducts = JSON.parse(localStorage.getItem(productsKey)) || [];
-        const newProduct = {
-            name: itemName,
-            link: itemLink,
-            date: new Date().toLocaleDateString()
-        };
-        myProducts.push(newProduct);
-        localStorage.setItem(productsKey, JSON.stringify(myProducts));
+    // Initialise l'affichage du panier (au cas où il y avait des données persistantes)
+    renderCart(); 
+});
+
+
+cartIcon.addEventListener('click', () => {
+    cartContent.classList.toggle('visible');
+});
+
+checkoutBtn.addEventListener('click', async () => {
+    // ... (Votre logique de paiement reste inchangée, elle est correcte) ...
+
+    if (cart.length === 0) {
+        alert("Votre panier est vide.");
+        return;
     }
-      // --- NOUVELLE FONCTION POUR LE KV GLOBAL ---
-async function saveToGlobalKV(productName, price, status, agentId) {
-    const transactionData = {
-        action: "transfer_money", // Réutiliser l'action qui déclenche l'enregistrement KV
-        amount: price,
-        // On utilise le nom du produit comme destinataire pour un achat
-        recipientCardNumber: productName, 
-        senderName: AGENT_NAME,
-        type: status // Ex: "Achat" ou "Produit premium gratuit"
-    };
+
+    // ... (Lecture utilisateur et vérification) ...
     
-    // Le Worker gère l'enregistrement asynchrone dans le KV
+    const userString = localStorage.getItem('user');
+    let user;
     try {
-        const response = await fetch(WORKER_URL, {
+        user = JSON.parse(userString);
+    } catch (e) {
+        console.error("Erreur lors de l'analyse des données utilisateur:", e);
+        alert("Erreur de données utilisateur. Veuillez vous reconnecter.");
+        window.location.href = "index.html";
+        return;
+    }
+    
+    if (!user || !user.userId) {
+        alert("Vous devez être connecté et vos données doivent être valides pour effectuer un achat.");
+        window.location.href = "index.html";
+        return;
+    }
+    
+    alert("Achat en cours, veuillez patienter...");
+    
+    let purchasePromises = cart.map(item => {
+        const requestData = {
+            userId: user.userId,
+            productId: item.code
+        };
+        console.log("Données envoyées pour l'achat:", requestData);
+        return fetch(storeScriptUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(transactionData)
+            body: JSON.stringify(requestData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                return { success: true, newBalance: data.nouveauSolde, item: item };
+            } else {
+                return { success: false, error: data.error };
+            }
+        })
+        .catch(error => {
+            console.error("Erreur de connexion:", error);
+            alert("Erreur de connexion. Veuillez vérifier votre connexion ou le lien du serveur.");
+            return { success: false, error: "Erreur de connexion." };
         });
+    });
 
-        // La transaction globale ne dépend pas de la réponse, mais on log l'info.
-        if (response.ok) {
-            console.log("Transaction globale enregistrée dans le KV avec succès.");
-        } else {
-            console.error("Échec de l'enregistrement KV global:", await response.text());
+    const results = await Promise.all(purchasePromises);
+    
+    let successCount = 0;
+    let lastSuccessfulBalance = undefined;
+
+    results.forEach(result => {
+        if (result.success) {
+            successCount++;
+            lastSuccessfulBalance = result.newBalance;
+            
+            // Sauvegardez la transaction et le produit ici, car on sait que l'achat est réussi
+            saveToHistory(result.item.name, result.item.price, "Achat", user.userId);
+            saveToMyProducts(result.item.name, result.item.link, user.userId);
+            saveToGlobalKV(result.item.name, result.item.price, "Achat", user.userId);
         }
-    } catch (error) {
-        console.error("Erreur de connexion lors de l'enregistrement KV global:", error);
+    });
+
+    if (successCount > 0) {
+        if (lastSuccessfulBalance !== undefined) {
+            user.Solde = lastSuccessfulBalance;
+            localStorage.setItem('user', JSON.stringify(user));
+        }
+
+        alert(`Achat de ${successCount} produit(s) réussi !`);
+        cart = [];
+        renderCart();
+        cartContent.classList.remove('visible');
+        window.location.href = "home.html?refresh=" + new Date().getTime();
+    } else {
+        alert("Échec de l'achat. Veuillez vérifier votre solde ou réessayer.");
     }
-}
-// --- FIN NOUVELLE FONCTION ---
+
+});
+
+
 </script>
     </body>
 </html>
