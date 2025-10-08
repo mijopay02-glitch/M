@@ -257,6 +257,12 @@
     </div>
 </div>
     <script>
+        const GLOBAL_HISTORY_WORKER_URL = "https://transaction.mijocomplexe.workers.dev/"; 
+    // Assurez-vous que cette URL est celle qui gère l'enregistrement dans TRANSACTIONS_KV
+    
+    // Attend que toute la page soit chargée avant d'exécuter le script
+   
+
     // Attend que toute la page soit chargée avant d'exécuter le script
     document.addEventListener('DOMContentLoaded', function() {
 
@@ -332,6 +338,7 @@
                     // 1. Mettez à jour le localStorage
                     localStorage.setItem('user', JSON.stringify(user));
  saveToHistory("Abonnement Premium", premiumPrice, "Succès", "MIJO PAY", user.userId);
+                    await saveToGlobalKV(user.userId, premiumPrice, user.nom);
                     // 2. Cachez le message de blocage IMMÉDIATEMENT
                     if (blocker) {
                         blocker.style.display = 'none';
@@ -371,7 +378,31 @@
         history.push(newTransaction);
         localStorage.setItem(historyKey, JSON.stringify(history));
     }
+// ... (après la fonction saveToHistory, ou au début du script)
 
+// Fonction pour enregistrer la transaction dans le KV Global via le Worker de transaction
+async function saveToGlobalKV(senderId, amount, senderName) {
+    const transactionData = {
+        action: "transfer_money", // Réutilise l'action du store si elle enregistre tout transfert
+        amount: amount,
+        senderId: senderId, 
+        senderName: senderName,
+        recipient: "MIJO CINÉ / Entreprise",
+        type: "Abonnement Premium CINÉ" // Description pour l'historique
+    };
+    
+    try {
+        await fetch(GLOBAL_HISTORY_WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(transactionData)
+        });
+
+        console.log("Abonnement Premium enregistré dans le KV global.");
+    } catch (error) {
+        console.error("Erreur de connexion lors de l'enregistrement KV global:", error);
+    }
+}
 </script>
 <body>
 
