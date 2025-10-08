@@ -427,7 +427,7 @@ const loginUrl = "https://mijopay.mijocomplexe.workers.dev/"; // L'URL de votre 
  * Récupère TOUTES les données utilisateur à jour depuis l'API, 
  * met à jour le localStorage, et rafraîchit l'UI (Nom, Email, Solde, Premium).
  */
-async function refreshUserData(event) {
+async function refreshBalance(event) {
     if (event) event.preventDefault(); 
     
     const userString = localStorage.getItem('user');
