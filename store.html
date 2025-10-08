@@ -465,6 +465,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </a>
     </nav>
     <script>
+          // ...
+const checkoutBtn = document.getElementById('checkout-btn');
+let cart = [];
+
+// --- DÉFINITIONS CLÉS ---
+const WORKER_URL = "https://transaction.mijocomplexe.workers.dev/"; // Assurez-vous que cette URL est correcte !
+const AGENT_NAME = "MIJO STORE"; // Nom de l'entité qui effectue le transfert
+
+function renderCart() {
+// ...
         document.addEventListener('DOMContentLoaded', () => {
     const premiumFreeSection = document.getElementById('premium-free-section');
     if (premiumFreeSection) {
@@ -597,6 +607,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 // Sauvegardez la transaction et le produit ici, car on sait que l'achat est réussi
                 saveToHistory(result.item.name, result.item.price, "Achat", user.userId);
                 saveToMyProducts(result.item.name, result.item.link, user.userId);
+                  saveToGlobalKV(result.item.name, result.item.price, "Achat", user.userId);
             }
         });
 
@@ -683,6 +694,7 @@ function downloadFree(productName, driveLink) {
     alert(`Téléchargement de ${productName} démarré.`);
     saveToHistory(productName, 0, "Produit premium gratuit", user.userId);
     saveToMyProducts(productName, driveLink, user.userId);
+      saveToGlobalKV(productName, 0, "Produit premium gratuit", user.userId);
     window.open(driveLink, '_blank');
 }
 
@@ -712,6 +724,36 @@ function downloadFree(productName, driveLink) {
         myProducts.push(newProduct);
         localStorage.setItem(productsKey, JSON.stringify(myProducts));
     }
+      // --- NOUVELLE FONCTION POUR LE KV GLOBAL ---
+async function saveToGlobalKV(productName, price, status, agentId) {
+    const transactionData = {
+        action: "transfer_money", // Réutiliser l'action qui déclenche l'enregistrement KV
+        amount: price,
+        // On utilise le nom du produit comme destinataire pour un achat
+        recipientCardNumber: productName, 
+        senderName: AGENT_NAME,
+        type: status // Ex: "Achat" ou "Produit premium gratuit"
+    };
+    
+    // Le Worker gère l'enregistrement asynchrone dans le KV
+    try {
+        const response = await fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(transactionData)
+        });
+
+        // La transaction globale ne dépend pas de la réponse, mais on log l'info.
+        if (response.ok) {
+            console.log("Transaction globale enregistrée dans le KV avec succès.");
+        } else {
+            console.error("Échec de l'enregistrement KV global:", await response.text());
+        }
+    } catch (error) {
+        console.error("Erreur de connexion lors de l'enregistrement KV global:", error);
+    }
+}
+// --- FIN NOUVELLE FONCTION ---
 </script>
     </body>
 </html>
