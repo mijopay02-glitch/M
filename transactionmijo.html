@@ -148,74 +148,117 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const transactionList = document.getElementById('transactionList');
-            const passwordOverlay = document.getElementById('password-overlay');
-            const passwordInput = document.getElementById('passwordInput');
-            const loginBtn = document.getElementById('loginBtn');
-            const passwordError = document.getElementById('password-error');
-            const content = document.getElementById('content');
-            const historyKey = 'all_transactions';
-            const ADMIN_PASSWORD = "Ma17ma17"; 
+      
+    document.addEventListener('DOMContentLoaded', () => {
+        const transactionList = document.getElementById('transactionList');
+        const passwordOverlay = document.getElementById('password-overlay');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const passwordError = document.getElementById('password-error');
+        const content = document.getElementById('content');
+        const historyKey = 'all_transactions'; // Clé utilisée pour l'affichage local temporaire
 
-            function renderTransactions() {
-                const transactions = JSON.parse(localStorage.getItem(historyKey)) || [];
-                transactionList.innerHTML = '';
-                if (transactions.length > 0) {
-                    transactions.reverse().forEach(transaction => {
-                        const item = document.createElement('div');
-                        item.classList.add('transaction-item');
+        // --- NOUVEAU : URL de votre Cloudflare Worker ---
+        const WORKER_URL = "https://mijocomplexe.workers.dev/"; 
+        // --- ANCIEN : Supprimer la ligne `const ADMIN_PASSWORD = "Ma17ma17";`
 
-                        const details = document.createElement('div');
-                        details.classList.add('transaction-details');
+        function renderTransactions() {
+            // Le rendu utilise toujours la liste stockée temporairement après le succès de l'API
+            const transactions = JSON.parse(localStorage.getItem(historyKey)) || [];
+            transactionList.innerHTML = '';
+            
+            if (transactions.length > 0) {
+                // Pas besoin de reverse ici si le Worker le fait déjà (ce qu'il fait dans le code fourni)
+                transactions.forEach(transaction => {
+                    const item = document.createElement('div');
+                    item.classList.add('transaction-item');
 
-                        const typeAndRecipient = document.createElement('span');
-                        typeAndRecipient.classList.add('transaction-type');
-                        typeAndRecipient.innerText = `${transaction.type} à ${transaction.recipient}`;
-                        
-                        const agent = document.createElement('span');
-                        agent.classList.add('transaction-agent');
-                        agent.innerText = `Agent: ${transaction.agentName}`;
+                    const details = document.createElement('div');
+                    details.classList.add('transaction-details');
 
-                        const date = document.createElement('span');
-                        date.classList.add('transaction-date');
-                        date.innerText = transaction.date;
+                    const typeAndRecipient = document.createElement('span');
+                    typeAndRecipient.classList.add('transaction-type');
+                    // On affiche le type et le destinataire comme avant
+                    typeAndRecipient.innerText = `${transaction.type} à ${transaction.recipient}`;
+                    
+                    const agent = document.createElement('span');
+                    agent.classList.add('transaction-agent');
+                    agent.innerText = `Agent: ${transaction.agentName || 'Non spécifié'}`; // Utilisation sécurisée
+                    
+                    const date = document.createElement('span');
+                    date.classList.add('transaction-date');
+                    date.innerText = transaction.date;
 
-                        details.appendChild(typeAndRecipient);
-                        details.appendChild(agent);
-                        details.appendChild(date);
-                        
-                        const amount = document.createElement('span');
-                        amount.classList.add('transaction-amount');
-                        amount.innerText = `${transaction.montant} G`;
+                    details.appendChild(typeAndRecipient);
+                    details.appendChild(agent);
+                    details.appendChild(date);
+                    
+                    const amount = document.createElement('span');
+                    amount.classList.add('transaction-amount');
+                    amount.innerText = `${transaction.montant} G`;
 
-                        item.appendChild(details);
-                        item.appendChild(amount);
-                        transactionList.appendChild(item);
-                    });
-                } else {
-                    transactionList.innerHTML = '<p class="no-transactions">Aucune transaction globale.</p>';
-                }
+                    item.appendChild(details);
+                    item.appendChild(amount);
+                    transactionList.appendChild(item);
+                });
+            } else {
+                transactionList.innerHTML = '<p class="no-transactions">Aucune transaction globale.</p>';
+            }
+        }
+
+        // --- NOUVEAU : Fonction de connexion utilisant le Worker ---
+        loginBtn.addEventListener('click', async () => {
+            const password = passwordInput.value;
+            passwordError.textContent = ''; // Vider les messages d'erreur
+
+            if (!password) {
+                passwordError.textContent = 'Veuillez entrer le mot de passe.';
+                return;
             }
 
-            loginBtn.addEventListener('click', () => {
-                if (passwordInput.value === ADMIN_PASSWORD) {
+            // Préparer la requête que le Worker attend
+            const requestData = {
+                action: "admin_login",
+                password: password,
+            };
+
+            try {
+                // Appel API au Cloudflare Worker
+                const response = await fetch(WORKER_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(requestData)
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.transactions) {
+                    
+                    // Stocker la liste reçue du Worker dans le localStorage pour l'affichage (le stockage permanent est dans le KV)
+                    localStorage.setItem(historyKey, JSON.stringify(data.transactions)); 
+                    
                     passwordOverlay.style.display = 'none';
                     content.style.display = 'block';
-                    renderTransactions();
+                    renderTransactions(); // Afficher les données du KV
+                    
                 } else {
-                    passwordError.textContent = 'Mot de passe incorrect.';
-                    passwordInput.value = '';
+                    passwordError.textContent = data.error || 'Mot de passe incorrect ou erreur de serveur.';
+                    passwordInput.value = ''; // Effacer le mot de passe
                 }
-            });
-
-            // Permet aussi de valider avec la touche "Entrée"
-            passwordInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    loginBtn.click();
-                }
-            });
+            } catch (error) {
+                console.error("Erreur de connexion:", error);
+                passwordError.textContent = 'Impossible de se connecter au serveur.';
+            }
         });
+
+        // Permet aussi de valider avec la touche "Entrée"
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loginBtn.click();
+            }
+        });
+    });
+
     </script>
 </body>
 </html>
