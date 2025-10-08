@@ -277,6 +277,30 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     font-size: 0.8em;
     font-weight: 500;
 }
+        /* ... dans la balise <style> ... */
+
+/* Nouvelle section pour les styles du bouton de rafraîchissement */
+.refresh-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; /* Petit carré pour l'icône */
+    height: 30px;
+    border-radius: 50%;
+    /* background-color: rgba(255, 255, 255, 0.2); /* Fond léger */
+    transition: transform 0.3s ease-in-out;
+}
+
+.refresh-icon:active {
+    transform: rotate(-360deg); /* Animation de rotation au clic */
+}
+
+/* Style pour l'icône elle-même */
+.refresh-icon img {
+    filter: invert(1); /* Rendre l'icône blanche pour le fond bleu */
+}
+
+/* ... le reste de votre CSS ... */
 </style>
     
 </head>
@@ -300,9 +324,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </a>
     </div>
     <div class="balance-display">
-        <div class="balance-label">Solde MIJO</div>
+    <div class="balance-label">Solde MIJO</div>
+    <div style="display: flex; align-items: center; justify-content: center;">
         <div class="balance-value" id="balance">0 G</div>
+        <a href="#" id="refresh-button" class="refresh-icon" onclick="refreshBalance(event)">
+            <img src="https://i.postimg.cc/KYTvhNzv/mise-a-jour.png" alt="Rafraîchir" style="width: 20px; height: 20px; margin-left: 10px;">
+        </a>
     </div>
+</div>
     
     
     <div class="action-buttons-container">
@@ -390,6 +419,71 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </a>
     </nav>
 <script>
+      /* ... après la fonction updateUI(user) ... */
+
+
+/**
+ * Récupère le dernier solde de l'utilisateur depuis l'API et met à jour l'UI.
+ */
+async function refreshBalance(event) {
+    // Empêche le comportement par défaut (si c'était un lien)
+    if (event) event.preventDefault(); 
+    
+    const userString = localStorage.getItem('user');
+    if (!userString) {
+        alert("Veuillez vous reconnecter.");
+        logout();
+        return;
+    }
+
+    const user = JSON.parse(userString);
+    const loginUrl = "https://mijopay.mijocomplexe.workers.dev/"; // Réutilise l'URL de votre script de connexion
+    const refreshButton = document.getElementById('refresh-button');
+    const balanceDisplay = document.getElementById('balance');
+    const originalBalanceText = balanceDisplay.innerText;
+    
+    // Ajout d'une classe pour l'animation visuelle de rafraîchissement
+    refreshButton.style.opacity = '0.5';
+    balanceDisplay.innerText = "Chargement...";
+    
+    try {
+        const requestData = {
+            action: "login_user_by_card", // On réutilise l'action de connexion
+            cardNumber: user.NumeroCarte, // Utilise la carte stockée
+            password: user.CIN // Utilise le CIN stocké (si vous le stockez, sinon l'action doit se baser sur l'ID seulement)
+            // ATTENTION: Si le CIN n'est PAS stocké, votre API doit avoir une action "get_user_by_id"
+            // Si vous n'avez pas de CIN stocké, demandez-moi une modification pour une fonction d'API basée sur user.userId !
+        };
+
+        const response = await fetch(loginUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestData)
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.user && data.user.Solde !== undefined) {
+            // Mise à jour de l'objet utilisateur stocké localement
+            data.user.EstPremium = user.EstPremium; // On garde les flags locaux si l'API ne les renvoie pas
+            localStorage.setItem("user", JSON.stringify(data.user));
+            
+            // Mise à jour de l'interface utilisateur
+            updateUI(data.user);
+            alert("Solde mis à jour !");
+        } else {
+            alert(data.error || "Échec de la récupération du solde.");
+            balanceDisplay.innerText = originalBalanceText; // Rétablit l'ancien solde
+        }
+    } catch (error) {
+        console.error("Erreur de rafraîchissement:", error);
+        alert("Erreur de connexion avec le serveur.");
+        balanceDisplay.innerText = originalBalanceText; // Rétablit l'ancien solde
+    } finally {
+        // Enlève la classe de l'animation de rafraîchissement
+        refreshButton.style.opacity = '1';
+    }
+}
     // Fonction pour gérer le clic sur le flyer MIJO Business Helper
 document.getElementById('flyer-helper').addEventListener('click', function(event) {
   event.preventDefault(); // Empêche la redirection par défaut
