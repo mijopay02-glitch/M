@@ -422,7 +422,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
    /* ... dans la balise <script> ... */
 
 const loginUrl = "https://mijopay.mijocomplexe.workers.dev/"; // L'URL de votre API de connexion/récupération
-
+const GLOBAL_HISTORY_WORKER_URL = "https://transaction.mijocomplexe.workers.dev/"; 
 /**
  * Récupère TOUTES les données utilisateur à jour depuis l'API, 
  * met à jour le localStorage, et rafraîchit l'UI (Nom, Email, Solde, Premium).
@@ -583,6 +583,7 @@ document.getElementById('flyer-helper').addEventListener('click', function(event
         updateUI(user);
         
         saveToHistory("Abonnement Premium", premiumPrice, "Succès", "MIJO PAY", user.userId);
+          await saveToGlobalKV(user.userId, premiumPrice, user.nom);
         alert("Abonnement Premium activé avec succès ! Votre solde a été mis à jour.");
     } else {
         alert(data.error || "Échec de l'activation de l'abonnement Premium.");
@@ -708,7 +709,32 @@ document.getElementById('flyer-helper').addEventListener('click', function(event
     }
 
     // Ce code s'exécute chaque fois que la page est affichée, même en cas de retour arrière
+    // ... (après la fonction saveToHistory, ou au début du script)
+
+// Fonction pour enregistrer la transaction dans le KV Global via le Worker de transaction
+async function saveToGlobalKV(senderId, amount, senderName) {
+    const transactionData = {
+        action: "transfer_money", // Réutilise l'action du store si elle enregistre tout transfert
+        amount: amount,
+        senderId: senderId, 
+        senderName: senderName,
+        recipient: "MIJO CINÉ / Entreprise",
+        type: "Abonnement Premium CINÉ" // Description pour l'historique
+    };
     
+    try {
+        await fetch(GLOBAL_HISTORY_WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(transactionData)
+        });
+
+        console.log("Abonnement Premium enregistré dans le KV global.");
+    } catch (error) {
+        console.error("Erreur de connexion lors de l'enregistrement KV global:", error);
+    }
+}
+      
 window.addEventListener('pageshow', () => {
     const storedUser = localStorage.getItem('user');
     console.log("Contenu localStorage:", storedUser); // 👈 vérifie ce qu'il y a
