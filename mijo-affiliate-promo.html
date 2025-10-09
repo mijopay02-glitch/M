@@ -204,7 +204,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="card">
             <h2>Outils Marketing</h2>
             <p>Téléchargez les ressources pour promouvoir MIJO.</p>
-            <a href="URL_DE_VOTRE_FLYER" download class="copy-btn">Télécharger le Flyer</a>
+             <button id="outilBtn" class="copy-btn">Voir les outil</button>
         </div>
 
         <div class="card leaderboard-card">
@@ -227,6 +227,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         document.getElementById('bonusBtn').addEventListener('click', () => {
             window.location.href = 'bonus.html';
+        });
+           document.getElementById('outilBtn').addEventListener('click', () => {
+            window.location.href = 'outil.html';
         });
 
         document.addEventListener('DOMContentLoaded', () => {
