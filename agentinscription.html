@@ -108,13 +108,18 @@
         
         <div id="form-message" class="message" style="display:none;"></div>
     </div>
-    
     <script>
-      // agentinscription.js
+// agentinscription.js intégré dans HTML
 
-// URL de votre Worker Cloudflare ou de votre service d'envoi d'e-mail.
-// REMPLACEZ CECI PAR VOTRE VRAIE URL !
-const FORM_SUBMISSION_URL = "https://votre-worker-agent-inscription.workers.dev"; 
+// REMPLACEZ CECI PAR L'URL DE DÉPLOIEMENT DE VOTRE GOOGLE APPS SCRIPT !
+const FORM_SUBMISSION_URL = "https://script.google.com/macros/s/AKfycbziBa-STIO-m8_pnZxJ9hWd-dl6qUu4qg7Jo4XZIXYcnxQSaGePHtNX0hA3FfD0D8XF/exec"; 
+
+// Fonction utilitaire pour convertir l'objet de données en chaîne urlencoded
+const encodeFormData = (data) => {
+    return Object.keys(data).map(key => 
+        encodeURIComponent(key) + '=' + encodeURIComponent(data[key])
+    ).join('&');
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('agent-form');
@@ -122,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const formMessage = document.getElementById('form-message');
 
     form.addEventListener('submit', async (e) => {
-        e.preventDefault(); // Empêche l'envoi standard du formulaire
+        e.preventDefault(); 
 
         submitBtn.disabled = true;
         submitBtn.textContent = 'Envoi en cours... ⏳';
@@ -131,33 +136,37 @@ document.addEventListener('DOMContentLoaded', () => {
         // Collecter les données du formulaire
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
+        
+        // Convertir les données en format urlencoded
+        const urlEncodedData = encodeFormData(data);
 
         try {
             const response = await fetch(FORM_SUBMISSION_URL, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    // C'est le header qui indique le format urlencoded
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                body: JSON.stringify(data)
+                // Les données sont envoyées comme une chaîne
+                body: urlEncodedData
             });
 
-            if (response.ok) {
-                // Succès
+            // Apps Script retourne un statut 200 même en cas d'erreur logique, donc on lit le texte.
+            const resultText = await response.text();
+            
+            if (response.ok && resultText.includes("Succès")) {
                 formMessage.textContent = "Inscription soumise avec succès ! Nous vous contacterons par e-mail pour la suite et l'accès à l'application.";
                 formMessage.classList.remove('error');
                 formMessage.classList.add('success');
                 formMessage.style.display = 'block';
-                form.reset(); // Efface le formulaire après succès
+                form.reset();
             } else {
-                // Échec de l'envoi (problème côté Worker)
-                const errorText = await response.text();
-                throw new Error(`Erreur serveur: ${errorText}`);
+                throw new Error(`Erreur du service : ${resultText}`);
             }
 
         } catch (error) {
-            // Échec de la connexion (problème réseau ou URL incorrecte)
             console.error('Erreur de soumission:', error);
-            formMessage.textContent = "Une erreur est survenue. Veuillez vérifier votre connexion et réessayer.";
+            formMessage.textContent = "Une erreur est survenue. Veuillez vérifier votre connexion et réessayer. " + error.message;
             formMessage.classList.remove('success');
             formMessage.classList.add('error');
             formMessage.style.display = 'block';
@@ -167,6 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-      <script>
+</script>
 </body>
 </html>
