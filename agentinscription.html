@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription Agent MIJO PAY</title>
     <style>
-        /* CSS de base (à styliser davantage dans votre fichier principal) */
+        /* CSS de base */
         body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f9; }
         .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         h1 { text-align: center; color: #333; }
         
-        /* Styles spécifiques pour les commissions et le téléchargement */
+        /* Styles spécifiques pour les commissions */
         .info-box {
-            background-color: #e6f7ff; /* Bleu très clair */
+            background-color: #e6f7ff; 
             border-left: 5px solid #007bff;
             padding: 15px;
             margin-bottom: 25px;
@@ -22,29 +22,46 @@
         .commission-rate {
             font-size: 1.5em;
             font-weight: bold;
-            color: #28a745; /* Vert pour attirer l'attention */
+            color: #28a745; 
             display: block;
             margin: 10px 0;
             text-align: center;
         }
-        .download-btn {
-            background-color: #ffc107; /* Jaune/Orange pour le téléchargement */
-            color: #212529;
-            padding: 12px 20px;
+
+        /* NOUVEAU STYLE : Groupe de boutons de téléchargement/accès */
+        .download-group {
+            display: flex;
+            gap: 15px; /* Espace entre les boutons */
+            margin-bottom: 25px;
+        }
+
+        .download-btn, .web-access-btn {
+            padding: 12px 15px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            width: 100%;
-            font-size: 18px;
+            width: 50%; /* Chaque bouton prend la moitié de l'espace */
+            font-size: 16px;
             font-weight: bold;
-            text-decoration: none; /* Important pour les liens */
-            display: block;
+            text-decoration: none; 
             text-align: center;
-            margin-top: 20px;
+            display: block;
+            transition: background-color 0.3s;
+        }
+        
+        .download-btn {
+            background-color: #ffc107; /* Jaune/Orange pour le téléchargement (Android) */
+            color: #212529;
         }
         .download-btn:hover { background-color: #e0a800; }
         
-        /* Styles du formulaire (comme précédemment) */
+        .web-access-btn {
+            background-color: #17a2b8; /* Bleu-vert pour l'accès Web (iOS/Navigateur) */
+            color: white;
+        }
+        .web-access-btn:hover { background-color: #138496; }
+
+        /* Styles du formulaire (inchangés) */
         label { display: block; margin-bottom: 5px; font-weight: bold; }
         input[type="text"], input[type="email"], input[type="tel"] {
             width: 100%;
@@ -81,9 +98,19 @@
             <p>Commencez à générer des revenus immédiatement !</p>
         </div>
 
-        <a href="https://drive.google.com/file/d/1304cQsiAARfhE4M521qcoAXp774PU6AJ/view?usp=sharing" class="download-btn" target="_blank">
-            ⬇️ Télécharger l'App Agent MIJO PAY
-        </a>
+        <p style="text-align: center; font-weight: bold; margin-bottom: 15px;">
+            Choisissez votre méthode d'accès :
+        </p>
+        
+        <div class="download-group">
+            <a href="https://drive.google.com/file/d/1304cQsiAARfhE4M521qcoAXp774PU6AJ/view?usp=sharing" class="download-btn" target="_blank">
+                ⬇️ App Android (APK)
+            </a>
+            
+            <a href="agent.html" class="web-access-btn">
+                🌐 Accès Web (iOS/PC etc..)
+            </a>
+        </div>
         
         <p style="margin-top: 25px; text-align: center;">Soumettez vos informations pour finaliser votre statut d'agent et recevoir vos accès.</p>
 
@@ -108,6 +135,8 @@
         
         <div id="form-message" class="message" style="display:none;"></div>
     </div>
+    
+    
     <script>
 // agentinscription.js intégré dans HTML
 
