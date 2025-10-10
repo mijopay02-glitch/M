@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Agent MIJO PAY</title>
+    <style>
+        /* CSS de base (à styliser davantage dans votre fichier principal) */
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f9; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        
+        /* Styles spécifiques pour les commissions et le téléchargement */
+        .info-box {
+            background-color: #e6f7ff; /* Bleu très clair */
+            border-left: 5px solid #007bff;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        .info-box h2 { color: #007bff; margin-top: 0; }
+        .commission-rate {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #28a745; /* Vert pour attirer l'attention */
+            display: block;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .download-btn {
+            background-color: #ffc107; /* Jaune/Orange pour le téléchargement */
+            color: #212529;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none; /* Important pour les liens */
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .download-btn:hover { background-color: #e0a800; }
+        
+        /* Styles du formulaire (comme précédemment) */
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="email"], input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        button[type="submit"]:hover { background-color: #0056b3; }
+        .message { margin-top: 20px; padding: 10px; border-radius: 4px; text-align: center; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Devenir Agent MIJO PAY 🚀</h1>
+
+        <div class="info-box">
+            <h2>💰 Vos Commissions Garanties</h2>
+            <p>En tant qu'Agent MIJO, vous gagnez une commission sur **chaque transaction** (dépôt et retrait) effectuée auprès de votre point de service. </p>
+            <span class="commission-rate">Taux Fixe : 4%</span>
+            <p>Commencez à générer des revenus immédiatement !</p>
+        </div>
+
+        <a href="VOTRE_LIEN_GOOGLE_DRIVE_APP_AGENT" class="download-btn" target="_blank">
+            ⬇️ Télécharger l'App Agent MIJO PAY
+        </a>
+        
+        <p style="margin-top: 25px; text-align: center;">Soumettez vos informations pour finaliser votre statut d'agent et recevoir vos accès.</p>
+
+        <form id="agent-form">
+            <label for="full-name">Nom Complet :</label>
+            <input type="text" id="full-name" name="fullName" required>
+
+            <label for="email">Adresse E-mail :</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="phone">Numéro de Téléphone (WhatsApp) :</label>
+            <input type="tel" id="phone" name="phone" required>
+            
+            <label for="city">Ville/Localité :</label>
+            <input type="text" id="city" name="city" required>
+
+            <label for="reason">Pourquoi voulez-vous devenir agent MIJO ?</label>
+            <input type="text" id="reason" name="reason" required>
+
+            <button type="submit" id="submit-btn">Soumettre l'inscription</button>
+        </form>
+        
+        <div id="form-message" class="message" style="display:none;"></div>
+    </div>
+    
+    <script>
+      // agentinscription.js
+
+// URL de votre Worker Cloudflare ou de votre service d'envoi d'e-mail.
+// REMPLACEZ CECI PAR VOTRE VRAIE URL !
+const FORM_SUBMISSION_URL = "https://votre-worker-agent-inscription.workers.dev"; 
+
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('agent-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const formMessage = document.getElementById('form-message');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Empêche l'envoi standard du formulaire
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Envoi en cours... ⏳';
+        formMessage.style.display = 'none';
+
+        // Collecter les données du formulaire
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch(FORM_SUBMISSION_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                // Succès
+                formMessage.textContent = "Inscription soumise avec succès ! Nous vous contacterons par e-mail pour la suite et l'accès à l'application.";
+                formMessage.classList.remove('error');
+                formMessage.classList.add('success');
+                formMessage.style.display = 'block';
+                form.reset(); // Efface le formulaire après succès
+            } else {
+                // Échec de l'envoi (problème côté Worker)
+                const errorText = await response.text();
+                throw new Error(`Erreur serveur: ${errorText}`);
+            }
+
+        } catch (error) {
+            // Échec de la connexion (problème réseau ou URL incorrecte)
+            console.error('Erreur de soumission:', error);
+            formMessage.textContent = "Une erreur est survenue. Veuillez vérifier votre connexion et réessayer.";
+            formMessage.classList.remove('success');
+            formMessage.classList.add('error');
+            formMessage.style.display = 'block';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Soumettre l\'inscription';
+        }
+    });
+});
+      <script>
+</body>
+</html>
