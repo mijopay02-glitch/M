@@ -3,660 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIJO PAY – Tableau de Suivi</title>
-    <!-- Chargement de Tailwind CSS via CDN pour le design -->
+    <title>Tableau de Bord d'Analyse (Corrigé)</title>
+    <!-- Chargement de Tailwind CSS pour un design moderne et responsive -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chargement de Chart.js pour les graphiques -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-    <!-- Chargement de SweetAlert2 pour les notifications modernes -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    <!-- Configuration Tailwind et Polices -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'mijo-blue': '#004aad',
-                        'mijo-gold': '#ffcc00',
-                        'mijo-bg': '#f4f7f9',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                }
-            }
-        };
-    </script>
+    <!-- Police Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chargement des librairies externes -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7f9; }
+        .card { transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); }
+        /* Style pour centrer les labels de la Doughnut Chart */
+        #premiumRatioChart { max-height: 250px; } 
+    </style>
 </head>
-<body class="bg-mijo-bg font-sans min-h-screen">
+<body class="p-4 md:p-8">
 
-    <!-- Configuration de l'API -->
-    <div id="configSection" class="fixed inset-0 bg-gray-900 bg-opacity-95 z-50 flex items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg">
-            <h2 class="text-2xl font-bold text-mijo-blue mb-6">Configuration Airtable</h2>
-            <p class="mb-4 text-sm text-gray-600">Veuillez entrer vos clés pour connecter le tableau de bord à la base de données.</p>
-            
-            <input type="text" id="apiKeyInput" placeholder="Clé API Airtable (Bearer YOUR_TOKEN)" 
-                   class="w-full p-3 mb-4 border border-gray-300 rounded-xl focus:ring-mijo-gold focus:border-mijo-gold">
-            
-            <!-- Aide visuelle pour le format de la clé API -->
-            <p id="apiKeyStatus" class="text-xs mb-4 p-2 rounded-lg text-red-700 bg-red-100 hidden">
-                ⚠️ La clé doit commencer par "pat" ou "Bearer".
-            </p>
-
-            <input type="text" id="baseIdInput" placeholder="ID de Base Airtable (appXXXXXXX)" 
-                   class="w-full p-3 mb-6 border border-gray-300 rounded-xl focus:ring-mijo-gold focus:border-mijo-gold">
-            
-            <button id="saveConfigBtn" class="w-full bg-mijo-blue text-white font-semibold py-3 rounded-xl hover:bg-opacity-90 transition duration-200 shadow-md cursor-pointer">
-                Enregistrer la Configuration
-            </button>
-        </div>
-    </div>
-
-    <!-- Conteneur Principal du Dashboard -->
-    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
-
-        <!-- En-tête -->
-        <header class="flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-2xl shadow-lg mb-8">
-            <div class="flex items-center space-x-3 mb-4 md:mb-0">
-                <!-- Logo MIJO PAY -->
-                <svg class="w-8 h-8 text-mijo-gold" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-5 8a5 5 0 0110 0 5 5 0 01-10 0zm3 0a2 2 0 104 0 2 2 0 00-4 0z"></path></svg>
-                <h1 class="text-3xl font-bold text-mijo-blue">MIJO PAY – Tableau de Suivi</h1>
-            </div>
-            
-            <!-- Contrôles et Compteur API -->
-            <div class="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4 mt-2 md:mt-0">
-                <p id="apiCount" class="text-sm font-medium text-gray-500 order-2 md:order-1">Appels API : 0</p>
-                <div class="flex space-x-3 order-1 md:order-2">
-                    <button id="refreshBtn" class="cursor-pointer flex items-center px-4 py-2 bg-mijo-gold text-mijo-blue font-semibold rounded-xl hover:opacity-90 transition duration-200 shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span class="animate-spin mr-2 hidden" id="loadingSpinner">🔄</span>
-                        <span id="refreshText">Actualiser les données</span>
-                    </button>
-                    <button id="addUserBtn" class="cursor-pointer flex items-center px-4 py-2 bg-mijo-blue text-white font-semibold rounded-xl hover:bg-opacity-90 transition duration-200 shadow-md">
-                        ➕ Nouvel utilisateur
-                    </button>
+    <div class="max-w-7xl mx-auto">
+        <header class="mb-8 p-4 bg-white shadow-lg rounded-xl">
+            <h1 class="text-3xl font-bold text-gray-800">Tableau de Bord des Utilisateurs</h1>
+            <p class="text-gray-500 mt-1">Analyse des données Airtable en temps réel (ou depuis le cache).</p>
+            <div class="mt-4 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                <button onclick="fetchData(true)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                    <svg class="w-5 h-5 inline mr-2 align-text-bottom" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.836 2.004C18.257 12.28 16.5 13.525 14 13.5c-3.5 0-6.417-3.447-5.003-8.004M4.368 12c.324.414.509.914.509 1.414 0 5 4.79 9 10.153 9C20.697 22.414 24 18 24 13.5c0-3.5-2.731-6.417-6.004-7.003"></path></svg>
+                    Actualiser les Données
+                </button>
+                <div class="text-sm text-gray-500 py-2">
+                    <span id="lastUpdated">Dernière mise à jour: Jamais</span>
                 </div>
             </div>
         </header>
 
-        <!-- Section Ajouter un Utilisateur (Masquée par défaut) -->
-        <section id="formAddUser" class="bg-white p-6 rounded-2xl shadow-lg mb-8 hidden">
-            <h2 class="text-xl font-semibold text-mijo-blue mb-4 border-b pb-2">Ajouter un Nouvel Utilisateur</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <input type="text" id="userName" placeholder="Nom complet" class="p-3 border border-gray-300 rounded-xl focus:ring-mijo-gold focus:border-mijo-gold">
-                <input type="email" id="userEmail" placeholder="Email" class="p-3 border border-gray-300 rounded-xl focus:ring-mijo-gold focus:border-mijo-gold">
-                <input type="text" id="userPhone" placeholder="Téléphone (ex: 50948xxxxxx)" class="p-3 border border-gray-300 rounded-xl focus:ring-mijo-gold focus:border-mijo-gold">
-                <input type="text" id="userCIN" placeholder="CIN" class="p-3 border border-gray-300 rounded-xl focus:ring-mijo-gold focus:border-mijo-gold">
+        <!-- Section des Statistiques Clés (Key Stats) -->
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Statistiques Clés</h2>
+        <div id="statsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <!-- Les statistiques seront injectées ici par renderStats() -->
+            <div class="card bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <p class="text-sm font-medium text-gray-500">Nombre Total d'Utilisateurs</p>
+                <p id="statTotalUsers" class="text-3xl font-bold text-gray-900 mt-1">0</p>
             </div>
-            <div class="flex items-center justify-between mt-4">
-                <label class="flex items-center space-x-2 text-gray-700">
-                    <input type="checkbox" id="userPremium" class="form-checkbox h-5 w-5 text-mijo-blue rounded focus:ring-mijo-gold">
-                    <span class="font-medium">Compte Premium (Champ 'EstPremium')</span>
-                </label>
-                <button id="saveUserBtn" class="px-6 py-2 bg-mijo-blue text-white font-semibold rounded-xl hover:bg-opacity-90 transition duration-200 shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
-                    Enregistrer (Carte auto)
-                </button>
+            <div class="card bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <p class="text-sm font-medium text-gray-500">Utilisateurs Premium</p>
+                <p id="statPremiumUsers" class="text-3xl font-bold text-yellow-600 mt-1">0</p>
             </div>
-        </section>
+            <div class="card bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <p class="text-sm font-medium text-gray-500">Taux de Premium</p>
+                <p id="statPremiumRate" class="text-3xl font-bold text-green-600 mt-1">0%</p>
+            </div>
+            <div class="card bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <p class="text-sm font-medium text-gray-500">Moyenne d'Âge</p>
+                <p id="statAvgAge" class="text-3xl font-bold text-indigo-600 mt-1">0 ans</p>
+            </div>
+        </div>
 
-        <!-- Section Statistiques Globales -->
-        <section id="globalStats" class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-            <!-- Cartes de stats... (Non modifiées) -->
-            <div class="bg-white p-5 rounded-2xl shadow-lg text-center border-b-4 border-mijo-blue">
-                <p class="text-sm font-medium text-gray-500">Total Utilisateurs</p>
-                <p id="statTotalUsers" class="text-3xl font-bold text-mijo-blue mt-1">0</p>
-            </div>
-            <div class="bg-white p-5 rounded-2xl shadow-lg text-center border-b-4 border-mijo-gold">
-                <p class="text-sm font-medium text-gray-500">Solde Global (HTG)</p>
-                <p id="statTotalBalance" class="text-3xl font-bold text-mijo-gold mt-1">0.00</p>
-            </div>
-            <div class="bg-white p-5 rounded-2xl shadow-lg text-center border-b-4 border-mijo-blue">
-                <p class="text-sm font-medium text-gray-500">Dépôts Cumulés (HTG)</p>
-                <p id="statTotalDeposits" class="text-3xl font-bold text-mijo-blue mt-1">0.00</p>
-            </div>
-            <div class="bg-white p-5 rounded-2xl shadow-lg text-center border-b-4 border-mijo-gold">
-                <p class="text-sm font-medium text-gray-500">Retraits Cumulés (HTG)</p>
-                <p id="statTotalWithdrawals" class="text-3xl font-bold text-mijo-gold mt-1">0.00</p>
-            </div>
-            <div class="bg-white p-5 rounded-2xl shadow-lg text-center border-b-4 border-mijo-blue">
-                <p class="text-sm font-medium text-gray-500">Total Affiliés</p>
-                <p id="statTotalAffiliates" class="text-3xl font-bold text-mijo-blue mt-1">0</p>
-            </div>
-        </section>
-
-        <!-- Section Graphiques -->
-        <section id="chartsSection" class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Section des Graphiques (Charts) -->
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Visualisations</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
-            <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-lg">
-                <h3 class="text-xl font-semibold text-gray-700 mb-4">Inscriptions Quotidiennes</h3>
-                <canvas id="inscriptionsChart" height="150"></canvas>
+            <!-- Graphique 1: Utilisateurs par Ville -->
+            <div class="card bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <h3 class="text-lg font-semibold mb-4 text-gray-800">1. Répartition par Ville</h3>
+                <div class="h-64">
+                    <canvas id="cityChart"></canvas>
+                </div>
             </div>
 
-            <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-lg">
-                <h3 class="text-xl font-semibold text-gray-700 mb-4">Ratio Premium / Standard</h3>
-                <canvas id="premiumRatioChart" height="200"></canvas>
+            <!-- Graphique 2: Ratio Premium / Standard (Graphique Circulaire) -->
+            <div class="card bg-white p-6 rounded-xl shadow-md border border-gray-100 flex flex-col justify-center items-center">
+                <h3 class="text-lg font-semibold mb-4 text-gray-800">2. Ratio Comptes Premium / Standard</h3>
+                <div class="w-full max-w-xs mx-auto">
+                    <canvas id="premiumRatioChart"></canvas>
+                </div>
             </div>
-        </section>
 
-       
+        </div>
+
+        <!-- L'ancienne section de la table des utilisateurs n'est plus présente ici -->
     </div>
 
     <script>
         // =======================================================================
-        // Configuration et Initialisation
+        // Configuration et Variables Globales
         // =======================================================================
+        const AIRTABLE_API_KEY = 'VOTRE_CLE_API_AIRTABLE'; // Remplacez par votre clé réelle
+        const AIRTABLE_BASE_ID = 'VOTRE_ID_BASE_AIRTABLE'; // Remplacez par l'ID de la base
+        const AIRTABLE_TABLE_NAME = 'Nom de la Table'; // Remplacez par le nom de la table
+        const AIRTABLE_CACHE_KEY = 'airtableDataCache';
 
-        const AIRTABLE_CONFIG_KEY = 'mijo_pay_airtable_config';
-        const AIRTABLE_CACHE_KEY = 'mijo_pay_airtable_cache'; 
-        const AIRTABLE_TABLE_NAME = 'Utilisateurs';
-        const MIN_FETCH_INTERVAL = 60 * 1000; // 1 minute
-
-        let apiCallsCount = 0;
-        let lastFetchTime = 0;
-        let inscriptionsChartInstance = null;
-        let premiumRatioChartInstance = null;
-        let isFetching = false; 
         let allRecords = [];
-        let nextCardNumber = '4000200600000001'; 
+        let cityChartInstance = null;
+        let premiumRatioChartInstance = null;
 
-        // Fonctions simples d'encodage/décodage de la clé API
-        function encryptKey(key) {
-            if (!key) return '';
-            return btoa(key.split('').reverse().join('')); 
-        }
+        // =======================================================================
+        // Fonctions d'Utilitaires
+        // =======================================================================
 
-        function decryptKey(encoded) {
-            if (!encoded) return '';
-            try {
-                return atob(encoded).split('').reverse().join('');
-            } catch (e) {
-                console.error("Erreur de décryptage:", e);
-                return '';
-            }
-        }
-
-        let config = JSON.parse(localStorage.getItem(AIRTABLE_CONFIG_KEY)) || {
-            API_KEY: '', 
-            BASE_ID: '',
-        };
-
-        const configSection = document.getElementById('configSection');
-        const saveConfigBtn = document.getElementById('saveConfigBtn');
-        const apiKeyInput = document.getElementById('apiKeyInput');
-        const baseIdInput = document.getElementById('baseIdInput');
-        const apiKeyStatus = document.getElementById('apiKeyStatus');
-        const refreshBtn = document.getElementById('refreshBtn');
-        const refreshText = document.getElementById('refreshText');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const addUserBtn = document.getElementById('addUserBtn');
-        const formAddUser = document.getElementById('formAddUser');
-        const saveUserBtn = document.getElementById('saveUserBtn');
-        const userTableBody = document.getElementById('userTableBody');
-        const apiCountDisplay = document.getElementById('apiCount');
-        const userNameInput = document.getElementById('userName');
-        const userEmailInput = document.getElementById('userEmail');
-        const userPhoneInput = document.getElementById('userPhone');
-        const userCINInput = document.getElementById('userCIN');
-        const userPremiumCheckbox = document.getElementById('userPremium');
-
-
-        /**
-         * Affiche ou masque la section de configuration si les clés sont manquantes.
-         */
+        // Vérifie si la configuration Airtable est complète
         function checkConfig() {
-            const decryptedKey = decryptKey(config.API_KEY);
-            
-            // Si la configuration est manquante ou incomplète, on l'affiche
-            if (!decryptedKey || !config.BASE_ID || decryptedKey.includes('pat') || decryptedKey.includes('Bearer')) {
-                configSection.classList.remove('hidden');
-                // On met une valeur vide pour que l'utilisateur entre le token
-                apiKeyInput.value = ''; 
-                baseIdInput.value = config.BASE_ID || '';
-            } else {
-                configSection.classList.add('hidden');
+            if (AIRTABLE_API_KEY === 'VOTRE_CLE_API_AIRTABLE' || AIRTABLE_BASE_ID === 'VOTRE_ID_BASE_AIRTABLE' || AIRTABLE_TABLE_NAME === 'Nom de la Table') {
+                showError('Configuration Incomplète', 'Veuillez renseigner votre clé API, votre ID de Base et le nom de votre table Airtable dans le code source.');
+                return false;
             }
+            return true;
         }
-        
-        /**
-         * Vérifie que la clé API est au bon format.
-         */
-        apiKeyInput.addEventListener('input', (e) => {
-            const value = e.target.value.trim();
-            if (value && !value.toLowerCase().startsWith('bearer ') && !value.toLowerCase().startsWith('pat')) {
-                apiKeyInput.classList.add('border-red-500');
-                apiKeyStatus.classList.remove('hidden');
-            } else {
-                apiKeyInput.classList.remove('border-red-500');
-                apiKeyStatus.classList.add('hidden');
-            }
-        });
 
+        // Affiche une boîte de dialogue d'erreur
+        function showError(title, text) {
+            Swal.fire({
+                icon: 'error',
+                title: title,
+                text: text,
+                confirmButtonText: 'Compris'
+            });
+        }
 
-        /**
-         * Sauvegarde la configuration Airtable dans localStorage.
-         */
-        saveConfigBtn.addEventListener('click', () => {
-            let newApiKey = apiKeyInput.value.trim();
-            const newBaseId = baseIdInput.value.trim();
+        // =======================================================================
+        // Fonctions de Récupération de Données (Airtable)
+        // =======================================================================
 
-            if (!newApiKey || !newBaseId) {
-                Swal.fire('Erreur', 'Veuillez remplir les deux champs de configuration.', 'error');
-                return;
-            }
-            
-            // Correction critique : Airtable exige le préfixe "Bearer " dans la requête.
-            if (newApiKey && !newApiKey.toLowerCase().startsWith('bearer ')) {
-                newApiKey = 'Bearer ' + newApiKey;
-            }
+        async function fetchData(forceRefresh = false) {
+            if (!checkConfig()) return;
 
-            // Chiffrement de la clé avant de la stocker
-            config.API_KEY = encryptKey(newApiKey);
-            config.BASE_ID = newBaseId;
-            localStorage.setItem(AIRTABLE_CONFIG_KEY, JSON.stringify(config));
-            
-            // On ferme la configuration
-            configSection.classList.add('hidden');
-            
-            Swal.fire('Configuration enregistrée', 'Clé API sécurisée et enregistrée. Cliquez sur "Actualiser les données" pour charger le tableau Airtable.', 'success');
-        });
-
-        // Toggle du formulaire d'ajout d'utilisateur
-        addUserBtn.addEventListener('click', () => {
-            formAddUser.classList.toggle('hidden');
-        });
-
-        // Soumission du nouvel utilisateur
-        saveUserBtn.addEventListener('click', () => {
-            const name = userNameInput.value.trim();
-            const email = userEmailInput.value.trim();
-            const phone = userPhoneInput.value.trim();
-            const cin = userCINInput.value.trim();
-            const isPremium = userPremiumCheckbox.checked;
-
-            if (!name || !email || !phone || !cin) {
-                Swal.fire('Erreur', 'Veuillez remplir tous les champs obligatoires.', 'error');
+            const cachedData = localStorage.getItem(AIRTABLE_CACHE_KEY);
+            if (cachedData && !forceRefresh) {
+                // Le mode hors ligne est géré dans window.onload
                 return;
             }
 
-            const fields = {
-                NomUtilisateur: name,
-                Email: email,
-                NumeroTelephone: phone,
-                CIN: cin,
-                EstPremium: isPremium, // IMPORTANT: Le nom du champ doit correspondre à Airtable
-                NumeroCarte: nextCardNumber, // Numéro de carte calculé
-            };
-
-            addNewUser(fields);
-        });
-
-        // Confirmation SweetAlert2 avant l'appel API 
-        refreshBtn.addEventListener('click', async () => {
-            if (isFetching) return;
-
-            const result = await Swal.fire({
-                title: 'Charger les données ?',
-                text: 'Ceci va envoyer une requête à Airtable et consommera un appel API. Confirmez-vous ?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Oui, actualiser',
-                cancelButtonText: 'Annuler',
-                reverseButtons: true, 
-                confirmButtonColor: '#004aad', 
-                cancelButtonColor: '#ffcc00'   
+            Swal.fire({
+                title: 'Chargement en cours...',
+                text: 'Récupération des données depuis Airtable.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
             });
 
-            if (result.isConfirmed) {
-                fetchData();
-            }
-        });
-
-
-        // =======================================================================
-        // Logique Airtable
-        // =======================================================================
-
-        /**
-         * Simule un simple exponential backoff pour les requêtes API.
-         */
-        async function fetchWithRetry(url, options, retries = 3, delay = 1000) {
             try {
-                const response = await fetch(url, options);
-                
-                if (response.status === 403 || response.status === 401) {
-                    const errorBody = await response.text();
-                    Swal.fire({
-                        icon: 'error',
-                        title: `Erreur d'accès Airtable (Code ${response.status})`,
-                        html: `
-                            <p class="text-left text-sm mb-4">Le jeton API est incorrect ou les permissions sont insuffisantes.</p>
-                            <ul class="list-disc list-inside text-left text-xs mb-4 p-2 bg-red-50 rounded">
-                                <li><strong>Clé API/Token (Bearer) incorrect(e).</strong></li>
-                                <li><strong>Permissions manquantes.</strong> Le Token n'a pas les droits de lecture pour cette base ou cette table.</li>
-                            </ul>
-                            <p class="text-xs text-gray-500">Détail de l'erreur (Tronqué): ${errorBody.substring(0, 150)}...</p>
-                        `,
-                        confirmButtonText: 'Ré-ouvrir la configuration'
-                    }).then(() => {
-                        configSection.classList.remove('hidden');
-                    });
-                    throw new Error(`Erreur HTTP ${response.status}: ${errorBody.substring(0, 100)}...`);
-                }
+                // Simuler une attente pour ne pas spammer Airtable et voir le loading
+                await new Promise(resolve => setTimeout(resolve, 500)); 
 
-                if (response.status === 429) { 
-                    if (retries > 0) {
-                        console.warn(`[API] Limite de débit atteinte, nouvelle tentative dans ${delay / 1000}s...`);
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                        return fetchWithRetry(url, options, retries - 1, delay * 2);
+                const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?view=Grid%20view`; // Utilisation d'une vue par défaut
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_API_KEY}`
                     }
-                    throw new Error('Limite de requêtes atteinte après plusieurs tentatives.');
-                }
+                });
+
                 if (!response.ok) {
-                    const errorBody = await response.text();
-                    throw new Error(`Erreur HTTP ${response.status}: ${errorBody.substring(0, 100)}...`);
+                    throw new Error(`Erreur HTTP: ${response.status}`);
                 }
-                return response.json();
-            } catch (error) {
-                if (retries > 0 && error.message.includes('Failed to fetch')) {
-                    console.warn(`[Réseau] Erreur de récupération, nouvelle tentative dans ${delay / 1000}s...`);
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    return fetchWithRetry(url, options, retries - 1, delay * 2);
-                }
-                throw error;
-            }
-        }
-        
-        /**
-         * Calcule le prochain numéro de carte en incrémentant le plus grand existant.
-         */
-        function calculateNextCardNumber(records) {
-            let maxCardNumber = 0n;
 
-            records.forEach(record => {
-                const num = record.fields.NumeroCarte;
-                if (typeof num === 'string' && num.length === 16 && /^\d+$/.test(num)) {
-                    try {
-                        const bigIntValue = BigInt(num);
-                        if (bigIntValue > maxCardNumber) {
-                            maxCardNumber = bigIntValue;
-                        }
-                    } catch (e) {
-                        console.error("Erreur de conversion BigInt pour le numéro de carte:", num);
-                    }
-                }
-            });
+                const result = await response.json();
+                allRecords = result.records;
 
-            if (maxCardNumber === 0n) {
-                return '4000200600000001';
-            }
-
-            const next = maxCardNumber + 1n;
-            return String(next).padStart(16, '0');
-        }
-
-        /**
-         * Récupère toutes les données de la table "Utilisateurs".
-         */
-        async function fetchData() {
-            const now = Date.now();
-            
-            // Anti-abus (délai minimum entre deux requêtes)
-            if (now - lastFetchTime < MIN_FETCH_INTERVAL) {
-                const timeLeft = Math.ceil((MIN_FETCH_INTERVAL - (now - lastFetchTime)) / 1000);
-                Swal.fire('Attendez un peu', `Vous ne pouvez actualiser qu'une fois par minute. Veuillez patienter ${timeLeft} secondes.`, 'info');
-                return;
-            }
-
-            if (isFetching) return;
-            isFetching = true;
-
-            const decryptedKey = decryptKey(config.API_KEY);
-
-            if (!decryptedKey || !config.BASE_ID) {
-                Swal.fire('Erreur', 'Veuillez d\'abord configurer votre clé API et ID de Base.', 'error');
-                checkConfig();
-                isFetching = false;
-                return;
-            }
-
-            // Mettre à jour le compteur et l'heure de la dernière requête
-            lastFetchTime = now;
-            apiCallsCount++;
-            apiCountDisplay.textContent = `Appels API : ${apiCallsCount}`;
-
-            // Afficher l'état de chargement
-            refreshText.textContent = 'Chargement...';
-            loadingSpinner.classList.remove('hidden');
-            refreshBtn.disabled = true;
-
-            const url = `https://api.airtable.com/v0/${config.BASE_ID}/${AIRTABLE_TABLE_NAME}?maxRecords=1000`;
-            const options = {
-                method: 'GET',
-                headers: {
-                    'Authorization': decryptedKey, 
-                    'Content-Type': 'application/json'
-                }
-            };
-
-            try {
-                const data = await fetchWithRetry(url, options);
-
-                allRecords = data.records;
-                nextCardNumber = calculateNextCardNumber(allRecords);
-                
-                // Sauvegarde en cache (Mode Hors Ligne)
+                // Mettre à jour le cache
                 localStorage.setItem(AIRTABLE_CACHE_KEY, JSON.stringify(allRecords));
+                document.getElementById('lastUpdated').textContent = `Dernière mise à jour: ${new Date().toLocaleTimeString()}`;
 
-                // Mettre à jour l'interface
-                renderTable(allRecords);
+                // --- MISE À JOUR DU TABLEAU DE BORD (SANS renderTable) ---
+                // *** ANCIENNE LIGNE CAUSANT L'ERREUR ÉTAIT ICI (renderTable) ***
+                // renderTable(allRecords); // <--- L'APPEL A ÉTÉ RETIRÉ POUR ÉVITER LE CRASH
+
                 renderStats(allRecords);
                 renderCharts(allRecords);
 
+                Swal.close();
                 Swal.fire({
                     icon: 'success',
                     title: 'Données Actualisées',
-                    text: `${allRecords.length} utilisateurs chargés. Prochain numéro de carte: ${nextCardNumber}`,
+                    text: `${allRecords.length} enregistrements chargés avec succès.`,
                     showConfirmButton: false,
-                    timer: 3000
+                    timer: 2000,
+                    toast: true,
+                    position: 'top-end'
                 });
 
             } catch (error) {
-                console.error('Erreur lors de la récupération des données Airtable:', error);
+                console.error("Erreur lors de la récupération des données Airtable:", error);
                 
-                if (!error.message.includes('Erreur HTTP 403:') && !error.message.includes('Erreur HTTP 401:')) {
-                    Swal.fire('Erreur API Générique', `Impossible de charger les données : ${error.message}.`, 'error');
+                // Gérer le cas où on ne peut pas récupérer et il n'y a pas de cache
+                if (!localStorage.getItem(AIRTABLE_CACHE_KEY)) {
+                    showError('Erreur API Générique', `Impossible de charger les données : ${error.message}. Vérifiez votre configuration ou la connexion.`);
+                } else {
+                     // Si le cache existe, on informe juste que l'actualisation a échoué.
+                     Swal.fire({
+                        icon: 'warning',
+                        title: 'Échec de l\'Actualisation',
+                        text: 'Les données n\'ont pas pu être actualisées. Affichage des données en cache.',
+                        confirmButtonText: 'Compris'
+                    });
                 }
-                userTableBody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-red-500">Erreur de connexion. Vérifiez la console pour les détails.</td></tr>`;
-                
-            } finally {
-                // Masquer l'état de chargement
-                refreshText.textContent = 'Actualiser les données';
-                loadingSpinner.classList.add('hidden');
-                refreshBtn.disabled = false;
-                isFetching = false;
             }
         }
-
-        /**
-         * Ajoute un nouvel utilisateur à Airtable.
-         */
-        async function addNewUser(fields) {
-            const decryptedKey = decryptKey(config.API_KEY);
-            const originalButtonText = saveUserBtn.textContent;
-
-            if (!decryptedKey || !config.BASE_ID) {
-                Swal.fire('Erreur', 'Veuillez d\'abord configurer votre clé API et ID de Base.', 'error');
-                checkConfig();
-                return;
-            }
-            
-            // UX Amélioration: Désactiver le bouton pendant l'envoi
-            saveUserBtn.disabled = true;
-            saveUserBtn.textContent = 'Enregistrement...';
-            
-            const url = `https://api.airtable.com/v0/${config.BASE_ID}/${AIRTABLE_TABLE_NAME}`;
-            const options = {
-                method: 'POST',
-                headers: {
-                    'Authorization': decryptedKey,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    fields: {
-                        ...fields,
-                        Solde: 0,
-                        StatusCompte: 'Actif',
-                        DateInscription: new Date().toISOString(),
-                        nbreaffilie: 0,
-                        userId: crypto.randomUUID(), 
-                        // IMPORTANT: Ces champs sont vides ici et mis à jour par des Rollups (Colonnes de type 'Formule')
-                        TotalDepots: 0, 
-                        TotalRetraits: 0,
-                    }
-                })
-            };
-
-            try {
-                await fetchWithRetry(url, options);
-
-                // Réinitialiser les champs du formulaire après succès
-                userNameInput.value = '';
-                userEmailInput.value = '';
-                userPhoneInput.value = '';
-                userCINInput.value = '';
-                userPremiumCheckbox.checked = false;
-                formAddUser.classList.add('hidden');
-
-                Swal.fire('Succès !', 'Nouvel utilisateur ajouté et carte créée avec succès !', 'success');
-                
-                // Rafraîchir les données. C'est l'étape la plus longue.
-                await fetchData();
-            } catch (error) {
-                console.error('Erreur lors de l\'ajout de l\'utilisateur:', error);
-                if (!error.message.includes('Erreur HTTP 403:') && !error.message.includes('Erreur HTTP 401:')) {
-                     Swal.fire('Erreur d\'enregistrement', `Impossible d'ajouter l'utilisateur : ${error.message}`, 'error');
-                }
-            } finally {
-                // Rétablir le bouton
-                saveUserBtn.disabled = false;
-                saveUserBtn.textContent = originalButtonText;
-            }
-        }
-
 
         // =======================================================================
-        // Rendu de l'Interface Utilisateur
+        // Fonctions de Rendu (Stats et Charts)
         // =======================================================================
 
-        /**
-         * Met en forme un nombre en devise HTG.
-         */
-        function formatCurrency(amount) {
-            // CHANGEMENT : Utilisation de la Gourde Haïtienne (HTG)
-            return new Intl.NumberFormat('fr-FR', {
-                style: 'currency',
-                currency: 'HTG', 
-                minimumFractionDigits: 2
-            }).format(amount);
-        }
-
-        /**
-         * Affiche la liste des utilisateurs dans le tableau.
-         */
+        // *** Fonction renderTable : Gardée vide pour ne pas crasher si elle est appelée accidentellement. ***
+        // *** Cette fonction ne fait rien car la table a été retirée du HTML. ***
         function renderTable(records) {
-            if (records.length === 0) {
-                userTableBody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-gray-500">Aucun utilisateur trouvé.</td></tr>`;
-                return;
-            }
-
-            records.sort((a, b) => new Date(b.fields.DateInscription) - new Date(a.fields.DateInscription));
-
-            userTableBody.innerHTML = records.map(record => {
-                const f = record.fields;
-                const balance = parseFloat(f.Solde || 0);
-                const statusColor = f.StatusCompte === 'Actif' ? 'text-green-600' : 'text-red-600';
-                
-                // Vérifie le champ 'EstPremium' ou 'StatutPremium'
-                const isPremium = f.EstPremium === true || f.EstPremium === 'Premium'; 
-                const premiumTag = isPremium ? '<span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-mijo-gold text-mijo-blue">Premium</span>' : '';
-                
-                return `
-                    <tr class="hover:bg-gray-50 transition duration-150">
-                        <td class="px-4 py-3 whitespace-nowrap text-sm font-mono text-gray-900">${f.NumeroCarte || 'N/A'}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">${f.NomUtilisateur || 'N/A'}${premiumTag}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">${f.Email || 'N/A'}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">${f.NumeroTelephone || 'N/A'}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">${f.CIN || 'N/A'}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-right ${balance < 0 ? 'text-red-500' : 'text-green-700'}">${formatCurrency(balance)}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium hidden sm:table-cell">
-                            <span class="${statusColor} p-1 rounded-full bg-opacity-10">${f.StatusCompte || 'N/A'}</span>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+            console.log("INFO: renderTable a été ignorée car la table a été retirée du HTML.");
         }
 
-        /**
-         * Calcule et affiche les statistiques globales.
-         */
+
         function renderStats(records) {
+            const premiumCount = records.filter(r => r.fields.EstPremium === true || r.fields.EstPremium === 'Premium').length;
             const totalUsers = records.length;
-            const totalBalance = records.reduce((sum, r) => sum + (parseFloat(r.fields.Solde || 0)), 0);
-
-            // CHANGEMENT : Utilisation des nouveaux champs agrégés (doivent être créés dans Airtable)
-            const totalDeposits = records.reduce((sum, r) => sum + (parseFloat(r.fields.TotalDepots || 0)), 0);
-            const totalWithdrawals = records.reduce((sum, r) => sum + (parseFloat(r.fields.TotalRetraits || 0)), 0);
-
-            const totalAffiliates = records.reduce((sum, r) => sum + (parseInt(r.fields.nbreaffilie || 0)), 0);
+            const premiumRate = totalUsers > 0 ? ((premiumCount / totalUsers) * 100).toFixed(1) : 0;
+            
+            // Calculer la moyenne d'âge (en supposant un champ 'Age' ou 'Âge')
+            const ages = records.map(r => r.fields.Age || r.fields.Âge).filter(a => a && !isNaN(a));
+            const totalAge = ages.reduce((sum, age) => sum + age, 0);
+            const avgAge = ages.length > 0 ? (totalAge / ages.length).toFixed(1) : 0;
 
             document.getElementById('statTotalUsers').textContent = totalUsers.toLocaleString('fr-FR');
-            document.getElementById('statTotalBalance').textContent = formatCurrency(totalBalance);
-            document.getElementById('statTotalDeposits').textContent = formatCurrency(totalDeposits);
-            document.getElementById('statTotalWithdrawals').textContent = formatCurrency(totalWithdrawals);
-            document.getElementById('statTotalAffiliates').textContent = totalAffiliates.toLocaleString('fr-FR');
+            document.getElementById('statPremiumUsers').textContent = premiumCount.toLocaleString('fr-FR');
+            document.getElementById('statPremiumRate').textContent = `${premiumRate}%`;
+            document.getElementById('statAvgAge').textContent = `${avgAge} ans`;
         }
 
-        /**
-         * Calcule les données et dessine les graphiques Chart.js.
-         */
         function renderCharts(records) {
-            // --- 1. Inscriptions par Jour ---
-            const dailyInscriptions = records.reduce((acc, r) => {
-                const dateStr = r.fields.DateInscription ? new Date(r.fields.DateInscription).toLocaleDateString('fr-FR') : 'Date Inconnue';
-                acc[dateStr] = (acc[dateStr] || 0) + 1;
+            // S'assurer que les champs requis existent, sinon simuler des données pour éviter les erreurs
+            if (records.length === 0) {
+                // Vous pouvez ajouter ici une logique pour afficher un message "Pas de données"
+                return;
+            }
+
+            // --- 1. Répartition par Ville (Graphique à Barres) ---
+            const cityCounts = records.reduce((acc, r) => {
+                const city = r.fields.Ville || 'Inconnu'; // Assurez-vous que le champ est correct
+                acc[city] = (acc[city] || 0) + 1;
                 return acc;
             }, {});
 
-            const sortedDates = Object.keys(dailyInscriptions).sort((a, b) => {
-                const [dA, mA, yA] = a.split('/').map(Number);
-                const [dB, mB, yB] = b.split('/').map(Number);
-                return new Date(yA, mA - 1, dA) - new Date(yB, mB - 1, dB);
-            });
+            const sortedCities = Object.entries(cityCounts)
+                .sort(([, countA], [, countB]) => countB - countA)
+                .slice(0, 10); // Limiter aux 10 premières villes
 
-            const inscriptionsData = sortedDates.map(date => dailyInscriptions[date]);
+            const cityLabels = sortedCities.map(([city]) => city);
+            const cityData = sortedCities.map(([, count]) => count);
 
-            if (inscriptionsChartInstance) inscriptionsChartInstance.destroy();
+            if (cityChartInstance) cityChartInstance.destroy();
 
-            const ctxInscriptions = document.getElementById('inscriptionsChart').getContext('2d');
-            inscriptionsChartInstance = new Chart(ctxInscriptions, {
-                type: 'line',
+            const ctxCity = document.getElementById('cityChart').getContext('2d');
+            cityChartInstance = new Chart(ctxCity, {
+                type: 'bar',
                 data: {
-                    labels: sortedDates,
+                    labels: cityLabels,
                     datasets: [{
-                        label: 'Nouvelles Inscriptions',
-                        data: inscriptionsData,
+                        label: 'Nombre d\'Utilisateurs',
+                        data: cityData,
+                        backgroundColor: '#4c74b9',
                         borderColor: '#004aad',
-                        backgroundColor: 'rgba(0, 74, 173, 0.1)',
-                        tension: 0.3,
-                        pointBackgroundColor: '#ffcc00',
+                        borderWidth: 1
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true } }
+                    scales: { 
+                        y: { beginAtZero: true },
+                        x: { display: true } // Afficher les étiquettes des villes
+                    }
                 }
             });
 
@@ -682,8 +295,22 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'bottom' },
-                        title: { display: false }
+                        legend: { 
+                            position: 'bottom',
+                            labels: {
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const currentValue = context.raw;
+                                    const percentage = (currentValue / total) * 100;
+                                    return `${context.label}: ${currentValue} (${percentage.toFixed(1)}%)`;
+                                }
+                            }
+                        }
                     }
                 }
             });
@@ -702,10 +329,16 @@
                 try {
                     const records = JSON.parse(cachedData);
                     allRecords = records;
-                    renderTable(allRecords);
+                    
+                    // *** FIX: Suppression de l'appel à renderTable pour éviter le crash ***
+                    // renderTable(allRecords); 
+                    
                     renderStats(allRecords);
                     renderCharts(allRecords);
                     
+                    // Mise à jour de la date depuis le cache pour l'information
+                    document.getElementById('lastUpdated').textContent = `Dernière mise à jour (Cache): ${new Date().toLocaleTimeString()}`;
+
                     Swal.fire({
                         icon: 'info',
                         title: 'Mode Hors Ligne',
@@ -723,6 +356,11 @@
             }
             
             console.log("✅ Tableau prêt. Appuyez sur 'Actualiser les données' pour charger les informations.");
+            
+            // Tenter une première récupération si pas de cache, ou si les données sont trop anciennes
+            if (!cachedData) {
+                fetchData(true);
+            }
         }
     </script>
 </body>
