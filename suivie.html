@@ -270,13 +270,10 @@
                 return;
             }
             
-            // S'assurer que la clé a le préfixe "Bearer " pour la cohérence
-            if (!newApiKey.startsWith('Bearer ') && !newApiKey.startsWith('pat')) {
-                // Si la clé commence par 'key', on laisse la personne se débrouiller, mais on l'avertit sur le format moderne
-                // Si la clé est nue, on suppose qu'elle doit être de type "Bearer"
-                if (!newApiKey.startsWith('key')) {
-                    newApiKey = 'Bearer ' + newApiKey;
-                }
+            // Correction critique : Airtable exige le préfixe "Bearer " dans la requête.
+            // Nous nous assurons ici que la clé stockée est correctement formatée.
+            if (newApiKey && !newApiKey.toLowerCase().startsWith('bearer ')) {
+                newApiKey = 'Bearer ' + newApiKey;
             }
 
             // Chiffrement de la clé avant de la stocker
@@ -343,8 +340,8 @@
                     }).then(() => {
                         // Ré-activer la fonction checkConfig normale pour afficher
                         // Elle affichera la section car le checkConfig actuel est forcé
-                        forceCheckConfig(false);
-                        checkConfig(); 
+                        // On doit forcer l'affichage sans la fonction "forceCheckConfig" qui n'existe pas.
+                        configSection.classList.remove('hidden');
                     });
                     throw new Error(`Erreur HTTP 403: ${errorBody.substring(0, 100)}...`);
                 }
@@ -363,8 +360,7 @@
                     }).then(() => {
                         // Ré-activer la fonction checkConfig normale pour afficher
                         // Elle affichera la section car le checkConfig actuel est forcé
-                        forceCheckConfig(false);
-                        checkConfig(); 
+                        configSection.classList.remove('hidden');
                     });
                     throw new Error(`Erreur HTTP 401: ${errorBody.substring(0, 100)}...`);
                 }
@@ -459,8 +455,8 @@
             const options = {
                 method: 'GET',
                 headers: {
-                    // Décryptage de la clé pour l'appel API
-                    'Authorization': decryptedKey, // Utilise la clé telle que stockée/configurée (Bearer ou PAT)
+                    // La clé stockée commence maintenant toujours par "Bearer " grâce à saveConfigBtn.
+                    'Authorization': decryptedKey, 
                     'Content-Type': 'application/json'
                 }
             };
@@ -531,6 +527,7 @@
             const options = {
                 method: 'POST',
                 headers: {
+                    // La clé stockée commence maintenant toujours par "Bearer "
                     'Authorization': decryptedKey,
                     'Content-Type': 'application/json'
                 },
@@ -741,4 +738,3 @@
     </script>
 </body>
 </html>
-
