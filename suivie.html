@@ -220,10 +220,19 @@
 
         /**
          * Affiche ou masque la section de configuration si les clés sont manquantes.
+         * MODIFICATION : On force l'affichage pour que l'utilisateur puisse resaisir sa clé après l'erreur 401.
          */
         function checkConfig() {
             const decryptedKey = decryptKey(config.API_KEY);
             
+            // Ancienne condition: if (!decryptedKey || !config.BASE_ID) {
+            // Nouvelle condition forcée pour un usage temporaire:
+            configSection.classList.remove('hidden');
+            apiKeyInput.value = ''; 
+            baseIdInput.value = config.BASE_ID || '';
+            
+            // Note: Une fois la nouvelle clé enregistrée, le code devra être remis à l'état initial :
+            /*
             if (!decryptedKey || !config.BASE_ID) {
                 configSection.classList.remove('hidden');
                 apiKeyInput.value = ''; 
@@ -231,6 +240,7 @@
             } else {
                 configSection.classList.add('hidden');
             }
+            */
         }
         
         /**
@@ -274,7 +284,8 @@
             config.BASE_ID = newBaseId;
             localStorage.setItem(AIRTABLE_CONFIG_KEY, JSON.stringify(config));
             
-            checkConfig();
+            // Rétablissons la condition normale pour la prochaine fois
+            configSection.classList.add('hidden');
             
             // Alerte manuelle pour charger les données
             Swal.fire('Configuration enregistrée', 'Clé API sécurisée et enregistrée. Cliquez sur "Actualiser les données" pour charger le tableau Airtable.', 'success');
@@ -330,11 +341,33 @@
                         `,
                         confirmButtonText: 'Ré-ouvrir la configuration'
                     }).then(() => {
-                        checkConfig();
+                        // Ré-activer la fonction checkConfig normale pour afficher
+                        // Elle affichera la section car le checkConfig actuel est forcé
+                        forceCheckConfig(false);
+                        checkConfig(); 
                     });
                     throw new Error(`Erreur HTTP 403: ${errorBody.substring(0, 100)}...`);
                 }
 
+                // 🚨 Ajout de la gestion de l'erreur 401 pour afficher aussi la configuration
+                if (response.status === 401) {
+                    const errorBody = await response.text();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur d\'authentification (Code 401)',
+                        html: `
+                            <p class="text-left text-sm mb-4">Le jeton API est manquant, incorrect ou a expiré. Veuillez le resaisir.</p>
+                            <p class="text-xs text-gray-500">Détail de l'erreur (Tronqué): ${errorBody.substring(0, 150)}...</p>
+                        `,
+                        confirmButtonText: 'Ré-ouvrir la configuration'
+                    }).then(() => {
+                        // Ré-activer la fonction checkConfig normale pour afficher
+                        // Elle affichera la section car le checkConfig actuel est forcé
+                        forceCheckConfig(false);
+                        checkConfig(); 
+                    });
+                    throw new Error(`Erreur HTTP 401: ${errorBody.substring(0, 100)}...`);
+                }
 
                 if (response.status === 429) { 
                     if (retries > 0) {
@@ -457,8 +490,8 @@
             } catch (error) {
                 console.error('Erreur lors de la récupération des données Airtable:', error);
                 
-                // Si l'erreur est gérée par le 403 spécifique, on ne fait rien de plus ici
-                if (!error.message.includes('Erreur HTTP 403:')) {
+                // Si l'erreur est gérée par le 403 ou 401 spécifique, on ne fait rien de plus ici
+                if (!error.message.includes('Erreur HTTP 403:') && !error.message.includes('Erreur HTTP 401:')) {
                     Swal.fire('Erreur API Générique', `Impossible de charger les données : ${error.message}.`, 'error');
                 }
                 userTableBody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-red-500">Erreur de connexion. Vérifiez la console pour les détails.</td></tr>`;
@@ -523,7 +556,7 @@
                 await fetchData();
             } catch (error) {
                 console.error('Erreur lors de l\'ajout de l\'utilisateur:', error);
-                if (!error.message.includes('Erreur HTTP 403:')) {
+                if (!error.message.includes('Erreur HTTP 403:') && !error.message.includes('Erreur HTTP 401:')) {
                      Swal.fire('Erreur d\'enregistrement', `Impossible d'ajouter l'utilisateur : ${error.message}`, 'error');
                 }
             }
@@ -708,3 +741,4 @@
     </script>
 </body>
 </html>
+
