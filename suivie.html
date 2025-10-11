@@ -32,11 +32,11 @@
 </head>
 <body class="bg-mijo-bg font-sans min-h-screen">
 
-    <!-- Configuration de l'API (avec validation visuelle) -->
+    <!-- Configuration de l'API -->
     <div id="configSection" class="fixed inset-0 bg-gray-900 bg-opacity-95 z-50 flex items-center justify-center p-4">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg">
             <h2 class="text-2xl font-bold text-mijo-blue mb-6">Configuration Airtable</h2>
-            <p class="mb-4 text-sm text-gray-600">Veuillez entrer vos clés pour connecter le tableau de bord à la base de données. Assurez-vous que le token a les droits de lecture/écriture.</p>
+            <p class="mb-4 text-sm text-gray-600">Veuillez entrer vos clés pour connecter le tableau de bord à la base de données.</p>
             
             <input type="text" id="apiKeyInput" placeholder="Clé API Airtable (Bearer YOUR_TOKEN)" 
                    class="w-full p-3 mb-4 border border-gray-300 rounded-xl focus:ring-mijo-gold focus:border-mijo-gold">
@@ -93,9 +93,9 @@
             <div class="flex items-center justify-between mt-4">
                 <label class="flex items-center space-x-2 text-gray-700">
                     <input type="checkbox" id="userPremium" class="form-checkbox h-5 w-5 text-mijo-blue rounded focus:ring-mijo-gold">
-                    <span class="font-medium">Compte Premium</span>
+                    <span class="font-medium">Compte Premium (Champ 'EstPremium')</span>
                 </label>
-                <button id="saveUserBtn" class="px-6 py-2 bg-mijo-blue text-white font-semibold rounded-xl hover:bg-opacity-90 transition duration-200 shadow-md">
+                <button id="saveUserBtn" class="px-6 py-2 bg-mijo-blue text-white font-semibold rounded-xl hover:bg-opacity-90 transition duration-200 shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
                     Enregistrer (Carte auto)
                 </button>
             </div>
@@ -109,15 +109,15 @@
                 <p id="statTotalUsers" class="text-3xl font-bold text-mijo-blue mt-1">0</p>
             </div>
             <div class="bg-white p-5 rounded-2xl shadow-lg text-center border-b-4 border-mijo-gold">
-                <p class="text-sm font-medium text-gray-500">Solde Global</p>
+                <p class="text-sm font-medium text-gray-500">Solde Global (HTG)</p>
                 <p id="statTotalBalance" class="text-3xl font-bold text-mijo-gold mt-1">0.00</p>
             </div>
             <div class="bg-white p-5 rounded-2xl shadow-lg text-center border-b-4 border-mijo-blue">
-                <p class="text-sm font-medium text-gray-500">Dépôts Cumulés</p>
+                <p class="text-sm font-medium text-gray-500">Dépôts Cumulés (HTG)</p>
                 <p id="statTotalDeposits" class="text-3xl font-bold text-mijo-blue mt-1">0.00</p>
             </div>
             <div class="bg-white p-5 rounded-2xl shadow-lg text-center border-b-4 border-mijo-gold">
-                <p class="text-sm font-medium text-gray-500">Retraits (Simulé)</p>
+                <p class="text-sm font-medium text-gray-500">Retraits Cumulés (HTG)</p>
                 <p id="statTotalWithdrawals" class="text-3xl font-bold text-mijo-gold mt-1">0.00</p>
             </div>
             <div class="bg-white p-5 rounded-2xl shadow-lg text-center border-b-4 border-mijo-blue">
@@ -152,7 +152,7 @@
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Téléphone</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">CIN</th>
-                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Solde</th>
+                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Solde (HTG)</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Statut</th>
                         </tr>
                     </thead>
@@ -207,7 +207,7 @@
         const saveConfigBtn = document.getElementById('saveConfigBtn');
         const apiKeyInput = document.getElementById('apiKeyInput');
         const baseIdInput = document.getElementById('baseIdInput');
-        const apiKeyStatus = document.getElementById('apiKeyStatus'); // Nouvelle alerte visuelle
+        const apiKeyStatus = document.getElementById('apiKeyStatus');
         const refreshBtn = document.getElementById('refreshBtn');
         const refreshText = document.getElementById('refreshText');
         const loadingSpinner = document.getElementById('loadingSpinner');
@@ -216,39 +216,36 @@
         const saveUserBtn = document.getElementById('saveUserBtn');
         const userTableBody = document.getElementById('userTableBody');
         const apiCountDisplay = document.getElementById('apiCount');
+        const userNameInput = document.getElementById('userName');
+        const userEmailInput = document.getElementById('userEmail');
+        const userPhoneInput = document.getElementById('userPhone');
+        const userCINInput = document.getElementById('userCIN');
+        const userPremiumCheckbox = document.getElementById('userPremium');
 
 
         /**
          * Affiche ou masque la section de configuration si les clés sont manquantes.
-         * MODIFICATION : On force l'affichage pour que l'utilisateur puisse resaisir sa clé après l'erreur 401.
          */
         function checkConfig() {
             const decryptedKey = decryptKey(config.API_KEY);
             
-            // Ancienne condition: if (!decryptedKey || !config.BASE_ID) {
-            // Nouvelle condition forcée pour un usage temporaire:
-            configSection.classList.remove('hidden');
-            apiKeyInput.value = ''; 
-            baseIdInput.value = config.BASE_ID || '';
-            
-            // Note: Une fois la nouvelle clé enregistrée, le code devra être remis à l'état initial :
-            /*
-            if (!decryptedKey || !config.BASE_ID) {
+            // Si la configuration est manquante ou incomplète, on l'affiche
+            if (!decryptedKey || !config.BASE_ID || decryptedKey.includes('pat') || decryptedKey.includes('Bearer')) {
                 configSection.classList.remove('hidden');
+                // On met une valeur vide pour que l'utilisateur entre le token
                 apiKeyInput.value = ''; 
                 baseIdInput.value = config.BASE_ID || '';
             } else {
                 configSection.classList.add('hidden');
             }
-            */
         }
         
         /**
-         * 🚨 Débogage 403: Vérifie que la clé API est au bon format.
+         * Vérifie que la clé API est au bon format.
          */
         apiKeyInput.addEventListener('input', (e) => {
             const value = e.target.value.trim();
-            if (value && !value.startsWith('Bearer ') && !value.startsWith('pat')) {
+            if (value && !value.toLowerCase().startsWith('bearer ') && !value.toLowerCase().startsWith('pat')) {
                 apiKeyInput.classList.add('border-red-500');
                 apiKeyStatus.classList.remove('hidden');
             } else {
@@ -271,7 +268,6 @@
             }
             
             // Correction critique : Airtable exige le préfixe "Bearer " dans la requête.
-            // Nous nous assurons ici que la clé stockée est correctement formatée.
             if (newApiKey && !newApiKey.toLowerCase().startsWith('bearer ')) {
                 newApiKey = 'Bearer ' + newApiKey;
             }
@@ -281,11 +277,40 @@
             config.BASE_ID = newBaseId;
             localStorage.setItem(AIRTABLE_CONFIG_KEY, JSON.stringify(config));
             
-            // Rétablissons la condition normale pour la prochaine fois
+            // On ferme la configuration
             configSection.classList.add('hidden');
             
-            // Alerte manuelle pour charger les données
             Swal.fire('Configuration enregistrée', 'Clé API sécurisée et enregistrée. Cliquez sur "Actualiser les données" pour charger le tableau Airtable.', 'success');
+        });
+
+        // Toggle du formulaire d'ajout d'utilisateur
+        addUserBtn.addEventListener('click', () => {
+            formAddUser.classList.toggle('hidden');
+        });
+
+        // Soumission du nouvel utilisateur
+        saveUserBtn.addEventListener('click', () => {
+            const name = userNameInput.value.trim();
+            const email = userEmailInput.value.trim();
+            const phone = userPhoneInput.value.trim();
+            const cin = userCINInput.value.trim();
+            const isPremium = userPremiumCheckbox.checked;
+
+            if (!name || !email || !phone || !cin) {
+                Swal.fire('Erreur', 'Veuillez remplir tous les champs obligatoires.', 'error');
+                return;
+            }
+
+            const fields = {
+                NomUtilisateur: name,
+                Email: email,
+                NumeroTelephone: phone,
+                CIN: cin,
+                EstPremium: isPremium, // IMPORTANT: Le nom du champ doit correspondre à Airtable
+                NumeroCarte: nextCardNumber, // Numéro de carte calculé
+            };
+
+            addNewUser(fields);
         });
 
         // Confirmation SweetAlert2 avant l'appel API 
@@ -321,48 +346,24 @@
             try {
                 const response = await fetch(url, options);
                 
-                // 🚨 Débogage 403: Si l'erreur persiste, affichons une alerte de débogage spécifique.
-                if (response.status === 403) {
+                if (response.status === 403 || response.status === 401) {
                     const errorBody = await response.text();
                     Swal.fire({
                         icon: 'error',
-                        title: 'Erreur d\'accès Airtable (Code 403)',
+                        title: `Erreur d'accès Airtable (Code ${response.status})`,
                         html: `
-                            <p class="text-left text-sm mb-4">L'API Airtable a refusé l'accès. C'est presque toujours dû à :</p>
+                            <p class="text-left text-sm mb-4">Le jeton API est incorrect ou les permissions sont insuffisantes.</p>
                             <ul class="list-disc list-inside text-left text-xs mb-4 p-2 bg-red-50 rounded">
-                                <li><strong>Clé API/Token (Bearer) incorrect(e).</strong> Vérifiez qu'il s'agit du jeton d'accès personnel (PAT) ou de l'ancienne clé API, et qu'il commence par 'Bearer ' ou 'pat'.</li>
-                                <li><strong>ID de Base (appXXXXXXX) incorrect.</strong></li>
+                                <li><strong>Clé API/Token (Bearer) incorrect(e).</strong></li>
                                 <li><strong>Permissions manquantes.</strong> Le Token n'a pas les droits de lecture pour cette base ou cette table.</li>
                             </ul>
                             <p class="text-xs text-gray-500">Détail de l'erreur (Tronqué): ${errorBody.substring(0, 150)}...</p>
                         `,
                         confirmButtonText: 'Ré-ouvrir la configuration'
                     }).then(() => {
-                        // Ré-activer la fonction checkConfig normale pour afficher
-                        // Elle affichera la section car le checkConfig actuel est forcé
-                        // On doit forcer l'affichage sans la fonction "forceCheckConfig" qui n'existe pas.
                         configSection.classList.remove('hidden');
                     });
-                    throw new Error(`Erreur HTTP 403: ${errorBody.substring(0, 100)}...`);
-                }
-
-                // 🚨 Ajout de la gestion de l'erreur 401 pour afficher aussi la configuration
-                if (response.status === 401) {
-                    const errorBody = await response.text();
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Erreur d\'authentification (Code 401)',
-                        html: `
-                            <p class="text-left text-sm mb-4">Le jeton API est manquant, incorrect ou a expiré. Veuillez le resaisir.</p>
-                            <p class="text-xs text-gray-500">Détail de l'erreur (Tronqué): ${errorBody.substring(0, 150)}...</p>
-                        `,
-                        confirmButtonText: 'Ré-ouvrir la configuration'
-                    }).then(() => {
-                        // Ré-activer la fonction checkConfig normale pour afficher
-                        // Elle affichera la section car le checkConfig actuel est forcé
-                        configSection.classList.remove('hidden');
-                    });
-                    throw new Error(`Erreur HTTP 401: ${errorBody.substring(0, 100)}...`);
+                    throw new Error(`Erreur HTTP ${response.status}: ${errorBody.substring(0, 100)}...`);
                 }
 
                 if (response.status === 429) { 
@@ -455,7 +456,6 @@
             const options = {
                 method: 'GET',
                 headers: {
-                    // La clé stockée commence maintenant toujours par "Bearer " grâce à saveConfigBtn.
                     'Authorization': decryptedKey, 
                     'Content-Type': 'application/json'
                 }
@@ -486,7 +486,6 @@
             } catch (error) {
                 console.error('Erreur lors de la récupération des données Airtable:', error);
                 
-                // Si l'erreur est gérée par le 403 ou 401 spécifique, on ne fait rien de plus ici
                 if (!error.message.includes('Erreur HTTP 403:') && !error.message.includes('Erreur HTTP 401:')) {
                     Swal.fire('Erreur API Générique', `Impossible de charger les données : ${error.message}.`, 'error');
                 }
@@ -506,28 +505,22 @@
          */
         async function addNewUser(fields) {
             const decryptedKey = decryptKey(config.API_KEY);
+            const originalButtonText = saveUserBtn.textContent;
 
             if (!decryptedKey || !config.BASE_ID) {
                 Swal.fire('Erreur', 'Veuillez d\'abord configurer votre clé API et ID de Base.', 'error');
                 checkConfig();
                 return;
             }
-
-            Swal.fire({
-                title: 'Ajout en cours...',
-                text: 'Envoi des données à Airtable.',
-                icon: 'info',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
+            
+            // UX Amélioration: Désactiver le bouton pendant l'envoi
+            saveUserBtn.disabled = true;
+            saveUserBtn.textContent = 'Enregistrement...';
+            
             const url = `https://api.airtable.com/v0/${config.BASE_ID}/${AIRTABLE_TABLE_NAME}`;
             const options = {
                 method: 'POST',
                 headers: {
-                    // La clé stockée commence maintenant toujours par "Bearer "
                     'Authorization': decryptedKey,
                     'Content-Type': 'application/json'
                 },
@@ -539,7 +532,9 @@
                         DateInscription: new Date().toISOString(),
                         nbreaffilie: 0,
                         userId: crypto.randomUUID(), 
-                        CD: 0, 
+                        // IMPORTANT: Ces champs sont vides ici et mis à jour par des Rollups (Colonnes de type 'Formule')
+                        TotalDepots: 0, 
+                        TotalRetraits: 0,
                     }
                 })
             };
@@ -547,15 +542,27 @@
             try {
                 await fetchWithRetry(url, options);
 
+                // Réinitialiser les champs du formulaire après succès
+                userNameInput.value = '';
+                userEmailInput.value = '';
+                userPhoneInput.value = '';
+                userCINInput.value = '';
+                userPremiumCheckbox.checked = false;
                 formAddUser.classList.add('hidden');
+
                 Swal.fire('Succès !', 'Nouvel utilisateur ajouté et carte créée avec succès !', 'success');
-                // Rafraîchir les données
+                
+                // Rafraîchir les données. C'est l'étape la plus longue.
                 await fetchData();
             } catch (error) {
                 console.error('Erreur lors de l\'ajout de l\'utilisateur:', error);
                 if (!error.message.includes('Erreur HTTP 403:') && !error.message.includes('Erreur HTTP 401:')) {
                      Swal.fire('Erreur d\'enregistrement', `Impossible d'ajouter l'utilisateur : ${error.message}`, 'error');
                 }
+            } finally {
+                // Rétablir le bouton
+                saveUserBtn.disabled = false;
+                saveUserBtn.textContent = originalButtonText;
             }
         }
 
@@ -565,12 +572,13 @@
         // =======================================================================
 
         /**
-         * Met en forme un nombre en devise.
+         * Met en forme un nombre en devise HTG.
          */
         function formatCurrency(amount) {
+            // CHANGEMENT : Utilisation de la Gourde Haïtienne (HTG)
             return new Intl.NumberFormat('fr-FR', {
                 style: 'currency',
-                currency: 'XOF', // West African CFA Franc
+                currency: 'HTG', 
                 minimumFractionDigits: 2
             }).format(amount);
         }
@@ -590,9 +598,11 @@
                 const f = record.fields;
                 const balance = parseFloat(f.Solde || 0);
                 const statusColor = f.StatusCompte === 'Actif' ? 'text-green-600' : 'text-red-600';
-                const premiumTag = f.EstPremium ? '<span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-mijo-gold text-mijo-blue">Premium</span>' : '';
-                const date = f.DateInscription ? new Date(f.DateInscription).toLocaleDateString('fr-FR') : 'N/A';
-
+                
+                // Vérifie le champ 'EstPremium' ou 'StatutPremium'
+                const isPremium = f.EstPremium === true || f.EstPremium === 'Premium'; 
+                const premiumTag = isPremium ? '<span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-mijo-gold text-mijo-blue">Premium</span>' : '';
+                
                 return `
                     <tr class="hover:bg-gray-50 transition duration-150">
                         <td class="px-4 py-3 whitespace-nowrap text-sm font-mono text-gray-900">${f.NumeroCarte || 'N/A'}</td>
@@ -614,17 +624,18 @@
          */
         function renderStats(records) {
             const totalUsers = records.length;
-            const totalBalance = records.reduce((sum, r) => sum + (parseFloat(r.fields.Solde) || 0), 0);
-            const totalDeposits = records.reduce((sum, r) => sum + (parseFloat(r.fields.CD) || 0), 0);
-            const totalAffiliates = records.reduce((sum, r) => sum + (parseInt(r.fields.nbreaffilie) || 0), 0);
+            const totalBalance = records.reduce((sum, r) => sum + (parseFloat(r.fields.Solde || 0)), 0);
 
-            // Simulation pour les retraits : Estimation à 40% des dépôts cumulés
-            const simulatedWithdrawals = totalDeposits * 0.4;
+            // CHANGEMENT : Utilisation des nouveaux champs agrégés (doivent être créés dans Airtable)
+            const totalDeposits = records.reduce((sum, r) => sum + (parseFloat(r.fields.TotalDepots || 0)), 0);
+            const totalWithdrawals = records.reduce((sum, r) => sum + (parseFloat(r.fields.TotalRetraits || 0)), 0);
+
+            const totalAffiliates = records.reduce((sum, r) => sum + (parseInt(r.fields.nbreaffilie || 0)), 0);
 
             document.getElementById('statTotalUsers').textContent = totalUsers.toLocaleString('fr-FR');
             document.getElementById('statTotalBalance').textContent = formatCurrency(totalBalance);
             document.getElementById('statTotalDeposits').textContent = formatCurrency(totalDeposits);
-            document.getElementById('statTotalWithdrawals').textContent = formatCurrency(simulatedWithdrawals);
+            document.getElementById('statTotalWithdrawals').textContent = formatCurrency(totalWithdrawals);
             document.getElementById('statTotalAffiliates').textContent = totalAffiliates.toLocaleString('fr-FR');
         }
 
@@ -632,8 +643,6 @@
          * Calcule les données et dessine les graphiques Chart.js.
          */
         function renderCharts(records) {
-            // ... (logique de Chart.js non modifiée) ...
-            
             // --- 1. Inscriptions par Jour ---
             const dailyInscriptions = records.reduce((acc, r) => {
                 const dateStr = r.fields.DateInscription ? new Date(r.fields.DateInscription).toLocaleDateString('fr-FR') : 'Date Inconnue';
@@ -673,7 +682,8 @@
             });
 
             // --- 2. Ratio Premium / Standard (Graphique Circulaire) ---
-            const premiumCount = records.filter(r => r.fields.EstPremium).length;
+            // Le code vérifie si f.EstPremium est un booléen (true) ou une chaîne ('Premium')
+            const premiumCount = records.filter(r => r.fields.EstPremium === true || r.fields.EstPremium === 'Premium').length;
             const standardCount = records.length - premiumCount;
 
             if (premiumRatioChartInstance) premiumRatioChartInstance.destroy();
