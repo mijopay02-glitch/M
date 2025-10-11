@@ -32,13 +32,23 @@
 </head>
 <body class="bg-mijo-bg font-sans min-h-screen">
 
-    <!-- Configuration de l'API -->
+    <!-- Configuration de l'API (avec validation visuelle) -->
     <div id="configSection" class="fixed inset-0 bg-gray-900 bg-opacity-95 z-50 flex items-center justify-center p-4">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg">
             <h2 class="text-2xl font-bold text-mijo-blue mb-6">Configuration Airtable</h2>
-            <p class="mb-4 text-sm text-gray-600">Veuillez entrer vos clés pour connecter le tableau de bord à la base de données.</p>
-            <input type="text" id="apiKeyInput" placeholder="Clé API Airtable (Bearer YOUR_TOKEN)" class="w-full p-3 mb-4 border border-gray-300 rounded-xl focus:ring-mijo-gold focus:border-mijo-gold">
-            <input type="text" id="baseIdInput" placeholder="ID de Base Airtable (appXXXXXXX)" class="w-full p-3 mb-6 border border-gray-300 rounded-xl focus:ring-mijo-gold focus:border-mijo-gold">
+            <p class="mb-4 text-sm text-gray-600">Veuillez entrer vos clés pour connecter le tableau de bord à la base de données. Assurez-vous que le token a les droits de lecture/écriture.</p>
+            
+            <input type="text" id="apiKeyInput" placeholder="Clé API Airtable (Bearer YOUR_TOKEN)" 
+                   class="w-full p-3 mb-4 border border-gray-300 rounded-xl focus:ring-mijo-gold focus:border-mijo-gold">
+            
+            <!-- Aide visuelle pour le format de la clé API -->
+            <p id="apiKeyStatus" class="text-xs mb-4 p-2 rounded-lg text-red-700 bg-red-100 hidden">
+                ⚠️ La clé doit commencer par "pat" ou "Bearer".
+            </p>
+
+            <input type="text" id="baseIdInput" placeholder="ID de Base Airtable (appXXXXXXX)" 
+                   class="w-full p-3 mb-6 border border-gray-300 rounded-xl focus:ring-mijo-gold focus:border-mijo-gold">
+            
             <button id="saveConfigBtn" class="w-full bg-mijo-blue text-white font-semibold py-3 rounded-xl hover:bg-opacity-90 transition duration-200 shadow-md cursor-pointer">
                 Enregistrer la Configuration
             </button>
@@ -93,7 +103,7 @@
 
         <!-- Section Statistiques Globales -->
         <section id="globalStats" class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-            <!-- Cartes de stats... -->
+            <!-- Cartes de stats... (Non modifiées) -->
             <div class="bg-white p-5 rounded-2xl shadow-lg text-center border-b-4 border-mijo-blue">
                 <p class="text-sm font-medium text-gray-500">Total Utilisateurs</p>
                 <p id="statTotalUsers" class="text-3xl font-bold text-mijo-blue mt-1">0</p>
@@ -160,22 +170,22 @@
         // =======================================================================
 
         const AIRTABLE_CONFIG_KEY = 'mijo_pay_airtable_config';
-        const AIRTABLE_CACHE_KEY = 'mijo_pay_airtable_cache'; // Clé pour le mode hors ligne
+        const AIRTABLE_CACHE_KEY = 'mijo_pay_airtable_cache'; 
         const AIRTABLE_TABLE_NAME = 'Utilisateurs';
-        const MIN_FETCH_INTERVAL = 60 * 1000; // Intervalle minimum entre deux requêtes (1 minute)
+        const MIN_FETCH_INTERVAL = 60 * 1000; // 1 minute
 
         let apiCallsCount = 0;
         let lastFetchTime = 0;
         let inscriptionsChartInstance = null;
         let premiumRatioChartInstance = null;
-        let isFetching = false; // Indicateur de requête en cours
+        let isFetching = false; 
         let allRecords = [];
-        let nextCardNumber = '4000200600000001'; // Numéro de carte par défaut
+        let nextCardNumber = '4000200600000001'; 
 
         // Fonctions simples d'encodage/décodage de la clé API
         function encryptKey(key) {
             if (!key) return '';
-            return btoa(key.split('').reverse().join('')); // Base64 + Inversion
+            return btoa(key.split('').reverse().join('')); 
         }
 
         function decryptKey(encoded) {
@@ -189,7 +199,7 @@
         }
 
         let config = JSON.parse(localStorage.getItem(AIRTABLE_CONFIG_KEY)) || {
-            API_KEY: '', // Stocké chiffré
+            API_KEY: '', 
             BASE_ID: '',
         };
 
@@ -197,6 +207,7 @@
         const saveConfigBtn = document.getElementById('saveConfigBtn');
         const apiKeyInput = document.getElementById('apiKeyInput');
         const baseIdInput = document.getElementById('baseIdInput');
+        const apiKeyStatus = document.getElementById('apiKeyStatus'); // Nouvelle alerte visuelle
         const refreshBtn = document.getElementById('refreshBtn');
         const refreshText = document.getElementById('refreshText');
         const loadingSpinner = document.getElementById('loadingSpinner');
@@ -221,12 +232,27 @@
                 configSection.classList.add('hidden');
             }
         }
+        
+        /**
+         * 🚨 Débogage 403: Vérifie que la clé API est au bon format.
+         */
+        apiKeyInput.addEventListener('input', (e) => {
+            const value = e.target.value.trim();
+            if (value && !value.startsWith('Bearer ') && !value.startsWith('pat')) {
+                apiKeyInput.classList.add('border-red-500');
+                apiKeyStatus.classList.remove('hidden');
+            } else {
+                apiKeyInput.classList.remove('border-red-500');
+                apiKeyStatus.classList.add('hidden');
+            }
+        });
+
 
         /**
          * Sauvegarde la configuration Airtable dans localStorage.
          */
         saveConfigBtn.addEventListener('click', () => {
-            const newApiKey = apiKeyInput.value.trim();
+            let newApiKey = apiKeyInput.value.trim();
             const newBaseId = baseIdInput.value.trim();
 
             if (!newApiKey || !newBaseId) {
@@ -234,6 +260,15 @@
                 return;
             }
             
+            // S'assurer que la clé a le préfixe "Bearer " pour la cohérence
+            if (!newApiKey.startsWith('Bearer ') && !newApiKey.startsWith('pat')) {
+                // Si la clé commence par 'key', on laisse la personne se débrouiller, mais on l'avertit sur le format moderne
+                // Si la clé est nue, on suppose qu'elle doit être de type "Bearer"
+                if (!newApiKey.startsWith('key')) {
+                    newApiKey = 'Bearer ' + newApiKey;
+                }
+            }
+
             // Chiffrement de la clé avant de la stocker
             config.API_KEY = encryptKey(newApiKey);
             config.BASE_ID = newBaseId;
@@ -245,7 +280,7 @@
             Swal.fire('Configuration enregistrée', 'Clé API sécurisée et enregistrée. Cliquez sur "Actualiser les données" pour charger le tableau Airtable.', 'success');
         });
 
-        // Confirmation SweetAlert2 avant l'appel API (Sécurité token)
+        // Confirmation SweetAlert2 avant l'appel API 
         refreshBtn.addEventListener('click', async () => {
             if (isFetching) return;
 
@@ -277,6 +312,30 @@
         async function fetchWithRetry(url, options, retries = 3, delay = 1000) {
             try {
                 const response = await fetch(url, options);
+                
+                // 🚨 Débogage 403: Si l'erreur persiste, affichons une alerte de débogage spécifique.
+                if (response.status === 403) {
+                    const errorBody = await response.text();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur d\'accès Airtable (Code 403)',
+                        html: `
+                            <p class="text-left text-sm mb-4">L'API Airtable a refusé l'accès. C'est presque toujours dû à :</p>
+                            <ul class="list-disc list-inside text-left text-xs mb-4 p-2 bg-red-50 rounded">
+                                <li><strong>Clé API/Token (Bearer) incorrect(e).</strong> Vérifiez qu'il s'agit du jeton d'accès personnel (PAT) ou de l'ancienne clé API, et qu'il commence par 'Bearer ' ou 'pat'.</li>
+                                <li><strong>ID de Base (appXXXXXXX) incorrect.</strong></li>
+                                <li><strong>Permissions manquantes.</strong> Le Token n'a pas les droits de lecture pour cette base ou cette table.</li>
+                            </ul>
+                            <p class="text-xs text-gray-500">Détail de l'erreur (Tronqué): ${errorBody.substring(0, 150)}...</p>
+                        `,
+                        confirmButtonText: 'Ré-ouvrir la configuration'
+                    }).then(() => {
+                        checkConfig();
+                    });
+                    throw new Error(`Erreur HTTP 403: ${errorBody.substring(0, 100)}...`);
+                }
+
+
                 if (response.status === 429) { 
                     if (retries > 0) {
                         console.warn(`[API] Limite de débit atteinte, nouvelle tentative dans ${delay / 1000}s...`);
@@ -334,7 +393,7 @@
         async function fetchData() {
             const now = Date.now();
             
-            // 🛑 AMÉLIORATION : Anti-abus (délai minimum entre deux requêtes)
+            // Anti-abus (délai minimum entre deux requêtes)
             if (now - lastFetchTime < MIN_FETCH_INTERVAL) {
                 const timeLeft = Math.ceil((MIN_FETCH_INTERVAL - (now - lastFetchTime)) / 1000);
                 Swal.fire('Attendez un peu', `Vous ne pouvez actualiser qu'une fois par minute. Veuillez patienter ${timeLeft} secondes.`, 'info');
@@ -368,7 +427,7 @@
                 method: 'GET',
                 headers: {
                     // Décryptage de la clé pour l'appel API
-                    'Authorization': `Bearer ${decryptedKey}`,
+                    'Authorization': decryptedKey, // Utilise la clé telle que stockée/configurée (Bearer ou PAT)
                     'Content-Type': 'application/json'
                 }
             };
@@ -379,7 +438,7 @@
                 allRecords = data.records;
                 nextCardNumber = calculateNextCardNumber(allRecords);
                 
-                // 💾 AMÉLIORATION : Sauvegarde en cache (Mode Hors Ligne)
+                // Sauvegarde en cache (Mode Hors Ligne)
                 localStorage.setItem(AIRTABLE_CACHE_KEY, JSON.stringify(allRecords));
 
                 // Mettre à jour l'interface
@@ -397,14 +456,18 @@
 
             } catch (error) {
                 console.error('Erreur lors de la récupération des données Airtable:', error);
-                Swal.fire('Erreur API', `Impossible de charger les données : ${error.message}. Vérifiez votre clé API et ID de Base.`, 'error');
-                userTableBody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-red-500">Erreur de connexion : ${error.message}</td></tr>`;
+                
+                // Si l'erreur est gérée par le 403 spécifique, on ne fait rien de plus ici
+                if (!error.message.includes('Erreur HTTP 403:')) {
+                    Swal.fire('Erreur API Générique', `Impossible de charger les données : ${error.message}.`, 'error');
+                }
+                userTableBody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-red-500">Erreur de connexion. Vérifiez la console pour les détails.</td></tr>`;
+                
             } finally {
                 // Masquer l'état de chargement
                 refreshText.textContent = 'Actualiser les données';
                 loadingSpinner.classList.add('hidden');
                 refreshBtn.disabled = false;
-                // Réinitialiser le flag de chargement
                 isFetching = false;
             }
         }
@@ -435,7 +498,7 @@
             const options = {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${decryptedKey}`,
+                    'Authorization': decryptedKey,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
@@ -456,11 +519,13 @@
 
                 formAddUser.classList.add('hidden');
                 Swal.fire('Succès !', 'Nouvel utilisateur ajouté et carte créée avec succès !', 'success');
-                // Rafraîchir les données pour inclure le nouvel utilisateur (cela déclenchera le compteur et l'anti-abus)
+                // Rafraîchir les données
                 await fetchData();
             } catch (error) {
                 console.error('Erreur lors de l\'ajout de l\'utilisateur:', error);
-                Swal.fire('Erreur d\'enregistrement', `Impossible d'ajouter l'utilisateur : ${error.message}`, 'error');
+                if (!error.message.includes('Erreur HTTP 403:')) {
+                     Swal.fire('Erreur d\'enregistrement', `Impossible d'ajouter l'utilisateur : ${error.message}`, 'error');
+                }
             }
         }
 
@@ -537,7 +602,7 @@
          * Calcule les données et dessine les graphiques Chart.js.
          */
         function renderCharts(records) {
-            // ... (logique de Chart.js non modifiée, elle est correcte) ...
+            // ... (logique de Chart.js non modifiée) ...
             
             // --- 1. Inscriptions par Jour ---
             const dailyInscriptions = records.reduce((acc, r) => {
@@ -612,7 +677,7 @@
         window.onload = function() {
             checkConfig();
 
-            // 💾 AMÉLIORATION : Chargement des données mises en cache (Mode Hors Ligne)
+            // Chargement des données mises en cache (Mode Hors Ligne)
             const cachedData = localStorage.getItem(AIRTABLE_CACHE_KEY);
             if (cachedData) {
                 try {
