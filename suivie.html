@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tableau de Bord d'Analyse (Corrigé)</title>
+    <title>Tableau de Bord d'Analyse (Dynamique)</title>
     <!-- Chargement de Tailwind CSS pour un design moderne et responsive -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Police Inter -->
@@ -15,7 +15,8 @@
         body { font-family: 'Inter', sans-serif; background-color: #f4f7f9; }
         .card { transition: transform 0.2s, box-shadow 0.2s; }
         .card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); }
-        /* Style pour centrer les labels de la Doughnut Chart */
+        /* Ajustements pour les graphiques */
+        .chart-container { height: 300px; } 
         #premiumRatioChart { max-height: 250px; } 
     </style>
 </head>
@@ -30,6 +31,9 @@
                     <svg class="w-5 h-5 inline mr-2 align-text-bottom" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.836 2.004C18.257 12.28 16.5 13.525 14 13.5c-3.5 0-6.417-3.447-5.003-8.004M4.368 12c.324.414.509.914.509 1.414 0 5 4.79 9 10.153 9C20.697 22.414 24 18 24 13.5c0-3.5-2.731-6.417-6.004-7.003"></path></svg>
                     Actualiser les Données
                 </button>
+                <button onclick="clearConfigAndReload()" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                    Réinitialiser la Clé API
+                </button>
                 <div class="text-sm text-gray-500 py-2">
                     <span id="lastUpdated">Dernière mise à jour: Jamais</span>
                 </div>
@@ -38,7 +42,7 @@
 
         <!-- Section des Statistiques Clés (Key Stats) -->
         <h2 class="text-2xl font-semibold text-gray-700 mb-4">Statistiques Clés</h2>
-        <div id="statsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <div id="statsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
             <!-- Les statistiques seront injectées ici par renderStats() -->
             <div class="card bg-white p-6 rounded-xl shadow-md border border-gray-100">
                 <p class="text-sm font-medium text-gray-500">Nombre Total d'Utilisateurs</p>
@@ -52,83 +56,136 @@
                 <p class="text-sm font-medium text-gray-500">Taux de Premium</p>
                 <p id="statPremiumRate" class="text-3xl font-bold text-green-600 mt-1">0%</p>
             </div>
-            <div class="card bg-white p-6 rounded-xl shadow-md border border-gray-100">
-                <p class="text-sm font-medium text-gray-500">Moyenne d'Âge</p>
-                <p id="statAvgAge" class="text-3xl font-bold text-indigo-600 mt-1">0 ans</p>
-            </div>
         </div>
 
         <!-- Section des Graphiques (Charts) -->
         <h2 class="text-2xl font-semibold text-gray-700 mb-4">Visualisations</h2>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
-            <!-- Graphique 1: Utilisateurs par Ville -->
-            <div class="card bg-white p-6 rounded-xl shadow-md border border-gray-100">
-                <h3 class="text-lg font-semibold mb-4 text-gray-800">1. Répartition par Ville</h3>
-                <div class="h-64">
-                    <canvas id="cityChart"></canvas>
+            <!-- NOUVEAU GRAPHIQUE: Évolution des Inscriptions -->
+            <div class="card bg-white p-6 rounded-xl shadow-md border border-gray-100 col-span-1">
+                <h3 class="text-lg font-semibold mb-4 text-gray-800">Évolution des Inscriptions (Journalier)</h3>
+                <div class="chart-container">
+                    <canvas id="registrationChart"></canvas>
                 </div>
             </div>
 
-            <!-- Graphique 2: Ratio Premium / Standard (Graphique Circulaire) -->
+            <!-- Graphique: Ratio Premium / Standard -->
             <div class="card bg-white p-6 rounded-xl shadow-md border border-gray-100 flex flex-col justify-center items-center">
-                <h3 class="text-lg font-semibold mb-4 text-gray-800">2. Ratio Comptes Premium / Standard</h3>
+                <h3 class="text-lg font-semibold mb-4 text-gray-800">Ratio Comptes Premium / Standard</h3>
                 <div class="w-full max-w-xs mx-auto">
                     <canvas id="premiumRatioChart"></canvas>
                 </div>
             </div>
 
         </div>
-
-        <!-- L'ancienne section de la table des utilisateurs n'est plus présente ici -->
     </div>
 
     <script>
         // =======================================================================
         // Configuration et Variables Globales
         // =======================================================================
-        const AIRTABLE_API_KEY = 'VOTRE_CLE_API_AIRTABLE'; // Remplacez par votre clé réelle
-        const AIRTABLE_BASE_ID = 'VOTRE_ID_BASE_AIRTABLE'; // Remplacez par l'ID de la base
-        const AIRTABLE_TABLE_NAME = 'Nom de la Table'; // Remplacez par le nom de la table
+        const LOCAL_CONFIG_KEY = 'airtableConfig';
         const AIRTABLE_CACHE_KEY = 'airtableDataCache';
 
+        let airtableConfig = null;
         let allRecords = [];
-        let cityChartInstance = null;
-        let premiumRatioChartInstance = null;
+        let premiumRatioChartInstance = null; 
+        let registrationChartInstance = null; // Nouvelle instance de graphique
 
         // =======================================================================
-        // Fonctions d'Utilitaires
+        // Gestion de la Configuration (LocalStorage)
         // =======================================================================
 
-        // Vérifie si la configuration Airtable est complète
+        function loadConfig() {
+            const config = localStorage.getItem(LOCAL_CONFIG_KEY);
+            if (config) {
+                try {
+                    airtableConfig = JSON.parse(config);
+                    return true;
+                } catch (e) {
+                    console.error("Erreur lors du chargement de la configuration:", e);
+                    localStorage.removeItem(LOCAL_CONFIG_KEY);
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        async function promptForConfig() {
+            const result = await Swal.fire({
+                title: 'Configuration Airtable Requise',
+                html: `
+                    <p class="text-sm text-gray-600 mb-3">
+                        Pour sécuriser vos informations, entrez vos clés ici. Elles seront stockées uniquement dans votre navigateur (LocalStorage).
+                    </p>
+                    <input id="swal-api-key" class="swal2-input" placeholder="Airtable API Key (Bearer Token)">
+                    <input id="swal-base-id" class="swal2-input" placeholder="Base ID (e.g., appXyz123)">
+                    <input id="swal-table-name" class="swal2-input" placeholder="Nom de la Table (e.g., Utilisateurs)">
+                `,
+                focusConfirm: false,
+                confirmButtonText: 'Sauvegarder et Charger',
+                showCancelButton: true,
+                preConfirm: () => {
+                    const apiKey = document.getElementById('swal-api-key').value.trim();
+                    const baseId = document.getElementById('swal-base-id').value.trim();
+                    const tableName = document.getElementById('swal-table-name').value.trim();
+                    if (!apiKey || !baseId || !tableName) {
+                        Swal.showValidationMessage('Veuillez remplir tous les champs.');
+                        return false;
+                    }
+                    return { apiKey, baseId, tableName };
+                }
+            });
+
+            if (result.isConfirmed) {
+                airtableConfig = result.value;
+                localStorage.setItem(LOCAL_CONFIG_KEY, JSON.stringify(airtableConfig));
+                return true;
+            }
+            return false;
+        }
+
         function checkConfig() {
-            if (AIRTABLE_API_KEY === 'VOTRE_CLE_API_AIRTABLE' || AIRTABLE_BASE_ID === 'VOTRE_ID_BASE_AIRTABLE' || AIRTABLE_TABLE_NAME === 'Nom de la Table') {
-                showError('Configuration Incomplète', 'Veuillez renseigner votre clé API, votre ID de Base et le nom de votre table Airtable dans le code source.');
+            if (airtableConfig === null) {
+                return false;
+            }
+            if (!airtableConfig.apiKey || !airtableConfig.baseId || !airtableConfig.tableName) {
                 return false;
             }
             return true;
         }
 
-        // Affiche une boîte de dialogue d'erreur
-        function showError(title, text) {
+        function clearConfigAndReload() {
+            localStorage.removeItem(LOCAL_CONFIG_KEY);
+            localStorage.removeItem(AIRTABLE_CACHE_KEY);
             Swal.fire({
-                icon: 'error',
-                title: title,
-                text: text,
-                confirmButtonText: 'Compris'
+                icon: 'success',
+                title: 'Configuration Effacée',
+                text: 'La clé API et les données ont été retirées du cache local. Rechargement...',
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                window.location.reload();
             });
         }
+
 
         // =======================================================================
         // Fonctions de Récupération de Données (Airtable)
         // =======================================================================
 
         async function fetchData(forceRefresh = false) {
-            if (!checkConfig()) return;
+            if (!checkConfig()) {
+                if (await promptForConfig()) {
+                    // Re-appel la fonction après configuration
+                    return fetchData(true); 
+                }
+                return;
+            }
 
             const cachedData = localStorage.getItem(AIRTABLE_CACHE_KEY);
             if (cachedData && !forceRefresh) {
-                // Le mode hors ligne est géré dans window.onload
                 return;
             }
 
@@ -142,13 +199,11 @@
             });
 
             try {
-                // Simuler une attente pour ne pas spammer Airtable et voir le loading
-                await new Promise(resolve => setTimeout(resolve, 500)); 
-
-                const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?view=Grid%20view`; // Utilisation d'une vue par défaut
+                // Utilisation des valeurs de configuration stockées
+                const url = `https://api.airtable.com/v0/${airtableConfig.baseId}/${airtableConfig.tableName}?view=Grid%20view`; 
                 const response = await fetch(url, {
                     headers: {
-                        'Authorization': `Bearer ${AIRTABLE_API_KEY}`
+                        'Authorization': `Bearer ${airtableConfig.apiKey}`
                     }
                 });
 
@@ -162,10 +217,6 @@
                 // Mettre à jour le cache
                 localStorage.setItem(AIRTABLE_CACHE_KEY, JSON.stringify(allRecords));
                 document.getElementById('lastUpdated').textContent = `Dernière mise à jour: ${new Date().toLocaleTimeString()}`;
-
-                // --- MISE À JOUR DU TABLEAU DE BORD (SANS renderTable) ---
-                // *** ANCIENNE LIGNE CAUSANT L'ERREUR ÉTAIT ICI (renderTable) ***
-                // renderTable(allRecords); // <--- L'APPEL A ÉTÉ RETIRÉ POUR ÉVITER LE CRASH
 
                 renderStats(allRecords);
                 renderCharts(allRecords);
@@ -184,15 +235,20 @@
             } catch (error) {
                 console.error("Erreur lors de la récupération des données Airtable:", error);
                 
-                // Gérer le cas où on ne peut pas récupérer et il n'y a pas de cache
+                let errorText = `Impossible de charger les données : ${error.message}.`;
+                if (error.message.includes('401')) {
+                    errorText = "Erreur d'authentification (401). Vérifiez votre Clé API.";
+                } else if (error.message.includes('404')) {
+                    errorText = "Erreur (404). Vérifiez l'ID de Base ou le Nom de la Table.";
+                }
+                
                 if (!localStorage.getItem(AIRTABLE_CACHE_KEY)) {
-                    showError('Erreur API Générique', `Impossible de charger les données : ${error.message}. Vérifiez votre configuration ou la connexion.`);
+                    showError('Erreur API Générique', errorText);
                 } else {
-                     // Si le cache existe, on informe juste que l'actualisation a échoué.
                      Swal.fire({
                         icon: 'warning',
                         title: 'Échec de l\'Actualisation',
-                        text: 'Les données n\'ont pas pu être actualisées. Affichage des données en cache.',
+                        text: `${errorText} Affichage des données en cache.`,
                         confirmButtonText: 'Compris'
                     });
                 }
@@ -203,78 +259,93 @@
         // Fonctions de Rendu (Stats et Charts)
         // =======================================================================
 
-        // *** Fonction renderTable : Gardée vide pour ne pas crasher si elle est appelée accidentellement. ***
-        // *** Cette fonction ne fait rien car la table a été retirée du HTML. ***
         function renderTable(records) {
-            console.log("INFO: renderTable a été ignorée car la table a été retirée du HTML.");
+            console.log("INFO: renderTable a été ignorée.");
         }
 
 
         function renderStats(records) {
+            // Utilisation du champ 'EstPremium' (vérifié dans les captures)
             const premiumCount = records.filter(r => r.fields.EstPremium === true || r.fields.EstPremium === 'Premium').length;
             const totalUsers = records.length;
             const premiumRate = totalUsers > 0 ? ((premiumCount / totalUsers) * 100).toFixed(1) : 0;
             
-            // Calculer la moyenne d'âge (en supposant un champ 'Age' ou 'Âge')
-            const ages = records.map(r => r.fields.Age || r.fields.Âge).filter(a => a && !isNaN(a));
-            const totalAge = ages.reduce((sum, age) => sum + age, 0);
-            const avgAge = ages.length > 0 ? (totalAge / ages.length).toFixed(1) : 0;
-
             document.getElementById('statTotalUsers').textContent = totalUsers.toLocaleString('fr-FR');
             document.getElementById('statPremiumUsers').textContent = premiumCount.toLocaleString('fr-FR');
             document.getElementById('statPremiumRate').textContent = `${premiumRate}%`;
-            document.getElementById('statAvgAge').textContent = `${avgAge} ans`;
         }
 
         function renderCharts(records) {
-            // S'assurer que les champs requis existent, sinon simuler des données pour éviter les erreurs
             if (records.length === 0) {
-                // Vous pouvez ajouter ici une logique pour afficher un message "Pas de données"
                 return;
             }
 
-            // --- 1. Répartition par Ville (Graphique à Barres) ---
-            const cityCounts = records.reduce((acc, r) => {
-                const city = r.fields.Ville || 'Inconnu'; // Assurez-vous que le champ est correct
-                acc[city] = (acc[city] || 0) + 1;
+            // -------------------------------------------------------------------
+            // NOUVEAU GRAPHIQUE 1: Évolution des Inscriptions
+            // -------------------------------------------------------------------
+            const registrationData = records.reduce((acc, r) => {
+                // Utilisation du champ 'DateInscription'
+                const rawDate = r.fields.DateInscription;
+                if (rawDate) {
+                    try {
+                        // Extraire la partie date (avant le temps) et formater en YYYY-MM-DD
+                        const datePart = rawDate.split('T')[0]; 
+                        acc[datePart] = (acc[datePart] || 0) + 1;
+                    } catch (e) {
+                        console.warn("DateInscription invalide:", rawDate);
+                    }
+                }
                 return acc;
             }, {});
 
-            const sortedCities = Object.entries(cityCounts)
-                .sort(([, countA], [, countB]) => countB - countA)
-                .slice(0, 10); // Limiter aux 10 premières villes
+            // Trier par date
+            const sortedDates = Object.keys(registrationData).sort();
+            const dailyCounts = sortedDates.map(date => registrationData[date]);
 
-            const cityLabels = sortedCities.map(([city]) => city);
-            const cityData = sortedCities.map(([, count]) => count);
+            if (registrationChartInstance) registrationChartInstance.destroy();
 
-            if (cityChartInstance) cityChartInstance.destroy();
-
-            const ctxCity = document.getElementById('cityChart').getContext('2d');
-            cityChartInstance = new Chart(ctxCity, {
-                type: 'bar',
+            const ctxRegistration = document.getElementById('registrationChart').getContext('2d');
+            registrationChartInstance = new Chart(ctxRegistration, {
+                type: 'line',
                 data: {
-                    labels: cityLabels,
+                    labels: sortedDates,
                     datasets: [{
-                        label: 'Nombre d\'Utilisateurs',
-                        data: cityData,
-                        backgroundColor: '#4c74b9',
-                        borderColor: '#004aad',
-                        borderWidth: 1
+                        label: 'Nouvelles Inscriptions',
+                        data: dailyCounts,
+                        borderColor: '#10b981', // Vert émeraude
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.3,
+                        fill: true,
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    return `Inscriptions: ${context.raw}`;
+                                }
+                            }
+                        }
+                    },
                     scales: { 
-                        y: { beginAtZero: true },
-                        x: { display: true } // Afficher les étiquettes des villes
+                        y: { 
+                            beginAtZero: true,
+                            title: { display: true, text: 'Nombre d\'Inscriptions' }
+                        },
+                        x: { 
+                            title: { display: true, text: 'Date' }
+                        }
                     }
                 }
             });
 
-            // --- 2. Ratio Premium / Standard (Graphique Circulaire) ---
-            // Le code vérifie si f.EstPremium est un booléen (true) ou une chaîne ('Premium')
+            // -------------------------------------------------------------------
+            // GRAPHIQUE 2: Ratio Premium / Standard
+            // -------------------------------------------------------------------
             const premiumCount = records.filter(r => r.fields.EstPremium === true || r.fields.EstPremium === 'Premium').length;
             const standardCount = records.length - premiumCount;
 
@@ -321,47 +392,52 @@
         // =======================================================================
 
         window.onload = function() {
-            checkConfig();
+            // Tenter de charger la configuration depuis LocalStorage
+            loadConfig();
 
-            // Chargement des données mises en cache (Mode Hors Ligne)
-            const cachedData = localStorage.getItem(AIRTABLE_CACHE_KEY);
-            if (cachedData) {
-                try {
-                    const records = JSON.parse(cachedData);
-                    allRecords = records;
-                    
-                    // *** FIX: Suppression de l'appel à renderTable pour éviter le crash ***
-                    // renderTable(allRecords); 
-                    
-                    renderStats(allRecords);
-                    renderCharts(allRecords);
-                    
-                    // Mise à jour de la date depuis le cache pour l'information
-                    document.getElementById('lastUpdated').textContent = `Dernière mise à jour (Cache): ${new Date().toLocaleTimeString()}`;
+            // Si la configuration est chargée, tenter de charger le cache ou les données
+            if (checkConfig()) {
+                const cachedData = localStorage.getItem(AIRTABLE_CACHE_KEY);
+                if (cachedData) {
+                    try {
+                        const records = JSON.parse(cachedData);
+                        allRecords = records;
+                        
+                        renderStats(allRecords);
+                        renderCharts(allRecords);
+                        
+                        document.getElementById('lastUpdated').textContent = `Dernière mise à jour (Cache): ${new Date().toLocaleTimeString()}`;
 
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'Mode Hors Ligne',
-                        text: 'Les données affichées proviennent du cache local (dernière actualisation). Cliquez sur "Actualiser" pour obtenir les dernières données Airtable.',
-                        showConfirmButton: false,
-                        timer: 5000,
-                        toast: true,
-                        position: 'top-end'
-                    });
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Mode Hors Ligne',
+                            text: 'Les données affichées proviennent du cache local. Cliquez sur "Actualiser" pour obtenir les dernières données Airtable.',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            toast: true,
+                            position: 'top-end'
+                        });
+                        
+                        // Tenter l'actualisation silencieuse en arrière-plan
+                        fetchData(true);
 
-                } catch (e) {
-                    console.error("Erreur lors du chargement du cache:", e);
-                    localStorage.removeItem(AIRTABLE_CACHE_KEY);
+                    } catch (e) {
+                        console.error("Erreur lors du chargement du cache:", e);
+                        localStorage.removeItem(AIRTABLE_CACHE_KEY);
+                        promptForConfig();
+                    }
+                } else {
+                    // Si pas de cache, forcer la récupération
+                    fetchData(true);
                 }
+            } else {
+                // Si pas de configuration, demander les clés
+                promptForConfig();
             }
             
-            console.log("✅ Tableau prêt. Appuyez sur 'Actualiser les données' pour charger les informations.");
-            
-            // Tenter une première récupération si pas de cache, ou si les données sont trop anciennes
-            if (!cachedData) {
-                fetchData(true);
-            }
+            console.log("✅ Tableau prêt.");
         }
     </script>
 </body>
 </html>
+
