@@ -31,6 +31,46 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         #transaction-code { font-size: 2em; font-weight: bold; color: #dc3545; }
         .qr-code-text { font-size: 0.9em; color: #555; }
         #countdown-timer { font-size: 1.2em; color: #dc3545; margin-top: 10px; }
+          /* Style pour l'animation du "V" */
+.success-icon-container {
+    display: none; /* Caché par défaut */
+    margin-top: 20px;
+    width: 100%;
+    height: 150px;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+}
+.success-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #28a745; /* Vert de succès */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: scale-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.success-checkmark {
+    width: 60px;
+    height: 30px;
+    border: 8px solid #fff;
+    border-top: none;
+    border-right: none;
+    transform: rotate(-45deg);
+    opacity: 0;
+    animation: draw-check 0.4s ease-out 0.3s forwards;
+}
+
+@keyframes scale-in {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+@keyframes draw-check {
+    0% { width: 0; height: 0; opacity: 0; }
+    50% { width: 0; height: 30px; opacity: 1; }
+    100% { width: 60px; height: 30px; opacity: 1; }
+}
     </style>
 </head>
 <body>
@@ -40,6 +80,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
     <div class="container">
         <h1>Retrait Client MIJO</h1>
+          <div class="success-icon-container" id="success-animation">
+            <div class="success-circle">
+                <div class="success-checkmark"></div>
+            </div>
+        </div>
+    </div>
         <div class="client-info">
             <p>Connecté en tant que : <span id="client-name"></span></p>
             <p>Solde de votre compte : <span id="client-solde"></span> Gourdes</p>
@@ -53,7 +99,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="loader" id="loader"></div>
             <div id="status-message"></div>
         </form>
-
+<div class="transaction-code-box" id="code-box">
+    <h3>Votre code de retrait</h3>
+    <p id="transaction-code"></p>
+    <p id="countdown-timer">Expire dans 2:00</p>
+    <p class="qr-code-text">Présentez ce code à l'agent.</p>
+    
+    <button type="button" class="action-button" id="annuler-retrait" style="background-color: #dc3545; margin-top: 15px;">
+        Annuler le Retrait
+    </button>
+</div>
         <div class="transaction-code-box" id="code-box">
             <h3>Votre code de retrait</h3>
             <p id="transaction-code"></p>
@@ -62,6 +117,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
    <script>
+         const successAnimation = document.getElementById('success-animation');
+
     const form = document.getElementById('retrait-form');
     const loader = document.getElementById('loader');
     const statusMessage = document.getElementById('status-message');
@@ -70,13 +127,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const countdownTimer = document.getElementById('countdown-timer');
     const clientNameSpan = document.getElementById('client-name');
     const clientSoldeSpan = document.getElementById('client-solde');
-
+const annulerBouton = document.getElementById('annuler-retrait'); 
     const API_URL = 'https://retrait.mijocomplexe.workers.dev/';
     const EXPIRATION_TIME = 120; // 2 minutes en secondes
-
+let currentTransactionCode = null;
     let user = JSON.parse(localStorage.getItem('user'));
     let countdownInterval;
     let statusCheckInterval; // Nouveau minuteur
+
+
+          // NOUVELLE FONCTION
+function annulerRetrait() {
+    clearInterval(countdownInterval);
+    clearInterval(statusCheckInterval);
+    
+    // Réinitialiser l'interface
+    codeBox.style.display = 'none';
+    form.style.display = 'block'; // Réafficher le formulaire de retrait
+    statusMessage.textContent = "Le code de retrait a été annulé par le client.";
+    statusMessage.style.color = "orange";
+    
+    
+}
+
 
     function displayClientData() {
         if (user && user.NomUtilisateur) {
@@ -120,22 +193,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
             const result = await response.json();
 
-            if (result.status === "success") {
-                // Arrêter les deux minuteurs
-                clearInterval(countdownInterval);
-                clearInterval(statusCheckInterval);
-                
-                // Mettre à jour l'interface utilisateur
-                transactionCodeSpan.textContent = "Transaction réussie!";
-                countdownTimer.textContent = "";
-                statusMessage.textContent = "Votre retrait a été confirmé par l'agent.";
-                statusMessage.style.color = "green";
-                
-                // Rediriger après un court délai pour que l'utilisateur lise le message
-                setTimeout(() => {
-                    window.location.href = 'menuretrai.html';
-                }, 3000);
-            }
+           if (result.status === "success") {
+        // Arrêter les deux minuteurs
+        clearInterval(countdownInterval);
+        clearInterval(statusCheckInterval);
+        
+        // Mettre à jour l'interface utilisateur
+        codeBox.style.display = 'none'; // Cacher la boîte de code
+        successAnimation.style.display = 'flex'; // Afficher l'animation
+        
+        statusMessage.textContent = "Votre retrait a été confirmé avec succès par l'agent.";
+        statusMessage.style.color = "green";
+        
+        
+        setTimeout(() => {
+           
+            window.location.reload(); 
+        }, 3500); // Laisser le temps de voir l'animation
+
+    }
         } catch (error) {
             console.error('Erreur de vérification de statut:', error);
         }
@@ -179,7 +255,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const result = await response.json();
 
             if (result.status === "success") {
-                user.Solde = user.Solde - montantTotal;
+                
                 localStorage.setItem('user', JSON.stringify(user));
                 clientSoldeSpan.textContent = user.Solde.toFixed(2);
                 transactionCodeSpan.textContent = result.transactionCode;
@@ -219,6 +295,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         history.push(newTransaction);
         localStorage.setItem(historyKey, JSON.stringify(history));
     }
+         // ... (à la fin de votre script, après les autres fonctions)
+annulerBouton.addEventListener('click', annulerRetrait);
 </script>
 </body>
 </html>
