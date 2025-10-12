@@ -569,7 +569,7 @@ async function saveToGlobalKV(productName, price, status, userId) {
     try { user = JSON.parse(userString); } catch (e) { return; }
     
     const transactionData = {
-        action: "transfer_money", 
+        action: "log_history", 
         amount: price,
         senderId: userId, // L'ID de l'acheteur (pour le débit)
         senderName: user ? user.nom : 'Inconnu',
