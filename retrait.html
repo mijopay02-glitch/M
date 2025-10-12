@@ -197,7 +197,8 @@ function annulerRetrait() {
         // Arrêter les deux minuteurs
         clearInterval(countdownInterval);
         clearInterval(statusCheckInterval);
-        
+         user.Solde = user.Solde - montantTotal;
+                 saveToHistory("Retrait", montantTotal, "Succès", "Agent MIJO PAY", user.userId);
         // Mettre à jour l'interface utilisateur
         codeBox.style.display = 'none'; // Cacher la boîte de code
         successAnimation.style.display = 'flex'; // Afficher l'animation
@@ -258,13 +259,13 @@ function annulerRetrait() {
                 
                 localStorage.setItem('user', JSON.stringify(user));
                 clientSoldeSpan.textContent = user.Solde.toFixed(2);
-                  user.Solde = user.Solde - montantTotal;
+                 
                 transactionCodeSpan.textContent = result.transactionCode;
                 codeBox.style.display = 'block';
                 statusMessage.textContent = "Code de retrait généré. Montrez-le à l'agent.";
                 statusMessage.style.color = "green";
                 startCountdown();
-                saveToHistory("Retrait", montantTotal, "Succès", "Agent MIJO PAY", user.userId);
+                
                 // Démarrer la vérification de statut toutes les 5 secondes
                 statusCheckInterval = setInterval(() => {
                     checkTransactionStatus(result.transactionCode);
