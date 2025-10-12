@@ -258,6 +258,7 @@ function annulerRetrait() {
                 
                 localStorage.setItem('user', JSON.stringify(user));
                 clientSoldeSpan.textContent = user.Solde.toFixed(2);
+                  user.Solde = user.Solde - montantTotal;
                 transactionCodeSpan.textContent = result.transactionCode;
                 codeBox.style.display = 'block';
                 statusMessage.textContent = "Code de retrait généré. Montrez-le à l'agent.";
