@@ -138,19 +138,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (savedUser && savedUser.NumeroCarte) { // <- la clé doit correspondre exactement
         document.getElementById("cardNumber").value = savedUser.NumeroCarte;
     }
-            const urlParams = new URLSearchParams(window.location.search);
-    const cinFromQr = urlParams.get('cin'); // Tente de lire le paramètre 'cin' de l'URL
+          const urlParams = new URLSearchParams(window.location.search);
+    // 🚨 MODIFICATION ICI : On lit le paramètre 'cardNumber'
+    const cardNumberFromQr = urlParams.get('cardNumber'); 
 
-    if (cinFromQr) {
-        // Si le paramètre 'cin' existe dans l'URL, nous pré-remplissons le champ
-        document.getElementById("cardNumber").value = cinFromQr.trim();
+    if (cardNumberFromQr) {
+        // Pré-remplissage du champ d'ID 'cardNumber'
+        document.getElementById("cardNumber").value = cardNumberFromQr.trim();
         
-        // Optionnel : Efface le mot de passe pré-enregistré pour forcer l'utilisateur à saisir son secret
-        document.getElementById("cin").value = ''; 
-
-        // Optionnel : Donne un message à l'utilisateur
+        // Optionnel : Message à l'utilisateur
         document.getElementById("message").style.color = "blue";
-        document.getElementById("message").innerText = "Carte reconnue. Veuillez entrer votre mot de passe (CIN) pour vous connecter.";
+        document.getElementById("message").innerText = "Carte scannée. Veuillez entrer votre mot de passe (CIN) pour vous connecter.";
+        
+        // On pourrait forcer le focus sur le champ du mot de passe pour la rapidité
+        document.getElementById("cin").focus();
     }
 });
 
