@@ -138,7 +138,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (savedUser && savedUser.NumeroCarte) { // <- la clé doit correspondre exactement
         document.getElementById("cardNumber").value = savedUser.NumeroCarte;
     }
+            const urlParams = new URLSearchParams(window.location.search);
+    const cinFromQr = urlParams.get('cin'); // Tente de lire le paramètre 'cin' de l'URL
+
+    if (cinFromQr) {
+        // Si le paramètre 'cin' existe dans l'URL, nous pré-remplissons le champ
+        document.getElementById("cardNumber").value = cinFromQr.trim();
+        
+        // Optionnel : Efface le mot de passe pré-enregistré pour forcer l'utilisateur à saisir son secret
+        document.getElementById("cin").value = ''; 
+
+        // Optionnel : Donne un message à l'utilisateur
+        document.getElementById("message").style.color = "blue";
+        document.getElementById("message").innerText = "Carte reconnue. Veuillez entrer votre mot de passe (CIN) pour vous connecter.";
+    }
 });
+
+
 
 
         // C'est la seule ligne qui change. Utilisez l'URL de votre proxy Vercel.
