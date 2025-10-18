@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Arcane - Série</title>
+    <style>
+        /* Styles de la liste d'épisodes (inchangés) */
+        .episode-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 30px;
+        }
+        .episode-item {
+            background-color: #282828; /* Gris foncé pour chaque épisode */
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .episode-item:hover {
+            background-color: #404040; /* Effet de survol netflix */
+        }
+        .episode-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #E50914; /* Un peu de rouge pour le style (comme Netflix) */
+        }
+        .episode-summary {
+            font-size: 0.9em;
+            color: #AAAAAA;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body style="background-color: #141414; color: white; padding: 50px;">
+    
+    <h1>Arcane (Saison 1)</h1>
+    <p style="font-style: italic;">"Dans la ville utopique de Piltover et la ville souterraine et opprimée de Zaun, les tensions s'intensifient lorsque de nouvelles inventions créent des rivalités entre sœurs et font basculer le monde."</p>
+    <p>Catégorie : **Animation / Action / Fantaisie** - Nombre d'épisodes : **9**</p>
+
+    <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden; max-width: 800px; margin-top: 20px;">
+        <iframe id="main-video-player"
+            src="https://drive.google.com/file/d/15pFVTQsAh50k9mKE_q9StHieo8_f77Bv/preview" 
+            style="width:100%; height:100%; position:absolute; left:0px; top:0px; overflow:hidden; border:none;"
+            allowfullscreen 
+            title="Arcane - Épisode en cours"
+            allow="web-share; autoplay; fullscreen">
+        </iframe>
+    </div>
+
+    <h2>Liste des Épisodes (Acte 1, 2 & 3)</h2>
+    <ul class="episode-list">
+        <li class="episode-item" data-video-id="15pFVTQsAh50k9mKE_q9StHieo8_f77Bv">
+            <div class="episode-title">Épisode 1 : Welcome to the Playground</div>
+            <div class="episode-summary">Les sœurs orphelines Vi et Powder causent des remous dans les rues souterraines de Zaun à la suite d'un braquage dans le très huppé Piltover.</div>
+        </li>
+        <li class="episode-item" data-video-id="1CPFc__kRswXLasLBVJN0q00KPa9Ia1fb">
+            <div class="episode-title">Épisode 2 : Certains mystères ne devraient jamais être résolus</div>
+            <div class="episode-summary">Idéaliste, le chercheur Jayce tente de maîtriser la magie par la science malgré les avertissements de son mentor. Le criminel Silco teste une substance puissante.</div>
+        </li>
+        <li class="episode-item" data-video-id="1ND1QmneK2AwfmWutrBK_gUFYqn6Ojyt3">
+            <div class="episode-title">Épisode 3 : Cette violence crasse nécessaire au changement</div>
+            <div class="episode-summary">Deux anciens rivaux s'affrontent lors d'un défi spectaculaire qui se révèle fatidique pour Zaun. Jayce et Viktor prennent de gros risques pour leurs recherches.</div>
+        </li>
+        
+        <li class="episode-item" data-video-id="1c7JGrCtt3c0Q33HGVWmG_h5EYwp1Ialh">
+            <div class="episode-title">Épisode 4 : Joyeuse Fête du progrès !</div>
+            <div class="episode-summary">Alors que Piltover profite de leur technologie, Jayce et Viktor réfléchissent à ce qu'ils vont faire. Un visage familier ressort de Zaun pour semer la pagaille.</div>
+        </li>
+        <li class="episode-item" data-video-id="12aURxv_kHN0XRSBm_7FbwDjHje805F0e">
+            <div class="episode-title">Épisode 5 : L'ennemi commun</div>
+            <div class="episode-summary">Caitlyn, la pacifieuse qui n'en fait qu'à sa tête, arpente les bas-fonds pour trouver Silco. Jayce devient une cible en combattant la corruption à Piltover.</div>
+        </li>
+        <li class="episode-item" data-video-id="1c32Yvp7s5zA4lh4OKLy0z1JmiVlnGkfz">
+            <div class="episode-title">Épisode 6 : Quand l'empire s'effondre</div>
+            <div class="episode-summary">Un protégé discrédite son mentor devant le Conseil à cause de l'évolution rapide d'une technologie magique. Poursuivie par les autorités, Jinx doit affronter son passé.</div>
+        </li>
+
+        <li class="episode-item" data-video-id="16SzhBPWGB71hhfazFL8VXVd_7YVNKSSI">
+            <div class="episode-title">Épisode 7 : Le petit sauveur</div>
+            <div class="episode-summary">Caitlyn et Vi retrouvent un allié dans les rues de Zaun et se déchaînent contre une ennemie commune. Viktor prend une décision désespérée.</div>
+        </li>
+        <li class="episode-item" data-video-id="1ktzo_Vq0MiacX_R_v8jlQB2qsegmg8hF">
+            <div class="episode-title">Épisode 8 : L'eau et l'huile</div>
+            <div class="episode-summary">L'héritière désavouée Mel et sa mère échangent des tactiques de combat. Caitlyn et Vi forgent une alliance improbable. Jinx subit une étonnante transformation.</div>
+        </li>
+        <li class="episode-item" data-video-id="1Q8oLZ4QLzJXqeolYEcuQ7Vl6DbfloMX8">
+            <div class="episode-title">Épisode 9 : Rouages et engrenages</div>
+            <div class="episode-summary">À deux doigts d'entrer en guerre, les chefs de Piltover et de Zaun sont face à un ultimatum, jusqu'à ce qu'un affrontement fatidique bouleverse les deux villes à jamais.</div>
+        </li>
+    </ul>
+    
+    <a href="serie.html" style="color: #A52A2A; margin-top: 20px; display: block;">Retour à l'accueil</a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const videoPlayer = document.getElementById('main-video-player');
+            const episodeItems = document.querySelectorAll('.episode-item');
+
+            // Fonction pour charger la nouvelle vidéo
+            function loadEpisode(videoId) {
+                // MODIFICATION : Utilisation du format d'intégration Google Drive
+                const newSrc = `https://drive.google.com/file/d/${videoId}/preview`; 
+                videoPlayer.src = newSrc;
+            }
+
+            // Écoute les clics sur les épisodes
+            episodeItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const videoId = this.getAttribute('data-video-id');
+                    loadEpisode(videoId);
+                    alert(`Chargement de l'épisode: ${this.querySelector('.episode-title').textContent} !`);
+                    // L'alerte est pour l'exemple. En réalité, la vidéo chargerait.
+                });
+            });
+
+            // Charge le premier épisode au démarrage
+            if (episodeItems.length > 0) {
+                loadEpisode(episodeItems[0].getAttribute('data-video-id'));
+            }
+        });
+    </script>
+</body>
+</html>
