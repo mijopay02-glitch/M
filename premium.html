@@ -5,6 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIJO Pay - Abonnement Premium</title>
     <link rel="stylesheet" href="style.css">
+   <style>body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+header {
+    background-color: #007bff;
+    color: white;
+    padding: 20px 0;
+    margin-bottom: 20px;
+}
+
+.premium-section {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.user-info-card, .activation-card, .auto-renew-card { /* Ajout de auto-renew-card */
+    background: white;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles pour le statut */
+#premiumStatusDisplay, #autoRenewStatusDisplay {
+    font-weight: bold;
+}
+.premium-active, .renew-active {
+    color: green;
+}
+.premium-inactive, .renew-inactive {
+    color: red;
+}
+
+
+/* Styles des boutons */
+button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #1e7e34;
+}
+
+.secondary-button {
+    background-color: #dc3545; /* Rouge pour désactiver */
+}
+
+.secondary-button:hover {
+    background-color: #c82333;
+}
+
+.note {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 15px;
+}
+
+/* Style de l'historique */
+#premiumHistory {
+    text-align: left;
+    background: #e9ecef;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+#transactionList {
+    list-style: none;
+    padding: 0;
+}
+
+#transactionList li {
+    background: white;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    border-left: 5px solid #007bff;
+    display: flex;
+    justify-content: space-between;
+}</style> 
 </head>
 <body>
 
