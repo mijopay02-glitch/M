@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIJO Pay - Abonnement Premium</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>MIJO Premium 👑</h1>
+    </header>
+
+    <main class="premium-section">
+        <div class="user-info-card">
+            <h2>Statut de votre compte</h2>
+            <p>ID Utilisateur: <span id="userIdDisplay">N/A</span></p>
+            <p>Solde actuel: <span id="userBalanceDisplay">N/A</span> Gdes</p>
+            <p>Statut Premium: <span id="premiumStatusDisplay">Non Actif ❌</span></p>
+        </div>
+
+        <div class="activation-card">
+            <h2>Abonnement Mensuel</h2>
+            <p>Profitez de tous les avantages MIJO pour seulement **150 Gdes/mois**.</p>
+            <button id="activateButton" onclick="activatePremium()">Activer MIJO Premium</button>
+            <p class="note">Le premier mois sera débité immédiatement.</p>
+        </div>
+
+        <div class="auto-renew-card" id="autoRenewSection" style="display:none;">
+            <h2>Gestion du Renouvellement Automatique</h2>
+            <p>Statut Auto-Renouvellement: <span id="autoRenewStatusDisplay" class="renew-active">Actif ✅</span></p>
+            
+            <button 
+                id="toggleRenewButton" 
+                onclick="toggleAutoRenew()"
+                class="secondary-button">Désactiver l'Auto-Renouvellement</button>
+                
+            <p class="note" id="renewNote">Votre abonnement sera reconduit le mois prochain.</p>
+        </div>
+
+        <div id="premiumHistory">
+            <h3>Historique des Transactions (Local)</h3>
+            <ul id="transactionList">
+                </ul>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
