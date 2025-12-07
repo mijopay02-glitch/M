@@ -141,6 +141,326 @@ button:hover {
         </div>
     </main>
 
-    <script src="script.js"></script>
+    <script>// --- CONSTANTES GLOBALES ---
+const PREMIUM_PRICE = 150;
+const STORE_SCRIPT_URL = "https://mijopaypremium.mijocomplexe.workers.dev/";
+// Worker gérant le débit (activation Premium)
+const GLOBAL_HISTORY_WORKER_URL = "https://votre-worker-global-history.workers.dev/"; 
+// Worker spécifique pour la désactivation de l'auto-renouvellement (mise à jour du casier 'Automatique')
+const AUTORENEW_TOGGLE_WORKER_URL = "https://votre-worker-autorenew-toggle.workers.dev/"; 
+
+// --- FONCTIONS AUXILIAIRES ---
+
+/**
+ * Met à jour l'interface utilisateur avec les dernières données de l'utilisateur.
+ * Inclut la gestion de l'auto-renouvellement.
+ * @param {object} user - L'objet utilisateur du localStorage.
+ */
+function updateUI(user) {
+    const userIdDisplay = document.getElementById('userIdDisplay');
+    const userBalanceDisplay = document.getElementById('userBalanceDisplay');
+    const premiumStatusDisplay = document.getElementById('premiumStatusDisplay');
+    const autoRenewSection = document.getElementById('autoRenewSection');
+    const autoRenewStatusDisplay = document.getElementById('autoRenewStatusDisplay');
+    const toggleRenewButton = document.getElementById('toggleRenewButton');
+    const renewNote = document.getElementById('renewNote');
+    const activateButton = document.getElementById('activateButton');
+
+    if (user && user.userId) {
+        userIdDisplay.textContent = user.userId;
+        userBalanceDisplay.textContent = user.Solde !== undefined ? user.Solde.toFixed(2) : 'N/A';
+        
+        const isPremium = user.EstPremium === true;
+        const autoRenewActive = user.AutoRenew === true; // NOUVEAU: Par défaut, supposons 'true' après activation
+        
+        // --- Statut Premium ---
+        premiumStatusDisplay.textContent = isPremium ? 'Actif ✅' : 'Non Actif ❌';
+        premiumStatusDisplay.classList.toggle('premium-active', isPremium);
+        premiumStatusDisplay.classList.toggle('premium-inactive', !isPremium);
+        activateButton.disabled = isPremium;
+        activateButton.textContent = isPremium ? 'Abonnement Déjà Actif' : `Activer MIJO Premium (${PREMIUM_PRICE} Gdes/mois)`;
+
+        // --- Section Auto-Renouvellement ---
+        autoRenewSection.style.display = isPremium ? 'block' : 'none';
+
+        if (isPremium) {
+            autoRenewStatusDisplay.textContent = autoRenewActive ? 'Actif ✅' : 'Désactivé ❌';
+            autoRenewStatusDisplay.classList.toggle('renew-active', autoRenewActive);
+            autoRenewStatusDisplay.classList.toggle('renew-inactive', !autoRenewActive);
+
+            toggleRenewButton.textContent = autoRenewActive ? 'Désactiver l\'Auto-Renouvellement' : 'Réactiver l\'Auto-Renouvellement';
+            toggleRenewButton.classList.toggle('secondary-button', autoRenewActive); // Rouge pour désactiver
+            toggleRenewButton.classList.toggle('secondary-button', !autoRenewActive); // Vert pour réactiver (il faudra ajuster le CSS si vous voulez une autre couleur pour réactiver)
+            
+            renewNote.textContent = autoRenewActive 
+                ? 'Votre abonnement sera reconduit le mois prochain (prélèvement automatique).' 
+                : 'L\'abonnement ne sera pas renouvelé automatiquement. Vous perdrez l\'accès à la fin du cycle.';
+        }
+
+        displayLocalHistory(user.userId);
+    } else {
+        // Utilisateur non connecté ou données manquantes
+        userIdDisplay.textContent = 'Non Connecté';
+        userBalanceDisplay.textContent = 'N/A';
+        premiumStatusDisplay.textContent = 'Non Actif ❌';
+        autoRenewSection.style.display = 'none';
+        activateButton.disabled = false;
+        activateButton.textContent = `Activer MIJO Premium (${PREMIUM_PRICE} Gdes/mois)`;
+    }
+}
+
+/**
+ * Enregistre une transaction dans l'historique local de l'utilisateur.
+ * (Fonction inchangée)
+ */
+function saveToHistory(type, amount, status, recipient, userId) {
+    const historyKey = `transactions_${userId}`;
+    let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+    const newTransaction = {
+        id: Date.now(),
+        type: type,
+        amount: amount,
+        status: status,
+        recipient: recipient,
+        date: new Date().toLocaleString()
+    };
+    history.unshift(newTransaction);
+    localStorage.setItem(historyKey, JSON.stringify(history));
+    displayLocalHistory(userId);
+}
+
+/**
+ * Affiche l'historique des transactions locales.
+ * (Fonction inchangée)
+ */
+function displayLocalHistory(userId) {
+    const transactionList = document.getElementById('transactionList');
+    transactionList.innerHTML = ''; 
+
+    if (!userId) return;
+
+    const historyKey = `transactions_${userId}`;
+    let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+
+    if (history.length === 0) {
+        transactionList.innerHTML = '<li>Aucune transaction enregistrée localement.</li>';
+        return;
+    }
+
+    history.forEach(tx => {
+        const listItem = document.createElement('li');
+        const statusColor = tx.status === 'Succès' ? 'green' : (tx.status.includes('Échec') || tx.status.includes('Réseau') ? 'red' : 'orange');
+        
+        listItem.innerHTML = `
+            <div>
+                <strong>${tx.type}</strong> (${tx.date})<br>
+                À: ${tx.recipient}
+            </div>
+            <div>
+                <span style="color: ${statusColor}; font-weight: bold;">${tx.status}</span>
+                <br>
+                ${tx.type === "Abonnement Premium" ? '-' : ''}${tx.amount} Gdes
+            </div>
+        `;
+        transactionList.appendChild(listItem);
+    });
+}
+
+/**
+ * Enregistre la transaction dans le KV Global via le Worker de transaction.
+ * (Fonction inchangée)
+ */
+async function saveToGlobalKV(senderId, amount, senderName) {
+    const transactionData = {
+        action: "transfer_money",
+        amount: amount,
+        senderId: senderId, 
+        senderName: senderName || "Utilisateur MIJO",
+        recipient: "MIJO CINÉ / Entreprise",
+        type: "Abonnement Premium CINÉ"
+    };
+    
+    try {
+        const response = await fetch(GLOBAL_HISTORY_WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(transactionData)
+        });
+
+        if (!response.ok) {
+            console.error("Échec de l'enregistrement KV global, Statut:", response.status);
+        }
+    } catch (error) {
+        console.error("Erreur de connexion lors de l'enregistrement KV global:", error);
+    }
+}
+
+/**
+ * Gère l'activation ou la désactivation de l'auto-renouvellement.
+ */
+async function toggleAutoRenew() {
+    const userString = localStorage.getItem('user');
+    let user = JSON.parse(userString);
+    
+    if (!user || !user.userId) {
+        alert("Utilisateur non connecté.");
+        return;
+    }
+    
+    // Si AutoRenew n'est pas défini, on suppose qu'il est actif par défaut
+    const currentState = user.AutoRenew === true; 
+    const newState = !currentState;
+    
+    const actionText = newState ? "Réactiver" : "Désactiver";
+    const confirmation = confirm(`Voulez-vous ${actionText} le renouvellement automatique de votre abonnement Premium ?`);
+    
+    if (!confirmation) {
+        return;
+    }
+
+    const toggleButton = document.getElementById('toggleRenewButton');
+    toggleButton.disabled = true;
+    toggleButton.textContent = `Traitement de la ${actionText} des paiements...`;
+
+    try {
+        // Envoi de la requête au Worker pour mettre à jour la base de données (Airtable/KV)
+        const response = await fetch(AUTORENEW_TOGGLE_WORKER_URL, {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: "toggle_autorenew", // Action pour votre Worker
+                userId: user.userId,
+                newState: newState // true ou false
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            // Mettre à jour l'état local de l'utilisateur
+            user.AutoRenew = newState;
+            localStorage.setItem('user', JSON.stringify(user));
+            
+            updateUI(user);
+            alert(`Renouvellement automatique ${newState ? 'réactivé' : 'désactivé'} avec succès.`);
+        } else {
+            alert(data.error || `Échec de la ${actionText} du renouvellement automatique.`);
+        }
+
+    } catch (error) {
+        console.error("Erreur lors de la requête de bascule d'auto-renouvellement:", error);
+        alert(`Erreur de connexion lors de la ${actionText} du renouvellement.`);
+    } finally {
+        // Réactiver le bouton
+        updateUI(user);
+    }
+}
+
+/**
+ * Gère le processus d'activation de l'abonnement Premium.
+ * (Mise à jour pour définir AutoRenew à 'true' par défaut après l'achat initial)
+ */
+async function activatePremium() {
+    // ... (Code de vérification d'utilisateur inchangé) ...
+    const userString = localStorage.getItem('user');
+    let user;
+    try {
+        user = JSON.parse(userString);
+    } catch (e) {
+        alert("Erreur de données utilisateur. Veuillez vous reconnecter.");
+        window.location.href = "index.html";
+        return;
+    }
+
+    if (!user || !user.userId) {
+        alert("Utilisateur non connecté ou données manquantes.");
+        return;
+    }
+    
+    if (user.EstPremium === true) {
+        alert("Votre abonnement Premium est déjà actif.");
+        return;
+    }
+    
+    const confirmation = confirm(`Voulez-vous activer MIJO Premium ? Prix : ${PREMIUM_PRICE} Gdes/mois. Le prélèvement sera effectué maintenant.`);
+    if (!confirmation) { return; }
+
+    const activateButton = document.getElementById('activateButton');
+    activateButton.disabled = true;
+    activateButton.textContent = "Traitement...";
+
+    try {
+        const response = await fetch(STORE_SCRIPT_URL, {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: "pay_premium",
+                senderId: user.userId,
+                amount: PREMIUM_PRICE
+            })
+        });
+
+        const data = await response.json();
+        let transactionStatus = "Échec";
+
+        if (data.success && data.user && data.user.Solde !== undefined) {
+            // Mise à jour de l'objet utilisateur
+            user.Solde = data.user.Solde; 
+            user.EstPremium = true;
+            user.AutoRenew = true; // DEFINI L'AUTO-RENOUVELLEMENT A TRUE LORS DE LA PREMIERE ACTIVATION
+            transactionStatus = "Succès";
+            
+            // 1. Mettez à jour le localStorage
+            localStorage.setItem('user', JSON.stringify(user));
+            
+            // 2. Mettez à jour l'affichage de la page IMMÉDIATEMENT
+            updateUI(user);
+            
+            // 3. Enregistrer l'historique
+            saveToHistory("Abonnement Premium", PREMIUM_PRICE, transactionStatus, "MIJO PAY", user.userId);
+            await saveToGlobalKV(user.userId, PREMIUM_PRICE, user.nom);
+            
+            alert("Abonnement Premium activé avec succès ! Le renouvellement automatique est actif par défaut.");
+        } else {
+            alert(data.error || "Échec de l'activation de l'abonnement Premium. Solde insuffisant ou erreur serveur.");
+            saveToHistory("Abonnement Premium", PREMIUM_PRICE, transactionStatus, "MIJO PAY", user.userId);
+        }
+    } catch (error) {
+        console.error("Erreur lors de la requête:", error);
+        alert("Erreur de connexion. Veuillez vérifier votre connexion ou le lien du serveur.");
+        saveToHistory("Abonnement Premium", PREMIUM_PRICE, "Échec Réseau", "MIJO PAY", user.userId);
+    } finally {
+        updateUI(user); 
+    }
+}
+
+/**
+ * Vérifie le statut de l'utilisateur au chargement de la page et met à jour l'UI.
+ */
+function checkUserStatus() {
+    const userString = localStorage.getItem('user');
+    let user = null;
+    
+    try {
+        user = JSON.parse(userString);
+        // Initialiser AutoRenew à true si EstPremium est true mais AutoRenew est manquant (pour la migration des anciens utilisateurs)
+        if (user && user.EstPremium === true && user.AutoRenew === undefined) {
+             user.AutoRenew = true;
+             localStorage.setItem('user', JSON.stringify(user));
+        }
+    } catch (e) {
+        console.error("Erreur de données utilisateur dans localStorage.", e);
+    }
+
+    if (!user || !user.userId) {
+        // Optionnel: alert("Veuillez vous connecter pour gérer votre abonnement Premium.");
+    }
+    
+    updateUI(user);
+}
+
+
+// --- Initialisation au chargement de la page ---
+document.addEventListener('DOMContentLoaded', checkUserStatus);</script>
 </body>
 </html>
