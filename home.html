@@ -610,8 +610,11 @@ document.getElementById('flyer-helper').addEventListener('click', function(event
 
     function updateUI(user) {
     if (user && user.NomUtilisateur) {
-        document.getElementById('username').innerText = user.NomUtilisateur || 'Utilisateur';
-        document.getElementById('email').innerText = user.Email || 'Email non renseigné';
+       const displayName = user.NomUtilisateur || user["Nom Utilisateur"] || "Utilisateur";
+    const displayEmail = user.Email || user.email || "Email non renseigné";
+    
+    document.getElementById('username').innerText = displayName;
+    document.getElementById('email').innerText = displayEmail;
 
         // --- DÉBUT DE LA CORRECTION ---
         // 1. On s'assure que le solde est un nombre
