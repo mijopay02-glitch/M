@@ -419,282 +419,114 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </a>
     </nav>
 <script>
-   /* ... dans la balise <script> ... */
-      // --- INITIALISATION IMMÉDIATE ---
-const storedUser = localStorage.getItem('user');
-if (storedUser) {
-    const user = JSON.parse(storedUser);
-    // On attend que le DOM soit prêt pour remplir les éléments
-    window.addEventListener('DOMContentLoaded', () => {
-        updateUI(user);
-    });
-} else {
-    // Si vraiment rien n'est stocké, on repart à la connexion
-    window.location.href = 'index.html';
-}
-
-const loginUrl = "https://mijopay.mijocomplexe.workers.dev/"; // L'URL de votre API de connexion/récupération
-const GLOBAL_HISTORY_WORKER_URL = "https://transaction.mijocomplexe.workers.dev/"; 
-/**
- * Récupère TOUTES les données utilisateur à jour depuis l'API, 
- * met à jour le localStorage, et rafraîchit l'UI (Nom, Email, Solde, Premium).
- */
-async function refreshBalance(event) {
-    if (event) event.preventDefault(); 
-    
-    const userString = localStorage.getItem('user');
-    const refreshButton = document.getElementById('refresh-button');
-
-    if (!userString) {
-        alert("Session expirée. Veuillez vous reconnecter.");
-        logout();
-        return;
-    }
-
-    const user = JSON.parse(userString);
-    const userId = user.userId;
-    const cardNumber = user.NumeroCarte; 
-    const cin = user.CIN; // Assurez-vous que le CIN est stocké dans 'user' lors de la connexion.
-
-    // Indication visuelle de chargement
-    refreshButton.style.opacity = '0.5';
-    refreshButton.style.pointerEvents = 'none'; // Désactiver le clic pendant le chargement
-    document.getElementById('balance').innerText = "Rafraîchissement...";
-
-
-    try {
-        const requestData = {
-            action: "login_user_by_card", // On réutilise l'action de connexion pour récupérer toutes les données
-            cardNumber: cardNumber,
-            password: cin // Ceci est requis si votre API utilise encore le CIN pour récupérer l'info
-        };
-
-        const response = await fetch(loginUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(requestData)
-        });
-
-        const data = await response.json();
-
-        if (data.success && data.user) {
-            
-            // --- C'EST LA PARTIE CLÉ : Mise à jour de TOUT l'objet utilisateur ---
-            // On s'assure de garder l'ID qui pourrait être nécessaire
-            data.user.userId = userId; 
-            
-            // On remplace l'ancien utilisateur par le nouveau complet
-            localStorage.setItem("user", JSON.stringify(data.user));
-            
-            // Mise à jour de TOUTE l'interface (Nom, Email, Solde, Premium)
-            updateUI(data.user);
-            
-            console.log("Données utilisateur complètement rafraîchies.");
-        } else {
-            alert(data.error || "Échec de la récupération des données utilisateur.");
-        }
-    } catch (error) {
-        console.error("Erreur de rafraîchissement des données:", error);
-        alert("Erreur de connexion avec le serveur.");
-    } finally {
-        // Rétablir l'état du bouton
-        refreshButton.style.opacity = '1';
-        refreshButton.style.pointerEvents = 'auto';
-    }
-}
-
-/* ... Assurez-vous d'appeler cette fonction dans le HTML : 
-   onclick="refreshUserData(event)"
-*/
-
-/* ... votre autre code JS (updateUI, handleTransfer, etc.) ... */
-    // Fonction pour gérer le clic sur le flyer MIJO Business Helper
-document.getElementById('flyer-helper').addEventListener('click', function(event) {
-  event.preventDefault(); // Empêche la redirection par défaut
-
-  const userString = localStorage.getItem('user');
-  if (!userString) {
-    alert("Veuillez vous connecter d'abord.");
-    window.location.href = 'index.html';
-    return;
-  }
-  
-  const user = JSON.parse(userString);
-  const isPremium = user.EstPremium; // Accède directement à la propriété EstPremium
-
-  if (isPremium) {
-    window.location.href = "helper.html";
-  } else {
-    alert("Vous devez avoir un abonnement Premium pour accéder à MIJO Business Helper.");
-  }
-});
-    function checkAffiliateStatus() {
-    const userString = localStorage.getItem('user');
-    if (!userString) {
-        alert("Veuillez vous connecter d'abord.");
-        window.location.href = 'index.html';
-        return;
-    }
-
-    const user = JSON.parse(userString);
-    if (user.Estafilia) {
-        window.location.href = 'mijo-affiliate-promo.html';
-    } else {
-        window.location.href = 'mijo-affiliate-inscription.html';
-    }
-}
-
-    
-    async function activatePremium() {
-    const confirmation = confirm("Voulez-vous activer MIJO Premium ? Prix : 150 Gdes/mois.");
-    if (!confirmation) {
-        return; // L'utilisateur a annulé
-    }
-
-    const userString = localStorage.getItem('user');
-    let user;
-    try {
-        user = JSON.parse(userString);
-    } catch (e) {
-        alert("Erreur de données utilisateur. Veuillez vous reconnecter.");
-        window.location.href = "index.html";
-        return;
-    }
-
-    if (!user || !user.userId) {
-        alert("Utilisateur non connecté ou données manquantes.");
-        return;
-    }
-
-    const premiumPrice = 150;
-    const storeScriptUrl = "https://mijopaypremium.mijocomplexe.workers.dev/"; 
-
-    try {
-    const response = await fetch(storeScriptUrl, {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            action: "pay_premium",
-            senderId: user.userId,
-            amount: premiumPrice
-        })
-    });
-
-    const data = await response.json();
-
-    console.log("Réponse du serveur:", data);
-
-    if (data.success && data.user && data.user.Solde !== undefined) {
-        user.Solde = data.user.Solde; 
-        user.EstPremium = true;
-        
-        // 1. Mettez à jour le localStorage
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        // 2. Mettez à jour l'affichage de la page IMMÉDIATEMENT après
-        updateUI(user);
-        
-        saveToHistory("Abonnement Premium", premiumPrice, "Succès", "MIJO PAY", user.userId);
-          await saveToGlobalKV(user.userId, premiumPrice, user.nom);
-        alert("Abonnement Premium activé avec succès ! Votre solde a été mis à jour.");
-    } else {
-        alert(data.error || "Échec de l'activation de l'abonnement Premium.");
-    }
-} catch (error) {
-    console.error("Erreur lors de la requête:", error);
-    alert("Erreur de connexion. Veuillez vérifier votre connexion ou le lien du serveur.");
-}
-}
-    const topSection = document.querySelector('.top-section');
+    // ==========================================
+    // 1. CONSTANTES ET CONFIGURATION
+    // ==========================================
+    const loginUrl = "https://mijopay.mijocomplexe.workers.dev/";
     const transferUrl = "https://transfert.mijocomplexe.workers.dev/";
+    const GLOBAL_HISTORY_WORKER_URL = "https://transaction.mijocomplexe.workers.dev/";
+    const storeScriptUrl = "https://mijopaypremium.mijocomplexe.workers.dev/";
 
-    function updateUI(user) {
-    if (user && user.NomUtilisateur) {
-       const displayName = user.NomUtilisateur || user["Nom Utilisateur"] || "Utilisateur";
-    const displayEmail = user.Email || user.email || "Email non renseigné";
+    // ==========================================
+    // 2. INITIALISATION ET VÉRIFICATION SESSION
+    // ==========================================
     
-    document.getElementById('username').innerText = displayName;
-    document.getElementById('email').innerText = displayEmail;
+    // S'exécute au chargement initial
+    window.addEventListener('DOMContentLoaded', () => {
+        checkUserSession();
+    });
 
-        // --- DÉBUT DE LA CORRECTION ---
-        // 1. On s'assure que le solde est un nombre
+    // S'exécute quand on revient sur la page (bouton retour)
+    window.addEventListener('pageshow', () => {
+        checkUserSession();
+    });
+
+    function checkUserSession() {
+        const storedUser = localStorage.getItem('user');
+        console.log("État LocalStorage:", storedUser);
+
+        if (!storedUser) {
+            console.log("Pas de session, redirection...");
+            window.location.href = 'index.html';
+            return;
+        }
+
+        try {
+            const user = JSON.parse(storedUser);
+            // Vérification basique que l'objet est valide
+            if (user && (user.userId || user.id)) {
+                updateUI(user);
+            } else {
+                throw new Error("Données utilisateur invalides");
+            }
+        } catch (e) {
+            console.error("Erreur session:", e);
+            logout(); // Si le JSON est cassé, on déconnecte proprement
+        }
+    }
+
+    // ==========================================
+    // 3. MISE À JOUR DE L'INTERFACE (UI)
+    // ==========================================
+    function updateUI(user) {
+        const topSection = document.querySelector('.top-section');
+        
+        // Gestion souple des noms de propriétés (au cas où l'API change)
+        const displayName = user.NomUtilisateur || user["Nom Utilisateur"] || user.nom || "Utilisateur";
+        const displayEmail = user.Email || user.email || "Email non renseigné";
+        
+        document.getElementById('username').innerText = displayName;
+        document.getElementById('email').innerText = displayEmail;
+
+        // Gestion du Solde (Conversion sécurisée)
         let solde = parseFloat(user.Solde);
-        
-        // 2. Si le solde n'est pas un nombre valide, on met 0
         if (isNaN(solde)) { solde = 0; }
-
-        // 3. On formate le nombre. 
-        // Si tu veux des centimes (ex: 50.50 G), utilise .toFixed(2)
-        // Si tu ne veux PAS de centimes (ex: 50 G), utilise Math.round(solde)
         
-        // Ici, j'utilise une méthode intelligente : 
-        // Si c'est un chiffre rond, pas de virgule. Sinon, 2 chiffres après la virgule.
+        // Affichage propre : pas de décimales si rond, sinon 2 décimales
         let soldeAffiche = (solde % 1 === 0) ? solde : solde.toFixed(2);
-
         document.getElementById('balance').innerText = soldeAffiche + " G";
-        // --- FIN DE LA CORRECTION ---
 
+        // Gestion du statut Premium
         if (user.EstPremium) {
             topSection.classList.add('premium');
         } else {
             topSection.classList.remove('premium');
         }
     }
-}
+
+    // ==========================================
+    // 4. FONCTIONS PRINCIPALES
+    // ==========================================
 
     function logout() {
         localStorage.removeItem('user');
         window.location.href = 'index.html';
     }
-    
-    function showTransferModal() {
-        document.getElementById('transferModal').style.display = 'flex';
-    }
 
-    function hideTransferModal() {
-        document.getElementById('transferModal').style.display = 'none';
-    }
-
-    async function handleTransfer() {
-        const amount = document.getElementById('transferAmount').value;
-        const recipientEmail = document.getElementById('recipientEmail').value;
-        const transferMessage = document.getElementById('transferMessage');
+    // --- Rafraîchir le solde ---
+    async function refreshBalance(event) {
+        if (event) event.preventDefault();
         
-        if (!amount || !recipientEmail || parseFloat(amount) <= 0) {
-            transferMessage.innerText = "Veuillez entrer un montant valide et l'email du destinataire.";
-            transferMessage.style.color = 'red';
-            return;
-        }
-        
-        const currentUserDataString = localStorage.getItem('user');
-        let user;
-        try {
-            user = JSON.parse(currentUserDataString);
-        } catch (e) {
-            console.error("Erreur de données utilisateur:", e);
-            transferMessage.innerText = "Erreur de données utilisateur. Veuillez vous reconnecter.";
-            transferMessage.style.color = 'red';
-            return;
-        }
+        const refreshButton = document.getElementById('refresh-button');
+        const userString = localStorage.getItem('user');
 
-        if (!user || !user.userId) {
-            transferMessage.innerText = "Utilisateur non connecté ou données manquantes.";
-            transferMessage.style.color = 'red';
-            return;
-        }
+        if (!userString) return logout();
 
-        transferMessage.innerText = "Transfert en cours... Veuillez patienter.";
-        transferMessage.style.color = '#2196F3';
+        const user = JSON.parse(userString);
         
-        const requestData = {
-            action: "automatic_transfer",
-            senderId: user.userId,
-            recipientEmail: recipientEmail,
-            amount: parseFloat(amount)
-        };
+        // UI Loading
+        refreshButton.style.opacity = '0.5';
+        refreshButton.style.pointerEvents = 'none';
+        document.getElementById('balance').innerText = "...";
 
         try {
-            const response = await fetch(transferUrl, {
+            const requestData = {
+                action: "login_user_by_card",
+                cardNumber: user.NumeroCarte,
+                password: user.CIN 
+            };
+
+            const response = await fetch(loginUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(requestData)
@@ -702,99 +534,217 @@ document.getElementById('flyer-helper').addEventListener('click', function(event
 
             const data = await response.json();
 
-           // Trouve ce bloc dans handleTransfer :
-if (data.success) {
-    const newBalance = data.newBalance;
-    
-    // --- REMPLACE LA LIGNE user.Solde = newBalance; PAR CECI : ---
-    // Cela nettoie le chiffre avant même de l'enregistrer dans le navigateur
-    let soldeNettoye = parseFloat(newBalance);
-    // On arrondit à 2 chiffres après la virgule pour éviter les 79.9999999
-    user.Solde = Math.round(soldeNettoye * 100) / 100; 
-    // -----------------------------------------------------------
-
-    localStorage.setItem('user', JSON.stringify(user));
-    
-    updateUI(user);
-    saveToHistory('Transfert', parseFloat(amount), 'Envoyé', recipientEmail, user.userId);
-
-    transferMessage.innerText = "Transfert réussi !";
-    transferMessage.style.color = 'green';
-    
-}
+            if (data.success && data.user) {
+                // Important : on garde l'ID original si l'API ne le renvoie pas
+                data.user.userId = user.userId; 
                 
+                localStorage.setItem("user", JSON.stringify(data.user));
+                updateUI(data.user);
+                console.log("Données rafraîchies via API");
             } else {
-                transferMessage.innerText = data.error || "Échec du transfert.";
-                transferMessage.style.color = 'red';
+                // En cas d'erreur API, on remet l'affichage local
+                updateUI(user);
+                console.warn("Échec refresh API:", data.error);
             }
         } catch (error) {
-            console.error("Erreur de transfert:", error);
-            transferMessage.innerText = "Erreur de connexion avec le serveur.";
-            transferMessage.style.color = 'red';
+            console.error("Erreur réseau refresh:", error);
+            updateUI(user);
+            alert("Erreur de connexion. Vérifiez internet.");
+        } finally {
+            refreshButton.style.opacity = '1';
+            refreshButton.style.pointerEvents = 'auto';
         }
     }
+
+    // --- Gestion Transfert ---
+    function showTransferModal() {
+        document.getElementById('transferModal').style.display = 'flex';
+    }
+
+    function hideTransferModal() {
+        document.getElementById('transferModal').style.display = 'none';
+        document.getElementById('transferMessage').innerText = "";
+    }
+
+    async function handleTransfer() {
+        const amountInput = document.getElementById('transferAmount');
+        const emailInput = document.getElementById('recipientEmail');
+        const messageBox = document.getElementById('transferMessage');
+        
+        const amount = parseFloat(amountInput.value);
+        const recipientEmail = emailInput.value;
+
+        // Validation
+        if (!amount || amount <= 0 || !recipientEmail) {
+            messageBox.style.color = 'red';
+            messageBox.innerText = "Veuillez vérifier le montant et l'email.";
+            return;
+        }
+
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) return logout();
+
+        messageBox.style.color = '#2196F3';
+        messageBox.innerText = "Traitement en cours...";
+
+        try {
+            const response = await fetch(transferUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "automatic_transfer",
+                    senderId: user.userId,
+                    recipientEmail: recipientEmail,
+                    amount: amount
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Mise à jour du solde local
+                let soldeNettoye = parseFloat(data.newBalance);
+                user.Solde = Math.round(soldeNettoye * 100) / 100;
+                
+                localStorage.setItem('user', JSON.stringify(user));
+                updateUI(user);
+                
+                saveToHistory('Transfert', amount, 'Envoyé', recipientEmail, user.userId);
+
+                messageBox.style.color = 'green';
+                messageBox.innerText = "Transfert réussi !";
+                
+                // Reset formulaire
+                amountInput.value = "";
+                emailInput.value = "";
+                
+                // Fermer le modal après 2 secondes
+                setTimeout(hideTransferModal, 2000);
+            } else {
+                messageBox.style.color = 'red';
+                messageBox.innerText = data.error || "Échec du transfert.";
+            }
+        } catch (error) {
+            console.error(error);
+            messageBox.style.color = 'red';
+            messageBox.innerText = "Erreur de connexion serveur.";
+        }
+    }
+
+    // --- Activation Premium ---
+    async function activatePremium() {
+        const confirmation = confirm("Voulez-vous activer MIJO Premium ? Prix : 150 Gdes/mois.");
+        if (!confirmation) return;
+
+        const userString = localStorage.getItem('user');
+        if (!userString) return logout();
+        
+        const user = JSON.parse(userString);
+        const premiumPrice = 150;
+
+        try {
+            const response = await fetch(storeScriptUrl, {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: "pay_premium",
+                    senderId: user.userId,
+                    amount: premiumPrice
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success && data.user) {
+                user.Solde = data.user.Solde; 
+                user.EstPremium = true;
+                
+                localStorage.setItem('user', JSON.stringify(user));
+                updateUI(user);
+                
+                saveToHistory("Abonnement Premium", premiumPrice, "Succès", "MIJO PAY", user.userId);
+                await saveToGlobalKV(user.userId, premiumPrice, user.NomUtilisateur);
+                
+                alert("Premium activé avec succès !");
+            } else {
+                alert(data.error || "Échec de l'activation.");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Erreur de connexion.");
+        }
+    }
+
+    // ==========================================
+    // 5. FONCTIONS UTILITAIRES & EVENTS
+    // ==========================================
+
+    function checkAffiliateStatus() {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) return logout();
+        
+        if (user.Estafilia) {
+            window.location.href = 'mijo-affiliate-promo.html';
+        } else {
+            window.location.href = 'mijo-affiliate-inscription.html';
+        }
+    }
+
     function saveToHistory(type, amount, status, recipient, userId) {
         const historyKey = `transactions_${userId}`;
         let history = JSON.parse(localStorage.getItem(historyKey)) || [];
-        const newTransaction = {
+        
+        history.push({
             id: Date.now(),
             type: type,
             amount: amount,
             status: status,
             recipient: recipient,
             date: new Date().toLocaleDateString()
-        };
-        history.push(newTransaction);
+        });
+        
         localStorage.setItem(historyKey, JSON.stringify(history));
     }
 
-    // Ce code s'exécute chaque fois que la page est affichée, même en cas de retour arrière
-    // ... (après la fonction saveToHistory, ou au début du script)
-
-// Fonction pour enregistrer la transaction dans le KV Global via le Worker de transaction
-async function saveToGlobalKV(senderId, amount, senderName) {
-    const transactionData = {
-        action: "transfer_money", // Réutilise l'action du store si elle enregistre tout transfert
-        amount: amount,
-        senderId: senderId, 
-        senderName: senderName,
-        recipient: "MIJO CINÉ / Entreprise",
-        type: "Abonnement Premium CINÉ" // Description pour l'historique
-    };
-    
-    try {
-        await fetch(GLOBAL_HISTORY_WORKER_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(transactionData)
-        });
-
-        console.log("Abonnement Premium enregistré dans le KV global.");
-    } catch (error) {
-        console.error("Erreur de connexion lors de l'enregistrement KV global:", error);
-    }
-}
-      
-window.addEventListener('pageshow', () => {
-    const storedUser = localStorage.getItem('user');
-    console.log("Contenu localStorage:", storedUser); // 👈 vérifie ce qu'il y a
-    if (storedUser) {
+    async function saveToGlobalKV(senderId, amount, senderName) {
         try {
-            const user = JSON.parse(storedUser);
-            if (user && user.NomUtilisateur) {
-                console.log("Utilisateur détecté:", user); // 👈 log l'objet
-                updateUI(user);
-            } else {
-                logout();
-            }
-        } catch (e) {
-            console.error("Erreur de données utilisateur:", e);
-            logout();
+            await fetch(GLOBAL_HISTORY_WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: "transfer_money",
+                    amount: amount,
+                    senderId: senderId, 
+                    senderName: senderName,
+                    recipient: "MIJO CINÉ / Entreprise",
+                    type: "Abonnement Premium CINÉ"
+                })
+            });
+            console.log("Historique global mis à jour");
+        } catch (error) {
+            console.error("Erreur KV Global:", error);
         }
-    } else {
-        logout();
     }
-});
 
+    // Gestionnaire clic sur le Flyer Helper
+    const flyerHelper = document.getElementById('flyer-helper');
+    if (flyerHelper) {
+        flyerHelper.addEventListener('click', function(event) {
+            event.preventDefault();
+            const userString = localStorage.getItem('user');
+            
+            if (!userString) {
+                alert("Veuillez vous connecter.");
+                return window.location.href = 'index.html';
+            }
+            
+            const user = JSON.parse(userString);
+            if (user.EstPremium) {
+                window.location.href = "helper.html";
+            } else {
+                alert("Réservé aux membres Premium.");
+            }
+        });
+    }
 
 </script>
