@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin MIJO PAY - Validations</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f2f5; padding: 20px; }
+        .card-request { margin-bottom: 15px; border-left: 5px solid #0d6efd; }
+        .btn-whatsapp { background-color: #25D366; color: white; border: none; }
+        .btn-whatsapp:hover { background-color: #128C7E; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Gestion des Inscriptions</h2>
+        <button onclick="logout()" class="btn btn-outline-danger btn-sm">Déconnexion</button>
+    </div>
+    
+    <div id="authSection" class="text-center mt-5">
+        <h4>Accès Sécurisé</h4>
+        <input type="password" id="adminPassword" class="form-control w-50 mx-auto mt-3" placeholder="Entrez le mot de passe Admin">
+        <button onclick="login()" class="btn btn-primary mt-3">Accéder</button>
+    </div>
+
+    <div id="dashboardSection" style="display:none;">
+        <div id="loading" class="text-center">Chargement des demandes...</div>
+        <div id="requestsList" class="row"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="successModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">Utilisateur Créé !</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <h4><span id="modalNom"></span></h4>
+        <p>Carte : <strong id="modalCarte" class="fs-4"></strong></p>
+        <p>CIN : <strong id="modalCin" class="fs-4"></strong></p>
+        <hr>
+        <button id="btnSendWhatsapp" class="btn btn-whatsapp w-100 py-2 mb-2">
+            Envoyer par WhatsApp 📲
+        </button>
+        <button id="btnSendEmail" class="btn btn-secondary w-100 py-2">
+            Envoyer par Email 📧
+        </button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+    // URL DE TON WORKER (C'est la seule info publique, et c'est sans danger)
+    const WORKER_URL = "https://newuser.mijocomplexe.workers.dev/";
+
+    let userPassword = "";
+
+    function login() {
+        userPassword = document.getElementById('adminPassword').value;
+        if(userPassword) {
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+            loadRequests();
+        }
+    }
+
+    function logout() {
+        userPassword = "";
+        location.reload();
+    }
+
+    async function loadRequests() {
+        const list = document.getElementById('requestsList');
+        const loading = document.getElementById('loading');
+        list.innerHTML = "";
+        loading.style.display = 'block';
+        
+        try {
+            // On demande au Worker la liste (en envoyant le mot de passe)
+            const response = await fetch(WORKER_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    action: "get_pending", 
+                    password: userPassword 
+                })
+            });
+
+            const data = await response.json();
+            loading.style.display = 'none';
+
+            if (data.status === 'error') {
+                alert(data.message);
+                logout();
+                return;
+            }
+
+            if(!data.records || data.records.length === 0) {
+                list.innerHTML = `<div class="alert alert-info text-center">Aucune demande en attente.</div>`;
+                return;
+            }
+
+            data.records.forEach(record => {
+                const f = record.fields;
+                // Protection contre les champs vides
+                const nom = f.NomComplet || 'Inconnu';
+                const tel = f.Telephone || '';
+                const email = f.Email || '';
+                const pays = f.Pays || '';
+
+                const cardHtml = `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card card-request shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">${nom}</h5>
+                                <p class="card-text mb-1">📞 ${tel}</p>
+                                <p class="card-text mb-1">📧 ${email}</p>
+                                <p class="card-text mb-3 text-muted">🌍 ${pays}</p>
+                                <button onclick="validateUser('${record.id}', '${nom.replace(/'/g, "\\'")}', '${tel}', '${email}')" 
+                                        class="btn btn-primary w-100" id="btn-${record.id}">
+                                    Valider & Créer Carte
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                list.innerHTML += cardHtml;
+            });
+
+        } catch (error) {
+            loading.innerText = "Erreur de connexion serveur.";
+            console.error(error);
+        }
+    }
+
+    async function validateUser(demandeId, nom, tel, email) {
+        const btn = document.getElementById(`btn-${demandeId}`);
+        btn.disabled = true;
+        btn.innerText = "Création en cours...";
+
+        try {
+            // On demande au Worker de créer l'utilisateur ET de supprimer la demande
+            const response = await fetch(WORKER_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "approve_user",
+                    password: userPassword, // Sécurité
+                    demandeId: demandeId,   // ID pour suppression
+                    nom: nom,
+                    telephone: tel,
+                    email: email,
+                    role: "user"
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                // Succès : On ouvre la modale WhatsApp
+                showSuccessModal(nom, result.card, result.CIN, tel, email);
+                // On supprime visuellement la carte
+                if(btn.closest('.col-md-6')) {
+                   btn.closest('.col-md-6').remove();
+                }
+            } else {
+                alert("Erreur : " + result.message);
+                btn.disabled = false;
+                btn.innerText = "Réessayer";
+            }
+
+        } catch (error) {
+            alert("Erreur réseau : " + error.message);
+            btn.disabled = false;
+            btn.innerText = "Réessayer";
+        }
+    }
+
+    function showSuccessModal(nom, card, cin, tel, email) {
+        document.getElementById('modalNom').innerText = nom;
+        document.getElementById('modalCarte').innerText = card;
+        document.getElementById('modalCin').innerText = cin;
+
+        // Configuration WhatsApp
+        const message = `Bonjour ${nom}, bienvenue sur MIJO PAY ! 🎉\n\nVoici vos identifiants :\n💳 Numéro de carte : *${card}*\n🔑 Mot de passe (CIN) : *${cin}*\n\nVous pouvez maintenant vous connecter sur mijopay.com.`;
+        const waLink = `https://wa.me/${tel.replace(/\D/g,'')}?text=${encodeURIComponent(message)}`;
+        
+        const btnWa = document.getElementById('btnSendWhatsapp');
+        btnWa.onclick = () => window.open(waLink, '_blank');
+
+        // Configuration Email
+        const mailLink = `mailto:${email}?subject=Bienvenue sur MIJO PAY&body=${encodeURIComponent(message)}`;
+        const btnMail = document.getElementById('btnSendEmail');
+        btnMail.onclick = () => window.location.href = mailLink;
+
+        new bootstrap.Modal(document.getElementById('successModal')).show();
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
