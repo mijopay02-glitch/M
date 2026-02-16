@@ -289,7 +289,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const data = await response.json();
 
         if (response.ok && data.status === 'success') {
-            alert("Demande envoyée avec succès ! 🎉\nNous vous contacterons par WhatsApp ou email une fois votre carte validée.");
+            alert("Demande envoyée avec succès ! 🎉\nNous vous contacterons par WhatsApp ou email une fois terminé.");
             hideInscription();
             // Optionnel : vider les champs
             document.getElementById("nomcomplet").value = "";
