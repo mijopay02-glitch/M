@@ -420,6 +420,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </nav>
 <script>
    /* ... dans la balise <script> ... */
+      // --- INITIALISATION IMMÉDIATE ---
+const storedUser = localStorage.getItem('user');
+if (storedUser) {
+    const user = JSON.parse(storedUser);
+    // On attend que le DOM soit prêt pour remplir les éléments
+    window.addEventListener('DOMContentLoaded', () => {
+        updateUI(user);
+    });
+} else {
+    // Si vraiment rien n'est stocké, on repart à la connexion
+    window.location.href = 'index.html';
+}
 
 const loginUrl = "https://mijopay.mijocomplexe.workers.dev/"; // L'URL de votre API de connexion/récupération
 const GLOBAL_HISTORY_WORKER_URL = "https://transaction.mijocomplexe.workers.dev/"; 
