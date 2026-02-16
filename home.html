@@ -597,18 +597,35 @@ document.getElementById('flyer-helper').addEventListener('click', function(event
     const transferUrl = "https://transfert.mijocomplexe.workers.dev/";
 
     function updateUI(user) {
-        if (user && user.NomUtilisateur) {
-            document.getElementById('username').innerText = user.NomUtilisateur || 'Utilisateur';
-            document.getElementById('email').innerText = user.Email || 'Email non renseigné';
-            document.getElementById('balance').innerText = (user.Solde || '0') + " G";
+    if (user && user.NomUtilisateur) {
+        document.getElementById('username').innerText = user.NomUtilisateur || 'Utilisateur';
+        document.getElementById('email').innerText = user.Email || 'Email non renseigné';
 
-            if (user.EstPremium) {
-                topSection.classList.add('premium');
-            } else {
-                topSection.classList.remove('premium');
-            }
+        // --- DÉBUT DE LA CORRECTION ---
+        // 1. On s'assure que le solde est un nombre
+        let solde = parseFloat(user.Solde);
+        
+        // 2. Si le solde n'est pas un nombre valide, on met 0
+        if (isNaN(solde)) { solde = 0; }
+
+        // 3. On formate le nombre. 
+        // Si tu veux des centimes (ex: 50.50 G), utilise .toFixed(2)
+        // Si tu ne veux PAS de centimes (ex: 50 G), utilise Math.round(solde)
+        
+        // Ici, j'utilise une méthode intelligente : 
+        // Si c'est un chiffre rond, pas de virgule. Sinon, 2 chiffres après la virgule.
+        let soldeAffiche = (solde % 1 === 0) ? solde : solde.toFixed(2);
+
+        document.getElementById('balance').innerText = soldeAffiche + " G";
+        // --- FIN DE LA CORRECTION ---
+
+        if (user.EstPremium) {
+            topSection.classList.add('premium');
+        } else {
+            topSection.classList.remove('premium');
         }
     }
+}
 
     function logout() {
         localStorage.removeItem('user');
@@ -670,18 +687,26 @@ document.getElementById('flyer-helper').addEventListener('click', function(event
 
             const data = await response.json();
 
-            if (data.success) {
-                const newBalance = data.newBalance;
-                
-                // --- C'EST LA LIGNE CLÉ QUI A ÉTÉ CORRIGÉE ---
-                user.Solde = newBalance;
-                localStorage.setItem('user', JSON.stringify(user));
-                
-                updateUI(user);
-                saveToHistory('Transfert', parseFloat(amount), 'Envoyé', recipientEmail, user.userId);
+           // Trouve ce bloc dans handleTransfer :
+if (data.success) {
+    const newBalance = data.newBalance;
+    
+    // --- REMPLACE LA LIGNE user.Solde = newBalance; PAR CECI : ---
+    // Cela nettoie le chiffre avant même de l'enregistrer dans le navigateur
+    let soldeNettoye = parseFloat(newBalance);
+    // On arrondit à 2 chiffres après la virgule pour éviter les 79.9999999
+    user.Solde = Math.round(soldeNettoye * 100) / 100; 
+    // -----------------------------------------------------------
 
-                transferMessage.innerText = "Transfert réussi !";
-                transferMessage.style.color = 'green';
+    localStorage.setItem('user', JSON.stringify(user));
+    
+    updateUI(user);
+    saveToHistory('Transfert', parseFloat(amount), 'Envoyé', recipientEmail, user.userId);
+
+    transferMessage.innerText = "Transfert réussi !";
+    transferMessage.style.color = 'green';
+    
+}
                 
             } else {
                 transferMessage.innerText = data.error || "Échec du transfert.";
