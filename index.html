@@ -271,19 +271,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             inscriptionMessageDiv.innerText = "";
 
             try {
-                const params = new URLSearchParams();
-                params.append('nomcomplet', nom);
-                params.append('pays', pays);
-                params.append('adresseemail', email);
-                params.append('telephone', telephone); // Ajout du téléphone aux données envoyées
-
-                const response = await fetch(inscriptionUrl, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: params.toString()
-                });
+        const response = await fetch("https://newuser.mijocomplexe.workers.dev/", {
+            method: "POST",
+            body: JSON.stringify({
+                action: "submit_request",
+                nom: nom,
+                pays: pays,
+                email: email,
+                telephone: telephone
+            })
+        });
+        
+        if(response.ok) {
+            alert("Demande envoyée !");
+            hideInscription();
+        }
+    } catch(e) {
+        alert("Erreur de connexion");
+    }
+}
 
                 const data = await response.text();
                 
