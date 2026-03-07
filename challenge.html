@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
     <style>
-        /* Réinitialisation de base */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -17,7 +16,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f4f7f6; /* Gris très clair et pro */
+            background-color: #f4f7f6;
             color: #333;
             line-height: 1.6;
         }
@@ -29,7 +28,6 @@
             text-align: center;
         }
 
-        /* Section Héro (Titre principal) */
         .hero {
             margin-bottom: 50px;
         }
@@ -49,7 +47,6 @@
             margin: 0 auto;
         }
 
-        /* Grille pour les cartes */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -57,7 +54,6 @@
             margin-bottom: 40px;
         }
 
-        /* Style des cartes */
         .card {
             background: white;
             padding: 40px 30px;
@@ -93,7 +89,6 @@
             color: #4a5568;
         }
 
-        /* Ajout d'une petite coche personnalisée pour les listes */
         .card ul li::before {
             content: "✓";
             position: absolute;
@@ -108,7 +103,6 @@
             font-weight: 600;
         }
 
-        /* Section Participer (Pleine largeur) */
         .cta-section {
             background: white;
             padding: 50px;
@@ -130,7 +124,6 @@
             font-size: 18px;
         }
 
-        /* Bouton stylisé */
         .btn {
             background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
             color: white;
@@ -138,7 +131,7 @@
             padding: 16px 40px;
             font-size: 18px;
             font-weight: 600;
-            border-radius: 50px; /* Bouton très arrondi pour un look moderne */
+            border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
@@ -152,14 +145,34 @@
             box-shadow: 0 6px 20px rgba(56, 161, 105, 0.4);
         }
 
-        /* Pied de page */
         .footer {
             margin-top: 60px;
             color: #a0aec0;
             font-size: 14px;
         }
 
-        /* Responsivité pour les téléphones */
+        /* =========================================
+           NOUVEAU : CLASSES POUR L'ANIMATION
+           ========================================= */
+        
+        /* État initial : Invisible et décalé vers le bas */
+        .hidden-animate {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        /* État final : Visible et à sa position normale */
+        .show-animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Ajout d'un délai pour que les cartes apparaissent une par une */
+        .card:nth-child(1) { transition-delay: 0.1s; }
+        .card:nth-child(2) { transition-delay: 0.3s; }
+        .card:nth-child(3) { transition-delay: 0.5s; }
+
         @media (max-width: 600px) {
             .hero h1 {
                 font-size: 36px;
@@ -174,13 +187,13 @@
 
     <div class="container">
 
-        <header class="hero">
+        <header class="hero hidden-animate">
             <h1>MIJO Business Challenge</h1>
             <p>Présente ton idée de business et tente de gagner une récompense exclusive pour propulser ton projet.</p>
         </header>
 
         <div class="grid">
-            <div class="card">
+            <div class="card hidden-animate">
                 <h2>🏆 Récompense</h2>
                 <ul>
                     <li>Prix en argent</li>
@@ -190,7 +203,7 @@
                 </ul>
             </div>
 
-            <div class="card">
+            <div class="card hidden-animate">
                 <h2>📋 Conditions</h2>
                 <ul>
                     <li>Soumettre un business plan simple et clair</li>
@@ -199,14 +212,14 @@
                 </ul>
             </div>
 
-            <div class="card">
+            <div class="card hidden-animate">
                 <h2>📅 Date limite</h2>
                 <p style="font-size: 24px; color: #e53e3e; margin-top: 10px;">30 Mars 2026</p>
                 <p style="font-size: 14px; font-weight: normal; margin-top: 5px;">Assure-toi de soumettre avant minuit.</p>
             </div>
         </div>
 
-        <div class="cta-section">
+        <div class="cta-section hidden-animate">
             <h2>🚀 Prêt à relever le défi ?</h2>
             <p>Clique sur le bouton ci-dessous pour accéder au formulaire et soumettre ton business plan.</p>
             
@@ -215,11 +228,30 @@
             </a>
         </div>
 
-        <footer class="footer">
-            <p>© 2026 MIJObusnesshelper. Tous droits réservés.</p>
+        <footer class="footer hidden-animate">
+            <p>© 2026 MIJO COMPLEXE. Tous droits réservés.</p>
         </footer>
 
     </div>
+
+    <script>
+        // Création de l'observateur
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                // Si l'élément devient visible à l'écran
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show-animate');
+                }
+            });
+        }, {
+            // L'animation se déclenche quand 10% de l'élément est visible
+            threshold: 0.1 
+        });
+
+        // Sélectionner tous les éléments avec la classe 'hidden-animate' et les observer
+        const hiddenElements = document.querySelectorAll('.hidden-animate');
+        hiddenElements.forEach((el) => observer.observe(el));
+    </script>
 
 </body>
 </html>
