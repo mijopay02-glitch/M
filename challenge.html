@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIJO Business Challenge</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* Réinitialisation de base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f6; /* Gris très clair et pro */
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        /* Section Héro (Titre principal) */
+        .hero {
+            margin-bottom: 50px;
+        }
+
+        .hero h1 {
+            color: #1a202c;
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            color: #4a5568;
+            font-size: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Grille pour les cartes */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        /* Style des cartes */
+        .card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: left;
+            border: 1px solid #edf2f7;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            font-size: 22px;
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card ul {
+            list-style-type: none;
+        }
+
+        .card ul li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 12px;
+            color: #4a5568;
+        }
+
+        /* Ajout d'une petite coche personnalisée pour les listes */
+        .card ul li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #38a169;
+            font-weight: bold;
+        }
+
+        .card p {
+            color: #4a5568;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Section Participer (Pleine largeur) */
+        .cta-section {
+            background: white;
+            padding: 50px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            border: 1px solid #edf2f7;
+        }
+
+        .cta-section h2 {
+            font-size: 28px;
+            color: #1a202c;
+            margin-bottom: 15px;
+        }
+
+        .cta-section p {
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+
+        /* Bouton stylisé */
+        .btn {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 50px; /* Bouton très arrondi pour un look moderne */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(56, 161, 105, 0.3);
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #2f855a 0%, #22543d 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 161, 105, 0.4);
+        }
+
+        /* Pied de page */
+        .footer {
+            margin-top: 60px;
+            color: #a0aec0;
+            font-size: 14px;
+        }
+
+        /* Responsivité pour les téléphones */
+        @media (max-width: 600px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+            .cta-section {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <header class="hero">
+            <h1>MIJO Business Challenge</h1>
+            <p>Présente ton idée de business et tente de gagner une récompense exclusive pour propulser ton projet.</p>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h2>🏆 Récompense</h2>
+                <ul>
+                    <li>Prix en argent</li>
+                    <li>Partenariat exclusif avec MIJO</li>
+                    <li>Publicité gratuite sur la plateforme</li>
+                    <li>Promotion dédiée du business gagnant</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>📋 Conditions</h2>
+                <ul>
+                    <li>Soumettre un business plan simple et clair</li>
+                    <li>Proposer un projet réaliste et réalisable</li>
+                    <li>Un seul projet autorisé par participant</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>📅 Date limite</h2>
+                <p style="font-size: 24px; color: #e53e3e; margin-top: 10px;">30 Mars 2026</p>
+                <p style="font-size: 14px; font-weight: normal; margin-top: 5px;">Assure-toi de soumettre avant minuit.</p>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h2>🚀 Prêt à relever le défi ?</h2>
+            <p>Clique sur le bouton ci-dessous pour accéder au formulaire et soumettre ton business plan.</p>
+            
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLScPcCp9z2D05DZULtAD5OBRtDuZI05MSG7rxLlOiIrY3kBrqg/viewform?usp=dialog" target="_blank" style="text-decoration: none;">
+                <button class="btn">Soumettre mon Business Plan</button>
+            </a>
+        </div>
+
+        <footer class="footer">
+            <p>© 2026 MIJObusnesshelper. Tous droits réservés.</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
