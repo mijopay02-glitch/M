@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIJO PAY - Bureau de Change</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2196F3;
+            --secondary: #f7a62d;
+            --success: #4CAF50;
+            --bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), #1565C0);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        .exchange-card {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            margin-top: -30px;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .rate-badge {
+            background: #e3f2fd;
+            color: var(--primary);
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f1f1f1;
+            padding: 5px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: 0.3s;
+            color: #666;
+        }
+
+        .tab.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 8px;
+            margin-left: 5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus { border-color: var(--primary); }
+
+        .currency-label {
+            position: absolute;
+            right: 15px;
+            font-weight: 700;
+            color: #aaa;
+        }
+
+        .swap-icon {
+            text-align: center;
+            margin: -10px 0;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .result-box {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 25px;
+            border: 1px dashed #ddd;
+        }
+
+        .result-val {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .btn-confirm {
+            width: 100%;
+            padding: 18px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+            transition: 0.3s;
+        }
+
+        .btn-confirm:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="home.html" class="back-btn">✕</a>
+        <h2 style="margin: 0;">Bureau de Change</h2>
+        <p style="opacity: 0.8; font-size: 0.9rem;">MIJO PAY Financial Services</p>
+    </div>
+
+    <div class="exchange-card">
+        <center><div class="rate-badge">Taux du jour : 1 USD = 135.00 HTG</div></center>
+
+        <div class="tabs">
+            <div class="tab active" id="tab-buy" onclick="setMode('buy')">Acheter $</div>
+            <div class="tab" id="tab-sell" onclick="setMode('sell')">Vendre $</div>
+        </div>
+
+        <div class="input-group">
+            <label id="label-from">Montant à convertir</label>
+            <div class="input-wrapper">
+                <input type="number" id="input-amount" placeholder="0.00" oninput="updateCalculation()">
+                <span class="currency-label" id="unit-from">HTG</span>
+            </div>
+        </div>
+
+        <div class="swap-icon">⇅</div>
+
+        <div class="result-box">
+            <label style="font-size: 0.7rem; color: #999; text-transform: uppercase;">Estimation de réception</label>
+            <div class="result-val" id="display-result">0.00 $</div>
+        </div>
+
+        <button class="btn-confirm" id="btn-action" onclick="handleExchange()">Confirmer l'opération</button>
+    </div>
+
+    <script>
+        let currentMode = 'buy';
+        const RATE = 135.00;
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('tab-buy').classList.toggle('active', mode === 'buy');
+            document.getElementById('tab-sell').classList.toggle('active', mode === 'sell');
+            
+            document.getElementById('unit-from').innerText = mode === 'buy' ? 'HTG' : 'USD';
+            document.getElementById('label-from').innerText = mode === 'buy' ? 'Montant en Gourdes' : 'Montant en Dollars';
+            
+            updateCalculation();
+        }
+
+        function updateCalculation() {
+            const amount = parseFloat(document.getElementById('input-amount').value) || 0;
+            const display = document.getElementById('display-result');
+            
+            if (currentMode === 'buy') {
+                display.innerText = (amount / RATE).toFixed(2) + " $";
+            } else {
+                display.innerText = (amount * RATE).toLocaleString() + " G";
+            }
+        }
+
+        async function handleExchange() {
+            const amount = parseFloat(document.getElementById('input-amount').value);
+            const user = JSON.parse(localStorage.getItem('user'));
+
+            if (!amount || amount <= 0) return alert("Entrez un montant valide.");
+
+            if (confirm(`Confirmer la conversion de ${amount} ${currentMode === 'buy' ? 'HTG' : 'USD'} ?`)) {
+                const btn = document.getElementById('btn-action');
+                btn.innerText = "Traitement...";
+                btn.disabled = true;
+
+                try {
+                    const response = await fetch("https://votre-worker-change.workers.dev/", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            userId: user.userId,
+                            type: currentMode, // 'buy' ou 'sell'
+                            amount: amount
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        alert("Opération réussie ! Vos soldes ont été mis à jour.");
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        window.location.href = 'home.html';
+                    } else {
+                        alert("Erreur: " + data.error);
+                    }
+                } catch (e) {
+                    alert("Erreur de connexion au serveur.");
+                } finally {
+                    btn.innerText = "Confirmer l'opération";
+                    btn.disabled = false;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
