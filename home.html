@@ -500,14 +500,15 @@
             // --- NOUVEAU : Gestion du Solde USD ---
             const usdSection = document.getElementById('usd-section');
             if (user.Compte_US_Actif === true || user.Compte_US_Actif === "true") {
-                let soldeUsd = parseFloat(user.Solde_USD) || 0;
-                let soldeUsdAffiche = soldeUsd.toFixed(2);
-                usdSection.innerHTML = `
-                    <div class="balance-value">${soldeUsdAffiche} $</div>
-                    <div style="font-size: 0.8em; margin-top: 2px;">
-                        <span class="badge-active">✓ Activé</span> 
-                    </div>
-                `;
+    let soldeUsd = parseFloat(user.Solde_USD) || 0;
+    let soldeUsdAffiche = soldeUsd.toFixed(2);
+    usdSection.innerHTML = `
+        <div class="balance-value">${soldeUsdAffiche} $</div>
+        <div style="margin-top: 5px;">
+            <a href="change.html" class="usd-activate-btn" style="background: #2196F3; color: white; padding: 4px 10px;">🔄 Change</a>
+        </div>
+    `;
+}
             } else {
                 usdSection.innerHTML = `
                     <div class="balance-value" style="font-size: 1.5em; opacity: 0.7; margin-bottom: 5px;">🔒</div>
