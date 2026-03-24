@@ -527,7 +527,10 @@
     event.preventDefault();
     
     const userString = localStorage.getItem('user');
-    if (!userString) return logout();
+   if (!userString || userString === "undefined") {
+        alert("Session expirée. Veuillez vous reconnecter.");
+        return logout();
+    }
     const user = JSON.parse(userString);
 
     const confirmer = confirm("Activer le compte Stable USD pour 200 Gdes ?");
