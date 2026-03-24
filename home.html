@@ -1,405 +1,364 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-      <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-K43FXR4W');</script>
-<!-- End Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-K43FXR4W');</script>
     <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MIJO PAY - Accueil</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-        --primary-color: #2196F3;
-        --text-color: #333;
-        --light-text-color: #999;
-        --bg-color: #f0f2f5;
-        --card-bg: #fff;
-    }
-
-    body {
-        font-family: 'Poppins', sans-serif;
-        margin: 0;
-        background-color: var(--bg-color);
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-    }
-
-    .container {
-        flex-grow: 1;
-        padding: 20px;
-    }
-
-    .modal {
-        position: fixed;
-        z-index: 10;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0,0,0,0.4);
-        display: none;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .modal-content {
-        background-color: #fefefe;
-        margin: auto;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        width: 90%;
-        max-width: 400px;
-        position: relative;
-    }
-
-    .close-btn {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
-    }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MIJO PAY - Accueil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    .top-section {
-        background-color: var(--primary-color);
-        color: white;
-        padding: 30px 20px 80px;
-        text-align: center;
-        border-bottom-left-radius: 25px;
-        border-bottom-right-radius: 25px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        position: relative;
-    }
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --text-color: #333;
+            --light-text-color: #999;
+            --bg-color: #f0f2f5;
+            --card-bg: #fff;
+        }
 
-    .user-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 20px;
-    }
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
-    .user-profile {
-        display: flex;
-        align-items: center;
-    }
+        .container {
+            flex-grow: 1;
+            padding: 20px;
+        }
 
-    .user-profile img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        margin-right: 10px;
-        border: 2px solid white;
-    }
+        /* Modals */
+        .modal {
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
 
-    .user-info {
-        display: flex;
-        flex-direction: column;
-        text-align: left;
-    }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
 
-    .username {
-        font-size: 1.1em;
-        font-weight: 500;
-    }
-    
-    .email {
-        font-size: 0.8em;
-        opacity: 0.8;
-        margin-top: -5px;
-    }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* Top Section */
+        .top-section {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 30px 20px 80px;
+            text-align: center;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
 
-    .balance-display {
-        margin-top: 20px;
-    }
+        .top-section.premium {
+            background-color: #f7a62d; 
+            background-image: linear-gradient(135deg, #f7a62d, #ffc977); 
+        }
 
-    .balance-value {
-        font-size: 2.8em;
-        font-weight: 700;
-    }
+        .user-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
 
-    .balance-label {
-        font-size: 1.1em;
-        opacity: 0.8;
-    }
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
 
-.action-buttons {
-    display: flex;
-    justify-content: space-around; /* Distribué uniformément */
-    position: absolute;
-    bottom: -30px;
-    left: 0;
-    width: 100%;
-}
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid white;
+        }
 
-.action-button {
-    display: flex;
-    flex-direction: column; /* Icône et texte en colonne */
-    align-items: center;
-    width: 70px; /* Taille du bouton */
-    height: 70px;
-    border-radius: 50%; /* Boutons ronds */
-    background-color: var(--card-bg);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-decoration: none;
-    color: var(--text-color);
-    transition: transform 0.2s;
-    justify-content: center;
-}
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
 
-.action-button .icon {
-    font-size: 1.5em; /* Taille de l'icône */
-    margin-bottom: 5px; /* Espace entre l'icône et le texte */
-}
+        .username {
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        .email {
+            font-size: 0.8em;
+            opacity: 0.8;
+            margin-top: -5px;
+        }
 
-.action-button span {
-    font-size: 0.7em; /* Taille du texte */
-    margin-top: 5px;
-    text-align: center;
-}
-    
-    .middle-section {
-        padding: 50px 20px 20px;
-    }
-    
-    .flyer-list {
-        display: grid;
-        gap: 15px;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    }
-    
-    .flyer-item {
-        background-color: var(--card-bg);
-        border-radius: 10px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        display: block;
-        overflow: hidden;
-        text-decoration: none;
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
+        .balance-display {
+            margin-top: 20px;
+        }
 
-    .flyer-item:active {
-        transform: scale(0.98);
-    }
-    
-    .flyer-item img {
-        width: 100%;
-        height: auto;
-        display: block;
-    }
+        .balance-value {
+            font-size: 2.8em;
+            font-weight: 700;
+        }
 
-    .footer-menu {
-        background-color: var(--card-bg);
-        border-top: 1px solid #ddd;
-        padding: 10px 0;
-        display: flex;
-        justify-content: space-around;
-        box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-    }
+        .balance-label {
+            font-size: 1.1em;
+            opacity: 0.8;
+        }
 
-    .menu-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        color: var(--light-text-color);
-        font-size: 0.7em;
-        text-decoration: none;
-        flex: 1;
-        padding: 5px 0;
-    }
+        .refresh-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            transition: transform 0.3s ease-in-out;
+        }
 
-    .menu-btn.active {
-        color: var(--primary-color);
-    }
+        .refresh-icon:active {
+            transform: rotate(-360deg);
+        }
 
-    .menu-btn .icon {
-        font-size: 1.5em;
-        margin-bottom: 5px;
-    }
-    
-    .top-section.premium {
-        background-color: #f7a62d; 
-        background-image: linear-gradient(135deg, #f7a62d, #ffc977); 
+        .refresh-icon img {
+            filter: invert(1);
+        }
 
-    }
-      /* Conteneur principal pour tous les boutons et leurs textes */
-.action-buttons-container {
-    display: flex;
-    justify-content: space-around; /* Distribue les éléments uniformément */
-    position: absolute;
-    bottom: -30px;
-    left: 0;
-    width: 100%;
-}
+        /* Action Buttons */
+        .action-buttons-container {
+            display: flex;
+            justify-content: space-around;
+            position: absolute;
+            bottom: -30px;
+            left: 0;
+            width: 100%;
+        }
 
-/* Conteneur pour chaque bouton et son texte */
-.action-item {
-    display: flex;
-    flex-direction: column; /* Empile le bouton et le texte verticalement */
-    align-items: center;
-    text-align: center;
-    text-decoration: none;
-    color: var(--text-color);
-}
+        .action-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-color);
+        }
 
-/* Style des boutons ronds */
-.action-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 60px; /* Taille des boutons ronds */
-    height: 60px;
-    border-radius: 50%; /* Rendre le bouton rond */
-    background-color: var(--card-bg);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 8px; /* Espace entre le bouton et le texte */
-}
+        .action-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--card-bg);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 8px;
+            transition: transform 0.2s;
+        }
 
-/* Style des icônes à l'intérieur des boutons */
-.action-button .icon img {
-    width: 28px; /* Taille de l'icône augmentée */
-    height: 28px;
-}
+        .action-button:active {
+            transform: scale(0.95);
+        }
 
-/* Style des textes sous les boutons */
-.action-item span {
-    font-size: 0.8em;
-    font-weight: 500;
-}
-        /* ... dans la balise <style> ... */
+        .action-button .icon img {
+            width: 28px;
+            height: 28px;
+        }
 
-/* Nouvelle section pour les styles du bouton de rafraîchissement */
-.refresh-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px; /* Petit carré pour l'icône */
-    height: 30px;
-    border-radius: 50%;
-    /* background-color: rgba(255, 255, 255, 0.2); /* Fond léger */
-    transition: transform 0.3s ease-in-out;
-}
+        .action-item span {
+            font-size: 0.8em;
+            font-weight: 500;
+        }
 
-.refresh-icon:active {
-    transform: rotate(-360deg); /* Animation de rotation au clic */
-}
+        /* Middle Section & Flyers */
+        .middle-section {
+            padding: 50px 20px 20px;
+        }
+        
+        .flyer-list {
+            display: grid;
+            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+        
+        .flyer-item {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: block;
+            overflow: hidden;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
 
-/* Style pour l'icône elle-même */
-.refresh-icon img {
-    filter: invert(1); /* Rendre l'icône blanche pour le fond bleu */
-}
+        .flyer-item:active {
+            transform: scale(0.98);
+        }
+        
+        .flyer-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
 
-/* ... le reste de votre CSS ... */
-</style>
-    
+        /* Footer Menu */
+        .footer-menu {
+            background-color: var(--card-bg);
+            border-top: 1px solid #ddd;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .menu-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--light-text-color);
+            font-size: 0.7em;
+            text-decoration: none;
+            flex: 1;
+            padding: 5px 0;
+        }
+
+        .menu-btn.active {
+            color: var(--primary-color);
+        }
+
+        .menu-btn .icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+    </style>
 </head>
 <body>
-      
-    <script src="https://cdn.botpress.cloud/webchat/v3.6/inject.js"></script>
-<script src="https://files.bpcontent.cloud/2026/03/12/19/20260312195118-4JAFKC3E.js" defer></script>
     
-       <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K43FXR4W"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-
+    <script src="https://cdn.botpress.cloud/webchat/v3.6/inject.js"></script>
+    <script src="https://files.bpcontent.cloud/2026/03/12/19/20260312195118-4JAFKC3E.js" defer></script>
+    
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K43FXR4W"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="top-section">
-    <div class="user-header">
-        <div class="user-profile">
-            <img src="https://i.postimg.cc/ryWXr8qx/20250410-102102.jpg" alt="MIJO PAY Logo">
-            <div class="user-info">
-                <span class="username" id="username">Chargement...</span>
-                <span class="email" id="email"></span>
+        <div class="user-header">
+            <div class="user-profile">
+                <img src="https://i.postimg.cc/ryWXr8qx/20250410-102102.jpg" alt="MIJO PAY Logo">
+                <div class="user-info">
+                    <span class="username" id="username">Chargement...</span>
+                    <span class="email" id="email"></span>
+                </div>
+            </div>
+            <a href="#" class="icon-link" onclick="logout()">
+                <img src="https://i.postimg.cc/43mBtP8B/icons8-exporter-48.png" alt="Déconnexion" style="width: 24px;">
+            </a>
+        </div>
+        
+        <div class="balance-display">
+            <div class="balance-label">Solde MIJO</div>
+            <div style="display: flex; align-items: center; justify-content: center;">
+                <div class="balance-value" id="balance">0 G</div>
+                <a href="#" id="refresh-button" class="refresh-icon" onclick="refreshBalance(event)">
+                    <img src="https://i.postimg.cc/KYTvhNzv/mise-a-jour.png" alt="Rafraîchir" style="width: 20px; height: 20px; margin-left: 10px;">
+                </a>
             </div>
         </div>
-        <a href="#" class="icon-link" onclick="logout()">
-            <img src="https://i.postimg.cc/43mBtP8B/icons8-exporter-48.png" alt="Déconnexion" style="width: 24px;">
-        </a>
-    </div>
-    <div class="balance-display">
-    <div class="balance-label">Solde MIJO</div>
-    <div style="display: flex; align-items: center; justify-content: center;">
-        <div class="balance-value" id="balance">0 G</div>
-        <a href="#" id="refresh-button" class="refresh-icon" onclick="refreshBalance(event)">
-            <img src="https://i.postimg.cc/KYTvhNzv/mise-a-jour.png" alt="Rafraîchir" style="width: 20px; height: 20px; margin-left: 10px;">
-        </a>
-    </div>
-</div>
-    
-    
-    <div class="action-buttons-container">
-        <div class="action-item">
-            <a href="depot.html" class="action-button">
-                <span class="icon">
-                    <img src="https://i.postimg.cc/Gp8HvTvk/icons8-t-l-charger-24.png" alt="Dépôt">
-                </span>
-            </a>
-            <span>Dépôt</span>
-        </div>
+        
+        <div class="action-buttons-container">
+            <div class="action-item">
+                <a href="depot.html" class="action-button">
+                    <span class="icon">
+                        <img src="https://i.postimg.cc/Gp8HvTvk/icons8-t-l-charger-24.png" alt="Dépôt">
+                    </span>
+                </a>
+                <span>Dépôt</span>
+            </div>
 
-        <div class="action-item">
-            <a href="menuretrai.html" class="action-button">
-                <span class="icon">
-                    <img src="https://i.postimg.cc/Gp8HvTvk/icons8-t-l-charger-24.png" alt="Retrait">
-                </span>
-            </a>
-            <span>Retrait</span>
-        </div>
+            <div class="action-item">
+                <a href="menuretrai.html" class="action-button">
+                    <span class="icon">
+                        <img src="https://i.postimg.cc/Gp8HvTvk/icons8-t-l-charger-24.png" alt="Retrait">
+                    </span>
+                </a>
+                <span>Retrait</span>
+            </div>
 
-        <div class="action-item">
-            <a href="#" class="action-button" onclick="showTransferModal()">
-                <span class="icon">
-                    <img src="https://i.postimg.cc/jdtwB5rb/icons8-transfert-50.png" alt="Transfert">
-                </span>
-            </a>
-            <span>Transfert</span>
-        </div>
+            <div class="action-item">
+                <a href="#" class="action-button" onclick="showTransferModal()">
+                    <span class="icon">
+                        <img src="https://i.postimg.cc/jdtwB5rb/icons8-transfert-50.png" alt="Transfert">
+                    </span>
+                </a>
+                <span>Transfert</span>
+            </div>
 
-        <div class="action-item">
-            <a href="#" class="action-button" onclick="checkAffiliateStatus()">
-                <span class="icon">
-                    <img src="https://i.postimg.cc/KjXqmTDQ/icons8-l-argent-avec-des-ailes-50.png" alt="Mijo Affiliate promo">
-                </span>
-            </a>
-            <span>Mijo Affiliate</span>
+            <div class="action-item">
+                <a href="#" class="action-button" onclick="checkAffiliateStatus()">
+                    <span class="icon">
+                        <img src="https://i.postimg.cc/KjXqmTDQ/icons8-l-argent-avec-des-ailes-50.png" alt="Mijo Affiliate promo">
+                    </span>
+                </a>
+                <span>Mijo Affiliate</span>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="container middle-section">
-    <div class="flyer-list">
-          <a href="#" class="flyer-item" onclick="alertChallenge(event)">
-    <img src="https://i.postimg.cc/0N8mW562/a-realistic-business-flyer-design-with-b-w4vf-CSRr-R3u-GWd-RDF15Dg-31Hsgpj-MQq6f6ns-ENc-Hgfg-sd.jpg" alt="MIJO Business Challenge">
-</a>
-        <a href="premium.html" class="flyer-item">
-            <img src="https://i.postimg.cc/d1zd7P3j/a-dynamic-promotional-poster-for-mijo-pa-O35h-A-9v-Sn-Srwi5-Blvd-PPA-l-NGj-Bdlx-TM6i-XCh8xxmma-A.jpg" alt="MIJO PAY Premium">
-        </a>
-    
-  <a href="#" id="flyer-helper" class="flyer-item">
-    <img src="https://i.postimg.cc/P5M6b1Sp/a-clean-modern-digital-flyer-advertiseme-U-h-NVf-UQp2-Gce-Fap-Boa-Bw-kt-LI72-WMR1e3f16-TBRJCi-Q.jpg" alt="MIJO Business Helper">
-  </a>
-        <a href="carte.html" class="flyer-item">
-            <img src="https://i.postimg.cc/9MtzNzV8/a-sleek-product-shot-advertisement-showc-dn-RNraq-ARUKf5-Ux-FUEwg-Lw-6-Kqvf-UE-SKy-J-f-CNb-OJdnw.jpg" alt="Carte physique MIJO">
-        </a>
-        <a href="cine.html" class="flyer-item">
-  <img src="https://i.postimg.cc/yY7wGmrd/Gemini-Generated-Image-um8tpmum8tpmum8t.png" alt="MIJO CINE">
-</a>
-        <a href="don.html" class="flyer-item">
-            <img src="https://i.postimg.cc/BbWhW5Sj/a-heartwarming-digital-flyer-advertiseme-spq1z-TDTRQu8-Sq7x-Ylr6-Q-wiy-Jeq-U-QQi-RWIPp-E5-VCyw.jpg" alt="Faire un don">
-        </a>
+    <div class="container middle-section">
+        <div class="flyer-list">
+            <a href="#" class="flyer-item" onclick="alertChallenge(event)">
+                <img src="https://i.postimg.cc/0N8mW562/a-realistic-business-flyer-design-with-b-w4vf-CSRr-R3u-GWd-RDF15Dg-31Hsgpj-MQq6f6ns-ENc-Hgfg-sd.jpg" alt="MIJO Business Challenge">
+            </a>
+            <a href="premium.html" class="flyer-item">
+                <img src="https://i.postimg.cc/d1zd7P3j/a-dynamic-promotional-poster-for-mijo-pa-O35h-A-9v-Sn-Srwi5-Blvd-PPA-l-NGj-Bdlx-TM6i-XCh8xxmma-A.jpg" alt="MIJO PAY Premium">
+            </a>
+            <a href="#" id="flyer-helper" class="flyer-item">
+                <img src="https://i.postimg.cc/P5M6b1Sp/a-clean-modern-digital-flyer-advertiseme-U-h-NVf-UQp2-Gce-Fap-Boa-Bw-kt-LI72-WMR1e3f16-TBRJCi-Q.jpg" alt="MIJO Business Helper">
+            </a>
+            <a href="carte.html" class="flyer-item">
+                <img src="https://i.postimg.cc/9MtzNzV8/a-sleek-product-shot-advertisement-showc-dn-RNraq-ARUKf5-Ux-FUEwg-Lw-6-Kqvf-UE-SKy-J-f-CNb-OJdnw.jpg" alt="Carte physique MIJO">
+            </a>
+            <a href="cine.html" class="flyer-item">
+                <img src="https://i.postimg.cc/yY7wGmrd/Gemini-Generated-Image-um8tpmum8tpmum8t.png" alt="MIJO CINE">
+            </a>
+            <a href="don.html" class="flyer-item">
+                <img src="https://i.postimg.cc/BbWhW5Sj/a-heartwarming-digital-flyer-advertiseme-spq1z-TDTRQu8-Sq7x-Ylr6-Q-wiy-Jeq-U-QQi-RWIPp-E5-VCyw.jpg" alt="Faire un don">
+            </a>
+        </div>
     </div>
-</div>
+
     <div id="transferModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="hideTransferModal()">&times;</span>
@@ -416,12 +375,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <span class="icon">🏠</span>
             <span>Accueil</span>
         </a>
-        
         <a href="store.html" class="menu-btn">
             <span class="icon">🛒</span>
             <span>Store</span>
         </a>
     </nav>
+
 <script>
     // ==========================================
     // 1. CONSTANTES ET CONFIGURATION
@@ -434,16 +393,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // ==========================================
     // 2. INITIALISATION ET VÉRIFICATION SESSION
     // ==========================================
-    
-    // S'exécute au chargement initial
-    window.addEventListener('DOMContentLoaded', () => {
-        checkUserSession();
-    });
-
-    // S'exécute quand on revient sur la page (bouton retour)
-    window.addEventListener('pageshow', () => {
-        checkUserSession();
-    });
+    window.addEventListener('DOMContentLoaded', () => { checkUserSession(); });
+    window.addEventListener('pageshow', () => { checkUserSession(); });
 
     function checkUserSession() {
         const storedUser = localStorage.getItem('user');
@@ -457,7 +408,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         try {
             const user = JSON.parse(storedUser);
-            // Vérification basique que l'objet est valide
             if (user && (user.userId || user.id)) {
                 updateUI(user);
             } else {
@@ -465,7 +415,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }
         } catch (e) {
             console.error("Erreur session:", e);
-            logout(); // Si le JSON est cassé, on déconnecte proprement
+            logout();
         }
     }
 
@@ -475,22 +425,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     function updateUI(user) {
         const topSection = document.querySelector('.top-section');
         
-        // Gestion souple des noms de propriétés (au cas où l'API change)
         const displayName = user.NomUtilisateur || user["Nom Utilisateur"] || user.nom || "Utilisateur";
         const displayEmail = user.Email || user.email || "Email non renseigné";
         
         document.getElementById('username').innerText = displayName;
         document.getElementById('email').innerText = displayEmail;
 
-        // Gestion du Solde (Conversion sécurisée)
         let solde = parseFloat(user.Solde);
         if (isNaN(solde)) { solde = 0; }
         
-        // Affichage propre : pas de décimales si rond, sinon 2 décimales
         let soldeAffiche = (solde % 1 === 0) ? solde : solde.toFixed(2);
         document.getElementById('balance').innerText = soldeAffiche + " G";
 
-        // Gestion du statut Premium
         if (user.EstPremium) {
             topSection.classList.add('premium');
         } else {
@@ -501,13 +447,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // ==========================================
     // 4. FONCTIONS PRINCIPALES
     // ==========================================
-
     function logout() {
         localStorage.removeItem('user');
         window.location.href = 'index.html';
     }
 
-    // --- Rafraîchir le solde ---
     async function refreshBalance(event) {
         if (event) event.preventDefault();
         
@@ -518,7 +462,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         const user = JSON.parse(userString);
         
-        // UI Loading
         refreshButton.style.opacity = '0.5';
         refreshButton.style.pointerEvents = 'none';
         document.getElementById('balance').innerText = "...";
@@ -539,14 +482,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const data = await response.json();
 
             if (data.success && data.user) {
-                // Important : on garde l'ID original si l'API ne le renvoie pas
                 data.user.userId = user.userId; 
-                
                 localStorage.setItem("user", JSON.stringify(data.user));
                 updateUI(data.user);
                 console.log("Données rafraîchies via API");
             } else {
-                // En cas d'erreur API, on remet l'affichage local
                 updateUI(user);
                 console.warn("Échec refresh API:", data.error);
             }
@@ -560,7 +500,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
     }
 
-    // --- Gestion Transfert ---
     function showTransferModal() {
         document.getElementById('transferModal').style.display = 'flex';
     }
@@ -578,7 +517,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const amount = parseFloat(amountInput.value);
         const recipientEmail = emailInput.value;
 
-        // Validation
         if (!amount || amount <= 0 || !recipientEmail) {
             messageBox.style.color = 'red';
             messageBox.innerText = "Veuillez vérifier le montant et l'email.";
@@ -606,7 +544,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const data = await response.json();
 
             if (data.success) {
-                // Mise à jour du solde local
                 let soldeNettoye = parseFloat(data.newBalance);
                 user.Solde = Math.round(soldeNettoye * 100) / 100;
                 
@@ -618,11 +555,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 messageBox.style.color = 'green';
                 messageBox.innerText = "Transfert réussi !";
                 
-                // Reset formulaire
                 amountInput.value = "";
                 emailInput.value = "";
                 
-                // Fermer le modal après 2 secondes
                 setTimeout(hideTransferModal, 2000);
             } else {
                 messageBox.style.color = 'red';
@@ -635,7 +570,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
     }
 
-    // --- Activation Premium ---
     async function activatePremium() {
         const confirmation = confirm("Voulez-vous activer MIJO Premium ? Prix : 150 Gdes/mois.");
         if (!confirmation) return;
@@ -682,7 +616,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // ==========================================
     // 5. FONCTIONS UTILITAIRES & EVENTS
     // ==========================================
-
     function checkAffiliateStatus() {
         const user = JSON.parse(localStorage.getItem('user'));
         if (!user) return logout();
@@ -730,7 +663,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
     }
 
-    // Gestionnaire clic sur le Flyer Helper
     const flyerHelper = document.getElementById('flyer-helper');
     if (flyerHelper) {
         flyerHelper.addEventListener('click', function(event) {
@@ -750,8 +682,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }
         });
     }
-function alertChallenge(event) {
-    event.preventDefault(); // Empêche la page de sauter en haut
-    alert("La première édition de MIJO Business Challenge, c'est pour bientôt !");
-}
+
+    function alertChallenge(event) {
+        event.preventDefault();
+        alert("La première édition de MIJO Business Challenge, c'est pour bientôt !");
+    }
 </script>
+</body>
+</html>
