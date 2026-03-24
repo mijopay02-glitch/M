@@ -505,7 +505,7 @@
                 usdSection.innerHTML = `
                     <div class="balance-value">${soldeUsdAffiche} $</div>
                     <div style="font-size: 0.8em; margin-top: 2px;">
-                        <span class="badge-active">✓ Activé</span> 🏆
+                        <span class="badge-active">✓ Activé</span> 
                     </div>
                 `;
             } else {
@@ -523,18 +523,51 @@
         }
 
         // --- NOUVEAU : Fonction d'activation du compte USD ---
-        function initiateUSDActivation(event) {
-            event.preventDefault();
-            // Ici, tu mettras ton appel fetch vers Cloudflare pour débiter les 200 Gdes
-            // et mettre à jour Airtable. En attendant, on redirige vers ta page de change
-            // ou on affiche une alerte.
-            const confirmer = confirm("Activer le compte Stable USD pour 200 Gdes ?");
-            if (confirmer) {
-                // Remplacer l'alerte par la redirection vers ton worker Cloudflare
-                alert("Redirection vers la passerelle d'activation Cloudflare...");
-                // window.location.href = "activation-usd.html";
+        async function initiateUSDActivation(event) {
+    event.preventDefault();
+    
+    const userString = localStorage.getItem('user');
+    if (!userString) return logout();
+    const user = JSON.parse(userString);
+
+    const confirmer = confirm("Activer le compte Stable USD pour 200 Gdes ?");
+    
+    if (confirmer) {
+        // Désactiver le bouton pendant le chargement
+        const btn = event.target;
+        const originalText = btn.innerText;
+        btn.innerText = "Traitement...";
+        btn.style.pointerEvents = "none";
+
+        try {
+            const response = await fetch("https://steep-cell-904c.mijocomplexe.workers.dev/", { // REMPLACER PAR VOTRE URL CLOUDFLARE
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    senderId: user.userId, // ID de l'utilisateur (ex: MIJO-XXXX)
+                    amount: 200
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert("Félicitations ! Votre compte USD est désormais actif.");
+                // Mettre à jour le localStorage avec les nouvelles données renvoyées
+                localStorage.setItem("user", JSON.stringify(data.user));
+                updateUI(data.user);
+            } else {
+                alert("Erreur : " + (data.error || "Impossible d'activer le compte."));
             }
+        } catch (error) {
+            console.error("Erreur connexion:", error);
+            alert("Erreur de connexion au serveur.");
+        } finally {
+            btn.innerText = originalText;
+            btn.style.pointerEvents = "auto";
         }
+    }
+}
 
         // ==========================================
         // 4. FONCTIONS PRINCIPALES
