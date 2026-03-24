@@ -10,7 +10,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>MIJO PAY - Accueil</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
     <style>
         :root {
             --primary-color: #2196F3;
@@ -34,7 +33,6 @@
             padding: 20px;
         }
 
-        /* Modals */
         .modal {
             position: fixed;
             z-index: 10;
@@ -68,7 +66,6 @@
             cursor: pointer;
         }
         
-        /* Top Section */
         .top-section {
             background-color: var(--primary-color);
             color: white;
@@ -78,11 +75,6 @@
             border-bottom-right-radius: 25px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             position: relative;
-        }
-
-        .top-section.premium {
-            background-color: #f7a62d; 
-            background-image: linear-gradient(135deg, #f7a62d, #ffc977); 
         }
 
         .user-header {
@@ -122,39 +114,75 @@
             margin-top: -5px;
         }
 
-        .balance-display {
-            margin-top: 20px;
+        /* --- NOUVEAUX STYLES POUR LE DOUBLE COMPTE --- */
+        .balance-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 10px 0;
+        }
+
+        .balance-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .balance-divider {
+            width: 1px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.3);
+            margin: 0 10px;
+        }
+
+        .balance-currency {
+            font-size: 0.75em;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
         }
 
         .balance-value {
-            font-size: 2.8em;
+            font-size: 2em; /* Réduit un peu pour tenir sur deux colonnes */
             font-weight: 700;
         }
 
-        .balance-label {
-            font-size: 1.1em;
-            opacity: 0.8;
+        .usd-activate-btn {
+            background-color: #fff;
+            color: var(--primary-color);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.75em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
         }
 
-        .refresh-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            transition: transform 0.3s ease-in-out;
+        .usd-activate-btn:active {
+            transform: scale(0.95);
         }
 
-        .refresh-icon:active {
-            transform: rotate(-360deg);
+        .badge-active {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 0.6em;
+            padding: 2px 6px;
+            border-radius: 10px;
+            vertical-align: middle;
+            margin-right: 3px;
         }
+        /* --------------------------------------------- */
 
-        .refresh-icon img {
-            filter: invert(1);
-        }
-
-        /* Action Buttons */
         .action-buttons-container {
             display: flex;
             justify-content: space-around;
@@ -183,11 +211,6 @@
             background-color: var(--card-bg);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 8px;
-            transition: transform 0.2s;
-        }
-
-        .action-button:active {
-            transform: scale(0.95);
         }
 
         .action-button .icon img {
@@ -199,8 +222,25 @@
             font-size: 0.8em;
             font-weight: 500;
         }
+        
+        .refresh-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            transition: transform 0.3s ease-in-out;
+        }
 
-        /* Middle Section & Flyers */
+        .refresh-icon:active {
+            transform: rotate(-360deg);
+        }
+
+        .refresh-icon img {
+            filter: invert(1);
+        }
+
         .middle-section {
             padding: 50px 20px 20px;
         }
@@ -232,7 +272,6 @@
             display: block;
         }
 
-        /* Footer Menu */
         .footer-menu {
             background-color: var(--card-bg);
             border-top: 1px solid #ddd;
@@ -264,10 +303,15 @@
             font-size: 1.5em;
             margin-bottom: 5px;
         }
+        
+        .top-section.premium {
+            background-color: #f7a62d; 
+            background-image: linear-gradient(135deg, #f7a62d, #ffc977); 
+        }
     </style>
 </head>
 <body>
-    
+      
     <script src="https://cdn.botpress.cloud/webchat/v3.6/inject.js"></script>
     <script src="https://files.bpcontent.cloud/2026/03/12/19/20260312195118-4JAFKC3E.js" defer></script>
     
@@ -288,12 +332,25 @@
         </div>
         
         <div class="balance-display">
-            <div class="balance-label">Solde MIJO</div>
-            <div style="display: flex; align-items: center; justify-content: center;">
-                <div class="balance-value" id="balance">0 G</div>
-                <a href="#" id="refresh-button" class="refresh-icon" onclick="refreshBalance(event)">
-                    <img src="https://i.postimg.cc/KYTvhNzv/mise-a-jour.png" alt="Rafraîchir" style="width: 20px; height: 20px; margin-left: 10px;">
-                </a>
+            <div class="balance-container">
+                <div class="balance-col">
+                    <span class="balance-currency">Solde HTG</span>
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <div class="balance-value" id="balance">0 G</div>
+                        <a href="#" id="refresh-button" class="refresh-icon" onclick="refreshBalance(event)">
+                            <img src="https://i.postimg.cc/KYTvhNzv/mise-a-jour.png" alt="Rafraîchir" style="width: 18px; height: 18px; margin-left: 5px;">
+                        </a>
+                    </div>
+                </div>
+
+                <div class="balance-divider"></div>
+
+                <div class="balance-col">
+                    <span class="balance-currency">Compte Stable USD</span>
+                    <div id="usd-section" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                        <div class="balance-value">...</div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -338,27 +395,28 @@
 
     <div class="container middle-section">
         <div class="flyer-list">
-            <a href="#" class="flyer-item" onclick="alertChallenge(event)">
-                <img src="https://i.postimg.cc/0N8mW562/a-realistic-business-flyer-design-with-b-w4vf-CSRr-R3u-GWd-RDF15Dg-31Hsgpj-MQq6f6ns-ENc-Hgfg-sd.jpg" alt="MIJO Business Challenge">
-            </a>
+              <a href="#" class="flyer-item" onclick="alertChallenge(event)">
+        <img src="https://i.postimg.cc/0N8mW562/a-realistic-business-flyer-design-with-b-w4vf-CSRr-R3u-GWd-RDF15Dg-31Hsgpj-MQq6f6ns-ENc-Hgfg-sd.jpg" alt="MIJO Business Challenge">
+    </a>
             <a href="premium.html" class="flyer-item">
                 <img src="https://i.postimg.cc/d1zd7P3j/a-dynamic-promotional-poster-for-mijo-pa-O35h-A-9v-Sn-Srwi5-Blvd-PPA-l-NGj-Bdlx-TM6i-XCh8xxmma-A.jpg" alt="MIJO PAY Premium">
             </a>
-            <a href="#" id="flyer-helper" class="flyer-item">
-                <img src="https://i.postimg.cc/P5M6b1Sp/a-clean-modern-digital-flyer-advertiseme-U-h-NVf-UQp2-Gce-Fap-Boa-Bw-kt-LI72-WMR1e3f16-TBRJCi-Q.jpg" alt="MIJO Business Helper">
-            </a>
+        
+      <a href="#" id="flyer-helper" class="flyer-item">
+        <img src="https://i.postimg.cc/P5M6b1Sp/a-clean-modern-digital-flyer-advertiseme-U-h-NVf-UQp2-Gce-Fap-Boa-Bw-kt-LI72-WMR1e3f16-TBRJCi-Q.jpg" alt="MIJO Business Helper">
+      </a>
             <a href="carte.html" class="flyer-item">
                 <img src="https://i.postimg.cc/9MtzNzV8/a-sleek-product-shot-advertisement-showc-dn-RNraq-ARUKf5-Ux-FUEwg-Lw-6-Kqvf-UE-SKy-J-f-CNb-OJdnw.jpg" alt="Carte physique MIJO">
             </a>
             <a href="cine.html" class="flyer-item">
-                <img src="https://i.postimg.cc/yY7wGmrd/Gemini-Generated-Image-um8tpmum8tpmum8t.png" alt="MIJO CINE">
-            </a>
+      <img src="https://i.postimg.cc/yY7wGmrd/Gemini-Generated-Image-um8tpmum8tpmum8t.png" alt="MIJO CINE">
+    </a>
             <a href="don.html" class="flyer-item">
                 <img src="https://i.postimg.cc/BbWhW5Sj/a-heartwarming-digital-flyer-advertiseme-spq1z-TDTRQu8-Sq7x-Ylr6-Q-wiy-Jeq-U-QQi-RWIPp-E5-VCyw.jpg" alt="Faire un don">
             </a>
         </div>
     </div>
-
+    
     <div id="transferModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="hideTransferModal()">&times;</span>
@@ -375,318 +433,284 @@
             <span class="icon">🏠</span>
             <span>Accueil</span>
         </a>
+        
         <a href="store.html" class="menu-btn">
             <span class="icon">🛒</span>
             <span>Store</span>
         </a>
     </nav>
 
-<script>
-    // ==========================================
-    // 1. CONSTANTES ET CONFIGURATION
-    // ==========================================
-    const loginUrl = "https://mijopay.mijocomplexe.workers.dev/";
-    const transferUrl = "https://transfert.mijocomplexe.workers.dev/";
-    const GLOBAL_HISTORY_WORKER_URL = "https://transaction.mijocomplexe.workers.dev/";
-    const storeScriptUrl = "https://mijopaypremium.mijocomplexe.workers.dev/";
+    <script>
+        // ==========================================
+        // 1. CONSTANTES ET CONFIGURATION
+        // ==========================================
+        const loginUrl = "https://mijopay.mijocomplexe.workers.dev/";
+        const transferUrl = "https://transfert.mijocomplexe.workers.dev/";
+        const GLOBAL_HISTORY_WORKER_URL = "https://transaction.mijocomplexe.workers.dev/";
+        const storeScriptUrl = "https://mijopaypremium.mijocomplexe.workers.dev/";
 
-    // ==========================================
-    // 2. INITIALISATION ET VÉRIFICATION SESSION
-    // ==========================================
-    window.addEventListener('DOMContentLoaded', () => { checkUserSession(); });
-    window.addEventListener('pageshow', () => { checkUserSession(); });
-
-    function checkUserSession() {
-        const storedUser = localStorage.getItem('user');
-        console.log("État LocalStorage:", storedUser);
-
-        if (!storedUser) {
-            console.log("Pas de session, redirection...");
-            window.location.href = 'index.html';
-            return;
-        }
-
-        try {
-            const user = JSON.parse(storedUser);
-            if (user && (user.userId || user.id)) {
-                updateUI(user);
-            } else {
-                throw new Error("Données utilisateur invalides");
-            }
-        } catch (e) {
-            console.error("Erreur session:", e);
-            logout();
-        }
-    }
-
-    // ==========================================
-    // 3. MISE À JOUR DE L'INTERFACE (UI)
-    // ==========================================
-    function updateUI(user) {
-        const topSection = document.querySelector('.top-section');
-        
-        const displayName = user.NomUtilisateur || user["Nom Utilisateur"] || user.nom || "Utilisateur";
-        const displayEmail = user.Email || user.email || "Email non renseigné";
-        
-        document.getElementById('username').innerText = displayName;
-        document.getElementById('email').innerText = displayEmail;
-
-        let solde = parseFloat(user.Solde);
-        if (isNaN(solde)) { solde = 0; }
-        
-        let soldeAffiche = (solde % 1 === 0) ? solde : solde.toFixed(2);
-        document.getElementById('balance').innerText = soldeAffiche + " G";
-
-        if (user.EstPremium) {
-            topSection.classList.add('premium');
-        } else {
-            topSection.classList.remove('premium');
-        }
-    }
-
-    // ==========================================
-    // 4. FONCTIONS PRINCIPALES
-    // ==========================================
-    function logout() {
-        localStorage.removeItem('user');
-        window.location.href = 'index.html';
-    }
-
-    async function refreshBalance(event) {
-        if (event) event.preventDefault();
-        
-        const refreshButton = document.getElementById('refresh-button');
-        const userString = localStorage.getItem('user');
-
-        if (!userString) return logout();
-
-        const user = JSON.parse(userString);
-        
-        refreshButton.style.opacity = '0.5';
-        refreshButton.style.pointerEvents = 'none';
-        document.getElementById('balance').innerText = "...";
-
-        try {
-            const requestData = {
-                action: "login_user_by_card",
-                cardNumber: user.NumeroCarte,
-                password: user.CIN 
-            };
-
-            const response = await fetch(loginUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(requestData)
-            });
-
-            const data = await response.json();
-
-            if (data.success && data.user) {
-                data.user.userId = user.userId; 
-                localStorage.setItem("user", JSON.stringify(data.user));
-                updateUI(data.user);
-                console.log("Données rafraîchies via API");
-            } else {
-                updateUI(user);
-                console.warn("Échec refresh API:", data.error);
-            }
-        } catch (error) {
-            console.error("Erreur réseau refresh:", error);
-            updateUI(user);
-            alert("Erreur de connexion. Vérifiez internet.");
-        } finally {
-            refreshButton.style.opacity = '1';
-            refreshButton.style.pointerEvents = 'auto';
-        }
-    }
-
-    function showTransferModal() {
-        document.getElementById('transferModal').style.display = 'flex';
-    }
-
-    function hideTransferModal() {
-        document.getElementById('transferModal').style.display = 'none';
-        document.getElementById('transferMessage').innerText = "";
-    }
-
-    async function handleTransfer() {
-        const amountInput = document.getElementById('transferAmount');
-        const emailInput = document.getElementById('recipientEmail');
-        const messageBox = document.getElementById('transferMessage');
-        
-        const amount = parseFloat(amountInput.value);
-        const recipientEmail = emailInput.value;
-
-        if (!amount || amount <= 0 || !recipientEmail) {
-            messageBox.style.color = 'red';
-            messageBox.innerText = "Veuillez vérifier le montant et l'email.";
-            return;
-        }
-
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (!user) return logout();
-
-        messageBox.style.color = '#2196F3';
-        messageBox.innerText = "Traitement en cours...";
-
-        try {
-            const response = await fetch(transferUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    action: "automatic_transfer",
-                    senderId: user.userId,
-                    recipientEmail: recipientEmail,
-                    amount: amount
-                })
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                let soldeNettoye = parseFloat(data.newBalance);
-                user.Solde = Math.round(soldeNettoye * 100) / 100;
-                
-                localStorage.setItem('user', JSON.stringify(user));
-                updateUI(user);
-                
-                saveToHistory('Transfert', amount, 'Envoyé', recipientEmail, user.userId);
-
-                messageBox.style.color = 'green';
-                messageBox.innerText = "Transfert réussi !";
-                
-                amountInput.value = "";
-                emailInput.value = "";
-                
-                setTimeout(hideTransferModal, 2000);
-            } else {
-                messageBox.style.color = 'red';
-                messageBox.innerText = data.error || "Échec du transfert.";
-            }
-        } catch (error) {
-            console.error(error);
-            messageBox.style.color = 'red';
-            messageBox.innerText = "Erreur de connexion serveur.";
-        }
-    }
-
-    async function activatePremium() {
-        const confirmation = confirm("Voulez-vous activer MIJO Premium ? Prix : 150 Gdes/mois.");
-        if (!confirmation) return;
-
-        const userString = localStorage.getItem('user');
-        if (!userString) return logout();
-        
-        const user = JSON.parse(userString);
-        const premiumPrice = 150;
-
-        try {
-            const response = await fetch(storeScriptUrl, {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: "pay_premium",
-                    senderId: user.userId,
-                    amount: premiumPrice
-                })
-            });
-
-            const data = await response.json();
-
-            if (data.success && data.user) {
-                user.Solde = data.user.Solde; 
-                user.EstPremium = true;
-                
-                localStorage.setItem('user', JSON.stringify(user));
-                updateUI(user);
-                
-                saveToHistory("Abonnement Premium", premiumPrice, "Succès", "MIJO PAY", user.userId);
-                await saveToGlobalKV(user.userId, premiumPrice, user.NomUtilisateur);
-                
-                alert("Premium activé avec succès !");
-            } else {
-                alert(data.error || "Échec de l'activation.");
-            }
-        } catch (error) {
-            console.error(error);
-            alert("Erreur de connexion.");
-        }
-    }
-
-    // ==========================================
-    // 5. FONCTIONS UTILITAIRES & EVENTS
-    // ==========================================
-    function checkAffiliateStatus() {
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (!user) return logout();
-        
-        if (user.Estafilia) {
-            window.location.href = 'mijo-affiliate-promo.html';
-        } else {
-            window.location.href = 'mijo-affiliate-inscription.html';
-        }
-    }
-
-    function saveToHistory(type, amount, status, recipient, userId) {
-        const historyKey = `transactions_${userId}`;
-        let history = JSON.parse(localStorage.getItem(historyKey)) || [];
-        
-        history.push({
-            id: Date.now(),
-            type: type,
-            amount: amount,
-            status: status,
-            recipient: recipient,
-            date: new Date().toLocaleDateString()
+        // ==========================================
+        // 2. INITIALISATION ET VÉRIFICATION SESSION
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            checkUserSession();
         });
-        
-        localStorage.setItem(historyKey, JSON.stringify(history));
-    }
 
-    async function saveToGlobalKV(senderId, amount, senderName) {
-        try {
-            await fetch(GLOBAL_HISTORY_WORKER_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: "transfer_money",
-                    amount: amount,
-                    senderId: senderId, 
-                    senderName: senderName,
-                    recipient: "MIJO CINÉ / Entreprise",
-                    type: "Abonnement Premium CINÉ"
-                })
-            });
-            console.log("Historique global mis à jour");
-        } catch (error) {
-            console.error("Erreur KV Global:", error);
-        }
-    }
+        window.addEventListener('pageshow', () => {
+            checkUserSession();
+        });
 
-    const flyerHelper = document.getElementById('flyer-helper');
-    if (flyerHelper) {
-        flyerHelper.addEventListener('click', function(event) {
-            event.preventDefault();
-            const userString = localStorage.getItem('user');
-            
-            if (!userString) {
-                alert("Veuillez vous connecter.");
-                return window.location.href = 'index.html';
+        function checkUserSession() {
+            const storedUser = localStorage.getItem('user');
+            if (!storedUser) {
+                window.location.href = 'index.html';
+                return;
             }
+
+            try {
+                const user = JSON.parse(storedUser);
+                if (user && (user.userId || user.id)) {
+                    updateUI(user);
+                } else {
+                    throw new Error("Données invalides");
+                }
+            } catch (e) {
+                logout();
+            }
+        }
+
+        // ==========================================
+        // 3. MISE À JOUR DE L'INTERFACE (UI)
+        // ==========================================
+        function updateUI(user) {
+            const topSection = document.querySelector('.top-section');
             
-            const user = JSON.parse(userString);
+            const displayName = user.NomUtilisateur || user["Nom Utilisateur"] || user.nom || "Utilisateur";
+            const displayEmail = user.Email || user.email || "Email non renseigné";
+            
+            document.getElementById('username').innerText = displayName;
+            document.getElementById('email').innerText = displayEmail;
+
+            // Gestion Solde Gourdes
+            let solde = parseFloat(user.Solde);
+            if (isNaN(solde)) { solde = 0; }
+            let soldeAffiche = (solde % 1 === 0) ? solde : solde.toFixed(2);
+            document.getElementById('balance').innerText = soldeAffiche + " G";
+
+            // --- NOUVEAU : Gestion du Solde USD ---
+            const usdSection = document.getElementById('usd-section');
+            if (user.Compte_US_Actif === true || user.Compte_US_Actif === "true") {
+                let soldeUsd = parseFloat(user.Solde_USD) || 0;
+                let soldeUsdAffiche = soldeUsd.toFixed(2);
+                usdSection.innerHTML = `
+                    <div class="balance-value">${soldeUsdAffiche} $</div>
+                    <div style="font-size: 0.8em; margin-top: 2px;">
+                        <span class="badge-active">✓ Activé</span> 🏆
+                    </div>
+                `;
+            } else {
+                usdSection.innerHTML = `
+                    <div class="balance-value" style="font-size: 1.5em; opacity: 0.7; margin-bottom: 5px;">🔒</div>
+                    <a href="#" class="usd-activate-btn" onclick="initiateUSDActivation(event)">Activer (200 G)</a>
+                `;
+            }
+
             if (user.EstPremium) {
-                window.location.href = "helper.html";
+                topSection.classList.add('premium');
             } else {
-                alert("Réservé aux membres Premium.");
+                topSection.classList.remove('premium');
             }
-        });
-    }
+        }
 
-    function alertChallenge(event) {
-        event.preventDefault();
-        alert("La première édition de MIJO Business Challenge, c'est pour bientôt !");
-    }
-</script>
+        // --- NOUVEAU : Fonction d'activation du compte USD ---
+        function initiateUSDActivation(event) {
+            event.preventDefault();
+            // Ici, tu mettras ton appel fetch vers Cloudflare pour débiter les 200 Gdes
+            // et mettre à jour Airtable. En attendant, on redirige vers ta page de change
+            // ou on affiche une alerte.
+            const confirmer = confirm("Activer le compte Stable USD pour 200 Gdes ?");
+            if (confirmer) {
+                // Remplacer l'alerte par la redirection vers ton worker Cloudflare
+                alert("Redirection vers la passerelle d'activation Cloudflare...");
+                // window.location.href = "activation-usd.html";
+            }
+        }
+
+        // ==========================================
+        // 4. FONCTIONS PRINCIPALES
+        // ==========================================
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        async function refreshBalance(event) {
+            if (event) event.preventDefault();
+            
+            const refreshButton = document.getElementById('refresh-button');
+            const userString = localStorage.getItem('user');
+
+            if (!userString) return logout();
+
+            const user = JSON.parse(userString);
+            refreshButton.style.opacity = '0.5';
+            refreshButton.style.pointerEvents = 'none';
+
+            try {
+                const requestData = {
+                    action: "login_user_by_card",
+                    cardNumber: user.NumeroCarte,
+                    password: user.CIN 
+                };
+
+                const response = await fetch(loginUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(requestData)
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.user) {
+                    data.user.userId = user.userId; 
+                    localStorage.setItem("user", JSON.stringify(data.user));
+                    updateUI(data.user);
+                } else {
+                    updateUI(user);
+                }
+            } catch (error) {
+                console.error("Erreur réseau refresh:", error);
+                updateUI(user);
+            } finally {
+                refreshButton.style.opacity = '1';
+                refreshButton.style.pointerEvents = 'auto';
+            }
+        }
+
+        function showTransferModal() {
+            document.getElementById('transferModal').style.display = 'flex';
+        }
+
+        function hideTransferModal() {
+            document.getElementById('transferModal').style.display = 'none';
+            document.getElementById('transferMessage').innerText = "";
+        }
+
+        async function handleTransfer() {
+            // (Code existant pour le transfert conservé tel quel)
+            const amountInput = document.getElementById('transferAmount');
+            const emailInput = document.getElementById('recipientEmail');
+            const messageBox = document.getElementById('transferMessage');
+            
+            const amount = parseFloat(amountInput.value);
+            const recipientEmail = emailInput.value;
+
+            if (!amount || amount <= 0 || !recipientEmail) {
+                messageBox.style.color = 'red';
+                messageBox.innerText = "Veuillez vérifier le montant et l'email.";
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) return logout();
+
+            messageBox.style.color = '#2196F3';
+            messageBox.innerText = "Traitement en cours...";
+
+            try {
+                const response = await fetch(transferUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        action: "automatic_transfer",
+                        senderId: user.userId,
+                        recipientEmail: recipientEmail,
+                        amount: amount
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    let soldeNettoye = parseFloat(data.newBalance);
+                    user.Solde = Math.round(soldeNettoye * 100) / 100;
+                    localStorage.setItem('user', JSON.stringify(user));
+                    updateUI(user);
+                    
+                    saveToHistory('Transfert', amount, 'Envoyé', recipientEmail, user.userId);
+
+                    messageBox.style.color = 'green';
+                    messageBox.innerText = "Transfert réussi !";
+                    amountInput.value = "";
+                    emailInput.value = "";
+                    setTimeout(hideTransferModal, 2000);
+                } else {
+                    messageBox.style.color = 'red';
+                    messageBox.innerText = data.error || "Échec du transfert.";
+                }
+            } catch (error) {
+                console.error(error);
+                messageBox.style.color = 'red';
+                messageBox.innerText = "Erreur de connexion serveur.";
+            }
+        }
+
+        // ==========================================
+        // 5. FONCTIONS UTILITAIRES & EVENTS
+        // ==========================================
+
+        function checkAffiliateStatus() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) return logout();
+            
+            if (user.Estafilia) {
+                window.location.href = 'mijo-affiliate-promo.html';
+            } else {
+                window.location.href = 'mijo-affiliate-inscription.html';
+            }
+        }
+
+        function saveToHistory(type, amount, status, recipient, userId) {
+            const historyKey = `transactions_${userId}`;
+            let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+            
+            history.push({
+                id: Date.now(),
+                type: type,
+                amount: amount,
+                status: status,
+                recipient: recipient,
+                date: new Date().toLocaleDateString()
+            });
+            
+            localStorage.setItem(historyKey, JSON.stringify(history));
+        }
+
+        const flyerHelper = document.getElementById('flyer-helper');
+        if (flyerHelper) {
+            flyerHelper.addEventListener('click', function(event) {
+                event.preventDefault();
+                const userString = localStorage.getItem('user');
+                
+                if (!userString) {
+                    alert("Veuillez vous connecter.");
+                    return window.location.href = 'index.html';
+                }
+                
+                const user = JSON.parse(userString);
+                if (user.EstPremium) {
+                    window.location.href = "helper.html";
+                } else {
+                    alert("Réservé aux membres Premium.");
+                }
+            });
+        }
+
+        function alertChallenge(event) {
+            event.preventDefault(); 
+            alert("La première édition de MIJO Business Challenge, c'est pour bientôt !");
+        }
+    </script>
 </body>
 </html>
