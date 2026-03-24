@@ -202,7 +202,25 @@
 
     <script>
         let currentMode = 'buy';
-        const RATE = 135.00;
+        // Remplace l'ancienne constante RATE par ces deux-là
+const RATE_BUY = 138.00;  // Le prix pour acheter 1$
+const RATE_SELL = 132.00; // Le prix pour vendre 1$
+
+function updateCalculation() {
+    const amount = parseFloat(document.getElementById('input-amount').value) || 0;
+    const display = document.getElementById('display-result');
+    const rateBadge = document.querySelector('.rate-badge');
+    
+    if (currentMode === 'buy') {
+        // Achat : On divise les Gourdes par le taux fort
+        display.innerText = (amount / RATE_BUY).toFixed(2) + " $";
+        rateBadge.innerText = `Taux d'achat : 1 USD = ${RATE_BUY} HTG`;
+    } else {
+        // Vente : On multiplie les Dollars par le taux faible
+        display.innerText = (amount * RATE_SELL).toLocaleString() + " G";
+        rateBadge.innerText = `Taux de vente : 1 USD = ${RATE_SELL} HTG`;
+    }
+}
 
         function setMode(mode) {
             currentMode = mode;
@@ -212,19 +230,7 @@
             document.getElementById('unit-from').innerText = mode === 'buy' ? 'HTG' : 'USD';
             document.getElementById('label-from').innerText = mode === 'buy' ? 'Montant en Gourdes' : 'Montant en Dollars';
             
-            updateCalculation();
-        }
-
-        function updateCalculation() {
-            const amount = parseFloat(document.getElementById('input-amount').value) || 0;
-            const display = document.getElementById('display-result');
-            
-            if (currentMode === 'buy') {
-                display.innerText = (amount / RATE).toFixed(2) + " $";
-            } else {
-                display.innerText = (amount * RATE).toLocaleString() + " G";
-            }
-        }
+          
 
         async function handleExchange() {
             const amount = parseFloat(document.getElementById('input-amount').value);
