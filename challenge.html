@@ -42,7 +42,6 @@
             margin: 0 auto;
         }
 
-        /* Badge pour la condition USD */
         .usd-alert {
             background: #fff5f5;
             border: 1px solid #feb2b2;
@@ -107,24 +106,35 @@
             font-weight: bold;
         }
 
+        /* NOUVEAUX STYLES FORMULAIRE */
+        .form-section {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            text-align: left;
+            max-width: 800px;
+            margin: 0 auto 40px auto;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #2d3748; }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #edf2f7;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            background: #f8fafc;
+        }
+
         .highlight-date {
             font-size: 26px;
             color: #e53e3e;
             font-weight: 800;
             margin-top: 10px;
         }
-
-        .cta-section {
-            background: #1a202c;
-            color: white;
-            padding: 50px;
-            border-radius: 24px;
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .cta-section h2 { margin-bottom: 15px; font-size: 28px; }
-        .cta-section p { color: #a0aec0; margin-bottom: 30px; }
 
         .btn {
             background: #38a169;
@@ -137,11 +147,13 @@
             display: inline-block;
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(56, 161, 105, 0.4);
+            border: none;
+            width: 100%;
+            cursor: pointer;
         }
 
-        .btn:hover { background: #2f855a; transform: scale(1.05); }
+        .btn:hover { background: #2f855a; transform: scale(1.02); }
 
-        /* Animations */
         .hidden-animate {
             opacity: 0;
             transform: translateY(30px);
@@ -156,6 +168,7 @@
         @media (max-width: 600px) {
             .hero h1 { font-size: 32px; }
             .grid { grid-template-columns: 1fr; }
+            .form-section { padding: 25px; }
         }
     </style>
 </head>
@@ -174,7 +187,6 @@
         </div>
 
         <div class="grid">
-            <!-- CARTE GRAND GAGNANT -->
             <div class="card premium hidden-animate">
                 <h2>👑 Gwo Gayan (Champion)</h2>
                 <ul>
@@ -186,7 +198,6 @@
                 </ul>
             </div>
 
-            <!-- CARTE AUTRES RÉCOMPENSES -->
             <div class="card hidden-animate">
                 <h2>🎁 Plizyè Lòt Prim</h2>
                 <ul>
@@ -198,7 +209,6 @@
                 </ul>
             </div>
 
-            <!-- CARTE DATES -->
             <div class="card hidden-animate">
                 <h2>📅 Dat Enpòtan</h2>
                 <p style="font-size: 14px; margin-bottom: 5px;">Limit Enskripsyon :</p>
@@ -208,13 +218,70 @@
             </div>
         </div>
 
-        <div class="cta-section hidden-animate">
-            <h2>🚀 Pare pou w kòmanse?</h2>
-            <p>Se sèl chans ou pou w jwenn sipò MIJO PAY bezwen an. Voye lide w la kounye a!</p>
+        <!-- FORMULAIRE INTÉGRÉ (Remplace la cta-section) -->
+        <div class="form-section hidden-animate">
+            <h2 style="margin-bottom: 25px; text-align: center;">🚀 Soumèt Pwojè w la</h2>
             
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLScPcCp9z2D05DZULtAD5OBRtDuZI05MSG7rxLlOiIrY3kBrqg/viewform?usp=dialog" target="_blank" class="btn">
-                Soumèt Pwojè m nan
-            </a>
+            <form id="challengeForm" onsubmit="envoyerProjet(event)">
+                <div class="form-group">
+                    <label>Non konplè ou</label>
+                    <input type="text" id="fullname" placeholder="Ex: Jean Philippe" required>
+                </div>
+
+                <div class="form-group">
+                    <label>ID MIJO PAY ou</label>
+                    <input type="text" id="mijoId" placeholder="Ex: MIJO-1234" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Nimewo WhatsApp</label>
+                    <input type="text" id="whatsapp" placeholder="Ex: +509..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>Nan ki vil ou rete?</label>
+                    <input type="text" id="ville" placeholder="Port-au-Prince, Cap-Haitien..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>Parle de ton projet</label>
+                    <textarea id="projectDetails" rows="5" placeholder="Esplike lide biznis ou an detay..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Kisa pwojè sa ap rezoud nan kominote w la?</label>
+                    <textarea id="problemSolved" rows="3" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Kisa w bezwen pou kòmanse?</label>
+                    <input type="text" id="needs" placeholder="Materyèl, local, stock..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>Ki bidjè w (Montant estimé)?</label>
+                    <input type="text" id="budget" placeholder="Ex: 50,000 HTG" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Poukisa se ou ki dwe ganyen?</label>
+                    <input type="text" id="whyMe" required>
+                </div>
+
+                <!-- OBLIGATION USD -->
+                <div style="background: #fff5f5; border: 2px solid #feb2b2; padding: 20px; border-radius: 12px; margin: 25px 0;">
+                    <p style="color: #c53030; font-weight: 800; margin-bottom: 5px;">🚨 OBLIGASYON USD</p>
+                    <p style="font-size: 0.85rem; color: #4a5568; margin-bottom: 15px;">
+                        Mwen konprann si m ganyen prim an USD, m ap sèlman resevwa l si kont entènasyonal mwen aktive sou MIJO PAY. Si m pa fè sa anvan 9 Me, m ap pèdi kach la.
+                    </p>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 700;">
+                        <input type="checkbox" required> MWEN DAKÒ ✅
+                    </label>
+                </div>
+
+                <button type="submit" id="submit-btn" class="btn">VOYE PWOJÈ M NAN</button>
+                <div id="response-message" style="margin-top:20px; text-align:center; font-weight:700; display:none;"></div>
+            </form>
         </div>
 
         <footer class="footer hidden-animate">
@@ -224,6 +291,7 @@
     </div>
 
     <script>
+        // ANIMATIONS
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
@@ -234,6 +302,50 @@
 
         const hiddenElements = document.querySelectorAll('.hidden-animate');
         hiddenElements.forEach((el) => observer.observe(el));
+
+        // ENVOI GOOGLE DRIVE
+        async function envoyerProjet(event) {
+            event.preventDefault();
+
+            const btn = document.getElementById('submit-btn');
+            const msg = document.getElementById('response-message');
+            
+            btn.disabled = true;
+            btn.innerText = "Anrejistreman...";
+
+            const googleFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSc6npO2YSaPR2uidljG2FHS_BJeFB-9nevIyTyGY44A-P1C3g/formResponse";
+
+            const formData = new FormData();
+            formData.append('entry.1795537608', document.getElementById('fullname').value);
+            formData.append('entry.2143473446', document.getElementById('mijoId').value);
+            formData.append('entry.66450711', document.getElementById('whatsapp').value);
+            formData.append('entry.108855109', document.getElementById('ville').value);
+            formData.append('entry.1481983172', document.getElementById('projectDetails').value);
+            formData.append('entry.1999515061', document.getElementById('problemSolved').value);
+            formData.append('entry.873452533', document.getElementById('needs').value);
+            formData.append('entry.775000183', document.getElementById('budget').value);
+            formData.append('entry.88595232', document.getElementById('whyMe').value);
+
+            try {
+                await fetch(googleFormUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: formData
+                });
+
+                msg.style.display = "block";
+                msg.style.color = "#38a169";
+                msg.innerHTML = "✅ Felisitasyon! Pwojè w la voye ak siksè. Bòn chans!";
+                document.getElementById('challengeForm').style.display = "none";
+
+            } catch (e) {
+                msg.style.display = "block";
+                msg.style.color = "#e53e3e";
+                msg.innerText = "❌ Erreyur koneksyon. Tanpri re-eseye.";
+                btn.disabled = false;
+                btn.innerText = "VOYE PWOJÈ M NAN";
+            }
+        }
     </script>
 
 </body>
