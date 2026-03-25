@@ -316,37 +316,34 @@
             const googleFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSc6npO2YSaPR2uidljG2FHS_BJeFB-9nevIyTyGY44A-P1C3g/formResponse";
 
             const formData = new FormData();
-            formData.append('entry.1795537608', document.getElementById('fullname').value);
-            formData.append('entry.2143473446', document.getElementById('mijoId').value);
-            formData.append('entry.66450711', document.getElementById('whatsapp').value);
-            formData.append('entry.108855109', document.getElementById('ville').value);
-            formData.append('entry.1481983172', document.getElementById('projectDetails').value);
-            formData.append('entry.1999515061', document.getElementById('problemSolved').value);
-            formData.append('entry.873452533', document.getElementById('needs').value);
-            formData.append('entry.775000183', document.getElementById('budget').value);
-            formData.append('entry.88595232', document.getElementById('whyMe').value);
+        // MAPPING EXACT SELON TON LIEN
+        formData.append('entry.1795537608', document.getElementById('fullname').value);
+        formData.append('entry.2143473446', document.getElementById('whatsapp').value);
+        formData.append('entry.66450711', document.getElementById('ville').value);
+        formData.append('entry.108855109', document.getElementById('nomProjet').value); // Correspond à ta case "MIJO"
+        formData.append('entry.1481983172', document.getElementById('details').value);
+        formData.append('entry.1999515061', document.getElementById('solution').value);
+        formData.append('entry.873452533', document.getElementById('needs').value);
+        formData.append('entry.775000183', document.getElementById('budget').value);
+        formData.append('entry.88595232', document.getElementById('why').value);
 
-            try {
-                await fetch(googleFormUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: formData
-                });
-
-                msg.style.display = "block";
-                msg.style.color = "#38a169";
-                msg.innerHTML = "✅ Felisitasyon! Pwojè w la voye ak siksè. Bòn chans!";
-                document.getElementById('challengeForm').style.display = "none";
-
-            } catch (e) {
-                msg.style.display = "block";
-                msg.style.color = "#e53e3e";
-                msg.innerText = "❌ Erreyur koneksyon. Tanpri re-eseye.";
-                btn.disabled = false;
-                btn.innerText = "VOYE PWOJÈ M NAN";
-            }
+        try {
+            await fetch(googleUrl, { method: 'POST', mode: 'no-cors', body: formData });
+            msg.style.display = "block";
+            msg.style.backgroundColor = "#c6f6d5";
+            msg.style.color = "#22543d";
+            msg.innerHTML = "🎉 Felisitasyon! Pwojè w la anrejistre sou Drive MIJO PAY. <br>Bòn chans!";
+            document.getElementById('challengeForm').style.display = "none";
+        } catch (e) {
+            msg.style.display = "block";
+            msg.style.backgroundColor = "#fed7d7";
+            msg.style.color = "#822727";
+            msg.innerText = "❌ Gen yon ti pwoblèm. Tcheke entènèt ou epi re-eseye.";
+            btn.disabled = false;
+            btn.innerText = "VOYE PWOJÈ M NAN";
         }
-    </script>
+    }
+</script>
 
 </body>
 </html>
