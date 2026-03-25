@@ -185,7 +185,6 @@
         </div>
 
         <div class="grid">
-            <!-- CARTES DE RÉCOMPENSES (Identiques à ton original) -->
             <div class="card premium hidden-animate">
                 <h2>👑 Gwo Gayan (Champion)</h2>
                 <ul>
@@ -216,7 +215,7 @@
             </div>
         </div>
 
-        <!-- FORMULAIRE CORRIGÉ -->
+        <!-- FORMULAIRE -->
         <div class="form-section hidden-animate">
             <h2 style="margin-bottom: 25px; text-align: center;">🚀 Soumèt Pwojè w la</h2>
             
@@ -279,7 +278,6 @@
                 </div>
 
                 <button type="submit" id="submit-btn" class="btn">VOYE PWOJÈ M NAN</button>
-                <div id="response-message" style="margin-top:20px; text-align:center; font-weight:700; display:none; padding: 20px; border-radius: 12px;"></div>
             </form>
         </div>
 
@@ -300,52 +298,50 @@
 
         document.querySelectorAll('.hidden-animate').forEach((el) => observer.observe(el));
 
-        // ENVOI VERS GOOGLE DRIVE
+        // ENVOI VERS GOOGLE FORMS
         async function envoyerProjet(event) {
-    event.preventDefault(); // Empêche la page de se recharger
-    
-    const btn = document.getElementById('submit-btn');
-    btn.disabled = true;
-    btn.innerText = "Anrejistreman...";
-
-    // URL CORRECTE POUR L'ENVOI
-    const googleUrl = "https://docs.google.com/forms/d/e/1FAIpQLSc6npO2YSaPR2uidljG2FHS_BJeFB-9nevIyTyGY44A-P1C3g/formResponse";
-
-    const formData = new FormData();
-    
-    // On utilise les IDs que tu as fournis dans ton lien de test
-    formData.append('entry.1795537608', document.getElementById('fullname').value);
-    formData.append('entry.2143473446', document.getElementById('whatsapp').value);
-    formData.append('entry.66450711', document.getElementById('ville').value);
-    formData.append('entry.108855109', document.getElementById('nomProjet').value);
-    formData.append('entry.1481983172', document.getElementById('details').value);
-    formData.append('entry.1999515061', document.getElementById('solution').value);
-    formData.append('entry.873452533', document.getElementById('needs').value);
-    formData.append('entry.775000183', document.getElementById('budget').value);
-    formData.append('entry.88595232', document.getElementById('why').value);
-
-    try {
-        // Envoi silencieux vers Google
-        await fetch(googleUrl, {
-            method: 'POST',
-            mode: 'no-cors', // Très important pour éviter les erreurs de sécurité
-            body: formData
-        });
-
-        // Message de succès personnalisé sur TON site
-        document.getElementById('challengeForm').innerHTML = `
-            <div style="text-align:center; padding:40px; background:#f0fff4; border-radius:20px;">
-                <h2 style="color:#2f855a; margin-bottom:10px;">✅ Siksè!</h2>
-                <p>Pwojè w la anrejistre pou MIJO Business Challenge la.</p>
-                <p style="margin-top:20px;"><a href="index.html" style="color:#38a169; font-weight:700;">Tounen nan akèy</a></p>
-            </div>`;
+            event.preventDefault();
             
-    } catch (error) {
-        alert("Gen yon pwoblèm. Tcheke koneksyon w.");
-        btn.disabled = false;
-        btn.innerText = "VOYE PWOJÈ M NAN";
-    }
-}
+            const btn = document.getElementById('submit-btn');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = "Anrejistreman...";
+
+            const googleUrl = "https://docs.google.com/forms/d/e/1FAIpQLSc6npO2YSaPR2uidljG2FHS_BJeFB-9nevIyTyGY44A-P1C3g/formResponse";
+            const formData = new FormData();
+            
+            // Mapping exact avec tes Entry IDs
+            formData.append('entry.1795537608', document.getElementById('fullname').value);
+            formData.append('entry.2143473446', document.getElementById('whatsapp').value);
+            formData.append('entry.66450711', document.getElementById('ville').value);
+            formData.append('entry.108855109', document.getElementById('nomProjet').value);
+            formData.append('entry.1481983172', document.getElementById('details').value);
+            formData.append('entry.1999515061', document.getElementById('solution').value);
+            formData.append('entry.873452533', document.getElementById('needs').value);
+            formData.append('entry.775000183', document.getElementById('budget').value);
+            formData.append('entry.88595232', document.getElementById('why').value);
+
+            try {
+                await fetch(googleUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: formData
+                });
+
+                // Remplacer le formulaire par le message de succès
+                document.getElementById('challengeForm').innerHTML = `
+                    <div style="text-align:center; padding:40px; background:#f0fff4; border-radius:20px;">
+                        <h2 style="color:#2f855a; margin-bottom:10px;">✅ Siksè!</h2>
+                        <p>Felisitasyon! Pwojè w la anrejistre pou MIJO Business Challenge la.</p>
+                        <p style="margin-top:20px;"><a href="index.html" style="color:#38a169; font-weight:700; text-decoration:none;">Tounen nan akèy</a></p>
+                    </div>`;
+                    
+            } catch (error) {
+                alert("Gen yon pwoblèm koneksyon. Re-eseye ankò.");
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
     </script>
 </body>
 </html>
