@@ -223,99 +223,78 @@
             <h2 style="margin-bottom: 25px; text-align: center;">🚀 Soumèt Pwojè w la</h2>
             
             <form id="challengeForm" onsubmit="envoyerProjet(event)">
-                <div class="form-group">
-                    <label>Non konplè ou</label>
-                    <input type="text" id="fullname" placeholder="Ex: Jean Philippe" required>
-                </div>
+               <div class="form-group">
+                <label>Nom Complet *</label>
+                <input type="text" id="fullname" placeholder="Non ak Siyati" required>
+            </div>
 
-                <div class="form-group">
-                    <label>ID MIJO PAY ou</label>
-                    <input type="text" id="mijoId" placeholder="Ex: MIJO-1234" required>
-                </div>
+            <div class="form-group">
+                <label>Numéro WhatsApp *</label>
+                <input type="text" id="whatsapp" placeholder="Ex: 33886402" required>
+            </div>
 
-                <div class="form-group">
-                    <label>Nimewo WhatsApp</label>
-                    <input type="text" id="whatsapp" placeholder="Ex: +509..." required>
-                </div>
+            <div class="form-group">
+                <label>Ville de résidence</label>
+                <input type="text" id="ville" placeholder="Kote w rete">
+            </div>
 
-                <div class="form-group">
-                    <label>Nan ki vil ou rete?</label>
-                    <input type="text" id="ville" placeholder="Port-au-Prince, Cap-Haitien..." required>
-                </div>
+            <h3 class="section-title">Votre Projet</h3>
 
-                <div class="form-group">
-                    <label>Parle de ton projet</label>
-                    <textarea id="projectDetails" rows="5" placeholder="Esplike lide biznis ou an detay..." required></textarea>
-                </div>
+            <div class="form-group">
+                <label>Nom du Projet *</label>
+                <input type="text" id="nomProjet" placeholder="Kijan pwojè a rele?" required>
+            </div>
 
-                <div class="form-group">
-                    <label>Kisa pwojè sa ap rezoud nan kominote w la?</label>
-                    <textarea id="problemSolved" rows="3" required></textarea>
-                </div>
+            <div class="form-group">
+                <label>Parle-nous de ton projet *</label>
+                <textarea id="details" rows="5" placeholder="Esplike lide biznis la an detay..." required></textarea>
+            </div>
 
-                <div class="form-group">
-                    <label>Kisa w bezwen pou kòmanse?</label>
-                    <input type="text" id="needs" placeholder="Materyèl, local, stock..." required>
-                </div>
+            <div class="form-group">
+                <label>Quel problème ton projet résout-il ? *</label>
+                <textarea id="solution" rows="3" placeholder="Kisa l ap ranje nan zòn ou?" required></textarea>
+            </div>
 
-                <div class="form-group">
-                    <label>Ki bidjè w (Montant estimé)?</label>
-                    <input type="text" id="budget" placeholder="Ex: 50,000 HTG" required>
-                </div>
+            <div class="form-group">
+                <label>De quoi as-tu besoin pour commencer ? *</label>
+                <input type="text" id="needs" placeholder="Materyèl, kòb, elatriye..." required>
+            </div>
 
-                <div class="form-group">
-                    <label>Poukisa se ou ki dwe ganyen?</label>
-                    <input type="text" id="whyMe" required>
-                </div>
+            <div class="form-group">
+                <label>Montant estimé pour lancer le projet *</label>
+                <input type="text" id="budget" placeholder="Ex: 50,000 HTG" required>
+            </div>
 
-                <!-- OBLIGATION USD -->
-                <div style="background: #fff5f5; border: 2px solid #feb2b2; padding: 20px; border-radius: 12px; margin: 25px 0;">
-                    <p style="color: #c53030; font-weight: 800; margin-bottom: 5px;">🚨 OBLIGASYON USD</p>
-                    <p style="font-size: 0.85rem; color: #4a5568; margin-bottom: 15px;">
-                        Mwen konprann si m ganyen prim an USD, m ap sèlman resevwa l si kont entènasyonal mwen aktive sou MIJO PAY. Si m pa fè sa anvan 9 Me, m ap pèdi kach la.
-                    </p>
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 700;">
-                        <input type="checkbox" required> MWEN DAKÒ ✅
-                    </label>
-                </div>
+            <div class="form-group">
+                <label>Pourquoi devrais-tu être le Champion MIJO ? *</label>
+                <textarea id="why" rows="3" placeholder="Poukisa se ou ki dwe ganyen?" required></textarea>
+            </div>
 
-                <button type="submit" id="submit-btn" class="btn">VOYE PWOJÈ M NAN</button>
-                <div id="response-message" style="margin-top:20px; text-align:center; font-weight:700; display:none;"></div>
-            </form>
-        </div>
+            <div class="usd-box">
+                <p><strong>🚨 OBLIGASYON USD :</strong> Mwen konprann si m ganyen prim an USD, m ap sèlman resevwa l si kont entènasyonal mwen aktive sou MIJO PAY anvan 9 Me 2026. Si m pa fè sa, m ap pèdi kach la.</p>
+                <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; font-weight: 800;">
+                    <input type="checkbox" required style="width: 20px; height: 20px;"> MWEN DAKÒ ✅
+                </label>
+            </div>
 
-        <footer class="footer hidden-animate">
-            <p>© 2026 MIJO COMPLEXE | www.mijopay.com</p>
-        </footer>
-
+            <button type="submit" id="submit-btn" class="btn">VOYE PWOJÈ M NAN</button>
+            <div id="response-message"></div>
+        </form>
     </div>
+</div>
 
-    <script>
-        // ANIMATIONS
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('show-animate');
-                }
-            });
-        }, { threshold: 0.1 });
+<script>
+    async function envoyerProjet(event) {
+        event.preventDefault();
+        const btn = document.getElementById('submit-btn');
+        const msg = document.getElementById('response-message');
+        
+        btn.disabled = true;
+        btn.innerText = "Anrejistreman...";
 
-        const hiddenElements = document.querySelectorAll('.hidden-animate');
-        hiddenElements.forEach((el) => observer.observe(el));
+        const googleUrl = "https://docs.google.com/forms/d/e/1FAIpQLSc6npO2YSaPR2uidljG2FHS_BJeFB-9nevIyTyGY44A-P1C3g/formResponse";
 
-        // ENVOI GOOGLE DRIVE
-        async function envoyerProjet(event) {
-            event.preventDefault();
-
-            const btn = document.getElementById('submit-btn');
-            const msg = document.getElementById('response-message');
-            
-            btn.disabled = true;
-            btn.innerText = "Anrejistreman...";
-
-            const googleFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSc6npO2YSaPR2uidljG2FHS_BJeFB-9nevIyTyGY44A-P1C3g/formResponse";
-
-            const formData = new FormData();
+        const formData = new FormData();
         // MAPPING EXACT SELON TON LIEN
         formData.append('entry.1795537608', document.getElementById('fullname').value);
         formData.append('entry.2143473446', document.getElementById('whatsapp').value);
