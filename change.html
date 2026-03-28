@@ -32,6 +32,7 @@
             border-bottom-left-radius: 30px;
             border-bottom-right-radius: 30px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-sizing: border-box;
         }
 
         .back-btn {
@@ -51,6 +52,7 @@
             padding: 25px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            box-sizing: border-box;
         }
 
         .rate-badge {
@@ -116,6 +118,7 @@
             font-weight: 600;
             outline: none;
             transition: 0.3s;
+            box-sizing: border-box;
         }
 
         input:focus { border-color: var(--primary); }
@@ -164,6 +167,7 @@
         }
 
         .btn-confirm:active { transform: scale(0.98); }
+        .btn-confirm:disabled { background: #9E9E9E; cursor: not-allowed; box-shadow: none; }
     </style>
 </head>
 <body>
@@ -175,7 +179,7 @@
     </div>
 
     <div class="exchange-card">
-        <center><div class="rate-badge">Taux du jour : 1 USD = 135.00 HTG</div></center>
+        <center><div class="rate-badge">Taux d'achat : 1 USD = 138.00 HTG</div></center>
 
         <div class="tabs">
             <div class="tab active" id="tab-buy" onclick="setMode('buy')">Acheter $</div>
@@ -183,7 +187,7 @@
         </div>
 
         <div class="input-group">
-            <label id="label-from">Montant à convertir</label>
+            <label id="label-from">Montant en Gourdes</label>
             <div class="input-wrapper">
                 <input type="number" id="input-amount" placeholder="0.00" oninput="updateCalculation()">
                 <span class="currency-label" id="unit-from">HTG</span>
@@ -202,25 +206,26 @@
 
     <script>
         let currentMode = 'buy';
-        // Remplace l'ancienne constante RATE par ces deux-là
-const RATE_BUY = 138.00;  // Le prix pour acheter 1$
-const RATE_SELL = 132.00; // Le prix pour vendre 1$
+        
+        // Les taux pour assurer le profit de MIJO PAY
+        const RATE_BUY = 138.00;  // Le client donne 138 HTG pour recevoir 1$
+        const RATE_SELL = 132.00; // Le client donne 1$ pour recevoir 132 HTG
 
-function updateCalculation() {
-    const amount = parseFloat(document.getElementById('input-amount').value) || 0;
-    const display = document.getElementById('display-result');
-    const rateBadge = document.querySelector('.rate-badge');
-    
-    if (currentMode === 'buy') {
-        // Achat : On divise les Gourdes par le taux fort
-        display.innerText = (amount / RATE_BUY).toFixed(2) + " $";
-        rateBadge.innerText = `Taux d'achat : 1 USD = ${RATE_BUY} HTG`;
-    } else {
-        // Vente : On multiplie les Dollars par le taux faible
-        display.innerText = (amount * RATE_SELL).toLocaleString() + " G";
-        rateBadge.innerText = `Taux de vente : 1 USD = ${RATE_SELL} HTG`;
-    }
-}
+        function updateCalculation() {
+            const amount = parseFloat(document.getElementById('input-amount').value) || 0;
+            const display = document.getElementById('display-result');
+            const rateBadge = document.querySelector('.rate-badge');
+            
+            if (currentMode === 'buy') {
+                // Achat : On divise les Gourdes par le taux fort
+                display.innerText = (amount / RATE_BUY).toFixed(2) + " $";
+                rateBadge.innerText = `Taux d'achat : 1 USD = ${RATE_BUY} HTG`;
+            } else {
+                // Vente : On multiplie les Dollars par le taux faible
+                display.innerText = (amount * RATE_SELL).toLocaleString() + " G";
+                rateBadge.innerText = `Taux de vente : 1 USD = ${RATE_SELL} HTG`;
+            }
+        }
 
         function setMode(mode) {
             currentMode = mode;
@@ -230,21 +235,32 @@ function updateCalculation() {
             document.getElementById('unit-from').innerText = mode === 'buy' ? 'HTG' : 'USD';
             document.getElementById('label-from').innerText = mode === 'buy' ? 'Montant en Gourdes' : 'Montant en Dollars';
             
-          
+            // Réinitialiser les champs quand on change de mode
+            document.getElementById('input-amount').value = '';
+            document.getElementById('display-result').innerText = mode === 'buy' ? '0.00 $' : '0 G';
+            updateCalculation();
+        }
 
         async function handleExchange() {
             const amount = parseFloat(document.getElementById('input-amount').value);
             const user = JSON.parse(localStorage.getItem('user'));
 
             if (!amount || amount <= 0) return alert("Entrez un montant valide.");
+            if (!user) return alert("Veuillez vous connecter.");
 
-            if (confirm(`Confirmer la conversion de ${amount} ${currentMode === 'buy' ? 'HTG' : 'USD'} ?`)) {
+            // Message de confirmation dynamique
+            const confirmMsg = currentMode === 'buy' 
+                ? `Voulez-vous échanger ${amount} HTG contre ${(amount/RATE_BUY).toFixed(2)} USD ?`
+                : `Voulez-vous échanger ${amount} USD contre ${(amount*RATE_SELL).toFixed(0)} HTG ?`;
+
+            if (confirm(confirmMsg)) {
                 const btn = document.getElementById('btn-action');
                 btn.innerText = "Traitement...";
                 btn.disabled = true;
 
                 try {
-                    const response = await fetch("https://votre-worker-change.workers.dev/", {
+                    // N'oublie pas de remplacer par l'URL de TON Worker Cloudflare
+                    const response = await fetch("https://change.mijocomplexe.workers.dev/", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -257,8 +273,8 @@ function updateCalculation() {
                     const data = await response.json();
                     if (data.success) {
                         alert("Opération réussie ! Vos soldes ont été mis à jour.");
-                        localStorage.setItem('user', JSON.stringify(data.user));
-                        window.location.href = 'home.html';
+                        localStorage.setItem('user', JSON.stringify(data.user)); // Met à jour le cache local
+                        window.location.href = 'home.html'; // Retour au menu principal
                     } else {
                         alert("Erreur: " + data.error);
                     }
