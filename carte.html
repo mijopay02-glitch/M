@@ -41,43 +41,68 @@
 
         h2 { text-align: center; margin-bottom: 30px; }
 
-        /* --- SÉLECTION DES CARTES --- */
         .card-selector {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            overflow-x: auto;
-            padding: 10px 5px;
-        }
+        display: flex;
+        gap: 20px;
+        margin-bottom: 30px;
+        justify-content: center;
+        padding: 10px;
+    }
 
-        .card-option {
-            flex: 1;
-            min-width: 200px;
-            height: 130px;
-            border-radius: 15px;
-            padding: 20px;
-            color: white;
-            cursor: pointer;
-            position: relative;
-            transition: 0.3s;
-            border: 3px solid transparent;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+    .card-option {
+        flex: 1;
+        max-width: 220px;
+        cursor: pointer;
+        transition: transform 0.3s ease, filter 0.3s ease;
+        position: relative;
+        text-align: center;
+    }
 
-        .card-option.standard { background: var(--gold-card); }
-        .card-option.black { background: var(--black-card); }
+    /* Style de l'image de la carte */
+    .card-img {
+        width: 100%;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        border: 3px solid transparent;
+        transition: 0.3s;
+    }
 
-        .card-option.active {
-            border-color: var(--primary);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-        }
+    /* Effet quand la carte est sélectionnée */
+    .card-option.active .card-img {
+        border-color: #2196F3;
+        transform: scale(1.05);
+        box-shadow: 0 8px 20px rgba(33, 150, 243, 0.4);
+    }
 
-        .card-option h3 { margin: 0; font-size: 1.1rem; }
-        .card-option .brand { position: absolute; bottom: 15px; right: 20px; font-weight: bold; opacity: 0.8; }
-        .card-option .status { font-size: 0.7rem; background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 10px; width: fit-content; }
+    /* Effet "Carte bloquée" si pas éligible */
+    .card-option.locked {
+        filter: grayscale(1) opacity(0.6);
+        cursor: not-allowed;
+    }
+
+    .card-label {
+        margin-top: 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: block;
+    }
+</style>
+
+<!-- ... dans le body ... -->
+
+<div class="card-selector">
+    <!-- Carte Standard -->
+    <div class="card-option active" id="opt-standard" onclick="selectCard('Standard', this)">
+        <img src="https://i.postimg.cc/TP39HrLg/Gemini-Generated-Image-2s1biy2s1biy2s1b.png" alt="Carte Standard" class="card-img">
+        <span class="card-label">Carte Standard (Gratuit)</span>
+    </div>
+
+    <!-- Carte Black -->
+    <div class="card-option" id="opt-black" onclick="selectCard('Black', this)">
+        <img src="https://i.postimg.cc/0jwMz4Ln/Gemini-Generated-Image-flbpnaflbpnaflbp.png" alt="Black Card" class="card-img">
+        <span class="card-label">Black Card (Premium)</span>
+    </div>
+</div>
 
         /* --- FORMULAIRE --- */
         .form-card {
@@ -198,28 +223,27 @@
 
     // 2. Sélection de la carte
     function selectCard(type, element) {
-        const btn = document.getElementById('submitBtn');
-        const lockMsg = document.getElementById('lockMessage');
+    const btn = document.getElementById('submitBtn');
+    const lockMsg = document.getElementById('lockMessage');
 
-        // Retirer la classe active de toutes les cartes
-        document.querySelectorAll('.card-option').forEach(card => card.classList.remove('active'));
-        
-        // Ajouter la classe active à la carte cliquée
-        element.classList.add('active');
-        document.getElementById('cardType').value = type;
-
-        // Logique de blocage pour la Black Card
-        if (type === 'Black' && !isInternationalActive) {
-            btn.disabled = true;
-            btn.style.opacity = "0.5";
-            lockMsg.style.display = "block";
-        } else {
-            btn.disabled = false;
-            btn.style.opacity = "1";
-            lockMsg.style.display = "none";
-        }
+    // Si on clique sur Black mais pas activé, on empêche la sélection visuelle
+    if (type === 'Black' && !isInternationalActive) {
+        element.classList.add('locked'); // Optionnel: ajoute un effet visuel gris
+        btn.disabled = true;
+        btn.style.opacity = "0.5";
+        lockMsg.style.display = "block";
+        return; // On arrête là
     }
 
+    // Gestion de la sélection normale
+    document.querySelectorAll('.card-option').forEach(card => card.classList.remove('active'));
+    element.classList.add('active');
+    document.getElementById('cardType').value = type;
+    
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    lockMsg.style.display = "none";
+}
     // 3. Soumission du formulaire
     document.getElementById('cardForm').addEventListener('submit', async function(event) {
         event.preventDefault();
