@@ -1,151 +1,266 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-      <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-K43FXR4W');</script>
-<!-- End Google Tag Manager -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3573655486794825"
-     crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demande de carte MIJO PAY</title>
+    <title>Demande de Carte - MIJO PAY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #2196F3;
+            --black-card: linear-gradient(135deg, #2c3e50, #000000);
+            --gold-card: linear-gradient(135deg, #1565C0, #2196F3);
+            --text: #333;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
+            color: var(--text);
         }
-        .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+        .header {
             width: 100%;
-            max-width: 400px;
-            box-sizing: border-box;
-        }
-        h2 {
+            background: white;
+            padding: 20px;
             text-align: center;
-            color: #333;
-            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
         }
-        .form-group {
-            margin-bottom: 15px;
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            padding-bottom: 50px;
         }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-weight: bold;
+
+        h2 { text-align: center; margin-bottom: 30px; }
+
+        /* --- SÉLECTION DES CARTES --- */
+        .card-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding: 10px 5px;
         }
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
+
+        .card-option {
+            flex: 1;
+            min-width: 200px;
+            height: 130px;
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            cursor: pointer;
+            position: relative;
+            transition: 0.3s;
+            border: 3px solid transparent;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        .btn-submit {
+
+        .card-option.standard { background: var(--gold-card); }
+        .card-option.black { background: var(--black-card); }
+
+        .card-option.active {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .card-option h3 { margin: 0; font-size: 1.1rem; }
+        .card-option .brand { position: absolute; bottom: 15px; right: 20px; font-weight: bold; opacity: 0.8; }
+        .card-option .status { font-size: 0.7rem; background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 10px; width: fit-content; }
+
+        /* --- FORMULAIRE --- */
+        .form-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 0.85rem; color: #666; margin-bottom: 5px; }
+        input {
             width: 100%;
             padding: 12px;
-            background-color: #4CAF50;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            outline: none;
+        }
+        input:focus { border-color: var(--primary); }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            margin-top: 10px;
+            transition: 0.3s;
         }
-        .btn-submit:hover {
-            background-color: #45a049;
+
+        .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
+
+        .lock-msg {
+            color: #d32f2f;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
         }
     </style>
 </head>
 <body>
-       <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K43FXR4W"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+
+<div class="header">
+    <h1 style="margin:0; font-size: 1.4rem; color: var(--primary);">MIJO PAY</h1>
+</div>
 
 <div class="container">
-    <h2>Demande de carte MIJO PAY</h2>
-    <form id="cardForm">
-        <div class="form-group">
-            <label for="name">Nom</label>
-            <input type="text" id="name" required>
+    <h2>Choisissez votre carte</h2>
+
+    <div class="card-selector">
+        <!-- Carte Standard -->
+        <div class="card-option standard active" onclick="selectCard('Standard', this)">
+            <div class="status">Disponible</div>
+            <h3>Carte Standard</h3>
+            <div class="brand">VISA</div>
         </div>
-        <div class="form-group">
-            <label for="cardNumber">Numéro de carte</label>
-            <input type="text" id="cardNumber" required>
+
+        <!-- Carte Black -->
+        <div class="card-option black" onclick="selectCard('Black', this)">
+            <div class="status" id="black-status">Vérification...</div>
+            <h3>Black Card</h3>
+            <div class="brand">MASTERCARD</div>
         </div>
-        <div class="form-group">
-            <label for="cin">CIN</label>
-            <input type="text" id="cin" required>
-        </div>
-        <div class="form-group">
-            <label for="deliveryAddress">Adresse de livraison</label>
-            <input type="text" id="deliveryAddress" required>
-        </div>
-        <button type="submit" class="btn-submit">Soumettre</button>
-    </form>
+    </div>
+
+    <div class="form-card">
+        <form id="cardForm">
+            <input type="hidden" id="cardType" value="Standard">
+            
+            <div class="form-group">
+                <label>Nom complet sur la carte</label>
+                <input type="text" id="name" placeholder="Ex: Jean Dupont" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Numéro de téléphone MIJO PAY</label>
+                <input type="text" id="phone" placeholder="Ex: +509..." required>
+            </div>
+
+            <div class="form-group">
+                <label>Numéro d'identification (CIN/NIF)</label>
+                <input type="text" id="cin" placeholder="Votre numéro d'identité" required>
+            </div>
+
+            <div class="form-group">
+                <label>Adresse de livraison complète</label>
+                <input type="text" id="deliveryAddress" placeholder="Rue, Ville, Zone" required>
+            </div>
+
+            <div id="lockMessage" class="lock-msg">⚠️ Activez votre compte International (USD) pour commander la Black Card.</div>
+            
+            <button type="submit" class="btn-submit" id="submitBtn">Commander ma carte</button>
+        </form>
+    </div>
 </div>
 
 <script>
+    let isInternationalActive = false;
+
+    // 1. Initialisation au chargement
+    window.onload = function() {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+            // Vérifier si le compte international est activé
+            isInternationalActive = (user.Compte_US_Actif === true || user.Compte_US_Actif === "true");
+            
+            document.getElementById('black-status').innerText = isInternationalActive ? "Éligible" : "Indisponible";
+            document.getElementById('name').value = `${user.Prenom || ''} ${user.Nom || ''}`;
+        }
+    };
+
+    // 2. Sélection de la carte
+    function selectCard(type, element) {
+        const btn = document.getElementById('submitBtn');
+        const lockMsg = document.getElementById('lockMessage');
+
+        // Retirer la classe active de toutes les cartes
+        document.querySelectorAll('.card-option').forEach(card => card.classList.remove('active'));
+        
+        // Ajouter la classe active à la carte cliquée
+        element.classList.add('active');
+        document.getElementById('cardType').value = type;
+
+        // Logique de blocage pour la Black Card
+        if (type === 'Black' && !isInternationalActive) {
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+            lockMsg.style.display = "block";
+        } else {
+            btn.disabled = false;
+            btn.style.opacity = "1";
+            lockMsg.style.display = "none";
+        }
+    }
+
+    // 3. Soumission du formulaire
     document.getElementById('cardForm').addEventListener('submit', async function(event) {
         event.preventDefault();
 
-        const name = document.getElementById('name').value;
-        const cardNumber = document.getElementById('cardNumber').value;
-        const cin = document.getElementById('cin').value;
-        const deliveryAddress = document.getElementById('deliveryAddress').value;
-
-        // Validation des champs
-        if (!name || !cardNumber || !cin || !deliveryAddress) {
-            alert("Données manquantes dans la requête");
-            return;
-        }
-
-        alert("Envoi en cours.. Veuillez patienter");
-
-        // Format the data to match the App Script's expected URL parameters
-        const params = new URLSearchParams({
-            nom: name,
-            numeroCarte: cardNumber,
-            cin: cin,
-            adresseLivraison: deliveryAddress
-        });
+        const btn = document.getElementById('submitBtn');
+        const originalText = btn.innerText;
         
+        const data = {
+            nom: document.getElementById('name').value,
+            typeCarte: document.getElementById('cardType').value,
+            phone: document.getElementById('phone').value,
+            cin: document.getElementById('cin').value,
+            adresseLivraison: document.getElementById('deliveryAddress').value
+        };
+
+        btn.innerText = "Traitement...";
+        btn.disabled = true;
+
+        const params = new URLSearchParams(data);
         const URL = 'https://script.google.com/macros/s/AKfycbwe_A_LIX9r0nHB5cECZyv7sKPVS1OSRJ__uFiKjx3hi8etvKv87R2k9Jlh8DBLNg/exec'; 
+
         try {
             const response = await fetch(URL, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded' // Change the content type
-                },
-                body: params.toString() // Send the URL-encoded data
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params.toString()
             });
 
-            // The App Script returns "OK" as a text response
             const result = await response.text();
             
             if (result === 'OK') {
-                alert("Votre demande de carte a été soumise avec succès !");
-                // Clear the form
-                document.getElementById('cardForm').reset();
+                alert("Félicitations ! Votre demande de carte " + data.typeCarte + " a été reçue. Un agent va vous contacter.");
+                window.location.href = 'home.html';
             } else {
-                alert("Échec de la soumission de la demande. Réponse du serveur : " + result);
+                alert("Erreur : " + result);
             }
         } catch (error) {
-            alert("Erreur de connexion. Veuillez réessayer.");
-            console.error('Error:', error);
+            alert("Erreur réseau. Réessayez.");
+        } finally {
+            btn.innerText = originalText;
+            btn.disabled = false;
         }
     });
 </script>
