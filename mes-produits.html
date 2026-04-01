@@ -119,7 +119,7 @@
         try {
             // FORMULE SÉCURISÉE : On cherche l'ID record dans le champ de lien 'Acheteur'
             // SEARCH() est parfait pour fouiller dans les champs de type "Link to another record"
-            const formula = encodeURIComponent(`SEARCH('${user.userId}', ARRAYJOIN({Acheteur}))`);
+            const formula = encodeURIComponent(`SEARCH('${user.NomUtilisateur}', ARRAYJOIN({Acheteur}))`);
 
             const response = await fetch(`https://api.airtable.com/v0/${BASE_ID}/Transactions?filterByFormula=${formula}`, {
                 headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }
