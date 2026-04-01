@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIJO PAY - Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --text-color: #333;
+            --light-text-color: #999;
+            --bg-color: #f0f2f5;
+            --card-bg: #fff;
+            --secondary-color: #4CAF50;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-bottom: 70px;
+        }
+
+        .container {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .product-section {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .product-list {
+            display: grid;
+            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+        
+        .product-item {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .product-item img {
+            width: 100%;
+            height: 200px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            object-fit: cover;
+        }
+
+        .product-item h3 {
+            margin-top: 0;
+            color: var(--text-color);
+            font-size: 1.1em;
+        }
+
+        .product-item p {
+            color: var(--light-text-color);
+            margin: 5px 0;
+        }
+
+        .product-item button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+        
+        .product-item button:hover {
+            background-color: #1976D2;
+        }
+        
+        .product-item.free {
+            background-color: #E8F5E9;
+            border: 1px solid #C8E6C9;
+        }
+        
+        .free-btn {
+            background-color: var(--secondary-color);
+        }
+
+        .footer-menu {
+            background-color: var(--card-bg);
+            border-top: 1px solid #ddd;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .menu-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--light-text-color);
+            font-size: 0.7em;
+            text-decoration: none;
+            flex: 1;
+            padding: 5px 0;
+        }
+
+        .menu-btn.active {
+            color: var(--primary-color);
+        }
+
+        .menu-btn .icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        #cart-container {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        #cart-icon {
+            background-color: transparent;
+            width: 50px;
+            height: 50px;
+            display: block;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        #cart-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+        }
+        
+        #cart-icon:hover {
+            transform: scale(1.1);
+        }
+
+        #cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.7em;
+            font-weight: bold;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        #cart-content {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-top: 10px;
+            width: 250px;
+            display: none;
+        }
+
+        #cart-content.visible {
+            display: block;
+        }
+
+        #cart-items {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 10px 0;
+        }
+
+        #cart-items li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        #cart-total {
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        #checkout-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .premium-section {
+            background-color: #e3f2fd;
+            border: 2px solid #2196F3;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png" alt="Logo MIJO" style="height: 30px; margin-right: 10px; vertical-align: middle;"> MIJO STORE</h1>
+
+        <div class="product-section">
+            <h2>Applications</h2>
+            <div class="product-list">
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png" alt="Image Mijo apk">
+                    <h3>Mijo apk pro</h3>
+                    <p>Prix : 500 G</p>
+                    <button onclick="addToCart('Mijo apk pro', 500, 'Mij-1', 'Lien_ici', 'recfcTPvpeweReklm')">Ajouter au panier</button>
+                </div>
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/mrcMcsX3/a-modern-logo-design-featuring-the-text-i-Ves-Kt-CZQnux-BX0-IRGSxj-A-4fwh-Yy-Yv-R-OCPy-Nt-Oo-Cm-Q.jpg" alt="Image Hai IA">
+                    <h3>Hai IA</h3>
+                    <p>Prix : 200 G</p>
+                    <button onclick="addToCart('Hai IA', 200, 'Hai-2', 'Lien_ici', 'recfcTPvpeweReklm')">Ajouter au panier</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-section">
+            <h2>Ebooks</h2>
+            <div class="product-list">
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/qMtVXW87/a-clean-modern-book-cover-design-blendin-k-Efi-VZax-Rr2-Z6-q2n-HBHf-Q-TU-he66-MQ4-GNnncvt-Br-W8g.jpg" alt="Image Chimie">
+                    <h3>Chimie industrielle</h3>
+                    <p>Prix : 250 G</p>
+                    <button onclick="addToCart('Chimie industrielle', 250, 'Chi-3', 'Lien_ici', 'recfcTPvpeweReklm')">Ajouter au panier</button>
+                </div>
+                <div class="product-item">
+                    <img src="https://i.postimg.cc/vHfmQ1cM/a-clean-modern-book-cover-illustration-f-o79-YAln7-Tnao8fxz6p9-Pd-Q-g0-P-NGZVTcu08-SDb-QHh-Yy-Q.jpg" alt="Image Stock">
+                    <h3>Gestion de Stock</h3>
+                    <p>Prix : 200 G</p>
+                    <button onclick="addToCart('Gestion de Stock', 200, 'Ges-4', 'Lien_ici', 'recfcTPvpeweReklm')">Ajouter au panier</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tu peux ajouter d'autres sections de la même manière en spécifiant le sellerId -->
+    </div>
+
+    <div id="cart-container">
+        <div id="cart-icon">
+            <img src="https://i.postimg.cc/25Knxt2f/shopping-cart-1105049-1280.png" alt="Panier">
+            <span id="cart-count">0</span>
+        </div>
+        <div id="cart-content">
+            <h3>Mon Panier</h3>
+            <ul id="cart-items"></ul>
+            <p id="cart-total">Total: 0 G</p>
+            <button id="checkout-btn" style="display:none;">Procéder à l'achat</button>
+        </div>
+    </div>
+
+    <nav class="footer-menu">
+        <a href="home.html" class="menu-btn"><span>🏠</span><span>Accueil</span></a>
+        <a href="historique.html" class="menu-btn"><span>📜</span><span>Historique</span></a>
+        <a href="store.html" class="menu-btn active"><span>🛒</span><span>Store</span></a>
+        <a href="mes-produits.html" class="menu-btn"><span>📦</span><span>Mes Produits</span></a>
+    </nav>
+
+    <script>
+        const storeScriptUrl = "https://store.mijocomplexe.workers.dev/";
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const cartContent = document.getElementById('cart-content');
+        const cartIcon = document.getElementById('cart-icon');
+        const cartCount = document.getElementById('cart-count');
+        const cartItemsList = document.getElementById('cart-items');
+        const cartTotalDisplay = document.getElementById('cart-total');
+
+        let cart = [];
+
+        function renderCart() {
+            cartItemsList.innerHTML = '';
+            let total = 0;
+            if (cart.length === 0) {
+                cartItemsList.innerHTML = '<li>Panier vide</li>';
+                checkoutBtn.style.display = 'none';
+            } else {
+                cart.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>${item.name}</span>
+                        <span>${item.price} G</span>
+                        <button onclick="removeFromCart('${item.code}')">X</button>
+                    `;
+                    cartItemsList.appendChild(li);
+                    total += item.price;
+                });
+                checkoutBtn.style.display = 'block';
+            }
+            cartCount.innerText = cart.length;
+            cartTotalDisplay.innerText = `Total: ${total} G`;
+        }
+
+        // Fonction mise à jour pour accepter le sellerId
+        function addToCart(name, price, code, link, sellerId) {
+            const existingItem = cart.find(item => item.code === code);
+            if (existingItem) {
+                alert("Déjà dans le panier.");
+                return;
+            }
+            cart.push({ name, price, code, link, sellerId }); 
+            renderCart();
+            alert(`${name} ajouté !`);
+        }
+
+        function removeFromCart(code) {
+            cart = cart.filter(item => item.code !== code);
+            renderCart();
+        }
+
+        cartIcon.addEventListener('click', () => cartContent.classList.toggle('visible'));
+
+        checkoutBtn.addEventListener('click', async () => {
+            const userString = localStorage.getItem('user');
+            if (!userString) {
+                alert("Veuillez vous connecter.");
+                return;
+            }
+            const user = JSON.parse(userString);
+            
+            alert("Traitement de l'achat...");
+
+            // On boucle sur chaque item du panier pour envoyer les infos au worker
+            let purchasePromises = cart.map(item => {
+                const requestData = {
+                    userId: user.userId,      // Acheteur
+                    productId: item.code,    // Code produit
+                    sellerId: item.sellerId,  // Vendeur spécifique du produit
+                    amount: item.price        // Prix
+                };
+
+                return fetch(storeScriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestData)
+                }).then(res => res.json());
+            });
+
+            try {
+                const results = await Promise.all(purchasePromises);
+                const allSuccess = results.every(r => r.success);
+
+                if (allSuccess) {
+                    alert("Achats réussis !");
+                    // Mise à jour du solde local avec le dernier solde reçu
+                    user.Solde = results[results.length - 1].nouveauSolde;
+                    localStorage.setItem('user', JSON.stringify(user));
+                    cart = [];
+                    renderCart();
+                    window.location.href = "home.html";
+                } else {
+                    alert("Erreur lors de l'achat. Vérifiez votre solde.");
+                }
+            } catch (err) {
+                alert("Erreur de connexion au serveur.");
+            }
+        });
+    </script>
+</body>
+</html>
