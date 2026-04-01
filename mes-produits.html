@@ -109,31 +109,33 @@
     const BASE_ID = 'appF8kBFp7T7ozO0F';
 
     async function loadMyProducts() {
-        const userString = localStorage.getItem('user');
-        if (!userString) {
-            window.location.href = 'login.html';
-            return;
-        }
-        const user = JSON.parse(userString);
-
-        try {
-            // FORMULE SÉCURISÉE : On cherche l'ID record dans le champ de lien 'Acheteur'
-            // SEARCH() est parfait pour fouiller dans les champs de type "Link to another record"
-            const formula = encodeURIComponent(`SEARCH('${user.NomUtilisateur}', ARRAYJOIN({Acheteur}))`);
-
-            const response = await fetch(`https://api.airtable.com/v0/${BASE_ID}/Transactions?filterByFormula=${formula}`, {
-                headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }
-            });
-
-            if (!response.ok) throw new Error("Erreur Airtable");
-
-            const data = await response.json();
-            displayProducts(data.records);
-        } catch (error) {
-            console.error("Erreur détaillée:", error);
-            document.getElementById('loading').innerText = "Impossible de charger vos biens.";
-        }
+    const userString = localStorage.getItem('user');
+    if (!userString) {
+        window.location.href = 'login.html';
+        return;
     }
+    const user = JSON.parse(userString);
+
+    try {
+        // CETTE FORMULE EST LA PLUS ROBUSTE POUR LES CHAMPS DE LIEN
+        // Elle transforme le lien en texte puis cherche le nom dedans
+        const formula = encodeURIComponent(`SEARCH("${user.NomUtilisateur}", ARRAYJOIN({Acheteur}))`);
+        
+        console.log("Nom cherché :", user.NomUtilisateur);
+        
+        const response = await fetch(`https://api.airtable.com/v0/${BASE_ID}/Transactions?filterByFormula=${formula}`, {
+            headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }
+        });
+
+        const data = await response.json();
+        console.log("Données reçues d'Airtable :", data); // Vérifie ici dans la console F12
+        
+        displayProducts(data.records);
+    } catch (error) {
+        console.error("Erreur Airtable:", error);
+        document.getElementById('loading').innerText = "Erreur de connexion.";
+    }
+}
 
     function displayProducts(records) {
         const container = document.getElementById('my-products-list');
