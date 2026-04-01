@@ -145,13 +145,15 @@
         container.innerHTML = '';
         records.forEach(rec => {
             const p = rec.fields;
-            container.innerHTML += `
-                <div class="product-card">
-                    <span class="product-icon">📦</span>
-                    <span class="product-name">${p.NomProduit || 'Produit sans nom'}</span>
-                    <a href="#" class="access-btn">Accéder</a>
-                </div>
-            `;
+            // Exemple dans ta boucle d'affichage :
+container.innerHTML += `
+    <div class="product-card">
+        <span class="product-name">${p.NomProduit}</span>
+        <a href="${p.LienAcces}" target="_blank" class="access-btn">
+            ${p.LienAcces ? 'Télécharger / Accéder' : 'Lien indisponible'}
+        </a>
+    </div>
+`;
         });
     }
 
