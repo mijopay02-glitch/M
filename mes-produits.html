@@ -119,7 +119,7 @@
     try {
         // CETTE FORMULE EST LA PLUS ROBUSTE POUR LES CHAMPS DE LIEN
         // Elle transforme le lien en texte puis cherche le nom dedans
-        const formula = encodeURIComponent(`SEARCH("${user.NomUtilisateur}", ARRAYJOIN({Acheteur}))`);
+        const formula = encodeURIComponent(`{userId (from DateTransaction)}='${user.userId}'`);
         
         console.log("Nom cherché :", user.NomUtilisateur);
         
