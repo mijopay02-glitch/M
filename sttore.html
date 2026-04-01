@@ -435,18 +435,20 @@
 
         alert("🛒 Validation de votre commande...");
 
-        let promises = cart.map(item => {
-            return fetch(storeScriptUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userId: user.userId,
-                    productId: item.code,
-                    sellerId: item.sellerId,
-                    amount: item.price
-                })
-            }).then(res => res.json());
-        });
+       
+let promises = cart.map(item => {
+    return fetch(storeScriptUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            userId: user.userId,      
+            productId: item.code,    
+            sellerId: item.sellerId, 
+            amount: item.price,      
+            productName: item.name   
+        })
+    }).then(res => res.json());
+});
 
         try {
             const results = await Promise.all(promises);
