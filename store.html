@@ -2,10 +2,21 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MIJO STORE | Marketplace Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        /* --- CORRECTION MAJEURE : Empêche le débordement horizontal --- */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+        /* ------------------------------------------------------------- */
+
         :root {
             --primary: #2196F3;
             --primary-dark: #1976D2;
@@ -35,14 +46,15 @@
             top: 0;
             z-index: 1000;
             box-shadow: var(--shadow);
+            width: 100%;
         }
 
         .header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
 
         .logo {
             font-weight: 700;
@@ -62,6 +74,7 @@
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
+            width: 100%;
         }
 
         .search-bar input {
@@ -76,11 +89,13 @@
         .trust-badges {
             display: flex;
             justify-content: space-around;
-            padding: 20px;
+            padding: 20px 10px;
             background: var(--white);
             margin-bottom: 20px;
             font-size: 0.8rem;
             text-align: center;
+            flex-wrap: wrap; /* Permet de s'adapter si l'écran est trop petit */
+            gap: 10px;
         }
 
         .badge-item span { display: block; font-weight: 600; color: var(--primary); }
@@ -90,6 +105,7 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 15px;
+            width: 100%;
         }
 
         .section-title {
@@ -101,48 +117,50 @@
 
         .section-title h2 { font-size: 1.3rem; margin: 0; }
 
-       .product-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Force 2 colonnes sur mobile */
-    gap: 12px; /* Espace plus petit pour gagner de la place */
-}
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+        }
+
         @media (min-width: 600px) {
-    .product-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 20px;
-    }
-}
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 20px;
+            }
+        }
 
         /* Product Card */
         .card {
-    background: var(--white);
-    border-radius: var(--radius);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    width: 100%; /* S'assure que la carte ne dépasse pas */
-    box-sizing: border-box;
-}
+            background: var(--white);
+            border-radius: var(--radius);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
 
-.card-title {
-    font-size: 0.85rem; /* Un peu plus petit sur mobile */
-    line-height: 1.2;
-    height: 38px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
+        .card-title {
+            font-size: 0.85rem;
+            line-height: 1.2;
+            height: 38px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
 
         .card:hover {
-    transform: translateY(-8px);
-    border-color: var(--primary);
-    box-shadow: 0 15px 35px rgba(33, 150, 243, 0.2);
-}
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 15px 35px rgba(33, 150, 243, 0.2);
+        }
 
         .card-img-wrapper {
             position: relative;
             height: 180px;
+            width: 100%;
         }
 
         .card img {
@@ -161,10 +179,14 @@
             border-radius: 4px;
             font-size: 0.7rem;
             font-weight: 700;
+            z-index: 10;
         }
 
         .card-content {
             padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
         }
 
         .card-category {
@@ -174,17 +196,16 @@
             letter-spacing: 0.5px;
         }
 
-        
-
         .card-price {
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--primary);
+            margin-top: 5px;
         }
 
         .seller-info {
             font-size: 0.7rem;
-            margin-top: 10px;
+            margin-top: auto;
             color: var(--text-light);
             border-top: 1px solid #eee;
             padding-top: 8px;
@@ -237,14 +258,14 @@
         .cart-modal {
             position: fixed;
             top: 0;
-            right: -100%;
+            right: -100vw; /* Utilisation de vw pour plus de sécurité */
             width: 100%;
             max-width: 400px;
             height: 100%;
             background: var(--white);
             z-index: 2000;
             box-shadow: -5px 0 20px rgba(0,0,0,0.1);
-            transition: 0.4s;
+            transition: right 0.4s ease;
             padding: 20px;
             display: flex;
             flex-direction: column;
@@ -256,6 +277,7 @@
         .footer-nav {
             position: fixed;
             bottom: 0;
+            left: 0;
             width: 100%;
             background: var(--white);
             display: flex;
@@ -263,6 +285,7 @@
             padding: 10px 0;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
             z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom, 10px); /* Support pour iPhone */
         }
 
         .nav-item {
@@ -274,56 +297,57 @@
 
         .nav-item.active { color: var(--primary); }
         .nav-item i { display: block; font-size: 1.2rem; margin-bottom: 2px; }
-.toast {
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #333;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 20px;
-        z-index: 3000;
-        display: none;
-        animation: fadeInOut 2s;
-    }
-    @keyframes fadeInOut {
-        0% { opacity: 0; top: 0; }
-        20% { opacity: 1; top: 20px; }
-        80% { opacity: 1; top: 20px; }
-        100% { opacity: 0; top: 0; }
-    }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            z-index: 3000;
+            display: none;
+            animation: fadeInOut 2s;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; top: 0; }
+            20% { opacity: 1; top: 20px; }
+            80% { opacity: 1; top: 20px; }
+            100% { opacity: 0; top: 0; }
+        }
+
         /* Mode focus pour un seul produit */
-.single-product-view .product-grid {
-    grid-template-columns: 1fr;
-    max-width: 500px;
-    margin: 0 auto;
-}
+        .single-product-view .product-grid {
+            grid-template-columns: 1fr;
+            max-width: 500px;
+            margin: 0 auto;
+        }
 
-.single-product-view .card {
-    transform: none !important;
-    box-shadow: none;
-    border: none;
-}
+        .single-product-view .card {
+            transform: none !important;
+            box-shadow: none;
+            border: none;
+        }
 
-.back-to-store {
-    display: none;
-    text-align: center;
-    margin-bottom: 20px;
-}
+        .back-to-store {
+            display: none;
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-.single-product-view .back-to-store {
-    display: block;
-}
+        .single-product-view .back-to-store {
+            display: block;
+        }
 
-.single-product-view .section-title, 
-.single-product-view .trust-badges {
-    display: none;
-}
-</style>
-
-<div id="toast" class="toast"></div>
+        .single-product-view .section-title, 
+        .single-product-view .trust-badges {
+            display: none;
+        }
     </style>
+    
     <meta property="og:title" content="MIJO STORE | La Boutique Officielle des Solutions Digitale">
     <meta property="og:description" content="Découvrez MIJO STORE : votre marketplace de confiance pour télécharger des applications , des ebooks exclusifs et des outils IA innovants dès maintenant">
     <meta property="og:image" content="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png">
@@ -332,6 +356,9 @@
     <meta name="theme-color" content="#2196F3">
 </head>
 <body>
+
+<div id="toast" class="toast"></div>
+
 <header>
     <div class="container">
         <div class="back-to-store">
@@ -342,7 +369,7 @@
         
         <div class="header-top">
             <a href="#" class="logo">
-                <img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png" height="30" style="margin-right:10px">
+                <img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png" height="30" style="margin-right:10px" alt="Logo">
                 MIJO STORE
             </a>
             <div style="font-size: 1.2rem;">👤</div>
@@ -352,7 +379,8 @@
             <span>🔍</span>
             <input type="text" id="searchInput" placeholder="Rechercher une application, un ebook...">
         </div>
-    </div> </header>
+    </div> 
+</header>
 
 <div class="trust-badges">
     <div class="badge-item"><span>🔒 Sécurisé</span>MIJO Pay</div>
@@ -362,19 +390,15 @@
 
 <div class="container">
     
-    <!-- Section Titre -->
     <div class="section-title">
         <h2>🔥 Boutique  MIJO</h2>
         <a href="#" style="color:var(--primary); text-decoration:none; font-size:0.8rem;">Voir tout</a>
     </div>
 
-    <!-- Début de la Grille de Produits Unique -->
     <div class="product-grid">
         
-        <!-- Produit 1: Application -->
         <div class="card">
             <div class="card-img-wrapper">
-                
                 <img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png" alt="Mijo Apk">
             </div>
             <div class="card-content">
@@ -382,22 +406,19 @@
                 <div class="card-title">Mijo Apk Premium Pro</div>
                 <div class="card-price">500 G</div>
                 <div class="seller-info">Vendu par: MIJO Official</div>
-                <!-- À mettre dans chaque .card-content -->
-<div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
-    <button class="share-btn" onclick="shareProduct('Mijo apk pro', 'Mij-1')" 
-        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
-        🔗 Partager & Gagner
-    </button>
-</div>
+                <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
+                    <button class="share-btn" onclick="shareProduct('Mijo apk pro', 'Mij-1')" 
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
                 <button class="buy-btn" onclick="addToCart('Mijo apk pro', 500, 'Mij-1', 'Lien_ici', 'recfcTPvpeweReklm')">Acheter</button>
             </div>
         </div>
 
-        <!-- Ebook 1: Chimie industrielle -->
         <div class="card">
             <div class="card-img-wrapper">
                 <span class="promo-badge">POPULAIRE</span>
-                
                 <img src="https://i.postimg.cc/qMtVXW87/a-clean-modern-book-cover-design-blendin-k-Efi-VZax-Rr2-Z6-q2n-HBHf-Q-TU-he66-MQ4-GNnncvt-Br-W8g.jpg" alt="Chimie industrielle">
             </div>
             <div class="card-content">
@@ -406,16 +427,15 @@
                 <div class="card-price">250 G</div>
                 <div class="seller-info">Vendu par: Académie MIJO</div>
                 <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
-    <button class="share-btn" onclick="shareProduct('Chimie industrielle', 'Chi-3')" 
-        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
-        🔗 Partager & Gagner
-    </button>
-</div>
+                    <button class="share-btn" onclick="shareProduct('Chimie industrielle', 'Chi-3')" 
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
                 <button class="buy-btn" onclick="addToCart('Chimie industrielle', 250, 'Chi-3', 'LINK_IN_AIRTABLE', 'recfcTPvpeweReklm')">Acheter</button>
             </div>
         </div>
 
-        <!-- Ebook 2: Gestion de Stock -->
         <div class="card">
             <div class="card-img-wrapper">
                 <img src="https://i.postimg.cc/vHfmQ1cM/a-clean-modern-book-cover-illustration-f-o79-YAln7-Tnao8fxz6p9-Pd-Q-g0-P-NGZVTcu08-SDb-QHh-Yy-Q.jpg" alt="Gestion de Stock">
@@ -426,16 +446,15 @@
                 <div class="card-price">200 G</div>
                 <div class="seller-info">Vendu par: Académie MIJO</div>
                 <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
-    <button class="share-btn" onclick="shareProduct('Gestion de Stock', 'Ges-4')" 
-        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
-        🔗 Partager & Gagner
-    </button>
-</div>
+                    <button class="share-btn" onclick="shareProduct('Gestion de Stock', 'Ges-4')" 
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
                 <button class="buy-btn" onclick="addToCart('Gestion de Stock', 200, 'Ges-4', 'LINK_IN_AIRTABLE', 'recfcTPvpeweReklm')">Acheter</button>
             </div>
         </div>
 
-        <!-- Ebook 3: Comptabilité 1 -->
         <div class="card">
             <div class="card-img-wrapper">
                 <img src="https://i.postimg.cc/T3yXc1WF/calculator-385506-640.jpg" alt="Comptabilité 1">
@@ -446,16 +465,15 @@
                 <div class="card-price">150 G</div>
                 <div class="seller-info">Vendu par: Académie MIJO</div>
                  <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
-    <button class="share-btn" onclick="shareProduct('Comptabilité 1', 'Com-5')" 
-        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
-        🔗 Partager & Gagner
-    </button>
-</div>
+                    <button class="share-btn" onclick="shareProduct('Comptabilité 1', 'Com-5')" 
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
                 <button class="buy-btn" onclick="addToCart('Comptabilité 1', 150, 'Com-5', 'LINK_IN_AIRTABLE', 'recfcTPvpeweReklm')">Acheter</button>
             </div>
         </div>
 
-        <!-- Ebook 4: Vers soi et au-delà -->
         <div class="card">
             <div class="card-img-wrapper">
                 <img src="https://i.postimg.cc/9X7c7VkJ/later-on-5012455-1280.jpg" alt="Vers soi">
@@ -467,15 +485,14 @@
                 <div class="seller-info">Vendu par: Académie MIJO</div>
                  <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
                 <button class="share-btn" onclick="shareProduct('Vers soi et au-delà', 'Ver-6')" 
-        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
-        🔗 Partager & Gagner
-    </button>
-</div>
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
                 <button class="buy-btn" onclick="addToCart('Vers soi et au-delà', 150, 'Ver-6', 'LINK_IN_AIRTABLE', 'recfcTPvpeweReklm')">Acheter</button>
             </div>
         </div>
 
-        <!-- Ebook 5: 30 Idées de Business -->
         <div class="card">
             <div class="card-img-wrapper">
                 <span class="promo-badge">TOP VENTE</span>
@@ -488,15 +505,14 @@
                 <div class="seller-info">Vendu par: Académie MIJO</div>
                  <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
                 <button class="share-btn" onclick="shareProduct('30 Idées de Business', '30I-7')" 
-        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
-        🔗 Partager & Gagner
-    </button>
-</div>
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
                 <button class="buy-btn" onclick="addToCart('30 Idées de Business', 200, '30I-7', 'LINK_IN_AIRTABLE', 'recfcTPvpeweReklm')">Acheter</button>
             </div>
         </div>
 
-        <!-- Ebook 6: Guide IA -->
         <div class="card">
             <div class="card-img-wrapper">
                 <img src="https://i.postimg.cc/DZHbZVgJ/ai-generated-8540913-1280.jpg" alt="Guide IA">
@@ -508,15 +524,14 @@
                 <div class="seller-info">Vendu par: Académie MIJO</div>
                 <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
                 <button class="share-btn" onclick="shareProduct('Guide IA', 'Gui-8')" 
-        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
-        🔗 Partager & Gagner
-    </button>
-</div>
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
                 <button class="buy-btn" onclick="addToCart('Guide IA', 200, 'Gui-8', 'LINK_IN_AIRTABLE', 'recfcTPvpeweReklm')">Acheter</button>
             </div>
         </div>
 
-        <!-- Ebook 7: Le Charisme Intérieur -->
         <div class="card">
             <div class="card-img-wrapper">
                 <img src="https://i.postimg.cc/PfzjTgMP/model-1335984-1920.jpg" alt="Charisme">
@@ -528,15 +543,14 @@
                 <div class="seller-info">Vendu par: Académie MIJO</div>
                 <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
                 <button class="share-btn" onclick="shareProduct('Le Charisme Intérieur', 'LeC-9')" 
-        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
-        🔗 Partager & Gagner
-    </button>
-</div>
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
                 <button class="buy-btn" onclick="addToCart('Le Charisme Intérieur', 150, 'LeC-9', 'LINK_IN_AIRTABLE', 'recfcTPvpeweReklm')">Acheter</button>
             </div>
         </div>
 
-        <!-- Ebook 8: Marketing digital -->
         <div class="card">
             <div class="card-img-wrapper">
                 <img src="https://i.postimg.cc/MGMhfNJ2/digital-marketing-5816304-640.jpg" alt="Marketing">
@@ -548,15 +562,14 @@
                 <div class="seller-info">Vendu par: Académie MIJO</div>
                 <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
                 <button class="share-btn" onclick="shareProduct('Marketing digital', 'Mar-10')" 
-        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
-        🔗 Partager & Gagner
-    </button>
-</div>
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
                 <button class="buy-btn" onclick="addToCart('Marketing digital', 250, 'Mar-10', 'LINK_IN_AIRTABLE', 'recfcTPvpeweReklm')">Acheter</button>
             </div>
         </div>
 
-        <!-- Produit IA -->
         <div class="card">
             <div class="card-img-wrapper">
                 <img src="https://i.postimg.cc/d1597ZZR/image-(2).png" alt="Etapes dans dans la vie des erudits">
@@ -568,18 +581,15 @@
                 <div class="seller-info">Vendu par: Emmanuel Tessier</div>
                  <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
                 <button class="share-btn" onclick="shareProduct('Etapes dans dans la vie des erudits', 'EV-18')" 
-        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
-        🔗 Partager & Gagner
-    </button>
-</div>
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
                 <button class="buy-btn" onclick="addToCart('Etapes dans dans la vie des erudits', 1250, 'EV-18', 'Lien_ici', 'recU6pHDrmLQJhenM')">Acheter</button>
             </div>
         </div>
 
-    </div> <!-- Fin de la grille -->
-</div> <!-- Fin du container -->
-<!-- Floating UI Elements -->
-<div id="cart-trigger" onclick="toggleCart()">
+    </div> </div> <div id="cart-trigger" onclick="toggleCart()">
     <span>🛒</span>
     <span class="cart-badge" id="cart-count-badge">0</span>
 </div>
@@ -587,11 +597,10 @@
 <div class="cart-modal" id="cart-modal">
     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px">
         <h3>Mon Panier</h3>
-        <button onclick="toggleCart()" style="border:none; background:none; font-size:1.5rem;">&times;</button>
+        <button onclick="toggleCart()" style="border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
     </div>
     <div id="cart-items-list" style="flex-grow:1; overflow-y:auto; padding:10px 0;">
-        <!-- Items injectés ici -->
-    </div>
+        </div>
     <div style="border-top:1px solid #eee; padding-top:15px">
         <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:15px">
             <span>Total</span>
@@ -603,10 +612,10 @@
 
 <nav class="footer-nav">
     <a href="home.html" class="nav-item"><i>🏠</i>Accueil</a>
-    
     <a href="store.html" class="nav-item active"><i>🛒</i>Store</a>
     <a href="mes-produits.html" class="nav-item"><i>📦</i>Mes Biens</a>
 </nav>
+
 
 <script>
     let cart = [];
