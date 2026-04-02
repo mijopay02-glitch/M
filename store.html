@@ -354,7 +354,7 @@
     
     <!-- Section Titre -->
     <div class="section-title">
-        <h2>🔥 Boutique Académie MIJO</h2>
+        <h2>🔥 Boutique  MIJO</h2>
         <a href="#" style="color:var(--primary); text-decoration:none; font-size:0.8rem;">Voir tout</a>
     </div>
 
@@ -387,7 +387,7 @@
         <div class="card">
             <div class="card-img-wrapper">
                 <span class="promo-badge">POPULAIRE</span>
-                <span class="promo-badge">CHIMIE</span>
+                
                 <img src="https://i.postimg.cc/qMtVXW87/a-clean-modern-book-cover-design-blendin-k-Efi-VZax-Rr2-Z6-q2n-HBHf-Q-TU-he66-MQ4-GNnncvt-Br-W8g.jpg" alt="Chimie industrielle">
             </div>
             <div class="card-content">
@@ -599,77 +599,74 @@
 </nav>
 
 <script>
-    // 1. Fonction pour partager
-window.onload = function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const prodCode = urlParams.get('prod');
-
-    if (prodCode) {
-        const container = document.querySelector('.container');
-        const cards = document.querySelectorAll('.card');
-        let productFound = false;
-
-        cards.forEach(card => {
-            const btn = card.querySelector('.buy-btn');
-            // On vérifie si le code du produit est dans le onclick du bouton
-            if (btn && btn.getAttribute('onclick').includes(`'${prodCode}'`)) {
-                card.style.display = "block";
-                productFound = true;
-            } else {
-                card.style.display = "none"; // Cache les autres
-            }
-        });
-
-        if (productFound) {
-            container.classList.add('single-product-view');
-            // Change le titre de la page pour le SEO
-            document.title = "Produit MIJO | " + prodCode;
-        }
-    }
-};
-
-// Modifie aussi ta fonction de partage pour inclure le nom dans l'URL (plus pro)
-function shareProduct(name, code) {
-    const shareUrl = window.location.origin + window.location.pathname + "?prod=" + code;
-    
-    if (navigator.share) {
-        navigator.share({
-            title: name,
-            text: `Découvre ${name} sur MIJO STORE !`,
-            url: shareUrl
-        });
-    } else {
-        navigator.clipboard.writeText(shareUrl);
-        alert("Lien de partage copié !");
-    }
-}
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.innerText = msg;
-        t.style.display = 'block';
-        setTimeout(() => { t.style.display = 'none'; }, 2000);
-    }
-    // Logique de recherche
-document.getElementById('searchInput').addEventListener('keyup', function(e) {
-    const text = e.target.value.toLowerCase();
-    const cards = document.querySelectorAll('.card');
-
-    cards.forEach(card => {
-        const title = card.querySelector('.card-title').innerText.toLowerCase();
-        const category = card.querySelector('.card-category').innerText.toLowerCase();
-        
-        if (title.includes(text) || category.includes(text)) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
-    });
-});
     let cart = [];
     const storeScriptUrl = "https://store.mijocomplexe.workers.dev/";
 
+    // 1. Initialisation au chargement
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const prodCode = urlParams.get('prod');
+
+        if (prodCode) {
+            const container = document.querySelector('.container');
+            const cards = document.querySelectorAll('.card');
+            let productFound = false;
+
+            cards.forEach(card => {
+                const btn = card.querySelector('.buy-btn');
+                // Correction : On vérifie si le code est présent dans l'appel de fonction
+                if (btn && btn.getAttribute('onclick').includes(`'${prodCode}'`)) {
+                    card.style.display = "block";
+                    productFound = true;
+                } else {
+                    card.style.display = "none";
+                }
+            });
+
+            if (productFound) {
+                container.classList.add('single-product-view');
+                document.title = "Produit MIJO | " + prodCode;
+            }
+        }
+    };
+
+    // 2. Logique de RECHERCHE (Améliorée)
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const text = e.target.value.toLowerCase();
+        const cards = document.querySelectorAll('.card');
+        const container = document.querySelector('.container');
+
+        // Si on commence à chercher, on annule la vue "Produit Unique"
+        if (text.length > 0) {
+            container.classList.remove('single-product-view');
+        }
+
+        cards.forEach(card => {
+            const title = card.querySelector('.card-title').innerText.toLowerCase();
+            const category = card.querySelector('.card-category').innerText.toLowerCase();
+            
+            if (title.includes(text) || category.includes(text)) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    });
+
+    // 3. Fonctions du Panier et Utilitaires
     function toggleCart() {
         document.getElementById('cart-modal').classList.toggle('active');
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        if(t) {
+            t.innerText = msg;
+            t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 2000);
+        } else {
+            alert(msg);
+        }
     }
 
     function addToCart(name, price, code, link, sellerId) {
@@ -712,70 +709,60 @@ document.getElementById('searchInput').addEventListener('keyup', function(e) {
         updateUI();
     }
 
-    function showToast(msg) {
-        // Optionnel : créer un élément toast stylé
-        console.log(msg);
+    function shareProduct(name, code) {
+        const shareUrl = window.location.origin + window.location.pathname + "?prod=" + code;
+        if (navigator.share) {
+            navigator.share({ title: name, text: `Découvre ${name} sur MIJO STORE !`, url: shareUrl });
+        } else {
+            navigator.clipboard.writeText(shareUrl);
+            showToast("Lien de partage copié !");
+        }
     }
 
-    // Logique de checkout (identique à ta version, mais reliée au nouveau bouton)
+    // 4. Checkout
     document.getElementById('checkout-btn-modal').addEventListener('click', async () => {
         const userString = localStorage.getItem('user');
         if (!userString) { alert("Connectez-vous"); return; }
         const user = JSON.parse(userString);
         
         if (cart.length === 0) return;
-
         alert("🛒 Validation de votre commande...");
 
-       
-let promises = cart.map(item => {
-    return fetch(storeScriptUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            userId: user.userId,      
-            productId: item.code,    
-            sellerId: item.sellerId, 
-            amount: item.price,      
-            productName: item.name   
-        })
-    }).then(res => res.json());
-});
+        let promises = cart.map(item => {
+            return fetch(storeScriptUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: user.userId,      
+                    productId: item.code,    
+                    sellerId: item.sellerId, 
+                    amount: item.price,      
+                    productName: item.name   
+                })
+            }).then(res => res.json());
+        });
 
-       try {
+        try {
             const results = await Promise.all(promises);
-            
-            // On vérifie si tous les achats ont réussi
             if (results.every(r => r.success)) {
-                
-                // --- MISE À JOUR PRO DU SOLDE ---
-                // On récupère le dernier résultat (le plus récent) pour avoir le solde final
                 const lastResult = results[results.length - 1]; 
-                
                 if (lastResult.newBalance !== undefined) {
-                    const user = JSON.parse(localStorage.getItem('user'));
-                    user.balance = lastResult.newBalance; // On met à jour le solde
-                    localStorage.setItem('user', JSON.stringify(user)); // On sauvegarde
+                    user.balance = lastResult.newBalance;
+                    localStorage.setItem('user', JSON.stringify(user));
                 }
-                // -------------------------------
-
                 alert("✅ Succès ! Retrouvez vos produits dans 'Mes Biens'.");
-                
                 cart = [];
                 updateUI();
                 toggleCart();
-                
-                // Maintenant le reload affichera le solde correct car le localStorage est à jour
                 window.location.reload(); 
             } else {
-                // On cherche le message d'erreur spécifique renvoyé par le worker (ex: "Solde insuffisant")
                 const errorMsg = results.find(r => !r.success)?.message || "Erreur serveur";
                 alert("❌ " + errorMsg);
             }
         } catch (e) {
-            console.error(e);
             alert("Erreur réseau ou technique.");
         }
+    });
 </script>
 
 </body>
