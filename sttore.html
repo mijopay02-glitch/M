@@ -332,6 +332,13 @@
                 <div class="card-title">Mijo Apk Premium Pro</div>
                 <div class="card-price">500 G</div>
                 <div class="seller-info">Vendu par: MIJO Official</div>
+                <!-- À mettre dans chaque .card-content -->
+<div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
+    <button class="share-btn" onclick="shareProduct('Mijo apk pro', 'Mij-1')" 
+        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+        🔗 Partager & Gagner
+    </button>
+</div>
                 <button class="buy-btn" onclick="addToCart('Mijo apk pro', 500, 'Mij-1', 'Lien_ici', 'recfcTPvpeweReklm')">Acheter</button>
             </div>
         </div>
@@ -497,6 +504,49 @@
 </nav>
 
 <script>
+    // 1. Fonction pour partager
+function shareProduct(name, code) {
+    const shareUrl = window.location.origin + window.location.pathname + "?prod=" + code;
+    
+    // Utilise l'API de partage native du téléphone si disponible
+    if (navigator.share) {
+        navigator.share({
+            title: 'Regarde ce produit sur MIJO STORE',
+            text: `Hé ! J'ai trouvé "${name}" sur MIJO STORE. C'est incroyable, jette un oeil !`,
+            url: shareUrl,
+        }).catch(console.error);
+    } else {
+        // Fallback : Copie dans le presse-papier
+        navigator.clipboard.writeText(shareUrl);
+        showToast("Lien copié ! Partage-le sur WhatsApp 🚀");
+    }
+}
+
+// 2. Détection du produit partagé à l'ouverture de la page
+window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const prodCode = urlParams.get('prod');
+
+    if (prodCode) {
+        // On cherche le bouton qui a ce code dans son onclick
+        const buttons = document.querySelectorAll('.buy-btn');
+        buttons.forEach(btn => {
+            if (btn.getAttribute('onclick').includes(prodCode)) {
+                const card = btn.closest('.card');
+                card.style.border = "2px solid #2196F3";
+                card.style.transform = "scale(1.05)";
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Petit effet de pulsation
+                card.animate([
+                    { boxShadow: '0 0 0px rgba(33,150,243,0.4)' },
+                    { boxShadow: '0 0 20px rgba(33,150,243,0.8)' },
+                    { boxShadow: '0 0 0px rgba(33,150,243,0.4)' }
+                ], { duration: 1500, iterations: 3 });
+            }
+        });
+    }
+};
     function showToast(msg) {
         const t = document.getElementById('toast');
         t.innerText = msg;
