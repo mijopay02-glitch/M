@@ -744,25 +744,29 @@
 
         try {
             const results = await Promise.all(promises);
-            if (results.every(r => r.success)) {
-                const lastResult = results[results.length - 1]; 
-                if (lastResult.newBalance !== undefined) {
-                    user.balance = lastResult.newBalance;
-                    localStorage.setItem('user', JSON.stringify(user));
-                }
-                alert("✅ Succès ! Retrouvez vos produits dans 'Mes Biens'.");
-                cart = [];
-                updateUI();
-                toggleCart();
-                window.location.reload(); 
-            } else {
-                const errorMsg = results.find(r => !r.success)?.message || "Erreur serveur";
-                alert("❌ " + errorMsg);
-            }
-        } catch (e) {
-            alert("Erreur réseau ou technique.");
-        }
-    });
+          if (results.every(r => r.success)) {
+    // 1. Récupérer le solde depuis le DERNIER résultat du Worker
+    const lastResult = results[results.length - 1];
+    
+    if (lastResult.newBalance !== undefined) {
+        const user = JSON.parse(localStorage.getItem('user'));
+        user.balance = lastResult.newBalance; // On met à jour l'objet
+        localStorage.setItem('user', JSON.stringify(user)); // On écrase l'ancien
+        
+        console.log("Nouveau solde enregistré :", user.balance);
+    }
+
+    alert("✅ Achat réussi !");
+    
+    // 2. Vider le panier AVANT de recharger
+    cart = [];
+    updateUI();
+
+    // 3. Rediriger ou recharger APRÈS un court délai (100ms) pour laisser le temps au stockage
+    setTimeout(() => {
+        window.location.href = "home.html"; // Mieux que reload() pour forcer la lecture du nouveau solde
+    }, 100);
+}
 </script>
 
 </body>
