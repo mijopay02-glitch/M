@@ -145,15 +145,22 @@
         container.innerHTML = '';
         records.forEach(rec => {
             const p = rec.fields;
-            // Exemple dans ta boucle d'affichage :
-container.innerHTML += `
-    <div class="product-card">
-        <span class="product-name">${p.NomProduit}</span>
-        <a href="${p.LienAcces}" target="_blank" class="access-btn">
-            ${p.LienAcces ? 'Télécharger / Accéder' : 'Lien indisponible'}
-        </a>
-    </div>
-`;
+            
+            // On extrait le lien correctement (gère le fait que ce soit un Lookup)
+            // Si LienTelechargement existe et est un tableau, on prend le premier élément
+            let lien = '';
+            if (p.LienTelechargement && p.LienTelechargement.length > 0) {
+                lien = p.LienTelechargement[0];
+            }
+
+            container.innerHTML += `
+            <div class="product-card">
+                <span class="product-name">${p.NomProduit}</span>
+                <a href="${lien !== '' ? lien : '#'}" target="${lien !== '' ? '_blank' : '_self'}" class="access-btn" style="${lien === '' ? 'background: #ccc; cursor: not-allowed;' : ''}">
+                    ${lien !== '' ? 'Télécharger / Accéder' : 'Lien indisponible'}
+                </a>
+            </div>
+            `;
         });
     }
 
