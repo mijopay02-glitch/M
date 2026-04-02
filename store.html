@@ -751,7 +751,7 @@
                 
                 if (lastResult.newBalance !== undefined) {
                     const user = JSON.parse(localStorage.getItem('user'));
-                    user.solde = lastResult.newBalance; // On met à jour l'objet
+                    user.Solde = lastResult.newBalance; // On met à jour l'objet
                     localStorage.setItem('user', JSON.stringify(user)); // On écrase l'ancien
                     
                     console.log("Nouveau solde enregistré :", user.balance);
