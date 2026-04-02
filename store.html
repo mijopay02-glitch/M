@@ -38,16 +38,15 @@
         }
 
         .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
 
         .logo {
             font-weight: 700;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: var(--primary);
             display: flex;
             align-items: center;
@@ -102,21 +101,38 @@
 
         .section-title h2 { font-size: 1.3rem; margin: 0; }
 
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
-        }
+       .product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Force 2 colonnes sur mobile */
+    gap: 12px; /* Espace plus petit pour gagner de la place */
+}
+        @media (min-width: 600px) {
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 20px;
+    }
+}
 
         /* Product Card */
         .card {
-            background: var(--white);
-            border-radius: var(--radius);
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
-            position: relative;
-            border: 1px solid rgba(0,0,0,0.05);
-        }
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* S'assure que la carte ne dépasse pas */
+    box-sizing: border-box;
+}
+
+.card-title {
+    font-size: 0.85rem; /* Un peu plus petit sur mobile */
+    line-height: 1.2;
+    height: 38px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
 
         .card:hover {
     transform: translateY(-8px);
@@ -158,13 +174,7 @@
             letter-spacing: 0.5px;
         }
 
-        .card-title {
-            font-size: 0.95rem;
-            font-weight: 600;
-            margin: 5px 0;
-            height: 40px;
-            overflow: hidden;
-        }
+        
 
         .card-price {
             font-size: 1.1rem;
@@ -553,7 +563,7 @@
             </div>
             <div class="card-content">
                 <div class="card-category">ebook</div>
-                <div class="card-title">Etapes dans dans la vie des erudits</div>
+                <div class="card-title">Etapes dans la vie des erudits</div>
                 <div class="card-price">1250 G</div>
                 <div class="seller-info">Vendu par: Emmanuel Tessier</div>
                  <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
