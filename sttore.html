@@ -283,6 +283,33 @@
         80% { opacity: 1; top: 20px; }
         100% { opacity: 0; top: 0; }
     }
+        /* Mode focus pour un seul produit */
+.single-product-view .product-grid {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.single-product-view .card {
+    transform: none !important;
+    box-shadow: none;
+    border: none;
+}
+
+.back-to-store {
+    display: none;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.single-product-view .back-to-store {
+    display: block;
+}
+
+.single-product-view .section-title, 
+.single-product-view .trust-badges {
+    display: none;
+}
 </style>
 
 <div id="toast" class="toast"></div>
@@ -291,6 +318,13 @@
 <body>
 
 <header>
+    <div class="container">
+    <div class="back-to-store">
+        <button onclick="window.location.href='store.html'" style="background:none; border:1px solid var(--primary); color:var(--primary); padding:10px 20px; border-radius:20px; cursor:pointer;">
+            ⬅️ Voir toute la boutique MIJO
+        </button>
+    </div>
+    
     <div class="header-top">
         <a href="#" class="logo">
             <img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png" height="30" style="margin-right:10px">
@@ -505,48 +539,49 @@
 
 <script>
     // 1. Fonction pour partager
-function shareProduct(name, code) {
-    const shareUrl = window.location.origin + window.location.pathname + "?prod=" + code;
-    
-    // Utilise l'API de partage native du téléphone si disponible
-    if (navigator.share) {
-        navigator.share({
-            title: 'Regarde ce produit sur MIJO STORE',
-            text: `Hé ! J'ai trouvé "${name}" sur MIJO STORE. C'est incroyable, jette un oeil !`,
-            url: shareUrl,
-        }).catch(console.error);
-    } else {
-        // Fallback : Copie dans le presse-papier
-        navigator.clipboard.writeText(shareUrl);
-        showToast("Lien copié ! Partage-le sur WhatsApp 🚀");
-    }
-}
-
-// 2. Détection du produit partagé à l'ouverture de la page
 window.onload = function() {
     const urlParams = new URLSearchParams(window.location.search);
     const prodCode = urlParams.get('prod');
 
     if (prodCode) {
-        // On cherche le bouton qui a ce code dans son onclick
-        const buttons = document.querySelectorAll('.buy-btn');
-        buttons.forEach(btn => {
-            if (btn.getAttribute('onclick').includes(prodCode)) {
-                const card = btn.closest('.card');
-                card.style.border = "2px solid #2196F3";
-                card.style.transform = "scale(1.05)";
-                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
-                // Petit effet de pulsation
-                card.animate([
-                    { boxShadow: '0 0 0px rgba(33,150,243,0.4)' },
-                    { boxShadow: '0 0 20px rgba(33,150,243,0.8)' },
-                    { boxShadow: '0 0 0px rgba(33,150,243,0.4)' }
-                ], { duration: 1500, iterations: 3 });
+        const container = document.querySelector('.container');
+        const cards = document.querySelectorAll('.card');
+        let productFound = false;
+
+        cards.forEach(card => {
+            const btn = card.querySelector('.buy-btn');
+            // On vérifie si le code du produit est dans le onclick du bouton
+            if (btn && btn.getAttribute('onclick').includes(`'${prodCode}'`)) {
+                card.style.display = "block";
+                productFound = true;
+            } else {
+                card.style.display = "none"; // Cache les autres
             }
         });
+
+        if (productFound) {
+            container.classList.add('single-product-view');
+            // Change le titre de la page pour le SEO
+            document.title = "Produit MIJO | " + prodCode;
+        }
     }
 };
+
+// Modifie aussi ta fonction de partage pour inclure le nom dans l'URL (plus pro)
+function shareProduct(name, code) {
+    const shareUrl = window.location.origin + window.location.pathname + "?prod=" + code;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: name,
+            text: `Découvre ${name} sur MIJO STORE !`,
+            url: shareUrl
+        });
+    } else {
+        navigator.clipboard.writeText(shareUrl);
+        alert("Lien de partage copié !");
+    }
+}
     function showToast(msg) {
         const t = document.getElementById('toast');
         t.innerText = msg;
