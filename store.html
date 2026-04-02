@@ -741,21 +741,40 @@ let promises = cart.map(item => {
     }).then(res => res.json());
 });
 
-        try {
+       try {
             const results = await Promise.all(promises);
+            
+            // On vérifie si tous les achats ont réussi
             if (results.every(r => r.success)) {
+                
+                // --- MISE À JOUR PRO DU SOLDE ---
+                // On récupère le dernier résultat (le plus récent) pour avoir le solde final
+                const lastResult = results[results.length - 1]; 
+                
+                if (lastResult.newBalance !== undefined) {
+                    const user = JSON.parse(localStorage.getItem('user'));
+                    user.balance = lastResult.newBalance; // On met à jour le solde
+                    localStorage.setItem('user', JSON.stringify(user)); // On sauvegarde
+                }
+                // -------------------------------
+
                 alert("✅ Succès ! Retrouvez vos produits dans 'Mes Biens'.");
+                
                 cart = [];
                 updateUI();
                 toggleCart();
-                window.location.reload();
+                
+                // Maintenant le reload affichera le solde correct car le localStorage est à jour
+                window.location.reload(); 
             } else {
-                alert("❌ Erreur de solde ou serveur.");
+                // On cherche le message d'erreur spécifique renvoyé par le worker (ex: "Solde insuffisant")
+                const errorMsg = results.find(r => !r.success)?.message || "Erreur serveur";
+                alert("❌ " + errorMsg);
             }
         } catch (e) {
-            alert("Erreur réseau");
+            console.error(e);
+            alert("Erreur réseau ou technique.");
         }
-    });
 </script>
 
 </body>
