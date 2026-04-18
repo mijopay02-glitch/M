@@ -1,207 +1,281 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-K43FXR4W');</script>
+    <meta property="og:image" content="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized.jpg">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="500">
+    <meta property="og:image:height" content="500">
+    <meta name="image" content="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized.jpg">
+    <link rel="image_src" href="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized.jpg">
+    <meta name="author" content="MIJO COMPLEXE">
+    <meta name="publisher" content="MIJO COMPLEXE">
+    <meta name="keywords" content="MIJO PAY, application financière Haïti, dépôt, retrait, carte numérique, argent en ligne, programme d’affiliation, fintech haïtienne">
+    <meta name="robots" content="index, follow">
+    <link rel="me" href="https://www.facebook.com/mijocomplexe">
+    <link rel="me" href="https://www.instagram.com/mijocomplexe">
+    <link rel="me" href="https://www.youtube.com/@mijocomplexe">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:image" content="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized.jpg">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin MIJO PAY - Validations</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>MIJO PAY - Connexion & Inscription Automatique</title>
+    <meta name="description" content="Connectez-vous à MIJO PAY, votre plateforme sécurisée pour toutes vos transactions et gestions de compte en ligne.">
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized-sma-e-Nct-Kg2v-RGmg-UPTRI4-Zs-UA-3q5o-P2yu-Q4yup5-Nnqd9-D-g.jpg" sizes="32x32">
     <style>
-        body { background-color: #f0f2f5; padding: 20px; }
-        .card-request { margin-bottom: 15px; border-left: 5px solid #0d6efd; }
-        .btn-whatsapp { background-color: #25D366; color: white; border: none; }
-        .btn-whatsapp:hover { background-color: #128C7E; color: white; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 380px;
+            text-align: center;
+        }
+        img {
+            max-width: 120px;
+            margin-bottom: 20px;
+        }
+        input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, opacity 0.3s;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #0b7dda;
+        }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .link-btn {
+            background: #4CAF50;
+        }
+        .link-btn:hover {
+            background: #45a049;
+        }
+        #message, #inscriptionMessage {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .credentials-box {
+            background: #e8f5e9;
+            border: 1px solid #4CAF50;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            color: #2e7d32;
+        }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Gestion des Inscriptions</h2>
-        <button onclick="logout()" class="btn btn-outline-danger btn-sm">Déconnexion</button>
-    </div>
-    
-    <div id="authSection" class="text-center mt-5">
-        <h4>Accès Sécurisé</h4>
-        <input type="password" id="adminPassword" class="form-control w-50 mx-auto mt-3" placeholder="Entrez le mot de passe Admin">
-        <button onclick="login()" class="btn btn-primary mt-3">Accéder</button>
-    </div>
-
-    <div id="dashboardSection" style="display:none;">
-        <div id="loading" class="text-center">Chargement des demandes...</div>
-        <div id="requestsList" class="row"></div>
-    </div>
-</div>
-
-<div class="modal fade" id="successModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-success text-white">
-        <h5 class="modal-title">Utilisateur Créé !</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body text-center">
-        <h4><span id="modalNom"></span></h4>
-        <p>Carte : <strong id="modalCarte" class="fs-4"></strong></p>
-        <p>CIN : <strong id="modalCin" class="fs-4"></strong></p>
-        <hr>
-        <button id="btnSendWhatsapp" class="btn btn-whatsapp w-100 py-2 mb-2">
-            Envoyer par WhatsApp 📲
-        </button>
-        <button id="btnSendEmail" class="btn btn-secondary w-100 py-2">
-            Envoyer par Email 📧
-        </button>
-    </div>
-  </div>
-</div>
-</div>
-
-<script>
-    // URL DE TON WORKER (C'est la seule info publique, et c'est sans danger)
-    const WORKER_URL = "https://newuser.mijocomplexe.workers.dev/";
-
-    let userPassword = "";
-
-    function login() {
-        userPassword = document.getElementById('adminPassword').value;
-        if(userPassword) {
-            document.getElementById('authSection').style.display = 'none';
-            document.getElementById('dashboardSection').style.display = 'block';
-            loadRequests();
-        }
-    }
-
-    function logout() {
-        userPassword = "";
-        location.reload();
-    }
-
-    async function loadRequests() {
-        const list = document.getElementById('requestsList');
-        const loading = document.getElementById('loading');
-        list.innerHTML = "";
-        loading.style.display = 'block';
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K43FXR4W" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <div class="container" id="loginContainer">
+        <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY Logo">
+        <h2>Connexion</h2>
         
-        try {
-            // On demande au Worker la liste (en envoyant le mot de passe)
-            const response = await fetch(WORKER_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    action: "get_pending", 
-                    password: userPassword 
-                })
-            });
+        <div id="successCredentials" class="credentials-box">
+            <h4>Inscription Réussie ! 🎉</h4>
+            <p>Carte : <strong id="displayCard"></strong></p>
+            <p>CIN : <strong id="displayCin"></strong></p>
+            <p style="font-size: 12px;">Vos identifiants ont été pré-remplis ci-dessous.</p>
+        </div>
 
-            const data = await response.json();
-            loading.style.display = 'none';
+        <input type="text" id="cardNumber" placeholder="Numéro de carte MIJO">
+        <input type="password" id="cin" placeholder="Mot de passe (CIN)">
+        <button id="loginButton" onclick="login()">Se connecter</button>
+        <button class="link-btn" onclick="showInscription()">Créer un compte</button>
+        <div id="message"></div>
+    </div>
 
-            if (data.status === 'error') {
-                alert(data.message);
-                logout();
+    <div class="container" id="inscriptionForm" style="display:none;">
+        <h2>Créer un compte</h2>
+        <input type="text" id="nomcomplet" placeholder="Nom complet">
+        <input type="text" id="pays" placeholder="Pays">
+        <input type="email" id="adresseemail" placeholder="Adresse email">
+        <input type="tel" id="telephone" placeholder="Numéro WhatsApp">
+        <button id="inscriptionButton" onclick="inscrire()">Valider et Générer ma carte</button>
+        <button onclick="hideInscription()" style="background: #f44336;">Annuler</button>
+        <div id="inscriptionMessage"></div>
+    </div>
+
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            // Auto-remplissage via localStorage
+            const savedUser = JSON.parse(localStorage.getItem("user"));
+            if (savedUser && savedUser.NumeroCarte) {
+                document.getElementById("cardNumber").value = savedUser.NumeroCarte;
+            }
+
+            // Auto-remplissage via QR Code
+            const urlParams = new URLSearchParams(window.location.search);
+            const cardNumberFromQr = urlParams.get('cardNumber'); 
+            if (cardNumberFromQr) {
+                document.getElementById("cardNumber").value = cardNumberFromQr.trim();
+                document.getElementById("message").style.color = "blue";
+                document.getElementById("message").innerText = "Carte scannée. Entrez votre CIN.";
+                document.getElementById("cin").focus();
+            }
+        });
+
+        const workerUrl = "https://newuser.mijocomplexe.workers.dev/";
+        const loginBtn = document.getElementById('loginButton');
+        const inscriptionBtn = document.getElementById('inscriptionButton');
+        const messageDiv = document.getElementById('message');
+        const inscriptionMessageDiv = document.getElementById('inscriptionMessage');
+
+        // --- FONCTION DE CONNEXION ---
+        async function login() {
+            const cardNumber = document.getElementById("cardNumber").value.trim();
+            const cin = document.getElementById("cin").value.trim();
+
+            if (!cardNumber || !cin) {
+                messageDiv.style.color = "red";
+                messageDiv.innerText = "Veuillez remplir tous les champs.";
                 return;
             }
 
-            if(!data.records || data.records.length === 0) {
-                list.innerHTML = `<div class="alert alert-info text-center">Aucune demande en attente.</div>`;
-                return;
-            }
+            loginBtn.disabled = true;
+            loginBtn.innerText = "Connexion en cours...";
+            messageDiv.innerText = "";
 
-            data.records.forEach(record => {
-                const f = record.fields;
-                // Protection contre les champs vides
-                const nom = f.NomComplet || 'Inconnu';
-                const tel = f.Telephone || '';
-                const email = f.Email || '';
-                const pays = f.Pays || '';
+            try {
+                const response = await fetch("https://mijopay.mijocomplexe.workers.dev/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action: "login_user_by_card", cardNumber: cardNumber, password: cin })
+                });
 
-                const cardHtml = `
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card card-request shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">${nom}</h5>
-                                <p class="card-text mb-1">📞 ${tel}</p>
-                                <p class="card-text mb-1">📧 ${email}</p>
-                                <p class="card-text mb-3 text-muted">🌍 ${pays}</p>
-                                <button onclick="validateUser('${record.id}', '${nom.replace(/'/g, "\\'")}', '${tel}', '${email}')" 
-                                        class="btn btn-primary w-100" id="btn-${record.id}">
-                                    Valider & Créer Carte
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                list.innerHTML += cardHtml;
-            });
+                const data = await response.json();
 
-        } catch (error) {
-            loading.innerText = "Erreur de connexion serveur.";
-            console.error(error);
-        }
-    }
-
-    async function validateUser(demandeId, nom, tel, email) {
-        const btn = document.getElementById(`btn-${demandeId}`);
-        btn.disabled = true;
-        btn.innerText = "Création en cours...";
-
-        try {
-            // On demande au Worker de créer l'utilisateur ET de supprimer la demande
-            const response = await fetch(WORKER_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    action: "approve_user",
-                    password: userPassword, // Sécurité
-                    demandeId: demandeId,   // ID pour suppression
-                    nom: nom,
-                    telephone: tel,
-                    email: email,
-                    role: "user"
-                })
-            });
-
-            const result = await response.json();
-
-            if (result.status === 'success') {
-                // Succès : On ouvre la modale WhatsApp
-                showSuccessModal(nom, result.card, result.CIN, tel, email);
-                // On supprime visuellement la carte
-                if(btn.closest('.col-md-6')) {
-                   btn.closest('.col-md-6').remove();
+                if (data.success) {
+                    localStorage.setItem("user", JSON.stringify(data.user));
+                    messageDiv.style.color = "green";
+                    messageDiv.innerText = "Connexion réussie ! Redirection...";
+                    setTimeout(() => { window.location.href = "home.html"; }, 1000);
+                } else {
+                    messageDiv.style.color = "red";
+                    messageDiv.innerText = data.error || "Numéro de carte ou CIN incorrect.";
                 }
-            } else {
-                alert("Erreur : " + result.message);
-                btn.disabled = false;
-                btn.innerText = "Réessayer";
+            } catch (err) {
+                messageDiv.style.color = "red";
+                messageDiv.innerText = "Erreur de connexion avec le serveur.";
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerText = "Se connecter";
+            }
+        }
+
+        // --- NOUVELLE FONCTION D'INSCRIPTION AUTOMATIQUE ---
+        async function inscrire() {
+            const nom = document.getElementById("nomcomplet").value.trim();
+            const pays = document.getElementById("pays").value.trim();
+            const email = document.getElementById("adresseemail").value.trim();
+            const telephone = document.getElementById("telephone").value.trim();
+
+            if (!nom || !pays || !email || !telephone) {
+                inscriptionMessageDiv.style.color = "red";
+                inscriptionMessageDiv.innerText = "Veuillez remplir tous les champs.";
+                return;
             }
 
-        } catch (error) {
-            alert("Erreur réseau : " + error.message);
-            btn.disabled = false;
-            btn.innerText = "Réessayer";
+            inscriptionBtn.disabled = true;
+            inscriptionBtn.innerText = "Création de votre carte en cours...";
+            inscriptionMessageDiv.innerText = "";
+
+            try {
+                const response = await fetch(workerUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        action: "auto_register", // Action modifiée pour indiquer au backend de créer directement
+                        nom: nom,
+                        pays: pays,
+                        email: email,
+                        telephone: telephone
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.status === 'success') {
+                    // 1. Sauvegarder dans le localStorage
+                    const newUserCredentials = { NumeroCarte: data.card, CIN: data.cin };
+                    localStorage.setItem("user", JSON.stringify(newUserCredentials));
+
+                    // 2. Remplir automatiquement les champs de connexion
+                    document.getElementById("cardNumber").value = data.card;
+                    document.getElementById("cin").value = data.cin;
+
+                    // 3. Afficher les identifiants sur l'écran de connexion
+                    document.getElementById("displayCard").innerText = data.card;
+                    document.getElementById("displayCin").innerText = data.cin;
+                    document.getElementById("successCredentials").style.display = "block";
+
+                    // 4. Vider le formulaire et retourner à la connexion
+                    document.getElementById("nomcomplet").value = "";
+                    document.getElementById("pays").value = "";
+                    document.getElementById("adresseemail").value = "";
+                    document.getElementById("telephone").value = "";
+                    
+                    hideInscription();
+                } else {
+                    throw new Error(data.message || "Erreur lors de la création.");
+                }
+
+            } catch (err) {
+                console.error("Erreur Inscription:", err);
+                inscriptionMessageDiv.style.color = "red";
+                inscriptionMessageDiv.innerText = "Une erreur est survenue : " + err.message;
+            } finally {
+                inscriptionBtn.disabled = false;
+                inscriptionBtn.innerText = "Valider et Générer ma carte";
+            }
         }
-    }
 
-    function showSuccessModal(nom, card, cin, tel, email) {
-        document.getElementById('modalNom').innerText = nom;
-        document.getElementById('modalCarte').innerText = card;
-        document.getElementById('modalCin').innerText = cin;
+        function showInscription() {
+            document.getElementById("loginContainer").style.display = "none";
+            document.getElementById("inscriptionForm").style.display = "block";
+            document.getElementById("successCredentials").style.display = "none"; // Cacher le succès si on réessaie
+        }
 
-        // Configuration WhatsApp
-        const message = `Bonjour ${nom}, bienvenue sur MIJO PAY ! 🎉\n\nVoici vos identifiants :\n💳 Numéro de carte : *${card}*\n🔑 Mot de passe (CIN) : *${cin}*\n\nVous pouvez maintenant vous connecter sur mijopay.com.`;
-        const waLink = `https://wa.me/${tel.replace(/\D/g,'')}?text=${encodeURIComponent(message)}`;
-        
-        const btnWa = document.getElementById('btnSendWhatsapp');
-        btnWa.onclick = () => window.open(waLink, '_blank');
-
-        // Configuration Email
-        const mailLink = `mailto:${email}?subject=Bienvenue sur MIJO PAY&body=${encodeURIComponent(message)}`;
-        const btnMail = document.getElementById('btnSendEmail');
-        btnMail.onclick = () => window.location.href = mailLink;
-
-        new bootstrap.Modal(document.getElementById('successModal')).show();
-    }
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        function hideInscription() {
+            document.getElementById("loginContainer").style.display = "block";
+            document.getElementById("inscriptionForm").style.display = "none";
+        }  
+    </script>
 </body>
 </html>
