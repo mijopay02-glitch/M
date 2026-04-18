@@ -1,33 +1,31 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-K43FXR4W');</script>
-<!-- End Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-K43FXR4W');</script>
     <meta property="og:image" content="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized.jpg">
-<meta property="og:image:type" content="image/jpeg">
-<meta property="og:image:width" content="500">
-<meta property="og:image:height" content="500">
-<meta name="image" content="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized.jpg">
-<link rel="image_src" href="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized.jpg">
-<meta name="author" content="MIJO COMPLEXE">
-<meta name="publisher" content="MIJO COMPLEXE">
-<meta name="keywords" content="MIJO PAY, application financière Haïti, dépôt, retrait, carte numérique, argent en ligne, programme d’affiliation, fintech haïtienne">
-<meta name="robots" content="index, follow">
-<link rel="me" href="https://www.facebook.com/mijocomplexe">
-<link rel="me" href="https://www.instagram.com/mijocomplexe">
-<link rel="me" href="https://www.youtube.com/@mijocomplexe">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="500">
+    <meta property="og:image:height" content="500">
+    <meta name="image" content="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized.jpg">
+    <link rel="image_src" href="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized.jpg">
+    <meta name="author" content="MIJO COMPLEXE">
+    <meta name="publisher" content="MIJO COMPLEXE">
+    <meta name="keywords" content="MIJO PAY, application financière Haïti, dépôt, retrait, carte numérique, argent en ligne, programme d’affiliation, fintech haïtienne">
+    <meta name="robots" content="index, follow">
+    <link rel="me" href="https://www.facebook.com/mijocomplexe">
+    <link rel="me" href="https://www.instagram.com/mijocomplexe">
+    <link rel="me" href="https://www.youtube.com/@mijocomplexe">
 
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized.jpg">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:image" content="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized.jpg">
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIJO PAY - Connexion</title>
+    <title>MIJO PAY - Connexion & Inscription Automatique</title>
     <meta name="description" content="Connectez-vous à MIJO PAY, votre plateforme sécurisée pour toutes vos transactions et gestions de compte en ligne.">
     <link rel="icon" type="image/png" href="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized-sma-e-Nct-Kg2v-RGmg-UPTRI4-Zs-UA-3q5o-P2yu-Q4yup5-Nnqd9-D-g.jpg" sizes="32x32">
     <style>
@@ -72,6 +70,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s, opacity 0.3s;
+            font-weight: bold;
         }
         button:hover {
             background: #0b7dda;
@@ -87,121 +86,84 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         .link-btn:hover {
             background: #45a049;
         }
-        #message {
+        #message, #inscriptionMessage {
             margin-top: 15px;
-            color: red;
             font-weight: bold;
         }
+        .credentials-box {
+            background: #e8f5e9;
+            border: 1px solid #4CAF50;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            color: #2e7d32;
+        }
     </style>
-    
-</script>
 </head>
-    
 <body>
-    <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K43FXR4W"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K43FXR4W" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="container" id="loginContainer">
         <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY Logo">
         <h2>Connexion</h2>
+        
+        <div id="successCredentials" class="credentials-box">
+            <h4>Inscription Réussie ! 🎉</h4>
+            <p>Carte : <strong id="displayCard"></strong></p>
+            <p>CIN : <strong id="displayCin"></strong></p>
+            <p style="font-size: 12px;">Vos identifiants ont été pré-remplis ci-dessous.</p>
+        </div>
+
         <input type="text" id="cardNumber" placeholder="Numéro de carte MIJO">
-        <input type="password" id="cin" placeholder="Mot de passe">
+        <input type="password" id="cin" placeholder="Mot de passe (CIN)">
         <button id="loginButton" onclick="login()">Se connecter</button>
-        <button class="link-btn" onclick="showInscription()">S’inscrire</button>
+        <button class="link-btn" onclick="showInscription()">Créer un compte</button>
         <div id="message"></div>
     </div>
 
-    <div class="container" id="inscriptionForm" style="display:none; margin-top:20px;">
-        <h2>Inscription</h2>
+    <div class="container" id="inscriptionForm" style="display:none;">
+        <h2>Créer un compte</h2>
         <input type="text" id="nomcomplet" placeholder="Nom complet">
         <input type="text" id="pays" placeholder="Pays">
         <input type="email" id="adresseemail" placeholder="Adresse email">
-        <input type="tel" id="telephone" placeholder="Numéro de téléphone WhatsApp">
-        <button id="inscriptionButton" onclick="inscrire()">Valider inscription</button>
-        <button onclick="hideInscription()">Annuler</button>
+        <input type="tel" id="telephone" placeholder="Numéro WhatsApp">
+        <button id="inscriptionButton" onclick="inscrire()">Valider et Générer ma carte</button>
+        <button onclick="hideInscription()" style="background: #f44336;">Annuler</button>
         <div id="inscriptionMessage"></div>
     </div>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FinancialService",
-  "name": "MIJO PAY",
-  "url": "https://mijopay.com",
-  "logo": "https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized-sma-e-Nct-Kg2v-RGmg-UPTRI4-Zs-UA-3q5o-P2yu-Q4yup5-Nnqd9-D-g.jpg",
-  "description": "Plateforme financière numérique haïtienne offrant des services de dépôt, retrait, transfert d'argent sans frais et un programme d'affiliation (MIJO Affiliate Promo) permettant de faire de l'argent en ligne.",
-  "areaServed": {
-    "@type": "Country",
-    "name": "Haïti"
-  },
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "contactType": "Service client et support",
-    "telephone": "+509 4499-0203",
-    "contactOption": "WhatsApp"
-  },
-    "sameAs": [
-  "https://www.facebook.com/mijocomplexe",
-  "https://www.instagram.com/mijocomplexe",
-  "https://www.youtube.com/@mijocomplexe"
-],
-"founder": {
-  "@type": "Person",
-  "name": "Mikyson Antoine"
-},
-"serviceType": [
-  "Portefeuille numérique",
-  "Transfert d'argent",
-  "Paiement mobile",
-  "Programme d'affiliation"
-]
-
-}
-</script>
 
     <script>
-       window.addEventListener("DOMContentLoaded", () => {
-    const savedUser = JSON.parse(localStorage.getItem("user"));
-    console.log("Loaded from localStorage:", savedUser); // <-- Vérifie ici
-    if (savedUser && savedUser.NumeroCarte) { // <- la clé doit correspondre exactement
-        document.getElementById("cardNumber").value = savedUser.NumeroCarte;
-    }
-          const urlParams = new URLSearchParams(window.location.search);
-    // 🚨 MODIFICATION ICI : On lit le paramètre 'cardNumber'
-    const cardNumberFromQr = urlParams.get('cardNumber'); 
+        window.addEventListener("DOMContentLoaded", () => {
+            // Auto-remplissage via localStorage
+            const savedUser = JSON.parse(localStorage.getItem("user"));
+            if (savedUser && savedUser.NumeroCarte) {
+                document.getElementById("cardNumber").value = savedUser.NumeroCarte;
+            }
 
-    if (cardNumberFromQr) {
-        // Pré-remplissage du champ d'ID 'cardNumber'
-        document.getElementById("cardNumber").value = cardNumberFromQr.trim();
-        
-        // Optionnel : Message à l'utilisateur
-        document.getElementById("message").style.color = "blue";
-        document.getElementById("message").innerText = "Carte scannée. Veuillez entrer votre mot de passe (CIN) pour vous connecter.";
-        
-        // On pourrait forcer le focus sur le champ du mot de passe pour la rapidité
-        document.getElementById("cin").focus();
-    }
-});
+            // Auto-remplissage via QR Code
+            const urlParams = new URLSearchParams(window.location.search);
+            const cardNumberFromQr = urlParams.get('cardNumber'); 
+            if (cardNumberFromQr) {
+                document.getElementById("cardNumber").value = cardNumberFromQr.trim();
+                document.getElementById("message").style.color = "blue";
+                document.getElementById("message").innerText = "Carte scannée. Entrez votre CIN.";
+                document.getElementById("cin").focus();
+            }
+        });
 
-
-
-
-        // C'est la seule ligne qui change. Utilisez l'URL de votre proxy Vercel.
-        // Remplacez 'votre-nom-de-projet' par le nom de votre projet sur Vercel.
-        const loginUrl = "https://mijopay.mijocomplexe.workers.dev/";
-        
-        const inscriptionUrl = "https://script.google.com/macros/s/AKfycbyAe6FJNozweDf3Ftcin5T1_Q_tuU0ay_0KIVYgx3szDtlV82cRq75ZF3rPzKy9-WnX/exec";
-        
+        const workerUrl = "https://newuser.mijocomplexe.workers.dev/";
         const loginBtn = document.getElementById('loginButton');
         const inscriptionBtn = document.getElementById('inscriptionButton');
         const messageDiv = document.getElementById('message');
         const inscriptionMessageDiv = document.getElementById('inscriptionMessage');
 
+        // --- FONCTION DE CONNEXION ---
         async function login() {
             const cardNumber = document.getElementById("cardNumber").value.trim();
             const cin = document.getElementById("cin").value.trim();
 
             if (!cardNumber || !cin) {
+                messageDiv.style.color = "red";
                 messageDiv.innerText = "Veuillez remplir tous les champs.";
                 return;
             }
@@ -211,41 +173,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             messageDiv.innerText = "";
 
             try {
-                const requestData = {
-                    action: "login_user_by_card",
-                    cardNumber: cardNumber,
-                    password: cin
-                };
-
-                const response = await fetch(loginUrl, {
+                const response = await fetch("https://mijopay.mijocomplexe.workers.dev/", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(requestData)
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action: "login_user_by_card", cardNumber: cardNumber, password: cin })
                 });
-
-                if (!response.ok) {
-                    throw new Error(`Erreur HTTP: ${response.status}`);
-                }
 
                 const data = await response.json();
 
                 if (data.success) {
-                    
                     localStorage.setItem("user", JSON.stringify(data.user));
                     messageDiv.style.color = "green";
                     messageDiv.innerText = "Connexion réussie ! Redirection...";
-                    
-                    setTimeout(() => {
-                        window.location.href = "home.html";
-                    }, 1000);
+                    setTimeout(() => { window.location.href = "home.html"; }, 1000);
                 } else {
                     messageDiv.style.color = "red";
                     messageDiv.innerText = data.error || "Numéro de carte ou CIN incorrect.";
                 }
             } catch (err) {
-                console.error("Erreur de connexion:", err);
                 messageDiv.style.color = "red";
                 messageDiv.innerText = "Erreur de connexion avec le serveur.";
             } finally {
@@ -254,63 +199,77 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }
         }
 
-        // FONCTION MODIFIÉE CI-DESSOUS
-       async function inscrire() {
-    const nom = document.getElementById("nomcomplet").value.trim();
-    const pays = document.getElementById("pays").value.trim();
-    const email = document.getElementById("adresseemail").value.trim();
-    const telephone = document.getElementById("telephone").value.trim();
+        // --- NOUVELLE FONCTION D'INSCRIPTION AUTOMATIQUE ---
+        async function inscrire() {
+            const nom = document.getElementById("nomcomplet").value.trim();
+            const pays = document.getElementById("pays").value.trim();
+            const email = document.getElementById("adresseemail").value.trim();
+            const telephone = document.getElementById("telephone").value.trim();
 
-    if (!nom || !pays || !email || !telephone) {
-        inscriptionMessageDiv.style.color = "red";
-        inscriptionMessageDiv.innerText = "Veuillez remplir tous les champs.";
-        return;
-    }
+            if (!nom || !pays || !email || !telephone) {
+                inscriptionMessageDiv.style.color = "red";
+                inscriptionMessageDiv.innerText = "Veuillez remplir tous les champs.";
+                return;
+            }
 
-    inscriptionBtn.disabled = true;
-    inscriptionBtn.innerText = "Envoi en cours...";
-    inscriptionMessageDiv.innerText = "";
+            inscriptionBtn.disabled = true;
+            inscriptionBtn.innerText = "Création de votre carte en cours...";
+            inscriptionMessageDiv.innerText = "";
 
-    try {
-        const response = await fetch("https://newuser.mijocomplexe.workers.dev/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                action: "submit_request",
-                nom: nom,
-                pays: pays,
-                email: email,
-                telephone: telephone
-            })
-        });
+            try {
+                const response = await fetch(workerUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        action: "auto_register", // Action modifiée pour indiquer au backend de créer directement
+                        nom: nom,
+                        pays: pays,
+                        email: email,
+                        telephone: telephone
+                    })
+                });
 
-        const data = await response.json();
+                const data = await response.json();
 
-        if (response.ok && data.status === 'success') {
-            alert("Demande envoyée avec succès ! 🎉\nNous vous contacterons par WhatsApp ou email une fois terminé.");
-            hideInscription();
-            // Optionnel : vider les champs
-            document.getElementById("nomcomplet").value = "";
-            document.getElementById("adresseemail").value = "";
-            document.getElementById("telephone").value = "";
-        } else {
-            throw new Error(JSON.stringify(data));
+                if (response.ok && data.status === 'success') {
+                    // 1. Sauvegarder dans le localStorage
+                    const newUserCredentials = { NumeroCarte: data.card, CIN: data.cin };
+                    localStorage.setItem("user", JSON.stringify(newUserCredentials));
+
+                    // 2. Remplir automatiquement les champs de connexion
+                    document.getElementById("cardNumber").value = data.card;
+                    document.getElementById("cin").value = data.cin;
+
+                    // 3. Afficher les identifiants sur l'écran de connexion
+                    document.getElementById("displayCard").innerText = data.card;
+                    document.getElementById("displayCin").innerText = data.cin;
+                    document.getElementById("successCredentials").style.display = "block";
+
+                    // 4. Vider le formulaire et retourner à la connexion
+                    document.getElementById("nomcomplet").value = "";
+                    document.getElementById("pays").value = "";
+                    document.getElementById("adresseemail").value = "";
+                    document.getElementById("telephone").value = "";
+                    
+                    hideInscription();
+                } else {
+                    throw new Error(data.message || "Erreur lors de la création.");
+                }
+
+            } catch (err) {
+                console.error("Erreur Inscription:", err);
+                inscriptionMessageDiv.style.color = "red";
+                inscriptionMessageDiv.innerText = "Une erreur est survenue : " + err.message;
+            } finally {
+                inscriptionBtn.disabled = false;
+                inscriptionBtn.innerText = "Valider et Générer ma carte";
+            }
         }
 
-    } catch (err) {
-        console.error("Erreur Inscription:", err);
-        alert("Une erreur est survenue : " + err.message);
-    } finally {
-        inscriptionBtn.disabled = false;
-        inscriptionBtn.innerText = "Valider inscription";
-    }
-}
-        
         function showInscription() {
             document.getElementById("loginContainer").style.display = "none";
             document.getElementById("inscriptionForm").style.display = "block";
+            document.getElementById("successCredentials").style.display = "none"; // Cacher le succès si on réessaie
         }
 
         function hideInscription() {
