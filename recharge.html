@@ -234,8 +234,7 @@
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        const code = document.getElementById('cardCode').value.trim();
-
+        const code = document.getElementById('cardCode').value.trim().replace(/-/g, '');
         messageDiv.style.display = 'none';
         loader.style.display = 'inline-block';
         btnText.textContent = "Vérification...";
