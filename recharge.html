@@ -202,22 +202,29 @@
 </div>
 
 <script>
-    // 1. Récupération des infos depuis le LocalStorage
-    // Note: Assurez-vous que lors de la connexion, vous enregistrez :
-    // localStorage.setItem('nom', userData.NomUtilisateur);
-    // localStorage.setItem('numeroCarte', userData.NumeroCarte);
+    // ==========================================
+    // 1. RÉCUPÉRATION DE LA SESSION (Format MIJO)
+    // ==========================================
+    const userString = localStorage.getItem('user');
     
-    const userName = localStorage.getItem('nom') || "Utilisateur";
-    // Remplace l'ancienne ligne 153 par celle-ci :
-const userCardNumber = localStorage.getItem('numeroCarte') || localStorage.getItem('NumeroCarte') || localStorage.getItem('numero_carte');
-    document.getElementById('userNameDisplay').textContent = userName;
-
-    // Si l'utilisateur n'est pas connecté, on peut le rediriger (optionnel)
-    if (!userCardNumber) {
+    // Si pas de session, redirection immédiate
+    if (!userString || userString === "undefined") {
         alert("Session expirée. Veuillez vous reconnecter.");
-        window.location.href = "login.html"; 
+        window.location.href = "index.html"; 
     }
 
+    const user = JSON.parse(userString);
+    
+    // Extraction des données selon tes noms de champs réels
+    const userName = user.NomUtilisateur || user["Nom Utilisateur"] || user.nom || "Utilisateur";
+    const userCardNumber = user.NumeroCarte; // Utilisation directe du NumeroCarte de l'objet user
+
+    // Affichage du nom en haut de la page
+    document.getElementById('userNameDisplay').textContent = userName;
+
+    // ==========================================
+    // 2. LOGIQUE DE RECHARGE
+    // ==========================================
     const form = document.getElementById('rechargeForm');
     const messageDiv = document.getElementById('message');
     const loader = document.getElementById('loader');
@@ -229,7 +236,6 @@ const userCardNumber = localStorage.getItem('numeroCarte') || localStorage.getIt
         
         const code = document.getElementById('cardCode').value.trim();
 
-        // Réinitialisation de l'UI
         messageDiv.style.display = 'none';
         loader.style.display = 'inline-block';
         btnText.textContent = "Vérification...";
@@ -241,7 +247,7 @@ const userCardNumber = localStorage.getItem('numeroCarte') || localStorage.getIt
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     code: code,
-                    userCardNumber: userCardNumber
+                    userCardNumber: userCardNumber // Envoi du NumeroCarte correct
                 })
             });
 
@@ -251,7 +257,12 @@ const userCardNumber = localStorage.getItem('numeroCarte') || localStorage.getIt
                 messageDiv.className = 'success';
                 messageDiv.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${result.message}<br>Nouveau solde : <b>${result.nouveauSolde} HTG</b>`;
                 messageDiv.style.display = 'block';
-localStorage.setItem('solde', result.nouveauSolde);
+
+                // --- MISE À JOUR SYNCHRONISÉE DU LOCALSTORAGE ---
+                // On met à jour le champ 'Solde' à l'intérieur de l'objet 'user'
+                user.Solde = result.nouveauSolde;
+                localStorage.setItem('user', JSON.stringify(user));
+
                 form.reset();
             } else {
                 messageDiv.className = 'error';
@@ -269,7 +280,7 @@ localStorage.setItem('solde', result.nouveauSolde);
         }
     });
 
-    // Auto-formatage du code (facultatif mais pro) : XXXX-XXXX-XXXX
+    // Formatage auto XXXX-XXXX-XXXX
     document.getElementById('cardCode').addEventListener('input', function (e) {
         let value = e.target.value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
         let formatted = "";
