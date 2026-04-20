@@ -208,8 +208,8 @@
     // localStorage.setItem('numeroCarte', userData.NumeroCarte);
     
     const userName = localStorage.getItem('nom') || "Utilisateur";
-    const userCardNumber = localStorage.getItem('numeroCarte'); // Très important pour le Worker
-
+    // Remplace l'ancienne ligne 153 par celle-ci :
+const userCardNumber = localStorage.getItem('numeroCarte') || localStorage.getItem('NumeroCarte') || localStorage.getItem('numero_carte');
     document.getElementById('userNameDisplay').textContent = userName;
 
     // Si l'utilisateur n'est pas connecté, on peut le rediriger (optionnel)
