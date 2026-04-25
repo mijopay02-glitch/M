@@ -6,6 +6,7 @@
     <title>MIJO PAY - Recharger mon compte</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/html5-qrcode"></script>
     
     <style>
         :root {
@@ -81,9 +82,16 @@
             margin-bottom: 25px;
         }
 
+        /* NOUVEAU: Wrapper pour aligner l'input et le bouton scan */
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
         .input-group {
             position: relative;
-            margin-bottom: 20px;
+            flex-grow: 1; /* L'input prend tout l'espace disponible */
         }
 
         .input-group i {
@@ -111,6 +119,35 @@
             border-color: var(--accent-color);
             outline: none;
             box-shadow: 0 0 8px rgba(255, 204, 0, 0.2);
+        }
+
+        /* NOUVEAU: Style du bouton scan */
+        .btn-scan {
+            background: var(--accent-color);
+            color: var(--primary-color);
+            border: none;
+            border-radius: 12px;
+            width: 55px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: transform 0.2s, background 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-scan:active {
+            transform: scale(0.9);
+        }
+
+        /* NOUVEAU: Zone d'affichage de la caméra */
+        #reader {
+            width: 100%;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            display: none;
+            border: 2px solid var(--accent-color);
         }
 
         .btn-recharge {
@@ -170,86 +207,45 @@
             color: #aaa;
         }
 
-        /* =========================================
-           ANIMATION FINTECH (Grand V de succès)
-           ========================================= */
         .success-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(5px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease;
         }
 
-        .success-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .success-overlay.active { opacity: 1; visibility: visible; }
 
         .success-circle {
-            width: 120px;
-            height: 120px;
-            background-color: var(--success-color);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            width: 120px; height: 120px; background-color: var(--success-color);
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
             box-shadow: 0 10px 30px rgba(46, 204, 113, 0.3);
-            transform: scale(0);
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(0); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .success-overlay.active .success-circle {
-            transform: scale(1);
-        }
+        .success-overlay.active .success-circle { transform: scale(1); }
 
         .success-circle i {
-            color: white;
-            font-size: 60px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.4s ease 0.3s; /* Délai pour apparaître après le cercle */
+            color: white; font-size: 60px; opacity: 0; transform: translateY(20px);
+            transition: all 0.4s ease 0.3s;
         }
 
-        .success-overlay.active .success-circle i {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .success-overlay.active .success-circle i { opacity: 1; transform: translateY(0); }
 
         .success-text {
-            margin-top: 30px;
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            transform: translateY(20px);
-            opacity: 0;
-            transition: all 0.4s ease 0.4s;
+            margin-top: 30px; font-size: 1.5rem; font-weight: 600; color: var(--primary-color);
+            transform: translateY(20px); opacity: 0; transition: all 0.4s ease 0.4s;
         }
 
         .success-amount {
-            font-size: 1.2rem;
-            color: #666;
-            margin-top: 10px;
-            transform: translateY(20px);
-            opacity: 0;
-            transition: all 0.4s ease 0.5s;
+            font-size: 1.2rem; color: #666; margin-top: 10px;
+            transform: translateY(20px); opacity: 0; transition: all 0.4s ease 0.5s;
         }
 
         .success-overlay.active .success-text,
-        .success-overlay.active .success-amount {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .success-overlay.active .success-amount { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body>
@@ -273,10 +269,17 @@
         <h2>Recharger mon compte</h2>
         <p class="subtitle">Saisissez ou scannez le code de votre carte.</p>
 
+        <div id="reader"></div>
+
         <form id="rechargeForm">
-            <div class="input-group">
-                <i class="fa-solid fa-qrcode"></i>
-                <input type="text" id="cardCode" placeholder="MJ75-XXXX-XXXX" maxlength="19" required>
+            <div class="input-wrapper">
+                <div class="input-group">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <input type="text" id="cardCode" placeholder="MJ75-XXXX-XXXX" maxlength="19" required>
+                </div>
+                <button type="button" id="startScanBtn" class="btn-scan" title="Scanner avec la caméra">
+                    <i class="fa-solid fa-camera"></i>
+                </button>
             </div>
 
             <button type="submit" id="submitBtn" class="btn-recharge">
@@ -300,7 +303,6 @@
     let userString = localStorage.getItem('user');
     let user = null;
     
-    // On essaie de parser, mais sans bloquer la page
     try {
         if (userString && userString !== "undefined") {
             user = JSON.parse(userString);
@@ -309,13 +311,12 @@
         console.error("Erreur de lecture du stockage");
     }
 
-    // Affichage du nom (ou repli si vide)
     const userNameDisplay = document.getElementById('userNameDisplay');
     if (user) {
         userNameDisplay.textContent = user.NomUtilisateur || user["Nom Utilisateur"] || user.nom || "Utilisateur";
     } else {
         userNameDisplay.textContent = "Non connecté";
-        userNameDisplay.style.color = "#e74c3c"; // Un petit rouge pour signaler l'état
+        userNameDisplay.style.color = "#e74c3c";
     }
 
     // ==========================================
@@ -333,7 +334,57 @@
     }
 
     // ==========================================
-    // 3. LOGIQUE DE RECHARGE (AVEC VÉRIFICATION)
+    // NOUVEAU: 3. LOGIQUE DU SCANNER CAMÉRA
+    // ==========================================
+    const html5QrCode = new Html5Qrcode("reader");
+    const startScanBtn = document.getElementById('startScanBtn');
+    const readerDiv = document.getElementById('reader');
+    let isScanning = false;
+
+    startScanBtn.addEventListener('click', () => {
+        if (!isScanning) {
+            readerDiv.style.display = "block";
+            html5QrCode.start(
+                { facingMode: "environment" }, // Utilise la caméra arrière sur mobile
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (decodedText) => {
+                    // Code détecté avec succès !
+                    let cleanCode = decodedText;
+                    // Gère le cas où le QR code est un lien complet (ex: https://.../?code=MJ75...)
+                    if(decodedText.includes('code=')) {
+                        cleanCode = decodedText.split('code=')[1];
+                    }
+                    inputField.value = cleanCode;
+                    inputField.dispatchEvent(new Event('input')); // Déclenche le formatage auto
+                    stopScanner();
+                },
+                (errorMessage) => {
+                    // Ignore les erreurs silencieuses pendant la recherche du code
+                }
+            ).then(() => {
+                isScanning = true;
+                startScanBtn.innerHTML = '<i class="fa-solid fa-times"></i>'; // Change l'icône en croix
+                startScanBtn.style.background = "#ccc";
+            }).catch(err => {
+                alert("Erreur d'accès à la caméra. Vérifiez les permissions du navigateur.");
+                readerDiv.style.display = "none";
+            });
+        } else {
+            stopScanner();
+        }
+    });
+
+    function stopScanner() {
+        html5QrCode.stop().then(() => {
+            readerDiv.style.display = "none";
+            isScanning = false;
+            startScanBtn.innerHTML = '<i class="fa-solid fa-camera"></i>';
+            startScanBtn.style.background = "var(--accent-color)";
+        }).catch(err => console.error("Erreur lors de l'arrêt", err));
+    }
+
+    // ==========================================
+    // 4. LOGIQUE DE RECHARGE (AVEC VÉRIFICATION)
     // ==========================================
     const form = document.getElementById('rechargeForm');
     const messageDiv = document.getElementById('message');
@@ -347,12 +398,11 @@
         e.preventDefault();
         messageDiv.style.display = 'none';
 
-        // --- LA VÉRIFICATION CRITIQUE ---
         if (!user || !user.userId) {
             messageDiv.className = 'error';
             messageDiv.innerHTML = `<i class="fa-solid fa-lock"></i> Erreur : Vous devez être connecté pour recharger. <a href="index.html" style="color: inherit; font-weight: bold;">Se connecter ici</a>`;
             messageDiv.style.display = 'block';
-            return; // On arrête tout ici !
+            return; 
         }
 
         const code = inputField.value.trim().replace(/-/g, '');
@@ -373,11 +423,9 @@
             const result = await response.json();
 
             if (result.status === 'success') {
-                // Mise à jour du solde local
                 user.Solde = result.nouveauSolde;
                 localStorage.setItem('user', JSON.stringify(user));
 
-                // Animation Succès
                 successAmountDisplay.innerHTML = `Nouveau solde : <b>${result.nouveauSolde} HTG</b>`;
                 successOverlay.classList.add('active');
 
