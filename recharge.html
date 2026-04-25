@@ -295,39 +295,45 @@
 
 <script>
     // ==========================================
-    // 1. RÉCUPÉRATION DE LA SESSION 
+    // 1. TENTATIVE DE RÉCUPÉRATION DE LA SESSION
     // ==========================================
-    const userString = localStorage.getItem('user');
+    let userString = localStorage.getItem('user');
+    let user = null;
     
-    if (!userString || userString === "undefined") {
-        alert("Session expirée. Veuillez vous reconnecter.");
-        window.location.href = "index.html"; 
+    // On essaie de parser, mais sans bloquer la page
+    try {
+        if (userString && userString !== "undefined") {
+            user = JSON.parse(userString);
+        }
+    } catch (e) {
+        console.error("Erreur de lecture du stockage");
     }
 
-    const user = JSON.parse(userString);
-    const userName = user.NomUtilisateur || user["Nom Utilisateur"] || user.nom || "Utilisateur";
-    const userId = user.userId;
-    
-    document.getElementById('userNameDisplay').textContent = userName;
+    // Affichage du nom (ou repli si vide)
+    const userNameDisplay = document.getElementById('userNameDisplay');
+    if (user) {
+        userNameDisplay.textContent = user.NomUtilisateur || user["Nom Utilisateur"] || user.nom || "Utilisateur";
+    } else {
+        userNameDisplay.textContent = "Non connecté";
+        userNameDisplay.style.color = "#e74c3c"; // Un petit rouge pour signaler l'état
+    }
 
     // ==========================================
-    // 2. LECTURE DU SCANNER QR CODE (Paramètre URL)
+    // 2. LECTURE DU SCANNER (URL)
     // ==========================================
     const urlParams = new URLSearchParams(window.location.search);
     const codeFromScanner = urlParams.get('code');
     const inputField = document.getElementById('cardCode');
 
-    // Si un code est détecté dans l'URL (depuis le scan), on le remplit
     if (codeFromScanner) {
         inputField.value = codeFromScanner;
-        // On déclenche manuellement l'événement 'input' pour appliquer le formatage visuel avec les tirets
         setTimeout(() => {
             inputField.dispatchEvent(new Event('input'));
         }, 100);
     }
 
     // ==========================================
-    // 3. LOGIQUE DE RECHARGE
+    // 3. LOGIQUE DE RECHARGE (AVEC VÉRIFICATION)
     // ==========================================
     const form = document.getElementById('rechargeForm');
     const messageDiv = document.getElementById('message');
@@ -339,10 +345,17 @@
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        // On retire les tirets pour envoyer le code pur au serveur
-        const code = document.getElementById('cardCode').value.trim().replace(/-/g, '');
         messageDiv.style.display = 'none';
+
+        // --- LA VÉRIFICATION CRITIQUE ---
+        if (!user || !user.userId) {
+            messageDiv.className = 'error';
+            messageDiv.innerHTML = `<i class="fa-solid fa-lock"></i> Erreur : Vous devez être connecté pour recharger. <a href="index.html" style="color: inherit; font-weight: bold;">Se connecter ici</a>`;
+            messageDiv.style.display = 'block';
+            return; // On arrête tout ici !
+        }
+
+        const code = inputField.value.trim().replace(/-/g, '');
         loader.style.display = 'inline-block';
         btnText.textContent = "Vérification...";
         submitBtn.disabled = true;
@@ -353,27 +366,24 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     code: code,
-                    userId: userId 
+                    userId: user.userId 
                 })
             });
 
             const result = await response.json();
 
             if (result.status === 'success') {
-                // MISE À JOUR SYNCHRONISÉE DU LOCALSTORAGE
+                // Mise à jour du solde local
                 user.Solde = result.nouveauSolde;
                 localStorage.setItem('user', JSON.stringify(user));
 
-                // AFFICHER L'ANIMATION "GRAND V"
+                // Animation Succès
                 successAmountDisplay.innerHTML = `Nouveau solde : <b>${result.nouveauSolde} HTG</b>`;
                 successOverlay.classList.add('active');
 
                 form.reset();
-
-                // Optionnel : Faire disparaître l'écran après 3 secondes
                 setTimeout(() => {
                     successOverlay.classList.remove('active');
-                    // window.location.href = "dashboard.html"; // Décommenter pour rediriger vers l'accueil après
                 }, 3500);
 
             } else {
@@ -383,7 +393,7 @@
             }
         } catch (error) {
             messageDiv.className = 'error';
-            messageDiv.textContent = "Erreur de connexion avec le serveur.";
+            messageDiv.textContent = "Erreur de connexion avec le serveur MIJO.";
             messageDiv.style.display = 'block';
         } finally {
             loader.style.display = 'none';
@@ -392,13 +402,10 @@
         }
     });
 
-    // Formatage auto intelligent (Gère MJ75-XXXX-XXXX ou numéros simples)
+    // Formatage auto
     inputField.addEventListener('input', function (e) {
-        // Enlève tout sauf les lettres et chiffres
         let value = e.target.value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
         let formatted = "";
-        
-        // Logique de placement des tirets tous les 4 caractères
         for(let i = 0; i < value.length; i++) {
             if(i > 0 && i % 4 === 0) formatted += "-";
             formatted += value[i];
