@@ -185,7 +185,29 @@
         }
 
         .error { background-color: #f8d7da; color: var(--error-color); border: 1px solid #f5c6cb; }
+/* Style du bouton retour */
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+}
 
+.back-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    transform: translateX(-3px);
+    color: var(--accent-color);
+}
         .loader {
             width: 20px;
             height: 20px;
@@ -260,6 +282,9 @@
 
 <div class="container">
     <div class="card">
+        <a href="home.html" class="back-button" title="Retour à l'accueil">
+        <i class="fa-solid fa-arrow-left"></i>
+    </a>
         <div class="logo">MIJO<span>PAY</span></div>
         
         <div id="statusContainer" class="user-status">
