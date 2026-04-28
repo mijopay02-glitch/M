@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIJO PAY - Spécial Fête des Mères</title>
+    <style>
+        :root {
+            --mijo-gold: #D4AF37;
+            --mijo-black: #1A1A1A;
+            --mijo-dark: #111111;
+        }
+
+        body {
+            background-color: var(--mijo-black);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* En-tête de Marque */
+        header {
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            background: linear-gradient(to bottom, #222, var(--mijo-black));
+            border-bottom: 1px solid var(--mijo-gold);
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 150px; /* Ajuste selon ton logo */
+            filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.5));
+        }
+
+        h1 {
+            color: var(--mijo-gold);
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+        }
+
+        /* Zone de la Roue */
+        .wheel-container {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin-bottom: 40px;
+        }
+
+        .wheel-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 8px solid var(--mijo-gold);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1);
+            background: conic-gradient(
+                #222 0deg 45deg, #333 45deg 90deg, 
+                #222 90deg 135deg, #333 135deg 180deg,
+                #222 180deg 225deg, #333 225deg 270deg,
+                #222 270deg 315deg, #333 315deg 360deg
+            );
+        }
+
+        .pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            z-index: 10;
+            filter: drop-shadow(0 2px 5px black);
+        }
+
+        /* Bouton d'Action */
+        .btn-spin {
+            background: linear-gradient(45deg, var(--mijo-gold), #f1d56e);
+            color: black;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .btn-spin:active { transform: scale(0.95); }
+        .btn-spin:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--mijo-dark);
+            border: 2px solid var(--mijo-gold);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            animation: fadeIn 0.5s;
+        }
+
+        .modal-title { color: var(--mijo-gold); font-size: 1.8rem; margin-bottom: 15px; }
+        .modal-body { font-size: 1.1rem; line-height: 1.6; margin-bottom: 25px; }
+
+        .btn-modal {
+            display: block;
+            width: 100%;
+            background: var(--mijo-gold);
+            color: black;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Responsive */
+        @media (max-width: 400px) {
+            .wheel-container { width: 280px; height: 280px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY" class="logo">
+        <h1>Cadeau Fête des Mères</h1>
+    </header>
+
+    <div class="wheel-container">
+        <svg class="pointer" viewBox="0 0 30 40">
+            <path d="M15 40 L30 0 L0 0 Z" fill="#D4AF37"/>
+        </svg>
+        <canvas id="wheelCanvas" class="wheel-canvas" width="400" height="400"></canvas>
+    </div>
+
+    <button id="spinBtn" class="btn-spin" onclick="startSpin()">LANCER LA ROUE</button>
+
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <div id="modalTitle" class="modal-title"></div>
+            <div id="modalBody" class="modal-body"></div>
+            <div id="modalFooter"></div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURATION DES WORKERS
+        const PROMO_WORKER_URL = "https://votre-worker-promo.workers.dev/"; // Worker pour Airtable
+        const PDF_LINK = "https://drive.google.com/file/d/1OSdjQgjPRDMV_yNUHje69qG_v2EqToFY/view?usp=sharing";
+
+        const segments = [
+            { label: "5 $ US", type: "usd" },
+            { label: "10 $ US", type: "usd" },
+            { label: "15 $ US", type: "usd" },
+            { label: "50 HTG", type: "cash" },
+            { label: "100 HTG", type: "cash_blocked" },
+            { label: "250 HTG", type: "cash_blocked" },
+            { label: "Livre PDF", type: "reward" },
+            { label: "Ciné +", type: "reward" }
+        ];
+
+        let canvas = document.getElementById('wheelCanvas');
+        let ctx = canvas.getContext('2d');
+        let spinBtn = document.getElementById('spinBtn');
+        let currentRotation = 0;
+        let userData = null;
+
+        // 1. INITIALISATION ET SESSION (Ta logique existante)
+        window.addEventListener('DOMContentLoaded', () => {
+            const storedUser = localStorage.getItem('user');
+            if (!storedUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+            userData = JSON.parse(storedUser);
+            drawWheel();
+            checkIfAlreadyPlayed();
+        });
+
+        // Dessiner la roue avec les labels
+        function drawWheel() {
+            let arc = (2 * Math.PI) / segments.length;
+            for (let i = 0; i < segments.length; i++) {
+                let angle = i * arc;
+                ctx.fillStyle = (i % 2 === 0) ? "#1A1A1A" : "#222";
+                ctx.beginPath();
+                ctx.moveTo(200, 200);
+                ctx.arc(200, 200, 190, angle, angle + arc);
+                ctx.fill();
+                ctx.strokeStyle = "#D4AF37";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(200, 200);
+                ctx.rotate(angle + arc / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "#D4AF37";
+                ctx.font = "bold 14px Arial";
+                ctx.fillText(segments[i].label, 170, 10);
+                ctx.restore();
+            }
+        }
+
+        // 2. LOGIQUE DE LANCEMENT
+        async function startSpin() {
+            spinBtn.disabled = true;
+
+            // Vérifier le statut US (Simulé par userData.Compte_US_Actif)
+            const isUsActive = userData.Compte_US_Actif === "OUI" || userData.Compte_US_Actif === true;
+            
+            let targetSegmentIndex;
+
+            if (!isUsActive) {
+                // PHASE 1 : Forcer Dollars (Index 0, 1 ou 2)
+                targetSegmentIndex = Math.floor(Math.random() * 3);
+            } else {
+                // PHASE 2 : PDF, Ciné ou 50 HTG (Index 3, 6, 7)
+                const phase2Options = [3, 6, 7];
+                targetSegmentIndex = phase2Options[Math.floor(Math.random() * phase2Options.length)];
+            }
+
+            // Calcul de la rotation (5 tours + angle cible)
+            const segmentArc = 360 / segments.length;
+            const extraDegree = (segments.length - 1 - targetSegmentIndex) * segmentArc + (segmentArc / 2);
+            const totalRotation = currentRotation + (360 * 5) + extraDegree;
+            
+            canvas.style.transform = `rotate(${totalRotation}deg)`;
+            currentRotation = totalRotation;
+
+            // Sauvegarder le fait qu'il a joué via Cloudflare
+            await registerPlay(userData.userId);
+
+            setTimeout(() => {
+                showResult(segments[targetSegmentIndex], isUsActive);
+            }, 5500);
+        }
+
+        // 3. AFFICHAGE RÉSULTAT
+        function showResult(segment, isUsActive) {
+            const modal = document.getElementById('resultModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+            const footer = document.getElementById('modalFooter');
+
+            if (!isUsActive) {
+                // Message Near-Miss
+                title.innerText = "ÉLIGIBILITÉ CONFIRMÉE !";
+                body.innerHTML = `Bravo ! Vous avez aligné la bourse de <b>${segment.label}</b>.<br><br>
+                                  <span style="color:#ff4d4d">⚠ Statut : EN ATTENTE</span><br>
+                                  Votre compte n'est pas configuré pour recevoir des USD. Activez votre compte USD (200 Gdes) pour débloquer ce prix et relancer.`;
+                footer.innerHTML = `<a href="#" onclick="activateUS()" class="btn-modal">ACTIVER MON COMPTE USD (200G)</a>`;
+            } else {
+                // Message Récompense Réelle
+                title.innerText = "FÉLICITATIONS !";
+                if (segment.label === "Livre PDF") {
+                    body.innerHTML = `Vous avez gagné le livre : <br><b>"30 Idées de Business à Petit Budget"</b>.`;
+                    footer.innerHTML = `<a href="${PDF_LINK}" target="_blank" class="btn-modal">TÉLÉCHARGER LE PDF</a>`;
+                } else {
+                    body.innerHTML = `Vous avez gagné : <b>${segment.label}</b> ! <br>Votre gain sera crédité sous 24h.`;
+                    footer.innerHTML = `<a href="home.html" class="btn-modal">RETOUR AU TABLEAU DE BORD</a>`;
+                }
+            }
+            modal.style.display = "flex";
+        }
+
+        // 4. PERSISTENCE & CLOUDFLARE
+        async function registerPlay(userId) {
+            try {
+                await fetch(PROMO_WORKER_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ userId: userId, action: 'mark_played' })
+                });
+            } catch (e) { console.error("Erreur persistence"); }
+        }
+
+        async function activateUS() {
+            // Envoyer à Cloudflare pour activer dans Airtable
+            try {
+                const response = await fetch(PROMO_WORKER_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ userId: userData.userId, action: 'activate_us' })
+                });
+                if (response.ok) {
+                    // Mettre à jour localement et recharger
+                    userData.Compte_US_Actif = true;
+                    localStorage.setItem('user', JSON.stringify(userData));
+                    window.location.reload();
+                }
+            } catch (e) { alert("Erreur lors de l'activation"); }
+        }
+
+        async function checkIfAlreadyPlayed() {
+            // Optionnel : vérifier au chargement si le worker dit que l'user a déjà épuisé ses chances
+        }
+    </script>
+</body>
+</html>
