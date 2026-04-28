@@ -28,6 +28,9 @@
     <title>MIJO PAY - Connexion & Inscription Automatique</title>
     <meta name="description" content="Connectez-vous à MIJO PAY, votre plateforme sécurisée pour toutes vos transactions et gestions de compte en ligne.">
     <link rel="icon" type="image/png" href="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized-sma-e-Nct-Kg2v-RGmg-UPTRI4-Zs-UA-3q5o-P2yu-Q4yup5-Nnqd9-D-g.jpg" sizes="32x32">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -99,6 +102,31 @@
             display: none;
             color: #2e7d32;
         }
+        
+        /* AJOUT : Style pour le bouton WhatsApp */
+        .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 25px;
+            background-color: #25D366;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .whatsapp-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(37, 211, 102, 0.4);
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -119,6 +147,10 @@
         <button id="loginButton" onclick="login()">Se connecter</button>
         <button class="link-btn" onclick="showInscription()">Créer un compte</button>
         <div id="message"></div>
+
+        <a href="https://wa.me/50944990203?text=Bonjour,%20j'ai%20besoin%20d'aide%20avec%20mon%20compte%20MIJO%20PAY." class="whatsapp-btn" target="_blank">
+            <i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> Assistance WhatsApp
+        </a>
     </div>
 
     <div class="container" id="inscriptionForm" style="display:none;">
@@ -134,13 +166,11 @@
 
     <script>
         window.addEventListener("DOMContentLoaded", () => {
-            // Auto-remplissage via localStorage
             const savedUser = JSON.parse(localStorage.getItem("user"));
             if (savedUser && savedUser.NumeroCarte) {
                 document.getElementById("cardNumber").value = savedUser.NumeroCarte;
             }
 
-            // Auto-remplissage via QR Code
             const urlParams = new URLSearchParams(window.location.search);
             const cardNumberFromQr = urlParams.get('cardNumber'); 
             if (cardNumberFromQr) {
@@ -157,7 +187,7 @@
         const messageDiv = document.getElementById('message');
         const inscriptionMessageDiv = document.getElementById('inscriptionMessage');
 
-        // --- FONCTION DE CONNEXION ---
+        // --- FONCTION DE CONNEXION MODIFIÉE ---
         async function login() {
             const cardNumber = document.getElementById("cardNumber").value.trim();
             const cin = document.getElementById("cin").value.trim();
@@ -182,6 +212,19 @@
                 const data = await response.json();
 
                 if (data.success) {
+                    // AJOUT : Vérification du statut de blocage
+                    const echecs = parseInt(data.user.Nombre_Echecs) || 0;
+                    
+                    if (echecs >= 5) {
+                        messageDiv.style.color = "#e74c3c";
+                        messageDiv.innerHTML = `
+                            <i class="fa-solid fa-lock"></i> Accès refusé.<br>
+                            Votre compte est suspendu suite à trop de tentatives de recharge échouées.
+                        `;
+                        return; // On arrête l'exécution ici, pas de redirection !
+                    }
+
+                    // Si le compte n'est pas bloqué, on continue normalement
                     localStorage.setItem("user", JSON.stringify(data.user));
                     messageDiv.style.color = "green";
                     messageDiv.innerText = "Connexion réussie ! Redirection...";
@@ -194,12 +237,13 @@
                 messageDiv.style.color = "red";
                 messageDiv.innerText = "Erreur de connexion avec le serveur.";
             } finally {
-                loginBtn.disabled = false;
+                if(messageDiv.innerHTML.indexOf('lock') === -1) { 
+                    loginBtn.disabled = false;
+                }
                 loginBtn.innerText = "Se connecter";
             }
         }
 
-        // --- NOUVELLE FONCTION D'INSCRIPTION AUTOMATIQUE ---
         async function inscrire() {
             const nom = document.getElementById("nomcomplet").value.trim();
             const pays = document.getElementById("pays").value.trim();
@@ -221,7 +265,7 @@
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        action: "auto_register", // Action modifiée pour indiquer au backend de créer directement
+                        action: "auto_register",
                         nom: nom,
                         pays: pays,
                         email: email,
@@ -232,20 +276,16 @@
                 const data = await response.json();
 
                 if (response.ok && data.status === 'success') {
-                    // 1. Sauvegarder dans le localStorage
                     const newUserCredentials = { NumeroCarte: data.card, CIN: data.cin };
                     localStorage.setItem("user", JSON.stringify(newUserCredentials));
 
-                    // 2. Remplir automatiquement les champs de connexion
                     document.getElementById("cardNumber").value = data.card;
                     document.getElementById("cin").value = data.cin;
 
-                    // 3. Afficher les identifiants sur l'écran de connexion
                     document.getElementById("displayCard").innerText = data.card;
                     document.getElementById("displayCin").innerText = data.cin;
                     document.getElementById("successCredentials").style.display = "block";
 
-                    // 4. Vider le formulaire et retourner à la connexion
                     document.getElementById("nomcomplet").value = "";
                     document.getElementById("pays").value = "";
                     document.getElementById("adresseemail").value = "";
@@ -269,7 +309,7 @@
         function showInscription() {
             document.getElementById("loginContainer").style.display = "none";
             document.getElementById("inscriptionForm").style.display = "block";
-            document.getElementById("successCredentials").style.display = "none"; // Cacher le succès si on réessaie
+            document.getElementById("successCredentials").style.display = "none";
         }
 
         function hideInscription() {
