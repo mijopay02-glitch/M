@@ -135,136 +135,125 @@
     </div>
 
     <script>
-        const PROMO_WORKER_URL = "https://votre-worker-promo.workers.dev/"; 
-        const PDF_LINK = "https://drive.google.com/file/d/1OSdjQgjPRDMV_yNUHje69qG_v2EqToFY/view?usp=sharing";
+    const PROMO_WORKER_URL = "https://votre-worker-promo.workers.dev/"; 
+    const PDF_LINK = "https://drive.google.com/file/d/1OSdjQgjPRDMV_yNUHje69qG_v2EqToFY/view?usp=sharing";
 
-        // IMPORTANT : L'ordre ici doit correspondre à ton dessin
-        const segments = [
-            { label: "5 $ US", type: "usd" },          // Index 0
-            { label: "10 $ US", type: "usd" },         // Index 1
-            { label: "15 $ US", type: "usd" },         // Index 2
-            { label: "50 HTG", type: "cash" },         // Index 3
-            { label: "100 HTG", type: "blocked" },      // Index 4
-            { label: "250 HTG", type: "blocked" },      // Index 5
-            { label: "Livre PDF", type: "reward" },    // Index 6
-            { label: "Ciné +", type: "reward" }        // Index 7
-        ];
+    const segments = [
+        { label: "5 $ US", type: "usd" },          // 0
+        { label: "10 $ US", type: "usd" },         // 1
+        { label: "15 $ US", type: "usd" },         // 2
+        { label: "50 HTG", type: "promo" },        // 3
+        { label: "100 HTG", type: "blocked" },     // 4
+        { label: "250 HTG", type: "blocked" },     // 5
+        { label: "Livre PDF", type: "promo" },     // 6
+        { label: "Ciné +", type: "promo" }         // 7
+    ];
 
-        let canvas = document.getElementById('wheelCanvas');
-        let ctx = canvas.getContext('2d');
-        let spinBtn = document.getElementById('spinBtn');
-        let currentRotation = 0;
-        let userData = null;
+    let canvas = document.getElementById('wheelCanvas');
+    let ctx = canvas.getContext('2d');
+    let spinBtn = document.getElementById('spinBtn');
+    let currentRotation = 0; // On garde en mémoire pour ne jamais reculer
+    let userData = null;
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const storedUser = localStorage.getItem('user');
-            if (!storedUser) { window.location.href = 'index.html'; return; }
-            userData = JSON.parse(storedUser);
-            drawWheel();
-        });
+    window.addEventListener('DOMContentLoaded', () => {
+        const storedUser = localStorage.getItem('user');
+        if (!storedUser) { window.location.href = 'index.html'; return; }
+        userData = JSON.parse(storedUser);
+        drawWheel();
+    });
 
-        function drawWheel() {
-            let arc = (2 * Math.PI) / segments.length;
-            for (let i = 0; i < segments.length; i++) {
-                let angle = i * arc;
-                ctx.fillStyle = (i % 2 === 0) ? "#1A1A1A" : "#222";
-                ctx.beginPath();
-                ctx.moveTo(200, 200);
-                ctx.arc(200, 200, 190, angle, angle + arc);
-                ctx.fill();
-                ctx.strokeStyle = "#D4AF37";
-                ctx.lineWidth = 2;
-                ctx.stroke();
+    function drawWheel() {
+        let arc = (2 * Math.PI) / segments.length;
+        for (let i = 0; i < segments.length; i++) {
+            let angle = i * arc;
+            ctx.fillStyle = (i % 2 === 0) ? "#1A1A1A" : "#222";
+            ctx.beginPath();
+            ctx.moveTo(200, 200);
+            ctx.arc(200, 200, 190, angle, angle + arc);
+            ctx.fill();
+            ctx.strokeStyle = "#D4AF37";
+            ctx.lineWidth = 2;
+            ctx.stroke();
 
-                ctx.save();
-                ctx.translate(200, 200);
-                ctx.rotate(angle + arc / 2);
-                ctx.textAlign = "right";
-                ctx.fillStyle = "#D4AF37";
-                ctx.font = "bold 16px Arial";
-                ctx.fillText(segments[i].label, 170, 10);
-                ctx.restore();
-            }
+            ctx.save();
+            ctx.translate(200, 200);
+            ctx.rotate(angle + arc / 2);
+            ctx.textAlign = "right";
+            ctx.fillStyle = "#D4AF37";
+            ctx.font = "bold 16px Arial";
+            ctx.fillText(segments[i].label, 170, 10);
+            ctx.restore();
         }
+    }
 
-        async function startSpin() {
-            spinBtn.disabled = true;
-            const isUsActive = userData.Compte_US_Actif === "OUI" || userData.Compte_US_Actif === true;
-            
-            let targetIndex;
-            if (!isUsActive) {
-                // PHASE 1 : Tombe obligatoirement sur Dollars (Index 0, 1 ou 2)
-                targetIndex = Math.floor(Math.random() * 3);
+    async function startSpin() {
+        spinBtn.disabled = true;
+        const isUsActive = userData.Compte_US_Actif === "OUI" || userData.Compte_US_Actif === true;
+        
+        // --- SÉLECTION DU GAGNANT ---
+        let possibleChoices = isUsActive 
+            ? segments.filter(s => s.type === "promo") 
+            : segments.filter(s => s.type === "usd");
+
+        const winner = possibleChoices[Math.floor(Math.random() * possibleChoices.length)];
+        const targetIndex = segments.indexOf(winner);
+
+        // --- CALCUL DE LA ROTATION ---
+        const degPerSegment = 360 / segments.length;
+        
+        // 247.5 est le "Magic Number" : (270° pour le haut - 22.5° pour le centre du premier segment)
+        const targetAngle = 247.5 - (targetIndex * degPerSegment);
+        
+        // On ajoute 10 tours (3600°) + le décalage, tout en restant cumulatif
+        const finalRotation = currentRotation + 3600 + (targetAngle - (currentRotation % 360));
+        
+        currentRotation = finalRotation;
+        canvas.style.transform = `rotate(${currentRotation}deg)`;
+        
+        registerPlay(userData.userId);
+
+        setTimeout(() => {
+            showResult(winner, isUsActive);
+        }, 5500);
+    }
+
+    function showResult(segment, isUsActive) {
+        const modal = document.getElementById('resultModal');
+        const title = document.getElementById('modalTitle');
+        const body = document.getElementById('modalBody');
+        const footer = document.getElementById('modalFooter');
+
+        if (!isUsActive) {
+            title.innerText = "ÉLIGIBILITÉ CONFIRMÉE !";
+            body.innerHTML = `Bravo ! Vous avez aligné la bourse de <b>${segment.label}</b>.<br><br><span style="color:#ff4d4d">⚠ Statut : EN ATTENTE</span><br>Activez votre compte USD (200 Gdes) pour débloquer ce prix.`;
+            footer.innerHTML = `<button onclick="activateUS()" class="btn-modal">ACTIVER MON COMPTE USD (200G)</button>`;
+        } else {
+            title.innerText = "FÉLICITATIONS !";
+            if (segment.label === "Livre PDF") {
+                body.innerHTML = `Vous avez gagné le livre : <br><b>"30 Idées de Business à Petit Budget"</b>.`;
+                footer.innerHTML = `<a href="${PDF_LINK}" target="_blank" class="btn-modal">TÉLÉCHARGER LE PDF</a>`;
             } else {
-                // PHASE 2 : Tombe UNIQUEMENT sur PDF (6), Ciné+ (7) ou 50G (3)
-                const secureOptions = [3, 6, 7];
-                targetIndex = secureOptions[Math.floor(Math.random() * secureOptions.length)];
+                body.innerHTML = `Vous avez gagné : <b>${segment.label}</b> ! <br>Votre gain sera crédité sous 24h.`;
+                footer.innerHTML = `<a href="home.html" class="btn-modal">RETOUR AU TABLEAU DE BORD</a>`;
             }
-
-            // CALCUL DE L'ANGLE POUR LA FLECHE EN HAUT
-            const degreesPerSegment = 360 / segments.length;
-            // On calcule l'angle pour que le milieu du segment targetIndex soit sous le pointeur (en haut)
-            // Le pointeur est à 270° dans le repère trigonométrique du canvas
-            const targetDegree = 360 - (targetIndex * degreesPerSegment) - (degreesPerSegment / 2);
-            
-            const totalSpin = currentRotation + (360 * 8) + targetDegree - (currentRotation % 360);
-            
-            canvas.style.transform = `rotate(${totalRotation(targetIndex)}deg)`;
-            
-            // On enregistre la participation
-            registerPlay(userData.userId);
-
-            setTimeout(() => {
-                showResult(segments[targetIndex], isUsActive);
-            }, 5500);
         }
+        modal.style.display = "flex";
+    }
 
-        function totalRotation(index) {
-            const deg = 360 / segments.length;
-            // Formule mathématique pour aligner l'index sur le pointeur en haut
-            const finalAngle = 360 * 10 - (index * deg) - (deg / 2);
-            return finalAngle;
-        }
+    async function registerPlay(userId) {
+        try { fetch(PROMO_WORKER_URL, { method: 'POST', body: JSON.stringify({ userId, action: 'mark_played' }) }); } catch(e){}
+    }
 
-        function showResult(segment, isUsActive) {
-            const modal = document.getElementById('resultModal');
-            const title = document.getElementById('modalTitle');
-            const body = document.getElementById('modalBody');
-            const footer = document.getElementById('modalFooter');
-
-            if (!isUsActive) {
-                title.innerText = "ÉLIGIBILITÉ DÉTECTÉE !";
-                body.innerHTML = `Bravo ! La roue s'est arrêtée sur <b>${segment.label}</b>.<br><br><span style="color:#ff4d4d">🔒 ACCÈS BLOQUÉ</span><br>Votre compte n'est pas International. Activez votre compte USD pour réclamer ce prix.`;
-                footer.innerHTML = `<button onclick="activateUS()" class="btn-modal">ACTIVER MON COMPTE USD (200G)</button>`;
-            } else {
-                title.innerText = "FÉLICITATIONS !";
-                if (segment.label === "Livre PDF") {
-                    body.innerHTML = `Vous avez gagné le livre : <br><b>"30 Idées de Business à Petit Budget"</b>.`;
-                    footer.innerHTML = `<a href="${PDF_LINK}" target="_blank" class="btn-modal">TÉLÉCHARGER MAINTENANT</a>`;
-                } else {
-                    body.innerHTML = `Vous avez gagné : <b>${segment.label}</b> ! <br>Votre cadeau est activé sur votre compte.`;
-                    footer.innerHTML = `<a href="home.html" class="btn-modal">VOIR MON COMPTE</a>`;
-                }
+    async function activateUS() {
+        try {
+            const res = await fetch(PROMO_WORKER_URL, { method: 'POST', body: JSON.stringify({ userId: userData.userId, action: 'activate_us' }) });
+            if (res.ok) {
+                userData.Compte_US_Actif = true;
+                localStorage.setItem('user', JSON.stringify(userData));
+                window.location.reload();
             }
-            modal.style.display = "flex";
-        }
-
-        async function registerPlay(userId) {
-            try { fetch(PROMO_WORKER_URL, { method: 'POST', body: JSON.stringify({ userId, action: 'mark_played' }) }); } catch(e){}
-        }
-
-        async function activateUS() {
-            try {
-                const res = await fetch(PROMO_WORKER_URL, { method: 'POST', body: JSON.stringify({ userId: userData.userId, action: 'activate_us' }) });
-                if (res.ok) {
-                    userData.Compte_US_Actif = true;
-                    localStorage.setItem('user', JSON.stringify(userData));
-                    window.location.reload();
-                } else {
-                    alert("Erreur: Vérifiez votre solde (200 G minimum)");
-                }
-            } catch(e) { alert("Erreur de connexion"); }
-        }
-    </script>
+        } catch(e) { alert("Erreur de connexion"); }
+    }
+</script>
 </body>
 </html>
