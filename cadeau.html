@@ -269,13 +269,21 @@
 
     async function activateUS() {
     try {
+        console.log("Tentative d'activation pour :", userData.userId); // Debug
+        
         const res = await fetch(PROMO_WORKER_URL, { 
             method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, // Précise le format
-            body: JSON.stringify({ userId: userData.userId, action: 'activate_us' }) 
+            headers: { 
+                'Content-Type': 'application/json' // <--- INDISPENSABLE
+            },
+            body: JSON.stringify({ 
+                userId: userData.userId, 
+                action: 'activate_us' 
+            }) 
         });
 
-        const data = await res.json(); // On récupère la réponse du Worker
+        // On essaie de lire la réponse du Worker
+        const data = await res.json();
 
         if (res.ok) {
             alert("Succès : " + data.message);
@@ -283,11 +291,12 @@
             localStorage.setItem('user', JSON.stringify(userData));
             window.location.reload();
         } else {
-            // Ici, on affiche le message précis : "Solde insuffisant", etc.
-            alert("Mijo Pay : " + data.message);
+            // Affiche l'erreur spécifique renvoyée par le Worker (ex: Solde insuffisant)
+            alert("Erreur MIJO PAY : " + (data.message || "Erreur inconnue"));
         }
     } catch(e) { 
-        alert("Erreur de connexion : Vérifiez votre accès internet ou l'état du serveur."); 
+        console.error("Détail de l'erreur :", e);
+        alert("Impossible de joindre le serveur. Vérifiez votre connexion ou si le Worker est bien déployé."); 
     }
 }
 </script>
