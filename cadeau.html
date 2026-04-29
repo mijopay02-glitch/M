@@ -168,6 +168,11 @@
             return; 
         }
         userData = JSON.parse(storedUser);
+        if (userData.Promo_Meres_Joue === true || userData.Promo_Meres_Joue === "OUI") {
+            spinBtn.disabled = true;
+            spinBtn.innerText = "DÉJÀ JOUÉ";
+            alert("Vous avez déjà récupéré votre cadeau pour la Fête des Mères !");
+        }
         drawWheel();
     });
 
@@ -198,6 +203,7 @@
 
     // 4. LOGIQUE DE LANCEMENT
     async function startSpin() {
+        if (userData.Promo_Meres_Joue === true || userData.Promo_Meres_Joue === "OUI") return;
         spinBtn.disabled = true;
         const isUsActive = userData.Compte_US_Actif === "OUI" || userData.Compte_US_Actif === true;
         
@@ -224,7 +230,8 @@
         canvas.style.transform = `rotate(${currentRotation}deg)`;
         
         registerPlay(userData.userId);
-
+userData.Promo_Meres_Joue = true;
+        localStorage.setItem('user', JSON.stringify(userData));
         setTimeout(() => {
             showResult(winner, isUsActive);
         }, 5500);
