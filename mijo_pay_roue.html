@@ -294,7 +294,7 @@
         <polygon points="14,0 28,28 14,20 0,28" fill="#D4AF37"/>
       </svg>
     </div>
-    <canvas id="wheel" width="680" height="680"></canvas>
+   <canvas id="wheel" width="1360" height="1360"></canvas>
     <div class="center-cap"></div>
   </div>
 
@@ -340,7 +340,7 @@
 
   const canvas = document.getElementById('wheel');
   const ctx    = canvas.getContext('2d');
-  const CX = 340, CY = 340, R = 320;
+  const CX = 680, CY = 680, R = 640;
 
   // ─── Draw full wheel ──────────────────────────────────────────────
   function drawWheel(winnerAlpha = 1, othersAlpha = 1) {
@@ -392,17 +392,17 @@
 
       if (isWinner) {
         // Two-line label
-        ctx.font = 'bold 22px Montserrat, sans-serif';
+        ctx.font = 'bold 44px Montserrat, sans-serif';
         ctx.fillStyle = '#0A0A0A';
         // shadow
         ctx.shadowColor = 'rgba(0,0,0,.4)';
         ctx.shadowBlur  = 4;
         const lines = ['CADEAU', 'MAMAN MIJO'];
         lines.forEach((l, li) => {
-          ctx.fillText(l, 70, (li - 0.5) * 28);
+          ctx.fillText(l, 140, (li - 0.5) * 56);
         });
       } else {
-        ctx.font = 'bold 20px Montserrat, sans-serif';
+        ctx.font = 'bold 40px Montserrat, sans-serif';
         ctx.fillStyle = `rgba(212,175,55,${alpha})`;
         ctx.shadowColor = 'rgba(0,0,0,.5)';
         ctx.shadowBlur  = 6;
