@@ -135,7 +135,8 @@
     </div>
 
     <script>
-    const PROMO_WORKER_URL = "https://votre-worker-promo.workers.dev/"; 
+    // 1. CONFIGURATION GLOBALE
+    const PROMO_WORKER_URL = "https://rough-heart-d656.mijocomplexe.workers.dev/"; 
     const PDF_LINK = "https://drive.google.com/file/d/1OSdjQgjPRDMV_yNUHje69qG_v2EqToFY/view?usp=sharing";
 
     const segments = [
@@ -152,16 +153,24 @@
     let canvas = document.getElementById('wheelCanvas');
     let ctx = canvas.getContext('2d');
     let spinBtn = document.getElementById('spinBtn');
-    let currentRotation = 0; // On garde en mémoire pour ne jamais reculer
+    
+    // VARIABLES D'ÉTAT
+    let currentRotation = 0; 
+    let lastResultIndex = null; 
     let userData = null;
 
+    // 2. INITIALISATION
     window.addEventListener('DOMContentLoaded', () => {
         const storedUser = localStorage.getItem('user');
-        if (!storedUser) { window.location.href = 'index.html'; return; }
+        if (!storedUser) { 
+            window.location.href = 'index.html'; 
+            return; 
+        }
         userData = JSON.parse(storedUser);
         drawWheel();
     });
 
+    // 3. DESSIN DE LA ROUE
     function drawWheel() {
         let arc = (2 * Math.PI) / segments.length;
         for (let i = 0; i < segments.length; i++) {
@@ -186,30 +195,42 @@
         }
     }
 
+    // 4. LOGIQUE DE LANCEMENT
     async function startSpin() {
         spinBtn.disabled = true;
         const isUsActive = userData.Compte_US_Actif === "OUI" || userData.Compte_US_Actif === true;
         
-        // --- SÉLECTION DU GAGNANT ---
+        // --- FILTRE INTELLIGENT (Pas deux fois le même résultat) ---
         let possibleChoices = isUsActive 
-            ? segments.filter(s => s.type === "promo") 
-            : segments.filter(s => s.type === "usd");
+            ? segments.filter((s, idx) => s.type === "promo" && idx !== lastResultIndex) 
+            : segments.filter((s, idx) => s.type === "usd" && idx !== lastResultIndex);
+
+        // Sécurité au cas où (si un seul choix possible)
+        if (possibleChoices.length === 0) {
+            possibleChoices = isUsActive 
+                ? segments.filter(s => s.type === "promo") 
+                : segments.filter(s => s.type === "usd");
+        }
 
         const winner = possibleChoices[Math.floor(Math.random() * possibleChoices.length)];
         const targetIndex = segments.indexOf(winner);
+        
+        // On mémorise l'index pour le prochain coup
+        lastResultIndex = targetIndex;
 
-        // --- CALCUL DE LA ROTATION ---
+        // --- CALCUL DE LA ROTATION (Alignement Nord) ---
         const degPerSegment = 360 / segments.length;
         
-        // 247.5 est le "Magic Number" : (270° pour le haut - 22.5° pour le centre du premier segment)
+        // 247.5° ajuste le segment 0 pour qu'il soit bien en haut face au pointeur
         const targetAngle = 247.5 - (targetIndex * degPerSegment);
         
-        // On ajoute 10 tours (3600°) + le décalage, tout en restant cumulatif
-        const finalRotation = currentRotation + 3600 + (targetAngle - (currentRotation % 360));
+        // On ajoute 10 tours + calcul de compensation pour ne jamais reculer
+        const rotationSupplementaire = 3600 + (targetAngle - (currentRotation % 360));
+        currentRotation += rotationSupplementaire;
         
-        currentRotation = finalRotation;
         canvas.style.transform = `rotate(${currentRotation}deg)`;
         
+        // Backend
         registerPlay(userData.userId);
 
         setTimeout(() => {
@@ -217,6 +238,7 @@
         }, 5500);
     }
 
+    // 5. AFFICHAGE RÉSULTAT
     function showResult(segment, isUsActive) {
         const modal = document.getElementById('resultModal');
         const title = document.getElementById('modalTitle');
@@ -224,22 +246,23 @@
         const footer = document.getElementById('modalFooter');
 
         if (!isUsActive) {
-            title.innerText = "ÉLIGIBILITÉ CONFIRMÉE !";
-            body.innerHTML = `Bravo ! Vous avez aligné la bourse de <b>${segment.label}</b>.<br><br><span style="color:#ff4d4d">⚠ Statut : EN ATTENTE</span><br>Activez votre compte USD (200 Gdes) pour débloquer ce prix.`;
+            title.innerText = "ÉLIGIBILITÉ DÉTECTÉE !";
+            body.innerHTML = `Félicitations ! Vous avez aligné le lot : <b>${segment.label}</b>.<br><br><span style="color:#ff4d4d">🔒 ACCÈS RESTREINT</span><br>Votre compte n'est pas encore "International". Activez-le pour débloquer vos gains.`;
             footer.innerHTML = `<button onclick="activateUS()" class="btn-modal">ACTIVER MON COMPTE USD (200G)</button>`;
         } else {
-            title.innerText = "FÉLICITATIONS !";
+            title.innerText = "BRAVO !";
             if (segment.label === "Livre PDF") {
-                body.innerHTML = `Vous avez gagné le livre : <br><b>"30 Idées de Business à Petit Budget"</b>.`;
-                footer.innerHTML = `<a href="${PDF_LINK}" target="_blank" class="btn-modal">TÉLÉCHARGER LE PDF</a>`;
+                body.innerHTML = `Vous gagnez : <br><b>"30 Idées de Business à Petit Budget"</b>.`;
+                footer.innerHTML = `<a href="${PDF_LINK}" target="_blank" class="btn-modal">TÉLÉCHARGER MAINTENANT</a>`;
             } else {
-                body.innerHTML = `Vous avez gagné : <b>${segment.label}</b> ! <br>Votre gain sera crédité sous 24h.`;
-                footer.innerHTML = `<a href="home.html" class="btn-modal">RETOUR AU TABLEAU DE BORD</a>`;
+                body.innerHTML = `Gagné : <b>${segment.label}</b> ! <br>Ce montant sera ajouté à votre balance MIJO PAY.`;
+                footer.innerHTML = `<a href="home.html" class="btn-modal">RETOUR AU PORTEFEUILLE</a>`;
             }
         }
         modal.style.display = "flex";
     }
 
+    // 6. FONCTIONS RÉSEAU
     async function registerPlay(userId) {
         try { fetch(PROMO_WORKER_URL, { method: 'POST', body: JSON.stringify({ userId, action: 'mark_played' }) }); } catch(e){}
     }
@@ -252,7 +275,7 @@
                 localStorage.setItem('user', JSON.stringify(userData));
                 window.location.reload();
             }
-        } catch(e) { alert("Erreur de connexion"); }
+        } catch(e) { alert("Erreur réseau"); }
     }
 </script>
 </body>
