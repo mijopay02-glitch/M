@@ -139,15 +139,16 @@
     const PROMO_WORKER_URL = "https://rough-heart-d656.mijocomplexe.workers.dev/"; 
     const PDF_LINK = "https://drive.google.com/file/d/1OSdjQgjPRDMV_yNUHje69qG_v2EqToFY/view?usp=sharing";
 
+    // AJOUT : La propriété 'amount' pour savoir combien créditer
     const segments = [
-        { label: "5 $ US", type: "usd" },          // 0
-        { label: "10 $ US", type: "usd" },         // 1
-        { label: "15 $ US", type: "usd" },         // 2
-        { label: "50 HTG", type: "promo" },        // 3
-        { label: "100 HTG", type: "blocked" },     // 4
-        { label: "250 HTG", type: "blocked" },     // 5
-        { label: "Livre PDF", type: "promo" },     // 6
-        { label: "Ciné +", type: "promo" }         // 7
+        { label: "5 $ US", type: "usd", amount: 5 },         // 0
+        { label: "10 $ US", type: "usd", amount: 10 },       // 1
+        { label: "15 $ US", type: "usd", amount: 15 },       // 2
+        { label: "50 HTG", type: "promo", amount: 50 },      // 3
+        { label: "100 HTG", type: "blocked", amount: 100 },  // 4
+        { label: "250 HTG", type: "blocked", amount: 250 },  // 5
+        { label: "Livre PDF", type: "promo", amount: 0 },    // 6
+        { label: "Ciné +", type: "promo", amount: 0 }        // 7
     ];
 
     let canvas = document.getElementById('wheelCanvas');
@@ -200,12 +201,10 @@
         spinBtn.disabled = true;
         const isUsActive = userData.Compte_US_Actif === "OUI" || userData.Compte_US_Actif === true;
         
-        // --- FILTRE INTELLIGENT (Pas deux fois le même résultat) ---
         let possibleChoices = isUsActive 
             ? segments.filter((s, idx) => s.type === "promo" && idx !== lastResultIndex) 
             : segments.filter((s, idx) => s.type === "usd" && idx !== lastResultIndex);
 
-        // Sécurité au cas où (si un seul choix possible)
         if (possibleChoices.length === 0) {
             possibleChoices = isUsActive 
                 ? segments.filter(s => s.type === "promo") 
@@ -215,22 +214,15 @@
         const winner = possibleChoices[Math.floor(Math.random() * possibleChoices.length)];
         const targetIndex = segments.indexOf(winner);
         
-        // On mémorise l'index pour le prochain coup
         lastResultIndex = targetIndex;
 
-        // --- CALCUL DE LA ROTATION (Alignement Nord) ---
         const degPerSegment = 360 / segments.length;
-        
-        // 247.5° ajuste le segment 0 pour qu'il soit bien en haut face au pointeur
         const targetAngle = 247.5 - (targetIndex * degPerSegment);
-        
-        // On ajoute 10 tours + calcul de compensation pour ne jamais reculer
         const rotationSupplementaire = 3600 + (targetAngle - (currentRotation % 360));
         currentRotation += rotationSupplementaire;
         
         canvas.style.transform = `rotate(${currentRotation}deg)`;
         
-        // Backend
         registerPlay(userData.userId);
 
         setTimeout(() => {
@@ -238,7 +230,7 @@
         }, 5500);
     }
 
-    // 5. AFFICHAGE RÉSULTAT
+    // 5. AFFICHAGE RÉSULTAT ET CRÉDIT DES GAINS
     function showResult(segment, isUsActive) {
         const modal = document.getElementById('resultModal');
         const title = document.getElementById('modalTitle');
@@ -254,9 +246,15 @@
             if (segment.label === "Livre PDF") {
                 body.innerHTML = `Vous gagnez : <br><b>"30 Idées de Business à Petit Budget"</b>.`;
                 footer.innerHTML = `<a href="${PDF_LINK}" target="_blank" class="btn-modal">TÉLÉCHARGER MAINTENANT</a>`;
+            } else if (segment.label === "Ciné +") {
+                body.innerHTML = `Gagné : <b>${segment.label}</b> ! <br>Ce lot sera ajouté à votre profil.`;
+                footer.innerHTML = `<a href="home.html" class="btn-modal">RETOUR AU PORTEFEUILLE</a>`;
             } else {
                 body.innerHTML = `Gagné : <b>${segment.label}</b> ! <br>Ce montant sera ajouté à votre balance MIJO PAY.`;
                 footer.innerHTML = `<a href="home.html" class="btn-modal">RETOUR AU PORTEFEUILLE</a>`;
+                
+                // AJOUT : On appelle la fonction pour créditer l'argent réel
+                claimWin(segment.amount);
             }
         }
         modal.style.display = "flex";
@@ -267,38 +265,70 @@
         try { fetch(PROMO_WORKER_URL, { method: 'POST', body: JSON.stringify({ userId, action: 'mark_played' }) }); } catch(e){}
     }
 
-    async function activateUS() {
-    try {
-        console.log("Tentative d'activation pour :", userData.userId); // Debug
-        
-        const res = await fetch(PROMO_WORKER_URL, { 
-            method: 'POST', 
-            headers: { 
-                'Content-Type': 'application/json' // <--- INDISPENSABLE
-            },
-            body: JSON.stringify({ 
-                userId: userData.userId, 
-                action: 'activate_us' 
-            }) 
-        });
+    // NOUVELLE FONCTION : Pour créditer les gains sur Airtable et dans le LocalStorage
+    async function claimWin(amount) {
+        if (!amount || amount <= 0) return; 
 
-        // On essaie de lire la réponse du Worker
-        const data = await res.json();
+        try {
+            const res = await fetch(PROMO_WORKER_URL, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    userId: userData.userId, 
+                    action: 'claim_prize',
+                    amount: amount
+                }) 
+            });
 
-        if (res.ok) {
-            alert("Succès : " + data.message);
-            userData.Compte_US_Actif = true;
-            localStorage.setItem('user', JSON.stringify(userData));
-            window.location.reload();
-        } else {
-            // Affiche l'erreur spécifique renvoyée par le Worker (ex: Solde insuffisant)
-            alert("Erreur MIJO PAY : " + (data.message || "Erreur inconnue"));
+            const data = await res.json();
+            
+            if (res.ok && data.nouveauSolde !== undefined) {
+                // Mise à jour du solde dans le navigateur
+                userData.Solde = data.nouveauSolde;
+                localStorage.setItem('user', JSON.stringify(userData));
+                console.log("Gain crédité avec succès ! Nouveau solde :", userData.Solde);
+            }
+        } catch(e) { 
+            console.error("Erreur lors du crédit :", e);
         }
-    } catch(e) { 
-        console.error("Détail de l'erreur :", e);
-        alert("Impossible de joindre le serveur. Vérifiez votre connexion ou si le Worker est bien déployé."); 
     }
-}
+
+    async function activateUS() {
+        try {
+            console.log("Tentative d'activation pour :", userData.userId);
+            
+            const res = await fetch(PROMO_WORKER_URL, { 
+                method: 'POST', 
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    userId: userData.userId, 
+                    action: 'activate_us' 
+                }) 
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                alert("Succès : " + data.message);
+                
+                // CORRECTION : On met à jour l'état et l'argent dans le stockage local
+                userData.Compte_US_Actif = true;
+                if (data.nouveauSolde !== undefined) {
+                    userData.Solde = data.nouveauSolde;
+                }
+                
+                localStorage.setItem('user', JSON.stringify(userData));
+                window.location.reload();
+            } else {
+                alert("Erreur MIJO PAY : " + (data.message || "Erreur inconnue"));
+            }
+        } catch(e) { 
+            console.error("Détail de l'erreur :", e);
+            alert("Impossible de joindre le serveur. Vérifiez votre connexion ou si le Worker est bien déployé."); 
+        }
+    }
 </script>
 </body>
 </html>
