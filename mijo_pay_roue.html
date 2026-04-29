@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIJO PAY – Cadeau Maman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --gold:   #D4AF37;
+      --gold2:  #F5D06A;
+      --gold3:  #A87C1A;
+      --dark:   #0A0A0A;
+      --panel:  #141414;
+      --cream:  #F5EDD4;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--dark);
+      color: white;
+      font-family: 'Montserrat', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Background texture ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(212,175,55,.12) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(212,175,55,.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── Thin gold lines decoration ── */
+    .deco-line {
+      position: fixed;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      height: 1px; width: 60%; opacity: .25;
+    }
+    .deco-line.top    { top: 15%; }
+    .deco-line.bottom { bottom: 15%; }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+      transition: opacity .8s, transform .8s;
+    }
+    .logo {
+      width: 110px;
+      filter: drop-shadow(0 0 18px rgba(212,175,55,.5));
+      margin-bottom: 10px;
+    }
+    .tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      letter-spacing: 6px;
+      color: var(--gold);
+      text-transform: uppercase;
+      opacity: .85;
+    }
+
+    /* ── Wheel wrapper ── */
+    .wheel-wrap {
+      position: relative;
+      width: 340px;
+      height: 340px;
+      filter: drop-shadow(0 0 40px rgba(212,175,55,.3));
+    }
+
+    /* Outer ring */
+    .wheel-ring {
+      position: absolute; inset: -8px;
+      border-radius: 50%;
+      border: 8px solid transparent;
+      background:
+        linear-gradient(var(--dark), var(--dark)) padding-box,
+        conic-gradient(var(--gold2), var(--gold3), var(--gold), var(--gold2), var(--gold3), var(--gold), var(--gold2)) border-box;
+      animation: ringRotate 6s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes ringRotate { to { transform: rotate(360deg); } }
+
+    canvas#wheel {
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      display: block;
+      transition: transform 7s cubic-bezier(0.17, 0.01, 0.05, 1);
+      will-change: transform;
+    }
+
+    /* Center cap */
+    .center-cap {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, var(--gold2), var(--gold3));
+      border: 3px solid var(--dark);
+      box-shadow: 0 0 18px rgba(212,175,55,.6);
+      z-index: 20;
+    }
+
+    /* Pointer */
+    .pointer {
+      position: absolute;
+      top: -18px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .pointer svg {
+      width: 28px; height: 28px;
+      filter: drop-shadow(0 2px 8px rgba(212,175,55,.7));
+    }
+
+    /* ── Spin button ── */
+    .btn-wrap {
+      margin-top: 32px;
+      position: relative;
+      transition: opacity .5s, transform .5s;
+    }
+    #btnSpin {
+      position: relative;
+      background: linear-gradient(135deg, var(--gold2), var(--gold3));
+      color: #0A0A0A;
+      border: none;
+      padding: 16px 52px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: .95rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      border-radius: 60px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform .15s, box-shadow .3s;
+      box-shadow: 0 0 30px rgba(212,175,55,.35), inset 0 1px 0 rgba(255,255,255,.3);
+    }
+    #btnSpin::after {
+      content: '';
+      position: absolute;
+      top: -50%; left: -60%;
+      width: 40%; height: 200%;
+      background: rgba(255,255,255,.25);
+      transform: skewX(-20deg);
+      transition: left .4s ease;
+    }
+    #btnSpin:hover::after { left: 130%; }
+    #btnSpin:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 40px rgba(212,175,55,.55), inset 0 1px 0 rgba(255,255,255,.3);
+    }
+    #btnSpin:active { transform: scale(.97); }
+
+    /* ── Result overlay ── */
+    #result {
+      position: fixed; inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.2s;
+      background: radial-gradient(ellipse 90% 70% at 50% 50%, rgba(0,0,0,.85) 0%, rgba(0,0,0,.98) 100%);
+      z-index: 100;
+    }
+    #result.visible { opacity: 1; pointer-events: all; }
+
+    .result-eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      letter-spacing: 8px;
+      color: var(--gold);
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all .9s .3s;
+    }
+    .result-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 7vw, 3.8rem);
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.1;
+      background: linear-gradient(135deg, var(--gold2), var(--cream), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 0;
+      transform: translateY(18px) scale(.95);
+      transition: all 1s .6s;
+    }
+    .result-divider {
+      width: 120px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity .8s .9s;
+    }
+    .result-dates {
+      display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all .8s 1.1s;
+    }
+    .date-pill {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: .8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      border: 1px solid var(--gold);
+      border-radius: 40px;
+      color: var(--gold);
+      background: rgba(212,175,55,.07);
+    }
+    .result-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,.6);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all .8s 1.4s;
+    }
+    .result-logo {
+      width: 80px;
+      filter: drop-shadow(0 0 14px rgba(212,175,55,.4));
+      opacity: 0;
+      transform: scale(.85);
+      transition: all .9s 1.7s;
+    }
+
+    #result.visible .result-eyebrow,
+    #result.visible .result-title,
+    #result.visible .result-dates,
+    #result.visible .result-sub,
+    #result.visible .result-logo {
+      opacity: 1;
+      transform: none;
+    }
+    #result.visible .result-divider { opacity: 1; }
+
+    /* Particle burst ring */
+    .burst-ring {
+      position: fixed; top: 50%; left: 50%;
+      width: 10px; height: 10px;
+      transform: translate(-50%, -50%) scale(0);
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99;
+    }
+    .burst-ring.animate {
+      animation: burstRing 1s ease-out forwards;
+    }
+    @keyframes burstRing {
+      to { transform: translate(-50%, -50%) scale(40); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="deco-line top"></div>
+  <div class="deco-line bottom"></div>
+
+  <div class="header" id="header">
+    <img src="https://i.postimg.cc/yYCsdY18/remove.png" class="logo" alt="MIJO PAY">
+    <div class="tagline">Mijo Pay Présente</div>
+  </div>
+
+  <div class="wheel-wrap">
+    <div class="wheel-ring"></div>
+    <div class="pointer">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="14,0 28,28 14,20 0,28" fill="#D4AF37"/>
+      </svg>
+    </div>
+    <canvas id="wheel" width="680" height="680"></canvas>
+    <div class="center-cap"></div>
+  </div>
+
+  <div class="btn-wrap" id="btnWrap">
+    <button id="btnSpin" onclick="spin()">✦ Lancer le Cadeau ✦</button>
+  </div>
+
+  <!-- Result overlay -->
+  <div id="result">
+    <div class="result-eyebrow">C'est Gagné !</div>
+    <div class="result-title">Cadeau Maman<br>MIJO PAY</div>
+    <div class="result-divider"></div>
+    <div class="result-dates">
+      <span class="date-pill">Samedi</span>
+      <span class="date-pill">Dimanche</span>
+      <span class="date-pill">Lundi</span>
+    </div>
+    <div class="result-sub">Récupérez votre cadeau sur l'app MIJO PAY</div>
+    <img src="https://i.postimg.cc/yYCsdY18/remove.png" class="result-logo" alt="MIJO PAY">
+  </div>
+
+  <div class="burst-ring" id="burst"></div>
+
+<script>
+  // ─── Wheel data ───────────────────────────────────────────────────
+  const SEGMENTS = [
+    { label: "CADEAU MAMAN MIJO", winner: true },
+    { label: "5$ US",             winner: false },
+    { label: "100 HTG",           winner: false },
+    { label: "LIVRE PDF",         winner: false },
+    { label: "CINÉ +",            winner: false },
+    { label: "50 HTG",            winner: false },
+    { label: "15$ US",            winner: false },
+    { label: "10$ US",            winner: false },
+  ];
+  const N      = SEGMENTS.length;
+  const ARC    = (2 * Math.PI) / N;
+  const GOLD   = '#D4AF37';
+  const GOLD2  = '#F5D06A';
+  const GOLD3  = '#A87C1A';
+  const DARK1  = '#111111';
+  const DARK2  = '#1A1A1A';
+
+  const canvas = document.getElementById('wheel');
+  const ctx    = canvas.getContext('2d');
+  const CX = 340, CY = 340, R = 320;
+
+  // ─── Draw full wheel ──────────────────────────────────────────────
+  function drawWheel(winnerAlpha = 1, othersAlpha = 1) {
+    ctx.clearRect(0, 0, 680, 680);
+
+    SEGMENTS.forEach((seg, i) => {
+      const start = i * ARC;
+      const end   = start + ARC;
+      const mid   = start + ARC / 2;
+      const isWinner = seg.winner;
+      const alpha = isWinner ? winnerAlpha : othersAlpha;
+
+      if (alpha <= 0) return;
+
+      ctx.save();
+      ctx.globalAlpha = alpha;
+
+      // Segment fill gradient
+      const grd = ctx.createRadialGradient(CX, CY, 0, CX, CY, R);
+      if (isWinner) {
+        grd.addColorStop(0,   '#F0CC50');
+        grd.addColorStop(0.6, GOLD);
+        grd.addColorStop(1,   GOLD3);
+      } else {
+        grd.addColorStop(0,   '#1E1E1E');
+        grd.addColorStop(1,   DARK1);
+      }
+
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.moveTo(CX, CY);
+      ctx.arc(CX, CY, R, start, end);
+      ctx.closePath();
+      ctx.fill();
+
+      // Stroke
+      ctx.strokeStyle = isWinner
+        ? `rgba(245,208,106,${alpha})`
+        : `rgba(212,175,55,${Math.min(alpha, 0.35)})`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Label
+      ctx.save();
+      ctx.translate(CX, CY);
+      ctx.rotate(mid);
+      ctx.textAlign   = 'left';
+      ctx.textBaseline = 'middle';
+
+      if (isWinner) {
+        // Two-line label
+        ctx.font = 'bold 22px Montserrat, sans-serif';
+        ctx.fillStyle = '#0A0A0A';
+        // shadow
+        ctx.shadowColor = 'rgba(0,0,0,.4)';
+        ctx.shadowBlur  = 4;
+        const lines = ['CADEAU', 'MAMAN MIJO'];
+        lines.forEach((l, li) => {
+          ctx.fillText(l, 70, (li - 0.5) * 28);
+        });
+      } else {
+        ctx.font = 'bold 20px Montserrat, sans-serif';
+        ctx.fillStyle = `rgba(212,175,55,${alpha})`;
+        ctx.shadowColor = 'rgba(0,0,0,.5)';
+        ctx.shadowBlur  = 6;
+        ctx.fillText(seg.label, 65, 0);
+      }
+      ctx.restore();
+      ctx.restore();
+    });
+
+    // Inner shadow
+    const inner = ctx.createRadialGradient(CX, CY, R * 0.72, CX, CY, R);
+    inner.addColorStop(0,   'transparent');
+    inner.addColorStop(1,   'rgba(0,0,0,.45)');
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = inner;
+    ctx.beginPath();
+    ctx.arc(CX, CY, R, 0, 2 * Math.PI);
+    ctx.fill();
+
+    // Center gloss
+    const gloss = ctx.createRadialGradient(CX - 30, CY - 30, 0, CX, CY, R * 0.55);
+    gloss.addColorStop(0,   'rgba(255,255,255,.04)');
+    gloss.addColorStop(1,   'transparent');
+    ctx.fillStyle = gloss;
+    ctx.beginPath();
+    ctx.arc(CX, CY, R, 0, 2 * Math.PI);
+    ctx.fill();
+  }
+
+  drawWheel();
+
+  // ─── Spin logic ───────────────────────────────────────────────────
+  let spinning = false;
+
+  function spin() {
+    if (spinning) return;
+    spinning = true;
+
+    document.getElementById('btnWrap').style.opacity  = '0';
+    document.getElementById('btnWrap').style.transform = 'translateY(12px)';
+    setTimeout(() => { document.getElementById('btnWrap').style.display = 'none'; }, 500);
+
+    // Rotation math:
+    // Segment 0 center is at angle 22.5° from 3-o'clock (canvas coords)
+    // = 112.5° clockwise from 12-o'clock
+    // Pointer is at 12-o'clock (top)
+    // To bring center of seg 0 to top → rotate canvas CW by:
+    //   (360 - 112.5) = 247.5° to avoid going full circle, or +247.5° CW
+    // Add 8 full spins: 360*8 = 2880
+    const extraSpins  = 360 * 8;
+    const alignAngle  = 247.5;
+    const total       = extraSpins + alignAngle;
+
+    canvas.style.transform = `rotate(${total}deg)`;
+
+    // After spin ends (7 s transition)
+    setTimeout(onLanded, 7100);
+  }
+
+  function onLanded() {
+    // Burst ring
+    document.getElementById('burst').classList.add('animate');
+
+    // Confetti bursts
+    const fire = (opts) => confetti({ spread: 70, origin: { y: 0.5 }, ...opts });
+    fire({ particleCount: 80,  colors: [GOLD, GOLD2, '#fff'],  angle: 60 });
+    fire({ particleCount: 80,  colors: [GOLD, '#fff', GOLD3],  angle: 120 });
+    setTimeout(() => fire({ particleCount: 120, colors: [GOLD2, '#fff', GOLD], spread: 100 }), 300);
+
+    // Fade out other segments
+    let othersAlpha = 1;
+    const fadeInterval = setInterval(() => {
+      othersAlpha -= 0.06;
+      if (othersAlpha <= 0) {
+        othersAlpha = 0;
+        clearInterval(fadeInterval);
+        showResult();
+      }
+      drawWheel(1, Math.max(0, othersAlpha));
+    }, 40);
+  }
+
+  function showResult() {
+    setTimeout(() => {
+      document.getElementById('result').classList.add('visible');
+      // Second confetti wave
+      setTimeout(() => {
+        confetti({ particleCount: 200, spread: 120, origin: { y: 0.35 }, colors: [GOLD, GOLD2, '#fff'] });
+      }, 800);
+    }, 300);
+  }
+</script>
+</body>
+</html>
