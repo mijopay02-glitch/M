@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>MIJO PAY - Pub Promo</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        :root { --gold: #D4AF37; --dark: #111; }
+        body { background: var(--dark); color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        
+        .header { text-align: center; margin-bottom: 20px; transition: opacity 0.5s; }
+        .logo { width: 120px; margin-bottom: 10px; }
+        
+        .wheel-box { position: relative; width: 350px; height: 350px; }
+        canvas { width: 100%; height: 100%; border: 5px solid var(--gold); border-radius: 50%; transition: transform 6s cubic-bezier(0.2, 0, 0, 1), opacity 1s; }
+        
+        .pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--gold); z-index: 10; }
+
+        #btnSpin { margin-top: 30px; background: var(--gold); color: black; border: none; padding: 15px 40px; font-weight: bold; border-radius: 50px; cursor: pointer; font-size: 1.1rem; }
+
+        /* Effet final */
+        .promo-info { position: absolute; top: 55%; text-align: center; opacity: 0; transform: translateY(20px); transition: all 1s; width: 100%; }
+        .promo-info.show { opacity: 1; transform: translateY(0); }
+        .date-badge { background: white; color: black; padding: 5px 15px; border-radius: 5px; font-weight: bold; font-size: 1.4rem; margin-top: 10px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <div class="header" id="header">
+        <img src="https://i.postimg.cc/yYCsdY18/remove.png" class="logo">
+        <div style="color: var(--gold); letter-spacing: 2px;">MIJO PAY PRÉSENTE</div>
+    </div>
+
+    <div class="wheel-box">
+        <div class="pointer"></div>
+        <canvas id="wheel" width="500" height="500"></canvas>
+    </div>
+
+    <button id="btnSpin" onclick="spin()">LANCER LE CADEAU</button>
+
+    <div class="promo-info" id="info">
+        <h2 style="color: var(--gold); margin-bottom: 5px;">LANCEMENT OFFICIEL</h2>
+        <div class="date-badge">SAMEDI - DIMANCHE - LUNDI</div>
+        <p style="font-size: 0.9rem; opacity: 0.8;">Récupérez votre cadeau sur l'app MIJO PAY</p>
+    </div>
+
+<script>
+    const canvas = document.getElementById('wheel');
+    const ctx = canvas.getContext('2d');
+    const segments = ["CADEAU MAMAN MIJO", "5$ US", "100 HTG", "LIVRE PDF", "CINÉ +", "50 HTG", "15$ US", "10$ US"];
+    
+    function draw(opacity = 1) {
+        const arc = (2 * Math.PI) / segments.length;
+        ctx.clearRect(0,0,500,500);
+        segments.forEach((label, i) => {
+            const angle = i * arc;
+            ctx.fillStyle = (i === 0) ? `rgba(212, 175, 55, ${opacity})` : `rgba(34, 34, 34, ${opacity})`;
+            ctx.beginPath();
+            ctx.moveTo(250, 250);
+            ctx.arc(250, 250, 240, angle, angle + arc);
+            ctx.fill();
+            ctx.strokeStyle = `rgba(212, 175, 55, ${opacity})`;
+            ctx.stroke();
+
+            ctx.save();
+            ctx.translate(250, 250);
+            ctx.rotate(angle + arc/2);
+            ctx.fillStyle = (i === 0) ? "black" : `rgba(212, 175, 55, ${opacity})`;
+            ctx.font = "bold 18px Arial";
+            ctx.fillText(label, 70, 10);
+            ctx.restore();
+        });
+    }
+
+    draw();
+
+    function spin() {
+        document.getElementById('btnSpin').style.display = 'none';
+        
+        // Force l'arrêt sur l'index 0 (CADEAU MAMAN MIJO)
+        // 270 degrés est le haut du canvas, donc on calcule pour que l'index 0 finisse là
+        const totalRotation = 360 * 8 + 270; 
+        canvas.style.transform = `rotate(${totalRotation}deg)`;
+
+        setTimeout(() => {
+            // Explosion de confettis
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#D4AF37', '#ffffff'] });
+            
+            // Disparition des autres cases
+            let op = 1;
+            const fade = setInterval(() => {
+                op -= 0.1;
+                if(op <= 0) {
+                    clearInterval(fade);
+                    document.getElementById('info').classList.add('show');
+                }
+                // On redessine avec seulement la case gagnante lumineuse
+                drawOnlyWinner(op);
+            }, 50);
+        }, 6500);
+    }
+
+    function drawOnlyWinner(otherOpacity) {
+        const arc = (2 * Math.PI) / segments.length;
+        ctx.clearRect(0,0,500,500);
+        
+        // Case gagnante (Index 0)
+        ctx.fillStyle = "#D4AF37";
+        ctx.beginPath(); ctx.moveTo(250, 250);
+        ctx.arc(250, 250, 240, 0, arc); ctx.fill();
+        ctx.fillStyle = "black";
+        ctx.save(); ctx.translate(250, 250); ctx.rotate(arc/2);
+        ctx.font = "bold 22px Arial"; ctx.fillText(segments[0], 60, 10); ctx.restore();
+
+        // Les autres s'effacent
+        if(otherOpacity > 0) {
+            for(let i=1; i<segments.length; i++) {
+                ctx.fillStyle = `rgba(34,34,34,${otherOpacity})`;
+                ctx.beginPath(); ctx.moveTo(250, 250);
+                ctx.arc(250, 250, 240, i*arc, (i+1)*arc); ctx.fill();
+            }
+        }
+    }
+</script>
+</body>
+</html>
