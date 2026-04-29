@@ -230,8 +230,7 @@
         canvas.style.transform = `rotate(${currentRotation}deg)`;
         
         registerPlay(userData.userId);
-userData.Promo_Meres_Joue = true;
-        localStorage.setItem('user', JSON.stringify(userData));
+
         setTimeout(() => {
             showResult(winner, isUsActive);
         }, 5500);
