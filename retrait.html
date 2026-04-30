@@ -131,6 +131,7 @@ const annulerBouton = document.getElementById('annuler-retrait');
     const API_URL = 'https://retrait.mijocomplexe.workers.dev/';
     const EXPIRATION_TIME = 120; // 2 minutes en secondes
 let currentTransactionCode = null;
+         let currentMontantTotal = 0;
     let user = JSON.parse(localStorage.getItem('user'));
     let countdownInterval;
     let statusCheckInterval; // Nouveau minuteur
@@ -228,9 +229,9 @@ function annulerRetrait() {
             return;
         }
         const frais = montant * 0.04;
-        const montantTotal = montant + frais;
+        currentMontantTotal = montant + frais;
 
-        if (montantTotal > user.Solde) {
+        if if (currentMontantTotal > user.Solde) {
             statusMessage.textContent = "Solde insuffisant pour ce retrait, y compris les frais.";
             statusMessage.style.color = "red";
             return;
@@ -256,7 +257,11 @@ function annulerRetrait() {
             const result = await response.json();
 
             if (result.status === "success") {
-                
+                clearInterval(countdownInterval);
+    clearInterval(statusCheckInterval);
+    // Utilise la nouvelle variable globale
+    user.Solde = user.Solde - currentMontantTotal; 
+    saveToHistory("Retrait", currentMontantTotal, "Succès", "Agent MIJO PAY", user.userId);
                 localStorage.setItem('user', JSON.stringify(user));
                 clientSoldeSpan.textContent = user.Solde.toFixed(2);
                  
