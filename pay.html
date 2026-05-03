@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIJO PAY - Paiement Sécurisé</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #2196F3, #0d47a1);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .logo img { width: 80px; }
+    .montant-box {
+      background: #e3f2fd;
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .montant-box .label {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    .montant-box .montant {
+      font-size: 32px;
+      font-weight: bold;
+      color: #2196F3;
+    }
+    .montant-box .description {
+      font-size: 13px;
+      color: #888;
+      margin-top: 5px;
+    }
+    .merchant-badge {
+      text-align: center;
+      font-size: 12px;
+      color: #4CAF50;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      font-size: 15px;
+      transition: border-color 0.3s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #2196F3;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover { background: #0b7dda; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    #message {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .secure-badge {
+      text-align: center;
+      font-size: 11px;
+      color: #999;
+      margin-top: 15px;
+    }
+    .secure-badge i { color: #4CAF50; }
+    .success-screen {
+      display: none;
+      text-align: center;
+    }
+    .success-screen .checkmark {
+      font-size: 60px;
+      color: #4CAF50;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  
+  <!-- Écran de paiement -->
+  <div id="payment-screen">
+    <div class="logo">
+      <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY">
+    </div>
+
+    <div class="montant-box">
+      <div class="label">Montant à payer</div>
+      <div class="montant" id="display-amount">...</div>
+      <div class="description" id="display-description"></div>
+    </div>
+
+    <div class="merchant-badge">
+      <i class="fa fa-store"></i> 
+      Marchand : <strong id="display-merchant"></strong>
+    </div>
+
+    <input type="text" id="cardNumber" placeholder="Numéro de carte MIJO PAY">
+    <input type="password" id="cin" placeholder="Mot de passe (CIN)">
+
+    <button id="pay-btn" onclick="payer()">
+      <i class="fa fa-lock"></i> Confirmer le paiement
+    </button>
+
+    <div id="message"></div>
+
+    <div class="secure-badge">
+      <i class="fa fa-shield-halved"></i> 
+      Paiement 100% sécurisé par MIJO PAY
+    </div>
+  </div>
+
+  <!-- Écran de succès -->
+  <div id="success-screen" class="success-screen">
+    <div class="checkmark">✅</div>
+    <h2>Paiement Réussi !</h2>
+    <p style="color:#666; margin-top:10px;">
+      Votre paiement a été traité avec succès.
+    </p>
+    <p id="redirect-message" style="color:#2196F3; margin-top:15px; font-size:13px;">
+      Redirection en cours...
+    </p>
+  </div>
+
+</div>
+
+<script>
+  // Récupère les paramètres de l'URL
+  const params = new URLSearchParams(window.location.search);
+  const merchant = params.get('merchant');
+  const amount = parseFloat(params.get('amount'));
+  const currency = params.get('currency') || 'HTG';
+  const description = params.get('description');
+  const redirect = params.get('redirect');
+
+  // Affiche les infos
+  document.getElementById('display-amount').innerText = amount + ' ' + currency;
+  document.getElementById('display-description').innerText = description || '';
+  document.getElementById('display-merchant').innerText = merchant || 'Inconnu';
+
+  const WORKER_URL = "https://payment.mijocomplexe.workers.dev/";
+
+  async function payer() {
+    const cardNumber = document.getElementById('cardNumber').value.trim();
+    const cin = document.getElementById('cin').value.trim();
+    const btn = document.getElementById('pay-btn');
+    const msg = document.getElementById('message');
+
+    if (!cardNumber || !cin) {
+      msg.style.color = 'red';
+      msg.innerText = 'Veuillez remplir tous les champs.';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerText = 'Traitement en cours...';
+    msg.innerText = '';
+
+    try {
+      const response = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'merchant_payment',
+          cardNumber: cardNumber,
+          cin: cin,
+          amount: amount,
+          currency: currency,
+          merchantId: merchant,
+          description: description
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Affiche l'écran de succès
+        document.getElementById('payment-screen').style.display = 'none';
+        document.getElementById('success-screen').style.display = 'block';
+
+        // Redirige le partenaire après 3 secondes
+        if (redirect) {
+          setTimeout(() => {
+            // Notifie la fenêtre parente (popup)
+            if (window.opener) {
+              window.opener.postMessage({
+                type: 'MIJO_PAYMENT_SUCCESS',
+                token: data.paymentToken,
+                amount: amount,
+                merchant: merchant
+              }, '*');
+            }
+            window.location.href = redirect + 
+              '?payment=success&token=' + data.paymentToken;
+          }, 3000);
+        }
+      } else {
+        msg.style.color = 'red';
+        msg.innerText = data.error || 'Paiement refusé. Vérifiez vos informations.';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa fa-lock"></i> Confirmer le paiement';
+      }
+
+    } catch (err) {
+      msg.style.color = 'red';
+      msg.innerText = 'Erreur de connexion. Réessayez.';
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa fa-lock"></i> Confirmer le paiement';
+    }
+  }
+</script>
+</body>
+</html>
