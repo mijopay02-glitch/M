@@ -6,6 +6,41 @@
 <title>MIJO Business Challenge — Résultats 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+  .cert-track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 20px 0;
+  scrollbar-width: none; /* Cache la barre de défilement */
+}
+
+.cert-item {
+  min-width: 250px;
+  height: 180px;
+  background: var(--dark-card);
+  border: 1px solid var(--gold-semi);
+  border-radius: 12px;
+  position: relative;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.cert-item:hover {
+  transform: scale(1.05) rotate(2deg); /* Effet d'éloge : le certificat se met en avant */
+  box-shadow: 0 0 20px var(--gold-glow);
+}
+
+.cert-overlay {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: var(--gold);
+  color: var(--dark);
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
   :root {
     --gold: #C9A84C; --gold-light: #F0D080; --gold-dark: #8A6A1E;
     --noir: #0A0A0A; --noir2: #111111; --noir3: #1A1A1A;
@@ -231,7 +266,34 @@
   <div class="stat-item"><span class="stat-num" data-target="3">0</span><span class="stat-label">Sites Web Créés</span></div>
   <div class="stat-item"><span class="stat-num" data-target="1">0</span><span class="stat-label">Grand Champion</span></div>
 </div>
+<div class="cert-gallery">
+  <div class="section-tag">Authenticité & Reconnaissance</div>
+  <h2 class="section-title">Certificats <span>Officiels</span></h2>
+  
+  <div class="cert-track">
+    <!-- Certificat 1 (Le Tien par exemple) -->
+    <div class="cert-item">
+      <img src="https://i.postimg.cc/MKvhdmWM/certificat-Marc-Elie-Telcy.png" alt="Certificat MIJO">
+      <div class="cert-overlay">Vérifié</div>
+    </div>
+    <!-- Certificat 2 -->
+    <div class="cert-item">
+      <img src="https://i.postimg.cc/wBH48XdT/certificat-Shaskia-Tercier.png" alt="Certificat MIJO">
+      <div class="cert-overlay">Vérifié</div>
+    </div>
+    <div class="cert-item">
+      <img src="https://i.postimg.cc/gjf4MRDz/certificat-Alexa-Stania-Accede.png" alt="Certificat MIJO">
+      <div class="cert-overlay">Vérifié</div>
+    </div>
+    <div class="cert-item">
+      <img src="https://i.postimg.cc/7Y0jFY2y/certificat-Mace-Lyne-Rose-Darah.png" alt="Certificat MIJO">
+      <div class="cert-overlay">Vérifié</div>
+    </div>
+    <!-- Ajoute autant de certificats que tu veux -->
+  </div>
+</div>
 
+<style>
 <!-- PODIUM -->
 <section id="champions">
   <div class="section-header">
