@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIJO Business Challenge — Résultats 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C; --gold-light: #F0D080; --gold-dark: #8A6A1E;
+    --noir: #0A0A0A; --noir2: #111111; --noir3: #1A1A1A;
+    --blanc: #F5F0E8; --gris: #888; --silver: #C8C8C8; --bronze: #CD7F32;
+    --emerald: #2ECC71; --red: #E84B25; --orange: #F7A600;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--noir);color:var(--blanc);font-family:'DM Sans',sans-serif;overflow-x:hidden;cursor:none;}
+
+  #cursor{position:fixed;width:12px;height:12px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s;mix-blend-mode:difference;}
+  #cursor-ring{position:fixed;width:38px;height:38px;border:1px solid rgba(201,168,76,.5);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);}
+  #particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+
+  #loader{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;z-index:9999;transition:opacity .8s,visibility .8s;}
+  #loader.out{opacity:0;visibility:hidden;}
+  .loader-logo{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:900;background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:loadPulse 1s ease-in-out infinite;}
+  @keyframes loadPulse{0%,100%{opacity:.4}50%{opacity:1}}
+  .loader-bar{width:180px;height:2px;background:#1a1a1a;border-radius:99px;overflow:hidden;}
+  .loader-fill{height:100%;background:linear-gradient(90deg,var(--gold-dark),var(--gold-light));animation:loadBar 1.6s ease forwards;}
+  @keyframes loadBar{from{width:0}to{width:100%}}
+  .loader-txt{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:#444;}
+
+  .live-badge{position:fixed;top:1.4rem;right:1.4rem;background:rgba(8,8,8,.92);border:1px solid rgba(201,168,76,.25);border-radius:99px;padding:.45rem 1rem;display:flex;align-items:center;gap:.45rem;font-family:'Space Mono',monospace;font-size:.6rem;color:var(--gold);z-index:100;letter-spacing:.1em;backdrop-filter:blur(12px);animation:fadeUp 1s 1.6s both;}
+  .live-dot{width:6px;height:6px;border-radius:50%;background:var(--emerald);animation:blink 1.4s ease-in-out infinite;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+
+  nav{position:fixed;top:0;left:0;right:0;padding:1.3rem 2rem;display:flex;align-items:center;z-index:100;backdrop-filter:blur(20px);background:rgba(8,8,8,.7);border-bottom:1px solid rgba(201,168,76,.07);animation:fadeUp .8s both;}
+  .nav-logo{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:900;background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .nav-right{margin-left:auto;display:flex;gap:1.8rem;align-items:center;}
+  .nav-link{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gris);text-decoration:none;font-family:'Space Mono',monospace;transition:color .3s;}
+  .nav-link:hover{color:var(--gold);}
+  .nav-cta{font-size:.72rem;padding:.45rem 1.1rem;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);border-radius:99px;color:var(--gold);text-decoration:none;font-family:'Space Mono',monospace;letter-spacing:.1em;transition:all .3s;}
+  .nav-cta:hover{background:rgba(201,168,76,.18);}
+
+  .hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;z-index:1;padding:2rem;}
+  .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 55% at 50% 0%,#1c1200 0%,var(--noir) 70%);}
+  .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(201,168,76,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.035) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 22s linear infinite;}
+  @keyframes gridMove{from{transform:translateY(0)}to{transform:translateY(60px)}}
+  .hero-badge{font-family:'Space Mono',monospace;font-size:.65rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;border:1px solid rgba(201,168,76,.28);padding:.45rem 1.4rem;border-radius:99px;margin-bottom:2rem;animation:fadeUp 1s .2s both;backdrop-filter:blur(8px);background:rgba(201,168,76,.04);}
+  .hero-title{font-family:'Playfair Display',serif;font-size:clamp(2.8rem,7.5vw,6.5rem);font-weight:900;text-align:center;line-height:1.06;animation:fadeUp 1s .4s both;}
+  .hero-title .accent{background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dark));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .hero-sub{margin-top:1.4rem;font-size:1.05rem;color:var(--gris);text-align:center;max-width:500px;line-height:1.75;animation:fadeUp 1s .6s both;}
+  .hero-date{margin-top:.9rem;font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.2em;color:var(--gold);opacity:.65;animation:fadeUp 1s .8s both;}
+  .hero-stat-btn{margin-top:2.2rem;display:inline-flex;align-items:center;gap:.7rem;padding:.85rem 2rem;background:linear-gradient(135deg,var(--gold-light),var(--gold));border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.95rem;color:#000;cursor:none;text-decoration:none;transition:all .3s;box-shadow:0 4px 24px rgba(201,168,76,.38);animation:fadeUp 1s 1s both;}
+  .hero-stat-btn:hover{box-shadow:0 8px 40px rgba(201,168,76,.6);transform:translateY(-3px);}
+  .hero-scroll{position:absolute;bottom:2.5rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--gris);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;font-family:'Space Mono',monospace;animation:fadeUp 1s 1.2s both;}
+  .hero-scroll-line{width:1px;height:54px;background:linear-gradient(var(--gold),transparent);animation:scPulse 2s ease-in-out infinite;}
+  @keyframes scPulse{0%,100%{opacity:.25}50%{opacity:1}}
+
+  .stats-bar{position:relative;z-index:1;display:flex;justify-content:center;background:var(--noir2);border-top:1px solid rgba(201,168,76,.12);border-bottom:1px solid rgba(201,168,76,.12);}
+  .stat-item{flex:1;max-width:200px;padding:1.8rem 1rem;text-align:center;border-right:1px solid rgba(201,168,76,.08);}
+  .stat-item:last-child{border-right:none;}
+  .stat-num{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block;}
+  .stat-label{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gris);font-family:'Space Mono',monospace;margin-top:.25rem;line-height:1.4;}
+
+  section{position:relative;z-index:1;}
+  .section-header{text-align:center;padding:5rem 2rem 3rem;}
+  .section-eyebrow{font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;display:inline-block;}
+  .section-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,4.5vw,3.2rem);font-weight:900;line-height:1.1;}
+  .section-divider{width:56px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.4rem auto 0;}
+
+  .podium-section{padding:0 2rem 6rem;}
+  .podium{max-width:1060px;margin:0 auto;display:grid;grid-template-columns:1fr 1.14fr 1fr;gap:1.4rem;align-items:end;}
+  .winner-card{border-radius:16px;overflow:hidden;position:relative;transition:transform .4s cubic-bezier(.175,.885,.32,1.275);cursor:none;}
+  .winner-card:hover{transform:translateY(-8px) scale(1.01);}
+  .winner-card.rank-2{background:linear-gradient(145deg,#1c1c1c,#141414);border:1px solid rgba(200,200,200,.18);}
+  .winner-card.rank-1{background:linear-gradient(145deg,#1e1800,#120f00);border:1px solid rgba(201,168,76,.38);box-shadow:0 0 60px rgba(201,168,76,.14),0 20px 60px rgba(0,0,0,.5);}
+  .winner-card.rank-3{background:linear-gradient(145deg,#1a1410,#100d08);border:1px solid rgba(205,127,50,.2);}
+  .card-crown{position:absolute;top:-1px;left:50%;transform:translateX(-50%);font-size:2rem;line-height:1;filter:drop-shadow(0 0 10px rgba(201,168,76,.9));animation:crownFloat 3s ease-in-out infinite;}
+  @keyframes crownFloat{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-5px)}}
+  .card-glow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,.07) 0%,transparent 70%);}
+  .rank-1::after{content:'';position:absolute;inset:-2px;border-radius:18px;background:linear-gradient(135deg,var(--gold-light),transparent,var(--gold));z-index:-1;opacity:.35;animation:bGlow 3s ease-in-out infinite;}
+  @keyframes bGlow{0%,100%{opacity:.18}50%{opacity:.45}}
+  .card-rank{position:absolute;top:1.2rem;right:1.2rem;font-family:'Playfair Display',serif;font-size:1rem;font-weight:900;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .rank-1 .card-rank{background:linear-gradient(135deg,var(--gold-light),var(--gold-dark));color:#000;}
+  .rank-2 .card-rank{background:linear-gradient(135deg,#e0e0e0,#888);color:#000;}
+  .rank-3 .card-rank{background:linear-gradient(135deg,#d4916c,#7a4b22);color:#fff;}
+  .card-preview{width:100%;height:175px;position:relative;overflow:hidden;background:#0d0d0d;}
+  .rank-1 .card-preview{height:210px;}
+  .card-preview-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3.2rem;position:relative;}
+  .preview-pattern{position:absolute;inset:0;opacity:.08;background-image:repeating-linear-gradient(45deg,var(--gold) 0,var(--gold) 1px,transparent 0,transparent 50%);background-size:20px 20px;}
+  .preview-icon{position:relative;z-index:1;filter:drop-shadow(0 0 18px rgba(201,168,76,.5));}
+  .preview-label{position:absolute;bottom:0;left:0;right:0;padding:.45rem 1rem;background:linear-gradient(transparent,rgba(0,0,0,.8));font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;font-family:'Space Mono',monospace;color:var(--gris);text-align:center;}
+  .card-body{padding:1.5rem;}
+  .rank-1 .card-body{padding:1.8rem;}
+  .card-project-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin-bottom:.28rem;}
+  .rank-1 .card-project-name{font-size:1.55rem;background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .card-founder{font-size:.75rem;color:var(--gris);font-family:'Space Mono',monospace;margin-bottom:1rem;}
+  .rank-1 .card-founder{color:var(--gold);}
+  .card-desc{font-size:.84rem;line-height:1.65;color:#aaa;margin-bottom:1.2rem;}
+  .card-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1.2rem;}
+  .tag{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.22rem .6rem;border-radius:99px;font-family:'Space Mono',monospace;background:rgba(201,168,76,.07);color:var(--gold);border:1px solid rgba(201,168,76,.14);}
+  .card-visit-btn{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:.75rem;border-radius:8px;border:none;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.85rem;cursor:none;transition:all .3s;text-decoration:none;letter-spacing:.04em;}
+  .rank-1 .card-visit-btn{background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#000;box-shadow:0 4px 20px rgba(201,168,76,.38);}
+  .rank-1 .card-visit-btn:hover{box-shadow:0 6px 30px rgba(201,168,76,.6);}
+  .rank-2 .card-visit-btn,.rank-3 .card-visit-btn{background:rgba(255,255,255,.05);color:var(--blanc);border:1px solid rgba(255,255,255,.1);}
+  .rank-2 .card-visit-btn:hover,.rank-3 .card-visit-btn:hover{background:rgba(255,255,255,.1);}
+  .trophy-zone{text-align:center;padding-bottom:1.5rem;}
+  .trophy-big{font-size:4.5rem;display:inline-block;animation:tAnim 2.5s ease-in-out infinite;filter:drop-shadow(0 0 28px rgba(201,168,76,.8));}
+  @keyframes tAnim{0%,100%{transform:scale(1) rotate(-2deg)}50%{transform:scale(1.06) rotate(2deg);filter:drop-shadow(0 0 45px rgba(201,168,76,1))}}
+
+  /* STATS SECTION */
+  .stats-link-section{background:var(--noir2);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);padding:5rem 2rem;text-align:center;}
+  .stats-link-inner{max-width:660px;margin:0 auto;}
+  .stats-link-label{font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;display:block;}
+  .stats-link-title{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:900;margin-bottom:1rem;}
+  .stats-link-sub{font-size:.92rem;color:var(--gris);line-height:1.7;margin-bottom:2.5rem;}
+  .stats-dashboard-btn{display:inline-flex;align-items:center;gap:.8rem;padding:1rem 2.2rem;background:linear-gradient(135deg,var(--red),var(--orange));border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1rem;color:#fff;cursor:none;text-decoration:none;transition:all .3s;box-shadow:0 4px 24px rgba(232,75,37,.35);}
+  .stats-dashboard-btn:hover{box-shadow:0 8px 36px rgba(232,75,37,.55);transform:translateY(-3px);}
+  .stats-preview{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:3rem;}
+  .sp-item{background:var(--noir3);border-radius:10px;padding:1.2rem;border:1px solid rgba(255,255,255,.05);}
+  .sp-num{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;display:block;}
+  .sp-num.r{color:var(--red)}.sp-num.o{color:var(--orange)}.sp-num.g{color:var(--gold)}
+  .sp-label{font-size:.6rem;color:var(--gris);font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.1em;margin-top:.2rem;line-height:1.4;display:block;}
+
+  /* ESPACE */
+  .espace-section{padding:6rem 2rem;background:linear-gradient(180deg,var(--noir) 0%,#0d0a00 100%);}
+  .espace-wrap{max-width:700px;margin:3rem auto 0;}
+  .espace-card{background:var(--noir2);border-radius:20px;border:1px solid rgba(201,168,76,.18);overflow:hidden;position:relative;}
+  .espace-card::before{content:'';position:absolute;top:-1px;left:10%;right:10%;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+  .espace-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,.06);}
+  .espace-tab{flex:1;padding:1rem .5rem;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;font-family:'Space Mono',monospace;color:var(--gris);background:none;border:none;cursor:none;transition:all .3s;border-bottom:2px solid transparent;}
+  .espace-tab.active{color:var(--gold);border-bottom-color:var(--gold);background:rgba(201,168,76,.04);}
+  .espace-tab:hover{color:var(--blanc);}
+  .espace-pane{display:none;padding:2.5rem;}
+  .espace-pane.active{display:block;animation:fadeUp .4s ease;}
+  .e-icon{font-size:3rem;text-align:center;display:block;margin-bottom:1.5rem;}
+  .e-title{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;text-align:center;margin-bottom:.6rem;}
+  .e-sub{font-size:.88rem;color:var(--gris);line-height:1.65;text-align:center;margin-bottom:2rem;}
+  .e-form{display:flex;flex-direction:column;gap:1rem;}
+  .e-input{padding:.88rem 1.2rem;background:var(--noir3);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:var(--blanc);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .3s;}
+  .e-input:focus{border-color:rgba(201,168,76,.4);}
+  .e-input::placeholder{color:#555;}
+  .e-btn{padding:1rem;width:100%;background:linear-gradient(135deg,var(--gold-light),var(--gold));border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;color:#000;cursor:none;font-size:.95rem;transition:all .3s;}
+  .e-btn:hover{box-shadow:0 6px 28px rgba(201,168,76,.4);transform:translateY(-1px);}
+  .e-msg{display:none;margin-top:1rem;padding:1rem 1.2rem;border-radius:8px;font-size:.85rem;line-height:1.6;animation:fadeUp .4s ease;}
+  .e-msg.gold{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);color:#ccc;}
+  .e-msg.green{background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.2);color:#aaa;}
+  .e-msg.err{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.2);color:#ccc;}
+  .e-feats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem;}
+  .e-feat{background:var(--noir3);border-radius:10px;padding:1.2rem 1rem;border:1px solid rgba(255,255,255,.05);text-align:center;}
+  .e-feat-icon{font-size:1.6rem;display:block;margin-bottom:.5rem;}
+  .e-feat-title{font-size:.75rem;font-weight:600;color:var(--blanc);margin-bottom:.2rem;}
+  .e-feat-sub{font-size:.65rem;color:var(--gris);font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.05em;}
+
+  /* RANK TABLE */
+  .rank-row{display:flex;align-items:center;gap:1rem;padding:1rem 1.2rem;border-radius:10px;margin-bottom:.8rem;}
+  .rr-gold{background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.04));border:1px solid rgba(201,168,76,.2);}
+  .rr-silver{background:rgba(200,200,200,.05);border:1px solid rgba(200,200,200,.12);}
+  .rr-bronze{background:rgba(205,127,50,.06);border:1px solid rgba(205,127,50,.15);}
+  .rr-part{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);}
+
+  footer{background:#000;border-top:1px solid rgba(201,168,76,.1);padding:3rem 2rem;text-align:center;}
+  .footer-logo{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:900;background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.4rem;}
+  .footer-tagline{font-size:.7rem;color:#555;font-family:'Space Mono',monospace;letter-spacing:.2em;}
+  .footer-links{display:flex;justify-content:center;gap:2rem;margin-top:1.5rem;}
+  .footer-link{font-size:.68rem;color:#444;font-family:'Space Mono',monospace;text-decoration:none;letter-spacing:.1em;transition:color .3s;}
+  .footer-link:hover{color:var(--gold);}
+  .footer-copy{margin-top:1.5rem;font-size:.65rem;color:#333;font-family:'Space Mono',monospace;}
+
+  .confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:2;}
+  .reveal{opacity:0;transform:translateY(36px);transition:opacity .8s ease,transform .8s ease;}
+  .reveal.visible{opacity:1;transform:translateY(0);}
+  .rd1{transition-delay:.1s}.rd2{transition-delay:.2s}.rd3{transition-delay:.3s}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+  @media(max-width:768px){
+    .podium{grid-template-columns:1fr;max-width:400px;}
+    .winner-card.rank-1{order:-1;}
+    .stats-bar{flex-wrap:wrap;}
+    .stat-item{min-width:50%;border-bottom:1px solid rgba(201,168,76,.06);}
+    nav .nav-right{display:none;}
+    .stats-preview{grid-template-columns:1fr 1fr;}
+    .e-feats{grid-template-columns:1fr 1fr;}
+    .espace-tab{font-size:.58rem;padding:.8rem .3rem;}
+  }
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="loader-logo">MIJO</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+  <div class="loader-txt">Chargement des résultats...</div>
+</div>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<canvas id="particles"></canvas>
+<div class="confetti-wrap" id="confetti"></div>
+
+<div class="live-badge"><div class="live-dot"></div>Résultats Officiels · 9 Mai 2026</div>
+
+<nav>
+  <div class="nav-logo">MIJO</div>
+  <div class="nav-right">
+    <a href="#champions" class="nav-link">Champions</a>
+    <a href="#statistiques" class="nav-link">Statistiques</a>
+    <a href="#espace" class="nav-cta">Mon Espace</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-badge">✦ MIJO Business Challenge · 1ère Édition ✦</div>
+  <h1 class="hero-title">Les <span class="accent">Champions</span><br>sont révélés</h1>
+  <p class="hero-sub">Plus de 30 candidats. 3 finalistes. 3 sites web créés. Un seul champion — mais toutes les ambitions comptent.</p>
+  <p class="hero-date">09 · 05 · 2026 — PORT-AU-PRINCE, HAÏTI</p>
+  <a href="mijo_dashboard.html" target="_blank" class="hero-stat-btn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+    Voir les Statistiques du Concours
+  </a>
+  <div class="hero-scroll"><div class="hero-scroll-line"></div>Découvrir</div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar reveal">
+  <div class="stat-item"><span class="stat-num" data-target="30" data-plus="1">0</span><span class="stat-label">Candidats</span></div>
+  <div class="stat-item"><span class="stat-num" data-target="3">0</span><span class="stat-label">Finalistes</span></div>
+  <div class="stat-item"><span class="stat-num" data-target="3">0</span><span class="stat-label">Sites Web Créés</span></div>
+  <div class="stat-item"><span class="stat-num" data-target="1">0</span><span class="stat-label">Grand Champion</span></div>
+</div>
+
+<!-- PODIUM -->
+<section id="champions">
+  <div class="section-header">
+    <div class="section-eyebrow">✦ Hall of Fame</div>
+    <h2 class="section-title">Le Podium des Finalistes</h2>
+    <div class="section-divider"></div>
+    <div class="trophy-zone" style="margin-top:2rem;"><span class="trophy-big">🏆</span></div>
+  </div>
+  <div class="podium-section">
+    <div class="podium">
+
+      <div class="winner-card rank-2 reveal rd2">
+        <div class="card-rank">2</div>
+        <div class="card-preview">
+          <div class="card-preview-inner"><div class="preview-pattern"></div><span class="preview-icon">💻</span></div>
+          <div class="preview-label">Site Web · En ligne</div>
+        </div>
+        <div class="card-body">
+          <div class="card-project-name" style="color:var(--silver);">Haiti Freelance</div>
+          <div class="card-founder">⬡ Finaliste MIJO 2026</div>
+          <div class="card-desc">Plateforme digitale mettant en valeur les talents freelances haïtiens. Une présence en ligne moderne et professionnelle.</div>
+          <div class="card-tags"><span class="tag">Tech</span><span class="tag">Digital</span><span class="tag">Services</span></div>
+          <a href="#" class="card-visit-btn" onclick="return visitSite('Haiti Freelance')">🌐 Visiter le site</a>
+        </div>
+      </div>
+
+      <div class="winner-card rank-1 reveal">
+        <div class="card-crown">👑</div>
+        <div class="card-glow"></div>
+        <div class="card-rank">1</div>
+        <div class="card-preview">
+          <div class="card-preview-inner"><div class="preview-pattern"></div><span class="preview-icon">💎</span></div>
+          <div class="preview-label">Site Web · En ligne</div>
+        </div>
+        <div class="card-body">
+          <div class="card-project-name">Soph Création</div>
+          <div class="card-founder">⬡ Sophie Blanc · Pétion-Ville</div>
+          <div class="card-desc">Boutique en ligne d'accessoires personnalisés — bijoux en résine, bracelets en perles, packages cadeaux féminins. Projet structuré, ambitieux et porteur d'impact.</div>
+          <div class="card-tags"><span class="tag">Artisanat</span><span class="tag">Bijoux</span><span class="tag">Résine</span><span class="tag">Cadeaux</span></div>
+          <a href="#" class="card-visit-btn" onclick="return visitSite('Soph Création')">✨ Visiter le site</a>
+        </div>
+      </div>
+
+      <div class="winner-card rank-3 reveal rd3">
+        <div class="card-rank">3</div>
+        <div class="card-preview">
+          <div class="card-preview-inner"><div class="preview-pattern"></div><span class="preview-icon">🐓</span></div>
+          <div class="preview-label">Projet Agri-Business</div>
+        </div>
+        <div class="card-body">
+          <div class="card-project-name" style="color:var(--bronze);">Golden Poultry Farm</div>
+          <div class="card-founder">⬡ Maçé Lyne Rose Darah · Tabarre</div>
+          <div class="card-desc">Élevage local de volailles avec vente directe d'œufs et de poulets. Un modèle économique solide ancré dans la communauté.</div>
+          <div class="card-tags"><span class="tag">Agriculture</span><span class="tag">Élevage</span><span class="tag">Local</span></div>
+          <a href="#" class="card-visit-btn" onclick="return visitSite('Golden Poultry Farm')">🌿 En savoir plus</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- STATS SECTION -->
+<section class="stats-link-section reveal" id="statistiques">
+  <div class="stats-link-inner">
+    <span class="stats-link-label">✦ Analyse complète</span>
+    <h2 class="stats-link-title">Les Chiffres du Challenge</h2>
+    <p class="stats-link-sub">Géographie, secteurs, genre, potentiel économique — toutes les données de cette 1ère édition dans un tableau de bord interactif conçu par MIJO.</p>
+    <a href="mijo_dashboard.html" target="_blank" class="stats-dashboard-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      Ouvrir le Tableau de Bord Statistique
+    </a>
+    <div class="stats-preview">
+      <div class="sp-item"><span class="sp-num r">30+</span><span class="sp-label">Candidatures reçues</span></div>
+      <div class="sp-item"><span class="sp-num o">62%</span><span class="sp-label">Femmes entrepreneures</span></div>
+      <div class="sp-item"><span class="sp-num g">4</span><span class="sp-label">Villes représentées</span></div>
+      <div class="sp-item"><span class="sp-num r">5</span><span class="sp-label">Secteurs d'activité</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ESPACE PERSO -->
+<section class="espace-section" id="espace">
+  <div class="section-header">
+    <div class="section-eyebrow">✦ Espace Privé</div>
+    <h2 class="section-title">Mon Espace Personnel</h2>
+    <div class="section-divider"></div>
+  </div>
+  <div class="espace-wrap reveal">
+    <div class="espace-card">
+      <div class="espace-tabs">
+        <button class="espace-tab active" onclick="switchTab(this,'login')">🔐 Connexion</button>
+        <button class="espace-tab" onclick="switchTab(this,'certificat')">📜 Certificat</button>
+        <button class="espace-tab" onclick="switchTab(this,'classement')">🏅 Classement</button>
+        <button class="espace-tab" onclick="switchTab(this,'feedback')">💬 Feedback</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div class="espace-pane active" id="pane-login">
+        <span class="e-icon">🔐</span>
+        <h3 class="e-title">Accès Candidat</h3>
+        <p class="e-sub">Connectez-vous avec votre numéro WhatsApp enregistré pour accéder à votre certificat officiel, votre classement et votre feedback personnalisé.</p>
+        <div class="e-form">
+          <input type="tel" class="e-input" id="whatsappInput" placeholder="Numéro WhatsApp (ex: 5091234567)">
+          <button class="e-btn" onclick="handleLogin()">🚀 Accéder à mon espace</button>
+        </div>
+        <div class="e-msg" id="loginMsg"></div>
+        <div class="e-feats">
+          <div class="e-feat"><span class="e-feat-icon">📜</span><div class="e-feat-title">Certificat PDF</div><div class="e-feat-sub">Officiel MIJO</div></div>
+          <div class="e-feat"><span class="e-feat-icon">🏅</span><div class="e-feat-title">Mon Classement</div><div class="e-feat-sub">Position finale</div></div>
+          <div class="e-feat"><span class="e-feat-icon">💬</span><div class="e-feat-title">Mon Feedback</div><div class="e-feat-sub">Avis personnalisé</div></div>
+        </div>
+      </div>
+
+      <!-- CERTIFICAT -->
+      <div class="espace-pane" id="pane-certificat">
+        <span class="e-icon">📜</span>
+        <h3 class="e-title">Votre Certificat</h3>
+        <p class="e-sub">Entrez votre code unique pour vérifier et télécharger votre certificat officiel MIJO — délivré le 9 mai 2026.</p>
+        <div class="e-form">
+          <input type="text" class="e-input" id="certCodeInput" placeholder="Code certificat (ex: MIJO-2026-SC-001)" style="text-transform:uppercase;letter-spacing:.08em;">
+          <button class="e-btn" onclick="verifyCert()">🔍 Vérifier &amp; Télécharger</button>
+        </div>
+        <div class="e-msg" id="certMsg"></div>
+        <p style="margin-top:1.2rem;font-size:.72rem;color:#555;font-family:'Space Mono',monospace;text-align:center;">Votre code figure dans le message WhatsApp envoyé par MIJO</p>
+      </div>
+
+      <!-- CLASSEMENT -->
+      <div class="espace-pane" id="pane-classement">
+        <span class="e-icon">🏅</span>
+        <h3 class="e-title">Classement Final</h3>
+        <p class="e-sub">Résultats officiels · MIJO Business Challenge · 1ère Édition · 9 mai 2026</p>
+        <div style="margin-top:1.5rem;">
+          <div class="rank-row rr-gold">
+            <span style="font-size:1.5rem;">🥇</span>
+            <div style="flex:1;">
+              <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Soph Création</div>
+              <div style="font-size:.72rem;color:var(--gris);font-family:'Space Mono',monospace;">Sophie Blanc · Champion MIJO 2026</div>
+            </div>
+            <div style="font-family:'Space Mono',monospace;font-size:.62rem;color:var(--gold);text-align:right;">MIJO-2026<br>SC-001</div>
+          </div>
+          <div class="rank-row rr-silver">
+            <span style="font-size:1.5rem;">🥈</span>
+            <div style="flex:1;">
+              <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;color:var(--silver);">Haiti Freelance</div>
+              <div style="font-size:.72rem;color:var(--gris);font-family:'Space Mono',monospace;">Vice-Champion · 2ème Place</div>
+            </div>
+            <div style="font-family:'Space Mono',monospace;font-size:.62rem;color:#aaa;text-align:right;">MIJO-2026<br>HF-002</div>
+          </div>
+          <div class="rank-row rr-bronze">
+            <span style="font-size:1.5rem;">🥉</span>
+            <div style="flex:1;">
+              <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;color:var(--bronze);">Golden Poultry Farm</div>
+              <div style="font-size:.72rem;color:var(--gris);font-family:'Space Mono',monospace;">Maçé Lyne Rose Darah · 3ème Place</div>
+            </div>
+            <div style="font-family:'Space Mono',monospace;font-size:.62rem;color:#aaa;text-align:right;">MIJO-2026<br>GP-003</div>
+          </div>
+          <div class="rank-row rr-part" style="justify-content:center;">
+            <span style="font-size:.72rem;color:#555;font-family:'Space Mono',monospace;letter-spacing:.08em;text-align:center;">+ 30 participants · Tous récompensés d'un certificat officiel MIJO</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEEDBACK -->
+      <div class="espace-pane" id="pane-feedback">
+        <span class="e-icon">💬</span>
+        <h3 class="e-title">Votre Feedback</h3>
+        <p class="e-sub">Votre avis est précieux pour améliorer les prochaines éditions du MIJO Business Challenge.</p>
+        <div class="e-form">
+          <input type="tel" class="e-input" placeholder="Votre numéro WhatsApp enregistré">
+          <select class="e-input" style="background:var(--noir3);color:#aaa;border:1px solid rgba(255,255,255,.08);">
+            <option value="">-- Note globale du challenge --</option>
+            <option>⭐⭐⭐⭐⭐ Excellent</option>
+            <option>⭐⭐⭐⭐ Très bien</option>
+            <option>⭐⭐⭐ Bien</option>
+            <option>⭐⭐ Moyen</option>
+            <option>⭐ À améliorer</option>
+          </select>
+          <textarea class="e-input" rows="4" placeholder="Partagez votre expérience avec le MIJO Business Challenge..." style="resize:none;line-height:1.6;"></textarea>
+          <button class="e-btn" onclick="sendFeedback()">📤 Envoyer mon feedback</button>
+        </div>
+        <div class="e-msg" id="feedbackMsg"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">MIJO</div>
+  <div class="footer-tagline">Façonner les Entrepreneurs de Demain · Port-au-Prince, Haïti</div>
+  <div class="footer-links">
+    <a href="#champions" class="footer-link">Champions</a>
+    <a href="mijo_dashboard.html" target="_blank" class="footer-link">Statistiques</a>
+    <a href="#espace" class="footer-link">Mon Espace</a>
+  </div>
+  <div class="footer-copy">© 2026 MIJO · Business Challenge · 1ère Édition · Tous droits réservés</div>
+</footer>
+
+<script>
+// CURSOR
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
+(function aR(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(aR);})();
+document.querySelectorAll('a,button,.winner-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.style.width='20px';cursor.style.height='20px';ring.style.width='58px';ring.style.height='58px';});
+  el.addEventListener('mouseleave',()=>{cursor.style.width='12px';cursor.style.height='12px';ring.style.width='38px';ring.style.height='38px';});
+});
+
+// LOADER
+window.addEventListener('load',()=>setTimeout(()=>{document.getElementById('loader').classList.add('out');launch();},1900));
+
+// PARTICLES
+const canvas=document.getElementById('particles'),ctx=canvas.getContext('2d');
+let W,H;function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;}resize();addEventListener('resize',resize);
+const pts=Array.from({length:55},()=>({x:Math.random()*1920,y:Math.random()*1080,r:Math.random()*1.4+.2,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.2,a:Math.random(),da:(Math.random()-.5)*.005}));
+(function dp(){ctx.clearRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.a+=p.da;if(p.a<0||p.a>1)p.da*=-1;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(201,168,76,${p.a*.35})`;ctx.fill();});requestAnimationFrame(dp);})();
+
+// CONFETTI
+function launch(){
+  const w=document.getElementById('confetti');
+  const cl=['#C9A84C','#F0D080','#fff','#FFD700','#E84B25','#F7A600'];
+  const s=document.createElement('style');s.textContent=`@keyframes cf{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(105vh) rotate(720deg);opacity:0}}`;document.head.appendChild(s);
+  for(let i=0;i<90;i++){const p=document.createElement('div');const sz=Math.random()*9+3;p.style.cssText=`position:absolute;width:${sz}px;height:${sz}px;background:${cl[Math.floor(Math.random()*cl.length)]};border-radius:${Math.random()>.5?'50%':'2px'};left:${Math.random()*100}vw;top:-20px;animation:cf ${2+Math.random()*3}s ${Math.random()*2}s ease-in forwards;`;w.appendChild(p);}
+  setTimeout(()=>w.innerHTML='',6000);
+}
+
+// REVEAL
+const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(r=>ro.observe(r));
+
+// COUNTERS
+const so=new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting)return;
+  const el=e.target,t=parseInt(el.dataset.target),plus=el.dataset.plus;
+  let c=0;const st=t/55;const ti=setInterval(()=>{c=Math.min(c+st,t);el.textContent=Math.floor(c)+(plus?'+':'');if(c>=t)clearInterval(ti);},22);so.unobserve(el);
+}),{threshold:.5});
+document.querySelectorAll('.stat-num[data-target]').forEach(n=>so.observe(n));
+
+// TABS
+function switchTab(btn,pane){
+  document.querySelectorAll('.espace-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.espace-pane').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');document.getElementById('pane-'+pane).classList.add('active');
+}
+
+// LOGIN
+function handleLogin(){
+  const num=document.getElementById('whatsappInput').value.trim();
+  const msg=document.getElementById('loginMsg');
+  if(!num){msg.className='e-msg gold';msg.textContent='⚠️ Veuillez entrer votre numéro WhatsApp.';msg.style.display='block';return;}
+  msg.className='e-msg green';msg.innerHTML='📬 <strong>Lien d\'accès envoyé !</strong> Vérifiez votre WhatsApp dans les prochaines heures. Votre certificat et classement seront disponibles via le lien.';msg.style.display='block';
+}
+
+// CERTIFICATE
+const certs={
+  'MIJO-2026-SC-001':{name:'Sophie Blanc',project:'Soph Création',rank:'🥇 Champion MIJO 2026 — 1ère Place'},
+  'MIJO-2026-HF-002':{name:'Haiti Freelance',project:'Haiti Freelance',rank:'🥈 Vice-Champion — 2ème Place'},
+  'MIJO-2026-GP-003':{name:'Maçé Lyne Rose Darah',project:'Golden Poultry Farm',rank:'🥉 Finaliste — 3ème Place'},
+  'MIJO-2026-AL-004':{name:'Alexa Stania Accédé',project:'LEXA Cosmétiques',rank:'🎖 Participant Officiel'},
+  'MIJO-2026-ST-005':{name:'Shaskia Tercier',project:'Empowerment Jeunesse',rank:'🎖 Participant Officiel'},
+  'MIJO-2026-YM-006':{name:'Ygnace Melissa Paquitte',project:'Senteur Royale',rank:'🎖 Participant Officiel'},
+};
+function verifyCert(){
+  const code=document.getElementById('certCodeInput').value.trim().toUpperCase();
+  const msg=document.getElementById('certMsg');
+  const cert=certs[code];
+  if(cert){
+    msg.className='e-msg green';msg.style.display='block';
+    msg.innerHTML=`✅ <strong style="color:var(--gold);">${cert.name}</strong><br>${cert.project} · ${cert.rank}<br><span style="font-size:.72rem;color:#666;font-family:'Space Mono',monospace;">Délivré le 9 Mai 2026 · Code : ${code}</span><br><br><a href="#" onclick="return false;" style="display:inline-block;margin-top:.6rem;padding:.55rem 1.3rem;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#000;border-radius:7px;font-weight:700;font-size:.82rem;text-decoration:none;">⬇ Télécharger le PDF</a>`;
+  } else if(!code){
+    msg.className='e-msg gold';msg.style.display='block';msg.textContent='⚠️ Entrez votre code de certificat.';
+  } else {
+    msg.className='e-msg err';msg.style.display='block';
+    msg.innerHTML=`❌ Code <strong>"${code}"</strong> non reconnu. Vérifiez votre email ou message WhatsApp envoyé par MIJO.`;
+  }
+}
+document.getElementById('certCodeInput')?.addEventListener('keypress',e=>{if(e.key==='Enter')verifyCert();});
+
+// FEEDBACK
+function sendFeedback(){
+  const msg=document.getElementById('feedbackMsg');
+  msg.className='e-msg green';msg.style.display='block';
+  msg.innerHTML='✅ <strong>Merci pour votre retour !</strong> Votre feedback a été transmis à l\'équipe MIJO.';
+  setTimeout(()=>{msg.style.display='none';},5000);
+}
+
+// VISIT
+function visitSite(n){alert(`🚀 ${n}\n\nLe site sera accessible en ligne très prochainement.\nSuivez MIJO pour être notifié dès le lancement !`);return false;}
+</script>
+</body>
+</html>

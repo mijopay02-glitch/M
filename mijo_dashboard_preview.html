@@ -1,0 +1,196 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--red:#E84B25;--orange:#F7A600;--gold:#C9A84C;--dark:#1A1A2E;--gray:#6B7280;--border:#E5E7EB;--bg:#F8F9FB;--white:#fff;--red-l:#FFF0EC;--org-l:#FFF8E6;--gold-l:#FDF8EE;}
+body{font-family:'Montserrat',sans-serif;background:var(--bg);padding:12px;}
+.page{max-width:1100px;margin:0 auto;}
+
+.header{background:#fff;border-radius:16px;padding:20px 24px;margin-bottom:14px;border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;position:relative;overflow:hidden;animation:slideDown .5s ease both;}
+.header::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--red),var(--orange),var(--gold));}
+.header-left{display:flex;align-items:center;gap:12px;}
+.brand{font-size:22px;font-weight:900;letter-spacing:-0.5px;line-height:1.1;}
+.brand span{color:var(--red);}
+.sub{font-size:11px;color:var(--gray);margin-top:2px;letter-spacing:1px;text-transform:uppercase;}
+.badge{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-size:10px;font-weight:700;padding:5px 14px;border-radius:20px;animation:pulse 2s infinite;}
+.tagline{font-size:10px;color:var(--gray);margin-top:4px;font-style:italic;}
+
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.kpi{background:#fff;border-radius:14px;padding:16px 14px;border:1px solid var(--border);position:relative;overflow:hidden;opacity:0;transform:translateY(14px);}
+.kpi.vis{opacity:1;transform:translateY(0);transition:opacity .5s ease,transform .5s ease;}
+.kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;border-radius:0 0 14px 14px;}
+.kpi.r::after{background:var(--red);}  .kpi.o::after{background:var(--orange);}  .kpi.g::after{background:var(--gold);}
+.kpi-ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.kpi-ic.r{background:var(--red-l);} .kpi-ic.o{background:var(--org-l);} .kpi-ic.g{background:var(--gold-l);}
+.kpi-v{font-size:30px;font-weight:900;line-height:1;}
+.kpi.r .kpi-v{color:var(--red);} .kpi.o .kpi-v{color:var(--orange);} .kpi.g .kpi-v{color:var(--gold);}
+.kpi-l{font-size:10px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:3px;line-height:1.3;}
+.kpi-s{font-size:10px;color:#9CA3AF;margin-top:1px;}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.grid3{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:10px;}
+.card{background:#fff;border-radius:14px;padding:16px;border:1px solid var(--border);opacity:0;transform:translateY(12px);}
+.card.vis{opacity:1;transform:translateY(0);transition:opacity .55s ease,transform .55s ease;}
+.ct{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:12px;}
+.cb{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;float:right;text-transform:uppercase;letter-spacing:.5px;}
+.cb.r{background:var(--red-l);color:var(--red);} .cb.o{background:var(--org-l);color:#B45309;}
+
+.donut-wrap{display:flex;align-items:center;gap:16px;}
+.dc-wrap{position:relative;flex-shrink:0;}
+.dc-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;}
+.dc-val{font-size:16px;font-weight:900;color:var(--dark);line-height:1;}
+.dc-sub{font-size:8px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;}
+.legend{display:flex;flex-direction:column;gap:6px;flex:1;}
+.li{display:flex;align-items:center;gap:7px;}
+.ld{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+.ln{font-size:11px;color:var(--dark);font-weight:500;flex:1;}
+.lp{font-size:12px;font-weight:800;}
+
+.bar-item{margin-bottom:11px;}
+.bar-item:last-child{margin-bottom:0;}
+.bar-top{display:flex;justify-content:space-between;margin-bottom:4px;}
+.bar-name{font-size:11px;font-weight:600;color:var(--dark);}
+.bar-pct{font-size:11px;font-weight:800;}
+.bar-track{height:9px;background:#F3F4F6;border-radius:5px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:5px;width:0;transition:width 1.3s cubic-bezier(.22,1,.36,1);}
+
+.emploi-card{background:linear-gradient(135deg,#FFF8F0,#FFF3E8);border:1px solid #FDDCBF;border-radius:14px;padding:16px;opacity:0;transform:translateY(12px);}
+.emploi-card.vis{opacity:1;transform:translateY(0);transition:opacity .6s ease,transform .6s ease;}
+.icons-row{display:flex;gap:4px;margin-bottom:10px;}
+.p-icon{width:24px;height:24px;border-radius:50%;background:#FDE68A;display:flex;align-items:center;justify-content:center;animation:float 2s ease-in-out infinite;}
+.p-icon:nth-child(2){animation-delay:.2s;} .p-icon:nth-child(3){animation-delay:.4s;} .p-icon:nth-child(4){animation-delay:.6s;} .p-icon:nth-child(5){animation-delay:.8s;opacity:.5;background:#FED7AA;}
+.emp-num{font-size:38px;font-weight:900;color:var(--orange);line-height:1;}
+.emp-range{font-size:12px;font-weight:700;color:#92400E;}
+.emp-desc{font-size:10px;color:#B45309;margin-top:4px;line-height:1.5;}
+.emp-tag{display:inline-block;background:rgba(247,166,0,.2);color:#92400E;font-size:9px;font-weight:700;padding:2px 9px;border-radius:20px;margin-top:8px;text-transform:uppercase;letter-spacing:.5px;}
+
+.bottom-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.mini{background:#fff;border-radius:12px;padding:14px;border:1px solid var(--border);text-align:center;opacity:0;transform:scale(.96);}
+.mini.vis{opacity:1;transform:scale(1);transition:opacity .5s ease,transform .5s ease;}
+.mini-v{font-size:22px;font-weight:900;color:var(--orange);}
+.mini-l{font-size:9px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:3px;line-height:1.4;}
+
+.footer{text-align:center;padding-top:14px;border-top:1px solid var(--border);}
+.foot-logo{font-size:15px;font-weight:900;color:var(--red);letter-spacing:1px;}
+.foot-sub{font-size:10px;color:var(--gray);margin-top:2px;}
+
+@keyframes slideDown{from{opacity:0;transform:translateY(-16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(232,75,37,.4);}50%{box-shadow:0 0 0 7px rgba(232,75,37,0);}}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+</style>
+
+<div class="page">
+  <div class="header">
+    <div class="header-left">
+      <svg width="46" height="36" viewBox="0 0 635 393">
+        <defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F7A600"/><stop offset="100%" stop-color="#E84B25"/></linearGradient></defs>
+        <ellipse cx="130" cy="360" rx="22" ry="22" fill="#E84B25"/>
+        <ellipse cx="505" cy="360" rx="22" ry="22" fill="#E84B25"/>
+        <path d="M108 340 Q60 280 80 160 Q100 60 200 40 L260 80 Q180 100 170 180 Q160 260 200 320 Z" fill="url(#g1)"/>
+        <path d="M527 340 Q575 280 555 160 Q535 60 435 40 L375 80 Q455 100 465 180 Q475 260 435 320 Z" fill="#E84B25"/>
+        <path d="M200 320 Q280 380 317 380 Q354 380 435 320 Q395 260 317 260 Q239 260 200 320 Z" fill="#D04020"/>
+        <path d="M260 80 Q317 140 317 200 Q317 140 375 80 Q317 60 260 80 Z" fill="#E84B25" opacity=".8"/>
+        <path d="M295 40 Q317 20 340 40 Q335 80 317 100 Q299 80 295 40 Z" fill="#F7A600"/>
+      </svg>
+      <div><div class="brand"><span>MIJO</span> Business Challenge</div><div class="sub">Statistiques · 1ère édition</div></div>
+    </div>
+    <div><div class="badge">9 Mai 2026 · Port-au-Prince</div><div class="tagline">« L'audace de transformer des idées en opportunités »</div></div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi r" data-d="0"><div class="kpi-ic r"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E84B25" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="kpi-v" data-c="100" data-s="%">0%</div><div class="kpi-l">Taux de participation</div><div class="kpi-s">Objectif atteint</div></div>
+    <div class="kpi o" data-d="80"><div class="kpi-ic o"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F7A600" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div><div class="kpi-v" data-c="62.5" data-s="%">0%</div><div class="kpi-l">Participantes femmes</div><div class="kpi-s">Leadership féminin</div></div>
+    <div class="kpi g" data-d="160"><div class="kpi-ic g"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div><div class="kpi-v" data-c="37.5" data-s="%">0%</div><div class="kpi-l">Participants hommes</div><div class="kpi-s">Diversité de genre</div></div>
+    <div class="kpi r" data-d="240"><div class="kpi-ic r"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E84B25" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><div class="kpi-v" data-c="87.5" data-s="%">0%</div><div class="kpi-l">Budget ≤ 50 000 HTG</div><div class="kpi-s">Projets accessibles</div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card" data-d="100">
+      <div class="ct"><span class="cb r">4 zones</span>Répartition géographique</div>
+      <div class="donut-wrap">
+        <div class="dc-wrap"><canvas id="gc" role="img" aria-label="Répartition géographique" width="120" height="120">Pétion-Ville 62.5%, Tabarre 12.5%, Delmas 33 12.5%, Publin 12.5%</canvas><div class="dc-center"><div class="dc-val">4</div><div class="dc-sub">villes</div></div></div>
+        <div class="legend">
+          <div class="li"><div class="ld" style="background:#E84B25;"></div><div class="ln">Pétion-Ville</div><div class="lp" style="color:#E84B25;">62.5%</div></div>
+          <div class="li"><div class="ld" style="background:#F7A600;"></div><div class="ln">Tabarre</div><div class="lp" style="color:#F7A600;">12.5%</div></div>
+          <div class="li"><div class="ld" style="background:#C9A84C;"></div><div class="ln">Delmas 33</div><div class="lp" style="color:#C9A84C;">12.5%</div></div>
+          <div class="li"><div class="ld" style="background:#D04020;"></div><div class="ln">Publin</div><div class="lp" style="color:#D04020;">12.5%</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card" data-d="180">
+      <div class="ct"><span class="cb o">2 langues</span>Langue de soumission</div>
+      <div class="donut-wrap">
+        <div class="dc-wrap"><canvas id="lc" role="img" aria-label="Langue de soumission" width="120" height="120">Kreyòl 62.5%, Français 37.5%</canvas><div class="dc-center"><div class="dc-val" style="font-size:11px;color:#E84B25;">Bilingue</div></div></div>
+        <div class="legend">
+          <div class="li"><div class="ld" style="background:#E84B25;"></div><div class="ln">Kreyòl</div><div class="lp" style="color:#E84B25;">62.5%</div></div>
+          <div class="li"><div class="ld" style="background:#F7A600;"></div><div class="ln">Français</div><div class="lp" style="color:#F7A600;">37.5%</div></div>
+          <div style="margin-top:8px;padding:8px;background:#FFF8F0;border-radius:8px;border-left:3px solid var(--orange);"><div style="font-size:10px;color:#92400E;font-weight:600;line-height:1.5;">Reflet authentique de la réalité haïtienne.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="card" data-d="140">
+      <div class="ct"><span class="cb r">5 secteurs</span>Secteurs représentés</div>
+      <div class="bar-item"><div class="bar-top"><span class="bar-name">Beauté &amp; Cosmétiques</span><span class="bar-pct" style="color:#E84B25;">37.5%</span></div><div class="bar-track"><div class="bar-fill" data-w="37.5" style="background:linear-gradient(90deg,#E84B25,#F7A600);"></div></div></div>
+      <div class="bar-item"><div class="bar-top"><span class="bar-name">Alimentation &amp; Boissons</span><span class="bar-pct" style="color:#F7A600;">25%</span></div><div class="bar-track"><div class="bar-fill" data-w="25" style="background:linear-gradient(90deg,#F7A600,#C9A84C);"></div></div></div>
+      <div class="bar-item"><div class="bar-top"><span class="bar-name">Tech &amp; Digital</span><span class="bar-pct" style="color:#D04020;">12.5%</span></div><div class="bar-track"><div class="bar-fill" data-w="12.5" style="background:linear-gradient(90deg,#E84B25,#D04020);"></div></div></div>
+      <div class="bar-item"><div class="bar-top"><span class="bar-name">Agriculture &amp; Élevage</span><span class="bar-pct" style="color:#C9A84C;">12.5%</span></div><div class="bar-track"><div class="bar-fill" data-w="12.5" style="background:linear-gradient(90deg,#C9A84C,#F7A600);"></div></div></div>
+      <div class="bar-item"><div class="bar-top"><span class="bar-name">Commerce Général</span><span class="bar-pct" style="color:#9CA3AF;">12.5%</span></div><div class="bar-track"><div class="bar-fill" data-w="12.5" style="background:#9CA3AF;"></div></div></div>
+    </div>
+    <div class="emploi-card" data-d="220">
+      <div style="font-size:10px;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">Potentiel d'emplois <span style="float:right;background:rgba(247,166,0,.2);color:#92400E;font-size:9px;padding:2px 7px;border-radius:10px;">12 mois</span></div>
+      <div class="icons-row">
+        <div class="p-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div>
+        <div class="p-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div>
+        <div class="p-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div>
+        <div class="p-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div>
+        <div class="p-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div>
+      </div>
+      <div class="emp-num">3–5</div>
+      <div class="emp-range">emplois directs par projet</div>
+      <div class="emp-desc">Moyenne d'emplois directs créés par chaque projet dans les 12 mois suivant le lancement.</div>
+      <div class="emp-tag">Impact économique local</div>
+    </div>
+  </div>
+
+  <div class="bottom-row">
+    <div class="mini" data-d="0"><div class="mini-v" data-c="100" data-s="%">0%</div><div class="mini-l">Impact communautaire local</div></div>
+    <div class="mini" data-d="80"><div class="mini-v" style="color:#E84B25;" data-c="62.5" data-s="%">0%</div><div class="mini-l">Projets portés par des femmes</div></div>
+    <div class="mini" data-d="160"><div class="mini-v" style="color:#C9A84C;" data-c="87.5" data-s="%">0%</div><div class="mini-l">Budget ≤ 50 000 HTG</div></div>
+    <div class="mini" data-d="240"><div class="mini-v" style="color:#D04020;" data-c="100" data-s="%">0%</div><div class="mini-l">Taux de participation</div></div>
+  </div>
+
+  <div class="footer">
+    <div class="foot-logo">MIJO</div>
+    <div class="foot-sub">mijopay.com · Business Challenge · 1ère Édition · 9 Mai 2026</div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+new Chart(document.getElementById('gc'),{type:'doughnut',data:{labels:['Pétion-Ville','Tabarre','Delmas 33','Publin'],datasets:[{data:[62.5,12.5,12.5,12.5],backgroundColor:['#E84B25','#F7A600','#C9A84C','#D04020'],borderWidth:3,borderColor:'#fff',hoverOffset:6}]},options:{responsive:false,cutout:'68%',animation:{duration:1200,easing:'easeInOutQuart'},plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+new Chart(document.getElementById('lc'),{type:'doughnut',data:{labels:['Kreyòl','Français'],datasets:[{data:[62.5,37.5],backgroundColor:['#E84B25','#F7A600'],borderWidth:3,borderColor:'#fff',hoverOffset:6}]},options:{responsive:false,cutout:'68%',animation:{duration:1200,easing:'easeInOutQuart'},plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+
+function animCount(el){
+  const tgt=parseFloat(el.dataset.c),suf=el.dataset.s||'',dec=tgt%1!==0;
+  const dur=1500,s=performance.now();
+  (function step(n){const t=Math.min((n-s)/dur,1),e=1-Math.pow(1-t,4),v=tgt*e;el.textContent=(dec?v.toFixed(1):Math.round(v))+suf;t<1&&requestAnimationFrame(step);})(s);
+}
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting) return;
+    const el=e.target,d=parseInt(el.dataset.d||0);
+    setTimeout(()=>{
+      el.classList.add('vis');
+      el.querySelectorAll('[data-c]').forEach(animCount);
+      el.querySelectorAll('.bar-fill').forEach(b=>{b.style.width=b.dataset.w+'%';});
+    },d);
+    obs.unobserve(el);
+  });
+},{threshold:0.1});
+
+document.querySelectorAll('.kpi,.card,.emploi-card,.mini').forEach(el=>obs.observe(el));
+</script>
