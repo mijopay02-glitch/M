@@ -494,25 +494,30 @@
       </div>
 
       <!-- FEEDBACK -->
-      <div class="espace-pane" id="pane-feedback">
-        <span class="e-icon">💬</span>
-        <h3 class="e-title">Votre Feedback</h3>
-        <p class="e-sub">Votre avis est précieux pour améliorer les prochaines éditions du MIJO Business Challenge.</p>
-        <div class="e-form">
-          <input type="tel" class="e-input" placeholder="Votre numéro WhatsApp enregistré">
-          <select class="e-input" style="background:var(--noir3);color:#aaa;border:1px solid rgba(255,255,255,.08);">
-            <option value="">-- Note globale du challenge --</option>
-            <option>⭐⭐⭐⭐⭐ Excellent</option>
-            <option>⭐⭐⭐⭐ Très bien</option>
-            <option>⭐⭐⭐ Bien</option>
-            <option>⭐⭐ Moyen</option>
-            <option>⭐ À améliorer</option>
-          </select>
-          <textarea class="e-input" rows="4" placeholder="Partagez votre expérience avec le MIJO Business Challenge..." style="resize:none;line-height:1.6;"></textarea>
-          <button class="e-btn" onclick="sendFeedback()">📤 Envoyer mon feedback</button>
-        </div>
-        <div class="e-msg" id="feedbackMsg"></div>
-      </div>
+      <!-- FEEDBACK -->
+<div class="espace-pane" id="pane-feedback">
+  <span class="e-icon">💬</span>
+  <h3 class="e-title">Votre Feedback</h3>
+  <p class="e-sub">Votre avis nous aide à améliorer le MIJO Business Challenge.</p>
+  
+  <!-- Formulaire lié à Formspree -->
+  <form action="https://formspree.io/f/mdabgogb" method="POST" class="e-form">
+    <input type="tel" name="WhatsApp" class="e-input" placeholder="Votre numéro WhatsApp" required>
+    
+    <select name="Satisfaction" class="e-input" required>
+      <option value="">-- Note globale --</option>
+      <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+      <option value="4">⭐⭐⭐⭐ Très bien</option>
+      <option value="3">⭐⭐⭐ Bien</option>
+      <option value="2">⭐⭐ Moyen</option>
+      <option value="1">⭐ À améliorer</option>
+    </select>
+    
+    <textarea name="Message" class="e-input" rows="4" placeholder="Partagez votre expérience..." style="resize:none;" required></textarea>
+    
+    <button type="submit" class="e-btn">📤 Envoyer mon feedback</button>
+  </form>
+</div>
 
     </div>
   </div>
