@@ -1,0 +1,15 @@
+<script>
+  fetch("https://dons.mijocomplexe.workers.dev/donateurs")
+    .then(res => res.json())
+    .then(data => {
+      const liste = data.donateurs.map(d => `
+        <tr>
+          <td>${d.nom}</td>
+          <td>${d.total} HTG</td>
+          <td>${d.nbDons}</td>
+          <td>${new Date(d.dernierDon).toLocaleDateString('fr-FR')}</td>
+        </tr>
+      `).join('');
+      document.getElementById('tableau').innerHTML = liste;
+    });
+</script>
