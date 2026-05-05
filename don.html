@@ -159,6 +159,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
         const user = JSON.parse(userString);
         const userId = user.userId;
+         
+const nom = user.NomUtilisateur; // ← adaptez selon le champ dans votre localStorage
+
 
         // Validation du montant
         if (isNaN(montant) || montant <= 0) {
@@ -169,7 +172,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // La structure de données pour la requête (basée sur les blocs)
         const requestData = {
             userId: userId,
-            montant: montant
+            montant: montant,
+              nom: nom
         };
         
        
