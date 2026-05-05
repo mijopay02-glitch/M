@@ -1,196 +1,1305 @@
-
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIJO PAY — Tableau de Performance Ambassadrices</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap');
-*{margin:0;padding:0;box-sizing:border-box;}
-:root{--red:#E84B25;--orange:#F7A600;--gold:#C9A84C;--dark:#1A1A2E;--gray:#6B7280;--border:#E5E7EB;--bg:#F8F9FB;--white:#fff;--red-l:#FFF0EC;--org-l:#FFF8E6;--gold-l:#FDF8EE;}
-body{font-family:'Montserrat',sans-serif;background:var(--bg);padding:12px;}
-.page{max-width:1100px;margin:0 auto;}
+  :root {
+    --gold: #E8A020;
+    --gold-light: #F5C842;
+    --gold-dim: rgba(232,160,32,0.15);
+    --red: #C03030;
+    --red-accent: #FF4444;
+    --bg: #080A0F;
+    --bg2: #0E1118;
+    --bg3: #141820;
+    --surface: #1A1F2E;
+    --surface2: #222840;
+    --border: rgba(232,160,32,0.18);
+    --text: #F0EDE8;
+    --text-dim: rgba(240,237,232,0.5);
+    --text-muted: rgba(240,237,232,0.3);
+    --shaskia: #4FC3F7;
+    --shaskia-dim: rgba(79,195,247,0.12);
+    --sarafina: #F48FB1;
+    --sarafina-dim: rgba(244,143,177,0.12);
+    --success: #4CAF50;
+    --radius: 16px;
+  }
 
-.header{background:#fff;border-radius:16px;padding:20px 24px;margin-bottom:14px;border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;position:relative;overflow:hidden;animation:slideDown .5s ease both;}
-.header::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--red),var(--orange),var(--gold));}
-.header-left{display:flex;align-items:center;gap:12px;}
-.brand{font-size:22px;font-weight:900;letter-spacing:-0.5px;line-height:1.1;}
-.brand span{color:var(--red);}
-.sub{font-size:11px;color:var(--gray);margin-top:2px;letter-spacing:1px;text-transform:uppercase;}
-.badge{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-size:10px;font-weight:700;padding:5px 14px;border-radius:20px;animation:pulse 2s infinite;}
-.tagline{font-size:10px;color:var(--gray);margin-top:4px;font-style:italic;}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
-.kpi{background:#fff;border-radius:14px;padding:16px 14px;border:1px solid var(--border);position:relative;overflow:hidden;opacity:0;transform:translateY(14px);}
-.kpi.vis{opacity:1;transform:translateY(0);transition:opacity .5s ease,transform .5s ease;}
-.kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;border-radius:0 0 14px 14px;}
-.kpi.r::after{background:var(--red);}  .kpi.o::after{background:var(--orange);}  .kpi.g::after{background:var(--gold);}
-.kpi-ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
-.kpi-ic.r{background:var(--red-l);} .kpi-ic.o{background:var(--org-l);} .kpi-ic.g{background:var(--gold-l);}
-.kpi-v{font-size:30px;font-weight:900;line-height:1;}
-.kpi.r .kpi-v{color:var(--red);} .kpi.o .kpi-v{color:var(--orange);} .kpi.g .kpi-v{color:var(--gold);}
-.kpi-l{font-size:10px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:3px;line-height:1.3;}
-.kpi-s{font-size:10px;color:#9CA3AF;margin-top:1px;}
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
-.grid3{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:10px;}
-.card{background:#fff;border-radius:14px;padding:16px;border:1px solid var(--border);opacity:0;transform:translateY(12px);}
-.card.vis{opacity:1;transform:translateY(0);transition:opacity .55s ease,transform .55s ease;}
-.ct{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:12px;}
-.cb{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;float:right;text-transform:uppercase;letter-spacing:.5px;}
-.cb.r{background:var(--red-l);color:var(--red);} .cb.o{background:var(--org-l);color:#B45309;}
+  /* ─── ANIMATED BG ─── */
+  .bg-mesh {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .bg-mesh::before {
+    content: '';
+    position: absolute;
+    width: 900px; height: 900px;
+    background: radial-gradient(circle, rgba(232,160,32,0.06) 0%, transparent 70%);
+    top: -200px; left: -200px;
+    animation: float1 18s ease-in-out infinite;
+  }
+  .bg-mesh::after {
+    content: '';
+    position: absolute;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(79,195,247,0.05) 0%, transparent 70%);
+    bottom: -100px; right: -100px;
+    animation: float2 22s ease-in-out infinite;
+  }
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background-image:
+      linear-gradient(rgba(232,160,32,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,160,32,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+  @keyframes float1 {
+    0%,100% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(60px,40px) scale(1.1); }
+  }
+  @keyframes float2 {
+    0%,100% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(-40px,-60px) scale(1.08); }
+  }
 
-.donut-wrap{display:flex;align-items:center;gap:16px;}
-.dc-wrap{position:relative;flex-shrink:0;}
-.dc-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;}
-.dc-val{font-size:16px;font-weight:900;color:var(--dark);line-height:1;}
-.dc-sub{font-size:8px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;}
-.legend{display:flex;flex-direction:column;gap:6px;flex:1;}
-.li{display:flex;align-items:center;gap:7px;}
-.ld{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
-.ln{font-size:11px;color:var(--dark);font-weight:500;flex:1;}
-.lp{font-size:12px;font-weight:800;}
+  /* ─── LAYOUT ─── */
+  .app { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px 60px; }
 
-.bar-item{margin-bottom:11px;}
-.bar-item:last-child{margin-bottom:0;}
-.bar-top{display:flex;justify-content:space-between;margin-bottom:4px;}
-.bar-name{font-size:11px;font-weight:600;color:var(--dark);}
-.bar-pct{font-size:11px;font-weight:800;}
-.bar-track{height:9px;background:#F3F4F6;border-radius:5px;overflow:hidden;}
-.bar-fill{height:100%;border-radius:5px;width:0;transition:width 1.3s cubic-bezier(.22,1,.36,1);}
+  /* ─── HEADER ─── */
+  header {
+    padding: 36px 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .logo-area { display: flex; align-items: center; gap: 16px; }
+  .logo-icon {
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: #080A0F;
+    box-shadow: 0 0 30px rgba(232,160,32,0.35);
+    flex-shrink: 0;
+  }
+  .logo-text h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .logo-text span {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .last-update {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  .refresh-btn {
+    background: var(--gold-dim);
+    border: 1px solid var(--border);
+    color: var(--gold-light);
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .refresh-btn:hover { background: rgba(232,160,32,0.25); transform: translateY(-1px); }
+  .refresh-btn.loading .spin { animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-.emploi-card{background:linear-gradient(135deg,#FFF8F0,#FFF3E8);border:1px solid #FDDCBF;border-radius:14px;padding:16px;opacity:0;transform:translateY(12px);}
-.emploi-card.vis{opacity:1;transform:translateY(0);transition:opacity .6s ease,transform .6s ease;}
-.icons-row{display:flex;gap:4px;margin-bottom:10px;}
-.p-icon{width:24px;height:24px;border-radius:50%;background:#FDE68A;display:flex;align-items:center;justify-content:center;animation:float 2s ease-in-out infinite;}
-.p-icon:nth-child(2){animation-delay:.2s;} .p-icon:nth-child(3){animation-delay:.4s;} .p-icon:nth-child(4){animation-delay:.6s;} .p-icon:nth-child(5){animation-delay:.8s;opacity:.5;background:#FED7AA;}
-.emp-num{font-size:38px;font-weight:900;color:var(--orange);line-height:1;}
-.emp-range{font-size:12px;font-weight:700;color:#92400E;}
-.emp-desc{font-size:10px;color:#B45309;margin-top:4px;line-height:1.5;}
-.emp-tag{display:inline-block;background:rgba(247,166,0,.2);color:#92400E;font-size:9px;font-weight:700;padding:2px 9px;border-radius:20px;margin-top:8px;text-transform:uppercase;letter-spacing:.5px;}
+  /* ─── SECTION TITLE ─── */
+  .section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--border), transparent);
+  }
 
-.bottom-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
-.mini{background:#fff;border-radius:12px;padding:14px;border:1px solid var(--border);text-align:center;opacity:0;transform:scale(.96);}
-.mini.vis{opacity:1;transform:scale(1);transition:opacity .5s ease,transform .5s ease;}
-.mini-v{font-size:22px;font-weight:900;color:var(--orange);}
-.mini-l{font-size:9px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:3px;line-height:1.4;}
+  /* ─── OVERVIEW ROW ─── */
+  .overview-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  @media (max-width: 768px) {
+    .overview-row { grid-template-columns: 1fr; }
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .stat-card:hover { transform: translateY(-2px); border-color: var(--gold); }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  }
+  .stat-card .label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 8px; }
+  .stat-card .value { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; color: var(--gold-light); }
+  .stat-card .sublabel { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
 
-.footer{text-align:center;padding-top:14px;border-top:1px solid var(--border);}
-.foot-logo{font-size:15px;font-weight:900;color:var(--red);letter-spacing:1px;}
-.foot-sub{font-size:10px;color:var(--gray);margin-top:2px;}
+  /* ─── AMBASSADOR CARDS ─── */
+  .ambassadors-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin-bottom: 40px;
+  }
+  @media (max-width: 860px) {
+    .ambassadors-grid { grid-template-columns: 1fr; }
+  }
 
-@keyframes slideDown{from{opacity:0;transform:translateY(-16px);}to{opacity:1;transform:translateY(0);}}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(232,75,37,.4);}50%{box-shadow:0 0 0 7px rgba(232,75,37,0);}}
-@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+  .amb-card {
+    background: var(--surface);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s, box-shadow 0.3s;
+    animation: fadeSlideUp 0.6s ease both;
+  }
+  .amb-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .amb-card.shaskia { border-color: rgba(79,195,247,0.3); }
+  .amb-card.shaskia:hover { box-shadow: 0 20px 60px rgba(79,195,247,0.15); }
+  .amb-card.sarafina { border-color: rgba(244,143,177,0.3); }
+  .amb-card.sarafina:hover { box-shadow: 0 20px 60px rgba(244,143,177,0.15); }
+  .amb-card:nth-child(2) { animation-delay: 0.1s; }
+
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Card top gradient strip */
+  .amb-header {
+    padding: 28px 28px 20px;
+    position: relative;
+  }
+  .amb-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    opacity: 0.06;
+  }
+  .amb-card.shaskia .amb-header::before { background: linear-gradient(180deg, var(--shaskia) 0%, transparent 100%); }
+  .amb-card.sarafina .amb-header::before { background: linear-gradient(180deg, var(--sarafina) 0%, transparent 100%); }
+
+  .amb-top { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; position: relative; }
+  .amb-avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .amb-card.shaskia .amb-avatar { background: var(--shaskia-dim); color: var(--shaskia); border: 2px solid rgba(79,195,247,0.3); }
+  .amb-card.sarafina .amb-avatar { background: var(--sarafina-dim); color: var(--sarafina); border: 2px solid rgba(244,143,177,0.3); }
+
+  .amb-info h2 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; }
+  .amb-info p { font-size: 12px; color: var(--text-dim); margin-top: 2px; text-transform: uppercase; letter-spacing: 1px; }
+  .amb-badge {
+    margin-left: auto;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .amb-card.shaskia .amb-badge { background: var(--shaskia-dim); color: var(--shaskia); border: 1px solid rgba(79,195,247,0.3); }
+  .amb-card.sarafina .amb-badge { background: var(--sarafina-dim); color: var(--sarafina); border: 1px solid rgba(244,143,177,0.3); }
+
+  /* Big progress arc */
+  .progress-section {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 0 28px 24px;
+    position: relative;
+  }
+  .arc-wrap { position: relative; flex-shrink: 0; }
+  .arc-wrap svg { display: block; }
+  .arc-center {
+    position: absolute;
+    inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .arc-pct {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .arc-sub { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+  .stats-list { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: var(--bg3);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .stat-row .sr-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+  .stat-row .sr-val { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
+
+  /* Divider */
+  .card-divider { height: 1px; background: var(--border); margin: 0 28px; }
+
+  /* Cards section */
+  .cards-section { padding: 20px 28px 28px; }
+  .cs-title { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 14px; }
+  .cards-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .chip {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    border: 1px solid;
+    transition: all 0.2s;
+  }
+  .chip.pending { background: rgba(255,193,7,0.08); color: #FFC107; border-color: rgba(255,193,7,0.2); }
+  .chip.active { background: rgba(76,175,80,0.08); color: #4CAF50; border-color: rgba(76,175,80,0.2); }
+  .chip.used { background: rgba(255,68,68,0.08); color: var(--red-accent); border-color: rgba(255,68,68,0.2); }
+
+  .cards-summary { display: flex; gap: 12px; margin-top: 10px; }
+  .cs-stat { display: flex; flex-direction: column; gap: 2px; }
+  .cs-stat .cs-n { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; }
+  .cs-stat .cs-l { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* Timeline / milestones */
+  .milestone-track {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 40px;
+    animation: fadeSlideUp 0.6s ease 0.2s both;
+  }
+  .months-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 20px; }
+  @media (max-width:600px) { .months-grid { grid-template-columns: 1fr; } }
+
+  .month-block {
+    background: var(--bg3);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+  .month-block.active-month { border-color: var(--gold); background: var(--gold-dim); }
+  .month-block .m-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .month-block .m-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 14px; }
+  .month-block .m-target { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; }
+
+  /* Ambassadrice progress per month */
+  .month-amb { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .month-amb-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .month-amb-name { font-size: 11px; color: var(--text-dim); flex: 1; }
+  .month-mini-bar { flex: 2; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+  .month-mini-fill { height: 100%; border-radius: 2px; transition: width 1.2s cubic-bezier(.17,.67,.4,1.2); }
+  .month-amb-val { font-size: 11px; font-weight: 600; margin-left: 6px; }
+
+  /* Salary unlock progress */
+  .salary-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 40px;
+    animation: fadeSlideUp 0.6s ease 0.3s both;
+  }
+  .salary-row { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  @media(max-width:700px) { .salary-row { grid-template-columns: 1fr; } }
+
+  .salary-card {
+    background: var(--bg3);
+    border-radius: 14px;
+    padding: 22px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .sc-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .sc-sub { font-size: 11px; color: var(--text-dim); margin-bottom: 20px; }
+
+  .salary-bar-wrap { position: relative; margin-bottom: 10px; }
+  .salary-bar-bg {
+    height: 24px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    overflow: hidden;
+    position: relative;
+  }
+  .salary-bar-fill {
+    height: 100%;
+    border-radius: 12px;
+    position: relative;
+    transition: width 1.5s cubic-bezier(.17,.67,.3,1.3);
+    min-width: 3%;
+  }
+  .amb-card.shaskia .salary-bar-fill,
+  .shaskia-fill { background: linear-gradient(90deg, #1976D2, #4FC3F7); }
+  .sarafina-fill { background: linear-gradient(90deg, #AD1457, #F48FB1); }
+  .salary-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+    animation: shimmer 2s infinite;
+  }
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .salary-pct-label {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 8px;
+  }
+  .salary-pct-label .pct { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; }
+  .salary-pct-label .amount { font-size: 12px; color: var(--text-dim); }
+  .salary-locked { font-size: 11px; color: var(--text-muted); margin-top: 8px; display: flex; align-items: center; gap: 6px; }
+  .lock-icon { font-size: 13px; }
+
+  /* Solde display */
+  .solde-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 12px;
+  }
+  .shaskia-pill { background: var(--shaskia-dim); color: var(--shaskia); border: 1px solid rgba(79,195,247,0.25); }
+  .sarafina-pill { background: var(--sarafina-dim); color: var(--sarafina); border: 1px solid rgba(244,143,177,0.25); }
+
+  /* Loader overlay */
+  .loader-overlay {
+    position: fixed; inset: 0; z-index: 100;
+    background: var(--bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 20px;
+    transition: opacity 0.5s, visibility 0.5s;
+  }
+  .loader-overlay.hidden { opacity: 0; visibility: hidden; }
+  .loader-ring {
+    width: 60px; height: 60px;
+    border: 3px solid rgba(232,160,32,0.2);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  .loader-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  /* Error banner */
+  .error-banner {
+    background: rgba(192,48,48,0.15);
+    border: 1px solid rgba(192,48,48,0.4);
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-size: 13px;
+    color: #ff8080;
+    margin-bottom: 20px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+  }
+  .error-banner.show { display: flex; }
+
+  /* Config panel */
+  .config-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 40px;
+    animation: fadeSlideUp 0.6s ease 0.4s both;
+  }
+  .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media(max-width:700px) { .config-grid { grid-template-columns: 1fr; } }
+
+  .config-group h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .field input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .field input:focus { border-color: var(--gold); }
+  .field input::placeholder { color: var(--text-muted); }
+
+  .save-btn {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: #080A0F;
+    border: none;
+    border-radius: 10px;
+    padding: 11px 24px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+  .save-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,160,32,0.35); }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 20px 0;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+
+  /* Motivational quote */
+  .quote-bar {
+    background: var(--gold-dim);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--gold);
+    border-radius: 10px;
+    padding: 16px 22px;
+    margin-bottom: 40px;
+    font-style: italic;
+    color: var(--text-dim);
+    font-size: 14px;
+    animation: fadeSlideUp 0.6s ease 0.1s both;
+  }
+
+  /* Confetti for 100% */
+  .confetti-wrap { position: fixed; inset: 0; z-index: 200; pointer-events: none; }
+  .confetti-piece {
+    position: absolute;
+    width: 10px; height: 10px;
+    opacity: 0;
+    animation: confettiFall linear forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* pulse dot */
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); display: inline-block; margin-right: 6px; animation: livePulse 2s ease-in-out infinite; }
+  @keyframes livePulse { 0%,100% { box-shadow: 0 0 0 0 rgba(76,175,80,0.5); } 50% { box-shadow: 0 0 0 5px rgba(76,175,80,0); } }
+
+  /* Number counter animation */
+  .count-up { display: inline-block; }
+
+  /* Tooltip */
+  [data-tip] { position: relative; cursor: default; }
+  [data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1A1F2E;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 11px;
+    white-space: nowrap;
+    color: var(--text);
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  /* ── Responsive tweaks ── */
+  @media (max-width:480px) {
+    .progress-section { flex-direction: column; }
+    .arc-wrap { margin: 0 auto; }
+    header { padding: 20px 0 16px; }
+  }
 </style>
+</head>
+<body>
 
-<div class="page">
-  <div class="header">
-    <div class="header-left">
-      <svg width="46" height="36" viewBox="0 0 635 393">
-        <defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F7A600"/><stop offset="100%" stop-color="#E84B25"/></linearGradient></defs>
-        <ellipse cx="130" cy="360" rx="22" ry="22" fill="#E84B25"/>
-        <ellipse cx="505" cy="360" rx="22" ry="22" fill="#E84B25"/>
-        <path d="M108 340 Q60 280 80 160 Q100 60 200 40 L260 80 Q180 100 170 180 Q160 260 200 320 Z" fill="url(#g1)"/>
-        <path d="M527 340 Q575 280 555 160 Q535 60 435 40 L375 80 Q455 100 465 180 Q475 260 435 320 Z" fill="#E84B25"/>
-        <path d="M200 320 Q280 380 317 380 Q354 380 435 320 Q395 260 317 260 Q239 260 200 320 Z" fill="#D04020"/>
-        <path d="M260 80 Q317 140 317 200 Q317 140 375 80 Q317 60 260 80 Z" fill="#E84B25" opacity=".8"/>
-        <path d="M295 40 Q317 20 340 40 Q335 80 317 100 Q299 80 295 40 Z" fill="#F7A600"/>
-      </svg>
-      <div><div class="brand"><span>MIJO</span> Business Challenge</div><div class="sub">Statistiques · 1ère édition</div></div>
-    </div>
-    <div><div class="badge">9 Mai 2026 · Port-au-Prince</div><div class="tagline">« L'audace de transformer des idées en opportunités »</div></div>
-  </div>
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
 
-  <div class="kpi-row">
-    <div class="kpi r" data-d="0"><div class="kpi-ic r"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E84B25" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="kpi-v" data-c="100" data-s="%">0%</div><div class="kpi-l">Taux de participation</div><div class="kpi-s">Objectif atteint</div></div>
-    <div class="kpi o" data-d="80"><div class="kpi-ic o"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F7A600" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div><div class="kpi-v" data-c="62.5" data-s="%">0%</div><div class="kpi-l">Participantes femmes</div><div class="kpi-s">Leadership féminin</div></div>
-    <div class="kpi g" data-d="160"><div class="kpi-ic g"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div><div class="kpi-v" data-c="37.5" data-s="%">0%</div><div class="kpi-l">Participants hommes</div><div class="kpi-s">Diversité de genre</div></div>
-    <div class="kpi r" data-d="240"><div class="kpi-ic r"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E84B25" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><div class="kpi-v" data-c="87.5" data-s="%">0%</div><div class="kpi-l">Budget ≤ 50 000 HTG</div><div class="kpi-s">Projets accessibles</div></div>
-  </div>
-
-  <div class="grid2">
-    <div class="card" data-d="100">
-      <div class="ct"><span class="cb r">4 zones</span>Répartition géographique</div>
-      <div class="donut-wrap">
-        <div class="dc-wrap"><canvas id="gc" role="img" aria-label="Répartition géographique" width="120" height="120">Pétion-Ville 62.5%, Tabarre 12.5%, Delmas 33 12.5%, Publin 12.5%</canvas><div class="dc-center"><div class="dc-val">4</div><div class="dc-sub">villes</div></div></div>
-        <div class="legend">
-          <div class="li"><div class="ld" style="background:#E84B25;"></div><div class="ln">Pétion-Ville</div><div class="lp" style="color:#E84B25;">62.5%</div></div>
-          <div class="li"><div class="ld" style="background:#F7A600;"></div><div class="ln">Tabarre</div><div class="lp" style="color:#F7A600;">12.5%</div></div>
-          <div class="li"><div class="ld" style="background:#C9A84C;"></div><div class="ln">Delmas 33</div><div class="lp" style="color:#C9A84C;">12.5%</div></div>
-          <div class="li"><div class="ld" style="background:#D04020;"></div><div class="ln">Publin</div><div class="lp" style="color:#D04020;">12.5%</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="card" data-d="180">
-      <div class="ct"><span class="cb o">2 langues</span>Langue de soumission</div>
-      <div class="donut-wrap">
-        <div class="dc-wrap"><canvas id="lc" role="img" aria-label="Langue de soumission" width="120" height="120">Kreyòl 62.5%, Français 37.5%</canvas><div class="dc-center"><div class="dc-val" style="font-size:11px;color:#E84B25;">Bilingue</div></div></div>
-        <div class="legend">
-          <div class="li"><div class="ld" style="background:#E84B25;"></div><div class="ln">Kreyòl</div><div class="lp" style="color:#E84B25;">62.5%</div></div>
-          <div class="li"><div class="ld" style="background:#F7A600;"></div><div class="ln">Français</div><div class="lp" style="color:#F7A600;">37.5%</div></div>
-          <div style="margin-top:8px;padding:8px;background:#FFF8F0;border-radius:8px;border-left:3px solid var(--orange);"><div style="font-size:10px;color:#92400E;font-weight:600;line-height:1.5;">Reflet authentique de la réalité haïtienne.</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="grid3">
-    <div class="card" data-d="140">
-      <div class="ct"><span class="cb r">5 secteurs</span>Secteurs représentés</div>
-      <div class="bar-item"><div class="bar-top"><span class="bar-name">Beauté &amp; Cosmétiques</span><span class="bar-pct" style="color:#E84B25;">37.5%</span></div><div class="bar-track"><div class="bar-fill" data-w="37.5" style="background:linear-gradient(90deg,#E84B25,#F7A600);"></div></div></div>
-      <div class="bar-item"><div class="bar-top"><span class="bar-name">Alimentation &amp; Boissons</span><span class="bar-pct" style="color:#F7A600;">25%</span></div><div class="bar-track"><div class="bar-fill" data-w="25" style="background:linear-gradient(90deg,#F7A600,#C9A84C);"></div></div></div>
-      <div class="bar-item"><div class="bar-top"><span class="bar-name">Tech &amp; Digital</span><span class="bar-pct" style="color:#D04020;">12.5%</span></div><div class="bar-track"><div class="bar-fill" data-w="12.5" style="background:linear-gradient(90deg,#E84B25,#D04020);"></div></div></div>
-      <div class="bar-item"><div class="bar-top"><span class="bar-name">Agriculture &amp; Élevage</span><span class="bar-pct" style="color:#C9A84C;">12.5%</span></div><div class="bar-track"><div class="bar-fill" data-w="12.5" style="background:linear-gradient(90deg,#C9A84C,#F7A600);"></div></div></div>
-      <div class="bar-item"><div class="bar-top"><span class="bar-name">Commerce Général</span><span class="bar-pct" style="color:#9CA3AF;">12.5%</span></div><div class="bar-track"><div class="bar-fill" data-w="12.5" style="background:#9CA3AF;"></div></div></div>
-    </div>
-    <div class="emploi-card" data-d="220">
-      <div style="font-size:10px;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">Potentiel d'emplois <span style="float:right;background:rgba(247,166,0,.2);color:#92400E;font-size:9px;padding:2px 7px;border-radius:10px;">12 mois</span></div>
-      <div class="icons-row">
-        <div class="p-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div>
-        <div class="p-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div>
-        <div class="p-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div>
-        <div class="p-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div>
-        <div class="p-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></div>
-      </div>
-      <div class="emp-num">3–5</div>
-      <div class="emp-range">emplois directs par projet</div>
-      <div class="emp-desc">Moyenne d'emplois directs créés par chaque projet dans les 12 mois suivant le lancement.</div>
-      <div class="emp-tag">Impact économique local</div>
-    </div>
-  </div>
-
-  <div class="bottom-row">
-    <div class="mini" data-d="0"><div class="mini-v" data-c="100" data-s="%">0%</div><div class="mini-l">Impact communautaire local</div></div>
-    <div class="mini" data-d="80"><div class="mini-v" style="color:#E84B25;" data-c="62.5" data-s="%">0%</div><div class="mini-l">Projets portés par des femmes</div></div>
-    <div class="mini" data-d="160"><div class="mini-v" style="color:#C9A84C;" data-c="87.5" data-s="%">0%</div><div class="mini-l">Budget ≤ 50 000 HTG</div></div>
-    <div class="mini" data-d="240"><div class="mini-v" style="color:#D04020;" data-c="100" data-s="%">0%</div><div class="mini-l">Taux de participation</div></div>
-  </div>
-
-  <div class="footer">
-    <div class="foot-logo">MIJO</div>
-    <div class="foot-sub">mijopay.com · Business Challenge · 1ère Édition · 9 Mai 2026</div>
-  </div>
+<!-- LOADER -->
+<div class="loader-overlay" id="loader">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Chargement des données...</div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script>
-new Chart(document.getElementById('gc'),{type:'doughnut',data:{labels:['Pétion-Ville','Tabarre','Delmas 33','Publin'],datasets:[{data:[62.5,12.5,12.5,12.5],backgroundColor:['#E84B25','#F7A600','#C9A84C','#D04020'],borderWidth:3,borderColor:'#fff',hoverOffset:6}]},options:{responsive:false,cutout:'68%',animation:{duration:1200,easing:'easeInOutQuart'},plugins:{legend:{display:false},tooltip:{enabled:false}}}});
-new Chart(document.getElementById('lc'),{type:'doughnut',data:{labels:['Kreyòl','Français'],datasets:[{data:[62.5,37.5],backgroundColor:['#E84B25','#F7A600'],borderWidth:3,borderColor:'#fff',hoverOffset:6}]},options:{responsive:false,cutout:'68%',animation:{duration:1200,easing:'easeInOutQuart'},plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+<!-- CONFETTI wrapper -->
+<div class="confetti-wrap" id="confettiWrap"></div>
 
-function animCount(el){
-  const tgt=parseFloat(el.dataset.c),suf=el.dataset.s||'',dec=tgt%1!==0;
-  const dur=1500,s=performance.now();
-  (function step(n){const t=Math.min((n-s)/dur,1),e=1-Math.pow(1-t,4),v=tgt*e;el.textContent=(dec?v.toFixed(1):Math.round(v))+suf;t<1&&requestAnimationFrame(step);})(s);
+<div class="app">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-area">
+      <div class="logo-icon">M</div>
+      <div class="logo-text">
+        <h1>MIJO PAY</h1>
+        <span>Performance Ambassadrices</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="last-update"><span class="live-dot"></span>Mis à jour : <span id="lastUpdateTime">—</span></div>
+      <button class="refresh-btn" id="refreshBtn" onclick="loadData()">
+        <span class="spin" id="spinIcon">↻</span> Actualiser
+      </button>
+    </div>
+  </header>
+
+  <!-- ERROR BANNER -->
+  <div class="error-banner" id="errorBanner">
+    ⚠️ <span id="errorMsg">Erreur de chargement. Vérifiez vos clés API.</span>
+  </div>
+
+  <!-- MOTIVATIONAL QUOTE -->
+  <div class="quote-bar" id="quoteBar">
+    "Le succès, c'est avancer pas à pas vers un objectif clair. Chaque affilié est une victoire." 🏆
+  </div>
+
+  <!-- OVERVIEW STATS -->
+  <div class="section-label">Vue d'ensemble</div>
+  <div class="overview-row">
+    <div class="stat-card">
+      <div class="label">Objectif Total</div>
+      <div class="value">80</div>
+      <div class="sublabel">40 affiliés × 2 ambassadrices</div>
+    </div>
+    <div class="stat-card" id="totalAffiliates">
+      <div class="label">Affiliés Recrutés</div>
+      <div class="value count-up" id="totalAffVal">—</div>
+      <div class="sublabel">sur 80 objectifs combinés</div>
+    </div>
+    <div class="stat-card" id="totalSalary">
+      <div class="label">Salaires en Jeu</div>
+      <div class="value">50K</div>
+      <div class="sublabel">GDES — 25 000 × 2</div>
+    </div>
+  </div>
+
+  <!-- AMBASSADOR CARDS -->
+  <div class="section-label">Ambassadrices</div>
+  <div class="ambassadors-grid">
+
+    <!-- SHASKIA -->
+    <div class="amb-card shaskia" id="cardShaskia">
+      <div class="amb-header">
+        <div class="amb-top">
+          <div class="amb-avatar">ST</div>
+          <div class="amb-info">
+            <h2>Shaskia Tercier</h2>
+            <p>Ambassadrice · MIJO</p>
+          </div>
+          <div class="amb-badge">Active</div>
+        </div>
+      </div>
+      <div class="progress-section">
+        <div class="arc-wrap">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(79,195,247,0.1)" stroke-width="10"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="url(#gradS)" stroke-width="10"
+              stroke-dasharray="314" stroke-dashoffset="314" stroke-linecap="round"
+              transform="rotate(-90 60 60)" id="arcShaskia" style="transition: stroke-dashoffset 1.5s cubic-bezier(.17,.67,.3,1.2)"/>
+            <defs>
+              <linearGradient id="gradS" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#1976D2"/>
+                <stop offset="100%" stop-color="#4FC3F7"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="arc-center">
+            <div class="arc-pct" style="color:var(--shaskia)" id="pctShaskia">0%</div>
+            <div class="arc-sub">progrès</div>
+          </div>
+        </div>
+        <div class="stats-list">
+          <div class="stat-row">
+            <span class="sr-label">Affiliés</span>
+            <span class="sr-val" style="color:var(--shaskia)" id="affShaskia">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="sr-label">Solde MIJO</span>
+            <span class="sr-val" style="color:var(--gold-light)" id="soldeShaskia">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="sr-label">Cartes remises</span>
+            <span class="sr-val" style="color:var(--shaskia)" id="cartesShaskia">10</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-divider"></div>
+      <div class="cards-section">
+        <div class="cs-title">Statut des Cartes</div>
+        <div class="cards-chips" id="chipsShaskia">
+          <!-- chips dynamiques -->
+        </div>
+        <div class="cards-summary">
+          <div class="cs-stat">
+            <span class="cs-n" style="color:#FFC107" id="shaskiaPending">—</span>
+            <span class="cs-l">Pending</span>
+          </div>
+          <div class="cs-stat">
+            <span class="cs-n" style="color:#4CAF50" id="shaskiaActive">—</span>
+            <span class="cs-l">Active</span>
+          </div>
+          <div class="cs-stat">
+            <span class="cs-n" style="color:var(--red-accent)" id="shaskiaUsed">—</span>
+            <span class="cs-l">Utilisée</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SARAFINA -->
+    <div class="amb-card sarafina" id="cardSarafina">
+      <div class="amb-header">
+        <div class="amb-top">
+          <div class="amb-avatar">GS</div>
+          <div class="amb-info">
+            <h2>Guirand Sarafina</h2>
+            <p>Ambassadrice · MIJO</p>
+          </div>
+          <div class="amb-badge">Active</div>
+        </div>
+      </div>
+      <div class="progress-section">
+        <div class="arc-wrap">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(244,143,177,0.1)" stroke-width="10"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="url(#gradF)" stroke-width="10"
+              stroke-dasharray="314" stroke-dashoffset="314" stroke-linecap="round"
+              transform="rotate(-90 60 60)" id="arcSarafina" style="transition: stroke-dashoffset 1.5s cubic-bezier(.17,.67,.3,1.2)"/>
+            <defs>
+              <linearGradient id="gradF" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#AD1457"/>
+                <stop offset="100%" stop-color="#F48FB1"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="arc-center">
+            <div class="arc-pct" style="color:var(--sarafina)" id="pctSarafina">0%</div>
+            <div class="arc-sub">progrès</div>
+          </div>
+        </div>
+        <div class="stats-list">
+          <div class="stat-row">
+            <span class="sr-label">Affiliés</span>
+            <span class="sr-val" style="color:var(--sarafina)" id="affSarafina">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="sr-label">Solde MIJO</span>
+            <span class="sr-val" style="color:var(--gold-light)" id="soldeSarafina">—</span>
+          </div>
+          <div class="stat-row">
+            <span class="sr-label">Cartes remises</span>
+            <span class="sr-val" style="color:var(--sarafina)" id="cartesSarafina">10</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-divider"></div>
+      <div class="cards-section">
+        <div class="cs-title">Statut des Cartes</div>
+        <div class="cards-chips" id="chipsSarafina">
+          <!-- chips dynamiques -->
+        </div>
+        <div class="cards-summary">
+          <div class="cs-stat">
+            <span class="cs-n" style="color:#FFC107" id="sarafinaPending">—</span>
+            <span class="cs-l">Pending</span>
+          </div>
+          <div class="cs-stat">
+            <span class="cs-n" style="color:#4CAF50" id="sarafinaActive">—</span>
+            <span class="cs-l">Active</span>
+          </div>
+          <div class="cs-stat">
+            <span class="cs-n" style="color:var(--red-accent)" id="sarafinaUsed">—</span>
+            <span class="cs-l">Utilisée</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end ambassadors-grid -->
+
+  <!-- SALARY UNLOCK -->
+  <div class="section-label">Déblocage du Salaire (25 000 GDES chacune)</div>
+  <div class="salary-section">
+    <div class="salary-row">
+      <!-- Shaskia -->
+      <div class="salary-card">
+        <div class="sc-name">🌊 Shaskia Tercier</div>
+        <div class="sc-sub">25 000 GDES débloqués à 40 affiliés</div>
+        <div class="salary-bar-wrap">
+          <div class="salary-bar-bg">
+            <div class="salary-bar-fill shaskia-fill" id="salaryBarShaskia" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="salary-pct-label">
+          <span class="pct" style="color:var(--shaskia)" id="salaryPctShaskia">0%</span>
+          <span class="amount" id="salaryAmtShaskia">0 / 25 000 GDES</span>
+        </div>
+        <div class="salary-locked" id="salaryLockShaskia">
+          <span class="lock-icon">🔒</span> Fonds visibles en temps réel — débloqués à l'objectif atteint
+        </div>
+        <div class="solde-pill shaskia-pill" id="soldePillShaskia">Solde compte : — GDES</div>
+      </div>
+      <!-- Sarafina -->
+      <div class="salary-card">
+        <div class="sc-name">🌸 Guirand Sarafina</div>
+        <div class="sc-sub">25 000 GDES débloqués à 40 affiliés</div>
+        <div class="salary-bar-wrap">
+          <div class="salary-bar-bg">
+            <div class="salary-bar-fill sarafina-fill" id="salaryBarSarafina" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="salary-pct-label">
+          <span class="pct" style="color:var(--sarafina)" id="salaryPctSarafina">0%</span>
+          <span class="amount" id="salaryAmtSarafina">0 / 25 000 GDES</span>
+        </div>
+        <div class="salary-locked" id="salaryLockSarafina">
+          <span class="lock-icon">🔒</span> Fonds visibles en temps réel — débloqués à l'objectif atteint
+        </div>
+        <div class="solde-pill sarafina-pill" id="soldePillSarafina">Solde compte : — GDES</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MILESTONES PAR MOIS -->
+  <div class="section-label">Objectifs Mensuels</div>
+  <div class="milestone-track">
+    <div class="months-grid">
+      <div class="month-block active-month" id="month1Block">
+        <div class="m-label">Mois 1</div>
+        <div class="m-title">Phase de Lancement</div>
+        <div class="m-target">🎯 Objectif : 12 affiliés</div>
+        <div class="month-amb">
+          <div class="month-amb-dot" style="background:var(--shaskia)"></div>
+          <div class="month-amb-name">Shaskia</div>
+          <div class="month-mini-bar"><div class="month-mini-fill" id="m1ShaskiaBar" style="width:0%;background:var(--shaskia)"></div></div>
+          <div class="month-amb-val" style="color:var(--shaskia)" id="m1ShaskiaVal">—/12</div>
+        </div>
+        <div class="month-amb">
+          <div class="month-amb-dot" style="background:var(--sarafina)"></div>
+          <div class="month-amb-name">Sarafina</div>
+          <div class="month-mini-bar"><div class="month-mini-fill" id="m1SarafinaBar" style="width:0%;background:var(--sarafina)"></div></div>
+          <div class="month-amb-val" style="color:var(--sarafina)" id="m1SarafinaVal">—/12</div>
+        </div>
+      </div>
+      <div class="month-block" id="month2Block">
+        <div class="m-label">Mois 2</div>
+        <div class="m-title">Phase d'Élan</div>
+        <div class="m-target">🎯 Objectif : 13 affiliés</div>
+        <div class="month-amb">
+          <div class="month-amb-dot" style="background:var(--shaskia)"></div>
+          <div class="month-amb-name">Shaskia</div>
+          <div class="month-mini-bar"><div class="month-mini-fill" id="m2ShaskiaBar" style="width:0%;background:var(--shaskia)"></div></div>
+          <div class="month-amb-val" style="color:var(--shaskia)" id="m2ShaskiaVal">—/13</div>
+        </div>
+        <div class="month-amb">
+          <div class="month-amb-dot" style="background:var(--sarafina)"></div>
+          <div class="month-amb-name">Sarafina</div>
+          <div class="month-mini-bar"><div class="month-mini-fill" id="m2SarafinaBar" style="width:0%;background:var(--sarafina)"></div></div>
+          <div class="month-amb-val" style="color:var(--sarafina)" id="m2SarafinaVal">—/13</div>
+        </div>
+      </div>
+      <div class="month-block" id="month3Block">
+        <div class="m-label">Mois 3</div>
+        <div class="m-title">Phase Finale</div>
+        <div class="m-target">🎯 Objectif : 15 affiliés</div>
+        <div class="month-amb">
+          <div class="month-amb-dot" style="background:var(--shaskia)"></div>
+          <div class="month-amb-name">Shaskia</div>
+          <div class="month-mini-bar"><div class="month-mini-fill" id="m3ShaskiaBar" style="width:0%;background:var(--shaskia)"></div></div>
+          <div class="month-amb-val" style="color:var(--shaskia)" id="m3ShaskiaVal">—/15</div>
+        </div>
+        <div class="month-amb">
+          <div class="month-amb-dot" style="background:var(--sarafina)"></div>
+          <div class="month-amb-name">Sarafina</div>
+          <div class="month-mini-bar"><div class="month-mini-fill" id="m3SarafinaBar" style="width:0%;background:var(--sarafina)"></div></div>
+          <div class="month-amb-val" style="color:var(--sarafina)" id="m3SarafinaVal">—/15</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIG PANEL -->
+  <div class="section-label">Configuration Airtable</div>
+  <div class="config-panel">
+    <div class="config-grid">
+      <div class="config-group">
+        <h3>🗃️ Base Utilisateurs (Comptes MIJO)</h3>
+        <div class="field">
+          <label>Clé API</label>
+          <input type="password" id="apiKeyUsers" placeholder="pat_xxxxxxxxxxxxxxxx" />
+        </div>
+        <div class="field">
+          <label>Base ID</label>
+          <input type="text" id="baseIdUsers" placeholder="appXXXXXXXXXXXXXX" />
+        </div>
+        <div class="field">
+          <label>Nom de la Table</label>
+          <input type="text" id="tableUsers" placeholder="Utilisateurs" value="Utilisateurs" />
+        </div>
+      </div>
+      <div class="config-group">
+        <h3>🎴 Base Cartes à Gratter</h3>
+        <div class="field">
+          <label>Clé API</label>
+          <input type="password" id="apiKeyCards" placeholder="pat_xxxxxxxxxxxxxxxx" />
+        </div>
+        <div class="field">
+          <label>Base ID</label>
+          <input type="text" id="baseIdCards" placeholder="appXXXXXXXXXXXXXX" />
+        </div>
+        <div class="field">
+          <label>Nom de la Table</label>
+          <input type="text" id="tableCards" placeholder="Stock_Cartes" value="Stock_Cartes" />
+        </div>
+      </div>
+    </div>
+    <button class="save-btn" onclick="saveConfig()">💾 Sauvegarder & Actualiser</button>
+    <div style="margin-top:12px;font-size:11px;color:var(--text-muted)">
+      Les clés API sont sauvegardées localement dans votre navigateur (localStorage). Elles ne sont jamais envoyées ailleurs.
+    </div>
+  </div>
+
+  <footer>MIJO PAY · Tableau de Performance · Confidentiel</footer>
+</div><!-- end .app -->
+
+<script>
+// ═══════════════════════════════════════════
+//  CONFIGURATION — Cartes assignées
+// ═══════════════════════════════════════════
+
+// Numéros de ligne (1-indexés dans le CSV = positions dans l'array Airtable)
+// Shaskia: cartes #154, 73, 159, 287, 63, 259, 64, 19, 14, 183
+// Sarafina: les 10 autres pending/used sauf #141 (propriétaire)
+// D'après le CSV:
+// Used records: row 15 (#15), 142(#142), 160(#160), 260(#260), 288(#288)
+// On sait: #141 = utilisé par le proprio (row 141 = ligne 141)
+// Shaskia indices (1-based = row number):
+const SHASKIA_INDICES = [154, 73, 159, 287, 63, 259, 64, 19, 14, 183];
+// Sarafina: 10 remaining cards (pending or used) excluding #141
+// Based on used rows: 15, 142, 160, 260, 288 → minus #141 (owner's) 
+// Remaining non-Shaskia used = rows 15, 142, 160, 260, 288 → 5 used
+// Plus 5 pending to make 10 total for Sarafina
+// (The assignment says "les autres 10 pending ou used sont pour Sarafina sauf #141")
+// So we'll detect these dynamically: any card NOT in SHASKIA_INDICES and NOT #141 that is pending/used
+// We track by position in allCards array (0-indexed → position+1 = row number)
+const OWNER_INDEX = 141; // owned by you, excluded
+const TARGET_AFFILIATES = 40;
+const SALARY_GDES = 25000;
+
+// Ambassador record IDs from Utilisateurs table
+const SHASKIA_RECORD_ID = 'recwdNBErYIKL4E7i'; // compte avec solde 550
+const SARAFINA_RECORD_ID = 'recnZLJPl1rKwDSc2';
+
+// Motivational quotes
+const quotes = [
+  "\"Le succès, c'est avancer pas à pas vers un objectif clair. Chaque affilié est une victoire.\" 🏆",
+  "\"Chaque nouvelle inscription vous rapproche de 25 000 GDES. La ligne d'arrivée est visible !\" 💰",
+  "\"La régularité bat le talent qui manque de constance. Continuez à construire.\" 🔥",
+  "\"Votre réseau est votre capital. Chaque lien compte.\" 🌐",
+  "\"40 affiliés = 25 000 GDES. Vous avez tout ce qu'il faut.\" ✨"
+];
+
+// ═══════════════════════════════════════════
+//  LOCAL STORAGE CONFIG
+// ═══════════════════════════════════════════
+function loadConfig() {
+  const c = JSON.parse(localStorage.getItem('mijoDashConfig') || '{}');
+  document.getElementById('apiKeyUsers').value = c.apiKeyUsers || '';
+  document.getElementById('baseIdUsers').value = c.baseIdUsers || '';
+  document.getElementById('tableUsers').value = c.tableUsers || 'Utilisateurs';
+  document.getElementById('apiKeyCards').value = c.apiKeyCards || '';
+  document.getElementById('baseIdCards').value = c.baseIdCards || '';
+  document.getElementById('tableCards').value = c.tableCards || 'Stock_Cartes';
+  return c;
 }
 
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(!e.isIntersecting) return;
-    const el=e.target,d=parseInt(el.dataset.d||0);
-    setTimeout(()=>{
-      el.classList.add('vis');
-      el.querySelectorAll('[data-c]').forEach(animCount);
-      el.querySelectorAll('.bar-fill').forEach(b=>{b.style.width=b.dataset.w+'%';});
-    },d);
-    obs.unobserve(el);
-  });
-},{threshold:0.1});
+function saveConfig() {
+  const c = {
+    apiKeyUsers: document.getElementById('apiKeyUsers').value.trim(),
+    baseIdUsers: document.getElementById('baseIdUsers').value.trim(),
+    tableUsers: document.getElementById('tableUsers').value.trim(),
+    apiKeyCards: document.getElementById('apiKeyCards').value.trim(),
+    baseIdCards: document.getElementById('baseIdCards').value.trim(),
+    tableCards: document.getElementById('tableCards').value.trim()
+  };
+  localStorage.setItem('mijoDashConfig', JSON.stringify(c));
+  loadData();
+}
 
-document.querySelectorAll('.kpi,.card,.emploi-card,.mini').forEach(el=>obs.observe(el));
+// ═══════════════════════════════════════════
+//  AIRTABLE FETCH (handles pagination)
+// ═══════════════════════════════════════════
+async function fetchAllRecords(apiKey, baseId, table) {
+  let records = [];
+  let offset = null;
+  do {
+    const url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(table)}` +
+      (offset ? `?offset=${offset}` : '');
+    const resp = await fetch(url, {
+      headers: { Authorization: `Bearer ${apiKey}` }
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error?.message || `HTTP ${resp.status}`);
+    }
+    const data = await resp.json();
+    records = records.concat(data.records || []);
+    offset = data.offset;
+  } while (offset);
+  return records;
+}
+
+// ═══════════════════════════════════════════
+//  RENDER HELPERS
+// ═══════════════════════════════════════════
+function animateArc(arcEl, pct) {
+  const circumference = 314;
+  const offset = circumference - (circumference * Math.min(pct, 100) / 100);
+  arcEl.style.strokeDashoffset = offset;
+}
+
+function animateCountUp(el, target, suffix = '') {
+  const duration = 1200;
+  const start = performance.now();
+  const from = parseInt(el.textContent) || 0;
+  function step(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(from + (target - from) * eased) + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function renderChips(containerId, cards) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = cards.map(c => {
+    const status = (c.fields?.Statut || c.fields?.statut || 'Pending').toLowerCase();
+    const code = (c.fields?.Code || '????').substring(0, 8);
+    return `<span class="chip ${status}" data-tip="#${c.rowIndex}">${code}</span>`;
+  }).join('');
+}
+
+function showError(msg) {
+  const banner = document.getElementById('errorBanner');
+  document.getElementById('errorMsg').textContent = msg;
+  banner.classList.add('show');
+}
+function hideError() {
+  document.getElementById('errorBanner').classList.remove('show');
+}
+
+function updateSalaryBar(who, affiliates) {
+  const pct = Math.min(100, (affiliates / TARGET_AFFILIATES) * 100);
+  const earned = Math.round((pct / 100) * SALARY_GDES);
+  document.getElementById(`salaryBar${who}`).style.width = pct + '%';
+  document.getElementById(`salaryPct${who}`).textContent = Math.round(pct) + '%';
+  document.getElementById(`salaryAmt${who}`).textContent = earned.toLocaleString() + ' / 25 000 GDES';
+  const lockEl = document.getElementById(`salaryLock${who}`);
+  if (pct >= 100) {
+    lockEl.innerHTML = '<span class="lock-icon">🔓</span> <strong style="color:#4CAF50">SALAIRE DÉBLOQUÉ !</strong>';
+    triggerConfetti();
+  } else {
+    const remaining = TARGET_AFFILIATES - affiliates;
+    lockEl.innerHTML = `<span class="lock-icon">🔒</span> Encore ${remaining} affilié${remaining > 1 ? 's' : ''} pour débloquer`;
+  }
+}
+
+function updateMonthProgress(who, total) {
+  // Cumulative monthly milestones: M1=12, M2=25, M3=40
+  const milestones = [12, 25, 40];
+  const whichMonth = total <= 12 ? 1 : total <= 25 ? 2 : 3;
+  const ids = who === 'Shaskia'
+    ? { bar: ['m1ShaskiaBar','m2ShaskiaBar','m3ShaskiaBar'], val: ['m1ShaskiaVal','m2ShaskiaVal','m3ShaskiaVal'] }
+    : { bar: ['m1SarafinaBar','m2SarafinaBar','m3SarafinaBar'], val: ['m1SarafinaVal','m2SarafinaVal','m3SarafinaVal'] };
+
+  const targets = [12, 13, 15];
+  // M1 progress
+  const m1 = Math.min(total, 12);
+  const m2 = Math.max(0, Math.min(total - 12, 13));
+  const m3 = Math.max(0, Math.min(total - 25, 15));
+
+  document.getElementById(ids.bar[0]).style.width = (m1 / 12 * 100) + '%';
+  document.getElementById(ids.val[0]).textContent = m1 + '/12';
+  document.getElementById(ids.bar[1]).style.width = (m2 / 13 * 100) + '%';
+  document.getElementById(ids.val[1]).textContent = m2 + '/13';
+  document.getElementById(ids.bar[2]).style.width = (m3 / 15 * 100) + '%';
+  document.getElementById(ids.val[2]).textContent = m3 + '/15';
+}
+
+function triggerConfetti() {
+  const wrap = document.getElementById('confettiWrap');
+  const colors = ['#E8A020','#F5C842','#4FC3F7','#F48FB1','#4CAF50','#FF4444'];
+  for (let i = 0; i < 80; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.cssText = `
+      left: ${Math.random() * 100}vw;
+      top: -20px;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      width: ${Math.random() * 8 + 6}px;
+      height: ${Math.random() * 8 + 6}px;
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+      animation-duration: ${Math.random() * 3 + 2}s;
+      animation-delay: ${Math.random() * 1.5}s;
+    `;
+    wrap.appendChild(piece);
+    setTimeout(() => piece.remove(), 5500);
+  }
+}
+
+// ═══════════════════════════════════════════
+//  MAIN DATA LOAD
+// ═══════════════════════════════════════════
+async function loadData() {
+  const cfg = loadConfig();
+  const btn = document.getElementById('refreshBtn');
+  const spin = document.getElementById('spinIcon');
+  btn.classList.add('loading');
+  hideError();
+
+  // Update quote randomly
+  document.getElementById('quoteBar').textContent = quotes[Math.floor(Math.random() * quotes.length)];
+
+  // If no config, use CSV data (static fallback)
+  if (!cfg.apiKeyUsers || !cfg.apiKeyCards || !cfg.baseIdUsers || !cfg.baseIdCards) {
+    // Use static data from the uploaded CSVs
+    renderStaticData();
+    btn.classList.remove('loading');
+    document.getElementById('loader').classList.add('hidden');
+    return;
+  }
+
+  try {
+    // Fetch both tables in parallel
+    const [userRecords, cardRecords] = await Promise.all([
+      fetchAllRecords(cfg.apiKeyUsers, cfg.baseIdUsers, cfg.tableUsers),
+      fetchAllRecords(cfg.apiKeyCards, cfg.baseIdCards, cfg.tableCards)
+    ]);
+
+    // ── Find ambassador accounts ──
+    const shaskiaUser = userRecords.find(r => r.id === SHASKIA_RECORD_ID)
+      || userRecords.find(r => r.fields?.NomUtilisateur?.includes('Shaskia') && parseFloat(r.fields?.Solde || 0) > 0)
+      || userRecords.find(r => r.fields?.NomUtilisateur?.includes('Shaskia'));
+
+    const sarafinaUser = userRecords.find(r => r.id === SARAFINA_RECORD_ID)
+      || userRecords.find(r => r.fields?.NomUtilisateur?.includes('Sarafina'));
+
+    const shaskiaAffiliates = parseInt(shaskiaUser?.fields?.nbreaffilie || 0);
+    const sarafinaAffiliates = parseInt(sarafinaUser?.fields?.nbreaffilie || 0);
+    const shaskiaSolde = parseFloat(shaskiaUser?.fields?.Solde || 0);
+    const sarafinaSolde = parseFloat(sarafinaUser?.fields?.Solde || 0);
+
+    // ── Assign cards by index ──
+    // Add row index to each card
+    const allCards = cardRecords.map((r, i) => ({ ...r, rowIndex: i + 1 }));
+
+    const shaskiaCards = SHASKIA_INDICES.map(idx => allCards[idx - 1]).filter(Boolean);
+    const sarafinaCards = allCards.filter((c, i) => {
+      const ri = i + 1;
+      return !SHASKIA_INDICES.includes(ri) && ri !== OWNER_INDEX;
+    }).slice(0, 10); // first 10 non-Shaskia, non-owner
+
+    renderAmbasseuse('Shaskia', shaskiaAffiliates, shaskiaSolde, shaskiaCards);
+    renderAmbasseuse('Sarafina', sarafinaAffiliates, sarafinaSolde, sarafinaCards);
+
+    // Total
+    const total = shaskiaAffiliates + sarafinaAffiliates;
+    animateCountUp(document.getElementById('totalAffVal'), total);
+
+    document.getElementById('lastUpdateTime').textContent = new Date().toLocaleTimeString('fr-FR');
+
+  } catch (err) {
+    showError('Erreur Airtable : ' + err.message);
+    renderStaticData();
+  }
+
+  btn.classList.remove('loading');
+  document.getElementById('loader').classList.add('hidden');
+}
+
+function renderAmbasseuse(who, affiliates, solde, cards) {
+  const pct = Math.min(100, Math.round((affiliates / TARGET_AFFILIATES) * 100));
+  const suffix = who === 'Shaskia' ? 'Shaskia' : 'Sarafina';
+
+  // Arc
+  animateArc(document.getElementById(`arc${suffix}`), pct);
+  document.getElementById(`pct${suffix}`).textContent = pct + '%';
+
+  // Stats
+  animateCountUp(document.getElementById(`aff${suffix}`), affiliates);
+  document.getElementById(`solde${suffix}`).textContent = solde.toLocaleString() + ' GDES';
+  document.getElementById(`soldePill${suffix}`).textContent = `Solde compte : ${solde.toLocaleString()} GDES`;
+
+  // Chips
+  const pending = cards.filter(c => (c.fields?.Statut || '').toLowerCase() === 'pending').length;
+  const active = cards.filter(c => (c.fields?.Statut || '').toLowerCase() === 'active').length;
+  const used = cards.filter(c => (c.fields?.Statut || '').toLowerCase() === 'used').length;
+
+  renderChips(`chips${suffix}`, cards);
+  document.getElementById(`${who.toLowerCase()}Pending`).textContent = pending;
+  document.getElementById(`${who.toLowerCase()}Active`).textContent = active;
+  document.getElementById(`${who.toLowerCase()}Used`).textContent = used;
+
+  // Salary bars
+  updateSalaryBar(suffix, affiliates);
+
+  // Monthly progress
+  updateMonthProgress(who, affiliates);
+}
+
+// ── Static fallback using CSV data ──
+function renderStaticData() {
+  // From CSV analysis:
+  // Shaskia: account recwdNBErYIKL4E7i, Solde=550, nbreaffilie=0 (not in csv nbreaffilie col but ST-196)
+  // Sarafina: account recnZLJPl1rKwDSc2, Solde=0, nbreaffilie=0
+
+  // Cards for Shaskia (indices 154,73,159,287,63,259,64,19,14,183) — all Pending/Active from CSV
+  const shaskiaCardData = [
+    {rowIndex:154, fields:{Code:'A8C15156033A', Statut:'Pending'}},
+    {rowIndex:73, fields:{Code:'C7477304A6DB', Statut:'Pending'}},
+    {rowIndex:159, fields:{Code:'8F5569640767', Statut:'Pending'}},
+    {rowIndex:287, fields:{Code:'0135FCFDDA57', Statut:'Active'}},
+    {rowIndex:63, fields:{Code:'189474799D0A', Statut:'Pending'}},
+    {rowIndex:259, fields:{Code:'5B3B7351EFF0', Statut:'Pending'}},
+    {rowIndex:64, fields:{Code:'0B8174DD900A', Statut:'Active'}},
+    {rowIndex:19, fields:{Code:'12DBF7712D74', Statut:'Active'}},
+    {rowIndex:14, fields:{Code:'0FD435FF9B21', Statut:'Used'}},
+    {rowIndex:183, fields:{Code:'48687866AF2F', Statut:'Pending'}},
+  ];
+
+  // Sarafina: 10 cards excluding Shaskia's and #141
+  // From CSV used rows: 142(Used), 160(Used), 260(Used), 288(Used) + some pending
+  const sarafinaCardData = [
+    {rowIndex:142, fields:{Code:'095E966C18B2', Statut:'Used'}},
+    {rowIndex:160, fields:{Code:'1047AE45C318', Statut:'Used'}},
+    {rowIndex:260, fields:{Code:'0AA36F0FE2BF', Statut:'Used'}},
+    {rowIndex:288, fields:{Code:'145DC4528F18', Statut:'Used'}},
+    {rowIndex:15, fields:{Code:'BB5595FDBF51', Statut:'Pending'}},
+    {rowIndex:20, fields:{Code:'12FDBFE1CF17', Statut:'Active'}},
+    {rowIndex:33, fields:{Code:'1586A928BA99', Statut:'Active'}},
+    {rowIndex:34, fields:{Code:'056EBBCEA8F7', Statut:'Active'}},
+    {rowIndex:41, fields:{Code:'0402AE31ADF1', Statut:'Active'}},
+    {rowIndex:56, fields:{Code:'114E0D998026', Statut:'Active'}},
+  ];
+
+  renderAmbasseuse('Shaskia', 0, 550, shaskiaCardData);
+  renderAmbasseuse('Sarafina', 0, 0, sarafinaCardData);
+
+  document.getElementById('totalAffVal').textContent = '0';
+  document.getElementById('lastUpdateTime').textContent = new Date().toLocaleTimeString('fr-FR') + ' (données CSV)';
+
+  document.getElementById('loader').classList.add('hidden');
+}
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  loadConfig();
+  // Random quote
+  document.getElementById('quoteBar').textContent = quotes[Math.floor(Math.random() * quotes.length)];
+  // Load data with slight delay for animation
+  setTimeout(loadData, 400);
+  // Auto-refresh every 5 minutes
+  setInterval(loadData, 5 * 60 * 1000);
+});
 </script>
+</body>
+</html>
