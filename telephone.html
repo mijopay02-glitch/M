@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIJO PAY — Recharge Téléphone</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1e;
+      --card: #111827;
+      --card2: #1a2235;
+      --blue: #3b82f6;
+      --blue-glow: rgba(59,130,246,0.25);
+      --green: #22c55e;
+      --green-glow: rgba(34,197,94,0.2);
+      --orange: #f97316;
+      --red: #ef4444;
+      --text: #f1f5f9;
+      --muted: #64748b;
+      --border: rgba(255,255,255,0.07);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: 
+        radial-gradient(ellipse at 20% 20%, rgba(59,130,246,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(34,197,94,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(249,115,22,0.04) 0%, transparent 60%);
+      animation: bgPulse 8s ease-in-out infinite alternate;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes bgPulse {
+      0% { transform: scale(1) rotate(0deg); }
+      100% { transform: scale(1.1) rotate(3deg); }
+    }
+
+    /* Top Nav */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      background: rgba(10,15,30,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--text); }
+    .nav-back svg { width: 18px; height: 18px; }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--blue);
+      letter-spacing: -0.5px;
+    }
+
+    .nav-solde {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+    }
+    .nav-solde .dot {
+      width: 8px; height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--green);
+      animation: blink 2s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Main Container */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 100px 20px 40px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .header-icon {
+      width: 72px; height: 72px;
+      background: linear-gradient(135deg, var(--blue), #6366f1);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 32px;
+      box-shadow: 0 0 40px var(--blue-glow);
+      animation: iconFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes iconFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Operator Selection */
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .operators {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    .operator-btn {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .operator-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .operator-btn.digicel::before {
+      background: radial-gradient(circle at center, rgba(239,68,68,0.1), transparent 70%);
+    }
+
+    .operator-btn.natcom::before {
+      background: radial-gradient(circle at center, rgba(59,130,246,0.1), transparent 70%);
+    }
+
+    .operator-btn:hover { transform: translateY(-2px); }
+    .operator-btn:hover::before { opacity: 1; }
+
+    .operator-btn.active.digicel {
+      border-color: var(--red);
+      box-shadow: 0 0 20px rgba(239,68,68,0.2);
+    }
+
+    .operator-btn.active.natcom {
+      border-color: var(--blue);
+      box-shadow: 0 0 20px var(--blue-glow);
+    }
+
+    .operator-logo {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+    }
+
+    .digicel .operator-logo {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+
+    .natcom .operator-logo {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+    }
+
+    .operator-name {
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .operator-check {
+      position: absolute;
+      top: 10px; right: 10px;
+      width: 20px; height: 20px;
+      background: var(--green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .operator-btn.active .operator-check { opacity: 1; }
+
+    /* Form Card */
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    .input-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper .prefix {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    input[type="tel"],
+    input[type="text"] {
+      width: 100%;
+      background: var(--card2);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 14px 14px 42px;
+      color: var(--text);
+      font-size: 16px;
+      font-family: 'DM Sans', sans-serif;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    input[type="tel"]:focus,
+    input[type="text"]:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px var(--blue-glow);
+    }
+
+    /* Amount Grid */
+    .amounts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .amount-chip {
+      background: var(--card2);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .amount-chip:hover {
+      border-color: var(--blue);
+      background: rgba(59,130,246,0.08);
+    }
+
+    .amount-chip.active {
+      border-color: var(--blue);
+      background: rgba(59,130,246,0.15);
+      color: #93c5fd;
+      box-shadow: 0 0 12px var(--blue-glow);
+    }
+
+    .amount-chip .htg {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    /* Summary Card */
+    .summary {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 16px;
+      display: none;
+    }
+
+    .summary.visible { display: block; animation: fadeUp 0.3s ease; }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 13px;
+    }
+
+    .summary-row:not(:last-child) {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .summary-row .label { color: var(--muted); }
+    .summary-row .value { font-weight: 600; }
+    .summary-row.total .value { color: var(--blue); font-size: 16px; }
+
+    /* CIN Input */
+    .cin-group {
+      margin-top: 16px;
+    }
+
+    .cin-wrapper {
+      position: relative;
+    }
+
+    .cin-wrapper .lock-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .cin-wrapper input {
+      padding-left: 42px;
+    }
+
+    /* Pay Button */
+    .pay-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--blue), #6366f1);
+      border: none;
+      border-radius: 14px;
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Syne', sans-serif;
+      cursor: pointer;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.6s 0.3s ease both;
+      letter-spacing: 0.3px;
+    }
+
+    .pay-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      transition: left 0.5s;
+    }
+
+    .pay-btn:hover::before { left: 100%; }
+    .pay-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(59,130,246,0.4); }
+    .pay-btn:active { transform: translateY(0); }
+    .pay-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* Message */
+    #message {
+      text-align: center;
+      margin-top: 14px;
+      font-size: 14px;
+      font-weight: 500;
+      min-height: 20px;
+      animation: fadeUp 0.3s ease;
+    }
+
+    #message.success { color: var(--green); }
+    #message.error { color: var(--red); }
+    #message.loading { color: var(--blue); }
+
+    /* Success Screen */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+      animation: fadeUp 0.5s ease;
+    }
+
+    .success-screen.visible { display: block; }
+
+    .success-circle {
+      width: 100px; height: 100px;
+      background: linear-gradient(135deg, var(--green), #16a34a);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 44px;
+      box-shadow: 0 0 60px var(--green-glow);
+      animation: successPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes successPop {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .success-screen h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .success-screen p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .success-details {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .new-recharge-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--card2);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'Syne', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .new-recharge-btn:hover {
+      border-color: var(--blue);
+      background: rgba(59,130,246,0.08);
+    }
+
+    /* Security Badge */
+    .security-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 16px;
+      animation: fadeUp 0.6s 0.4s ease both;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 400px) {
+      .amounts-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav">
+  <a href="home.html" class="nav-back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M19 12H5M12 5l-7 7 7 7"/>
+    </svg>
+    Retour
+  </a>
+  <div class="nav-logo">MIJO PAY</div>
+  <div class="nav-solde">
+    <div class="dot"></div>
+    <span id="nav-solde-display">...</span>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container">
+
+  <!-- Form Screen -->
+  <div id="form-screen">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-icon">📱</div>
+      <h1>Recharge Téléphone</h1>
+      <p>Digicel & Natcom • Instantané • 24/7</p>
+    </div>
+
+    <!-- Operator Selection -->
+    <div style="animation: fadeUp 0.6s 0.05s ease both;">
+      <div class="section-label">Choisir l'opérateur</div>
+      <div class="operators">
+        <button class="operator-btn digicel active" onclick="selectOperateur('digicel')">
+          <div class="operator-logo">DIG</div>
+          <div class="operator-name">Digicel</div>
+          <div class="operator-check">✓</div>
+        </button>
+        <button class="operator-btn natcom" onclick="selectOperateur('natcom')">
+          <div class="operator-logo">NAT</div>
+          <div class="operator-name">Natcom</div>
+          <div class="operator-check">✓</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card">
+
+      <!-- Phone Number -->
+      <div class="input-group">
+        <label class="input-label">Numéro de téléphone</label>
+        <div class="input-wrapper">
+          <span class="prefix">🇭🇹</span>
+          <input type="tel" id="phone" placeholder="509 XX XX XXXX"
+            oninput="updateSummary()" maxlength="15">
+        </div>
+      </div>
+
+      <!-- Amount Selection -->
+      <div class="input-group">
+        <label class="input-label">Montant de recharge</label>
+        <div class="amounts-grid">
+          <div class="amount-chip" onclick="selectMontant(100, this)">
+            100 G
+            <span class="htg">~0.75 USD</span>
+          </div>
+          <div class="amount-chip" onclick="selectMontant(250, this)">
+            250 G
+            <span class="htg">~1.85 USD</span>
+          </div>
+          <div class="amount-chip active" onclick="selectMontant(500, this)">
+            500 G
+            <span class="htg">~3.70 USD</span>
+          </div>
+          <div class="amount-chip" onclick="selectMontant(1000, this)">
+            1,000 G
+            <span class="htg">~7.40 USD</span>
+          </div>
+          <div class="amount-chip" onclick="selectMontant(2000, this)">
+            2,000 G
+            <span class="htg">~14.80 USD</span>
+          </div>
+          <div class="amount-chip" onclick="selectMontant(5000, this)">
+            5,000 G
+            <span class="htg">~37 USD</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="summary" id="summary">
+        <div class="summary-row">
+          <span class="label">Opérateur</span>
+          <span class="value" id="sum-operateur">—</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Numéro</span>
+          <span class="value" id="sum-phone">—</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Montant</span>
+          <span class="value" id="sum-montant">—</span>
+        </div>
+        <div class="summary-row total">
+          <span class="label">Solde restant</span>
+          <span class="value" id="sum-solde-apres">—</span>
+        </div>
+      </div>
+
+      <!-- CIN -->
+      <div class="cin-group">
+        <label class="input-label">Mot de passe MIJO PAY</label>
+        <div class="cin-wrapper">
+          <span class="lock-icon">🔒</span>
+          <input type="password" id="cin" placeholder="Votre mot de passe">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Pay Button -->
+    <button class="pay-btn" id="pay-btn" onclick="effectuerRecharge()">
+      Recharger maintenant
+    </button>
+
+    <div id="message"></div>
+
+    <!-- Security -->
+    <div class="security-badge">
+      🔐 Transaction sécurisée par MIJO PAY
+    </div>
+
+  </div>
+
+  <!-- Success Screen -->
+  <div id="success-screen" class="success-screen">
+    <div class="success-circle">✅</div>
+    <h2>Recharge Réussie !</h2>
+    <p>Le crédit a été envoyé avec succès</p>
+    <div class="success-details">
+      <div class="summary-row">
+        <span class="label">Numéro rechargé</span>
+        <span class="value" id="ok-phone">—</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">Opérateur</span>
+        <span class="value" id="ok-operateur">—</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">Montant envoyé</span>
+        <span class="value" id="ok-montant">—</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">Nouveau solde</span>
+        <span class="value" id="ok-solde">—</span>
+      </div>
+    </div>
+    <button class="new-recharge-btn" onclick="nouvelleRecharge()">
+      ➕ Faire une autre recharge
+    </button>
+  </div>
+
+</div>
+
+<script>
+  // ═══════════════════════════════
+  // Configuration
+  // ═══════════════════════════════
+  const WORKER_URL = "https://mijopay.mijocomplexe.workers.dev/";
+
+  // État de l'application
+  let operateurSelectionne = 'digicel';
+  let montantSelectionne = 500;
+  let soldeActuel = 0;
+  let userInfo = null;
+
+  // ═══════════════════════════════
+  // Initialisation
+  // ═══════════════════════════════
+  window.addEventListener('DOMContentLoaded', () => {
+    // Récupérer l'utilisateur depuis localStorage
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      window.location.href = 'index.html';
+      return;
+    }
+
+    userInfo = JSON.parse(userData);
+    soldeActuel = parseFloat(userInfo.Solde) || 0;
+
+    // Afficher le solde dans la nav
+    document.getElementById('nav-solde-display').textContent = 
+      soldeActuel.toLocaleString() + ' G';
+  });
+
+  // ═══════════════════════════════
+  // Sélection opérateur
+  // ═══════════════════════════════
+  function selectOperateur(op) {
+    operateurSelectionne = op;
+    document.querySelectorAll('.operator-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    document.querySelector(`.operator-btn.${op}`).classList.add('active');
+    updateSummary();
+  }
+
+  // ═══════════════════════════════
+  // Sélection montant
+  // ═══════════════════════════════
+  function selectMontant(montant, el) {
+    montantSelectionne = montant;
+    document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    updateSummary();
+  }
+
+  // ═══════════════════════════════
+  // Mise à jour du résumé
+  // ═══════════════════════════════
+  function updateSummary() {
+    const phone = document.getElementById('phone').value.trim();
+    const summary = document.getElementById('summary');
+
+    if (phone.length >= 8) {
+      summary.classList.add('visible');
+      document.getElementById('sum-operateur').textContent = 
+        operateurSelectionne === 'digicel' ? '📱 Digicel Haïti' : '📡 Natcom Haïti';
+      document.getElementById('sum-phone').textContent = phone;
+      document.getElementById('sum-montant').textContent = 
+        montantSelectionne.toLocaleString() + ' G';
+
+      const soldeApres = soldeActuel - montantSelectionne;
+      document.getElementById('sum-solde-apres').textContent = 
+        soldeApres >= 0 
+          ? soldeApres.toLocaleString() + ' G'
+          : '⚠️ Solde insuffisant';
+      document.getElementById('sum-solde-apres').style.color = 
+        soldeApres >= 0 ? 'var(--blue)' : 'var(--red)';
+    } else {
+      summary.classList.remove('visible');
+    }
+  }
+
+  // ═══════════════════════════════
+  // Effectuer la recharge
+  // ═══════════════════════════════
+  async function effectuerRecharge() {
+    const phone = document.getElementById('phone').value.trim();
+    const cin = document.getElementById('cin').value.trim();
+    const btn = document.getElementById('pay-btn');
+    const msg = document.getElementById('message');
+
+    // Validations
+    if (!phone || phone.length < 8) {
+      afficherMessage('Veuillez entrer un numéro de téléphone valide.', 'error');
+      return;
+    }
+
+    if (!cin) {
+      afficherMessage('Veuillez entrer votre mot de passe MIJO PAY.', 'error');
+      return;
+    }
+
+    if (soldeActuel < montantSelectionne) {
+      afficherMessage('Solde insuffisant pour effectuer cette recharge.', 'error');
+      return;
+    }
+
+    // Désactiver le bouton
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Traitement en cours...';
+    afficherMessage('', '');
+
+    try {
+      const response = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'recharge_telephone',
+          userId: userInfo.userId || userInfo.NumeroCarte,
+          cin: cin,
+          phone: phone,
+          operateur: operateurSelectionne,
+          montant: montantSelectionne
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Mettre à jour le solde local
+        const nouveauSolde = soldeActuel - montantSelectionne;
+        userInfo.Solde = nouveauSolde;
+        localStorage.setItem('user', JSON.stringify(userInfo));
+
+        // Afficher l'écran de succès
+        document.getElementById('ok-phone').textContent = phone;
+        document.getElementById('ok-operateur').textContent = 
+          operateurSelectionne === 'digicel' ? 'Digicel Haïti' : 'Natcom Haïti';
+        document.getElementById('ok-montant').textContent = 
+          montantSelectionne.toLocaleString() + ' G';
+        document.getElementById('ok-solde').textContent = 
+          nouveauSolde.toLocaleString() + ' G';
+
+        document.getElementById('form-screen').style.display = 'none';
+        document.getElementById('success-screen').classList.add('visible');
+
+      } else {
+        afficherMessage(data.error || 'Recharge échouée. Réessayez.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Recharger maintenant';
+      }
+
+    } catch (err) {
+      afficherMessage('Erreur de connexion. Vérifiez votre internet.', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Recharger maintenant';
+    }
+  }
+
+  // ═══════════════════════════════
+  // Helpers
+  // ═══════════════════════════════
+  function afficherMessage(texte, type) {
+    const msg = document.getElementById('message');
+    msg.textContent = texte;
+    msg.className = type;
+  }
+
+  function nouvelleRecharge() {
+    document.getElementById('success-screen').classList.remove('visible');
+    document.getElementById('form-screen').style.display = 'block';
+    document.getElementById('phone').value = '';
+    document.getElementById('cin').value = '';
+    document.getElementById('message').textContent = '';
+    document.getElementById('pay-btn').disabled = false;
+    document.getElementById('pay-btn').textContent = 'Recharger maintenant';
+    document.getElementById('summary').classList.remove('visible');
+
+    // Mettre à jour le solde dans la nav
+    soldeActuel = parseFloat(userInfo.Solde) || 0;
+    document.getElementById('nav-solde-display').textContent = 
+      soldeActuel.toLocaleString() + ' G';
+  }
+</script>
+
+</body>
+</html>
