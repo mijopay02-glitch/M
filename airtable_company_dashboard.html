@@ -1,0 +1,995 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .db-root {
+    font-family: 'DM Sans', sans-serif;
+    background: #0a0e1a;
+    color: #e8eaf2;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .db-header {
+    background: linear-gradient(135deg, #0d1629 0%, #111827 100%);
+    border-bottom: 1px solid #1e2d4a;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .db-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    color: #4f9fff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .db-logo span { color: #64ffda; }
+
+  .db-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #8892b0;
+  }
+
+  .db-status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #64ffda;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .db-refresh-btn {
+    background: #1e2d4a;
+    border: 1px solid #2a3f6b;
+    color: #4f9fff;
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .db-refresh-btn:hover { background: #2a3f6b; color: #64ffda; }
+  .db-refresh-btn.loading { opacity: 0.6; pointer-events: none; }
+
+  .db-config {
+    background: #0d1629;
+    border-bottom: 1px solid #1e2d4a;
+    padding: 12px 24px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .db-config label {
+    font-size: 11px;
+    color: #8892b0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .db-config input, .db-config select {
+    background: #111827;
+    border: 1px solid #2a3f6b;
+    color: #e8eaf2;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+  }
+
+  .db-config input:focus, .db-config select:focus {
+    border-color: #4f9fff;
+  }
+
+  .db-config input[type="text"] { width: 220px; font-family: 'Space Mono', monospace; font-size: 11px; }
+  .db-config input[type="date"] { width: 140px; }
+
+  .db-config .cfg-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cfg-divider {
+    width: 1px; height: 28px;
+    background: #1e2d4a;
+  }
+
+  .db-body {
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .db-alert {
+    background: #1a2a40;
+    border: 1px solid #2a3f6b;
+    border-left: 3px solid #4f9fff;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #8892b0;
+    display: none;
+  }
+
+  .db-alert.show { display: block; }
+  .db-alert strong { color: #4f9fff; }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  .metric-card {
+    background: #111827;
+    border: 1px solid #1e2d4a;
+    border-radius: 10px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .metric-card:hover {
+    transform: translateY(-2px);
+    border-color: #2a3f6b;
+  }
+
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .metric-card.blue::before { background: #4f9fff; }
+  .metric-card.teal::before { background: #64ffda; }
+  .metric-card.amber::before { background: #fbbf24; }
+  .metric-card.red::before { background: #f87171; }
+  .metric-card.purple::before { background: #a78bfa; }
+  .metric-card.pink::before { background: #f472b6; }
+
+  .metric-label {
+    font-size: 11px;
+    color: #8892b0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .metric-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 26px;
+    font-weight: 700;
+    color: #e8eaf2;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .metric-sub {
+    font-size: 11px;
+    color: #8892b0;
+  }
+
+  .metric-sub.up { color: #64ffda; }
+  .metric-sub.down { color: #f87171; }
+
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .charts-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  .chart-card {
+    background: #111827;
+    border: 1px solid #1e2d4a;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .chart-card.full { grid-column: 1 / -1; }
+
+  .chart-title {
+    font-size: 12px;
+    color: #8892b0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .chart-title-badge {
+    font-size: 10px;
+    background: #1e2d4a;
+    color: #4f9fff;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  .bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+  }
+
+  .bar-label {
+    width: 80px;
+    color: #8892b0;
+    text-align: right;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 11px;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 22px;
+    background: #1e2d4a;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    color: #0a0e1a;
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+    min-width: 30px;
+  }
+
+  .bar-fill.blue { background: #4f9fff; }
+  .bar-fill.teal { background: #64ffda; color: #0a1628; }
+  .bar-fill.amber { background: #fbbf24; color: #3a2800; }
+  .bar-fill.red { background: #f87171; }
+  .bar-fill.purple { background: #a78bfa; }
+
+  .donut-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .donut-svg { flex-shrink: 0; }
+
+  .donut-legend {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .legend-name { color: #c8ccd8; flex: 1; }
+  .legend-val { color: #e8eaf2; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; }
+
+  .timeline-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .timeline-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 11px;
+  }
+
+  .timeline-date {
+    color: #8892b0;
+    width: 110px;
+    flex-shrink: 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+  }
+
+  .timeline-bar-wrap {
+    flex: 1;
+    height: 16px;
+    background: #1e2d4a;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .timeline-bar {
+    height: 100%;
+    background: #4f9fff;
+    border-radius: 3px;
+    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .timeline-cnt {
+    width: 30px;
+    text-align: right;
+    color: #e8eaf2;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .user-table-wrap {
+    overflow-x: auto;
+  }
+
+  .user-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .user-table th {
+    text-align: left;
+    padding: 8px 10px;
+    color: #8892b0;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #1e2d4a;
+    white-space: nowrap;
+  }
+
+  .user-table td {
+    padding: 8px 10px;
+    color: #c8ccd8;
+    border-bottom: 1px solid #111827;
+    white-space: nowrap;
+  }
+
+  .user-table tr:hover td { background: #1a2236; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-used { background: #1a3a2a; color: #64ffda; }
+  .badge-active { background: #1a2a4a; color: #4f9fff; }
+  .badge-pending { background: #2a2a1a; color: #fbbf24; }
+  .badge-premium { background: #2a1a3a; color: #a78bfa; }
+  .badge-user { background: #1e2d4a; color: #8892b0; }
+  .badge-entreprise { background: #1a2a3a; color: #64ffda; }
+
+  .spinner {
+    width: 24px; height: 24px;
+    border: 2px solid #1e2d4a;
+    border-top-color: #4f9fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 40px auto;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-state {
+    text-align: center;
+    padding: 40px;
+    color: #8892b0;
+    font-size: 13px;
+  }
+
+  .date-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .db-section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #4f9fff;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .db-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #1e2d4a;
+  }
+
+  .error-msg {
+    background: #2a1a1a;
+    border: 1px solid #4a2020;
+    border-left: 3px solid #f87171;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #f87171;
+    display: none;
+  }
+
+  .error-msg.show { display: block; }
+
+  .top-users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .top-user-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #1e2d4a;
+  }
+
+  .top-user-rank {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: #4f9fff;
+    width: 20px;
+    text-align: center;
+  }
+
+  .top-user-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: #1e2d4a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: #4f9fff;
+    flex-shrink: 0;
+  }
+
+  .top-user-name {
+    flex: 1;
+    font-size: 12px;
+    color: #c8ccd8;
+  }
+
+  .top-user-solde {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: #64ffda;
+  }
+</style>
+
+<div class="db-root">
+  <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Tableau de bord entreprise - Vue d'ensemble des utilisateurs et cartes Airtable</h2>
+
+  <div class="db-header">
+    <div class="db-logo">Mijo<span>Board</span></div>
+    <div class="db-status">
+      <div class="db-status-dot" id="statusDot"></div>
+      <span id="statusText">Configurez vos clés API</span>
+    </div>
+    <button class="db-refresh-btn" id="refreshBtn" onclick="loadAllData()">↻ Actualiser</button>
+  </div>
+
+  <div class="db-config">
+    <div class="cfg-group">
+      <label>Clé API Cartes</label>
+      <input type="text" id="apiKeyCartes" placeholder="patXXXXXXXXXXXXXX.XXXXXXXX" />
+    </div>
+    <div class="cfg-group">
+      <label>Base ID Cartes</label>
+      <input type="text" id="baseIdCartes" placeholder="appXXXXXXXXXXXXXX" style="width:160px;" />
+    </div>
+    <div class="cfg-divider"></div>
+    <div class="cfg-group">
+      <label>Clé API Utilisateurs</label>
+      <input type="text" id="apiKeyUsers" placeholder="patXXXXXXXXXXXXXX.XXXXXXXX" />
+    </div>
+    <div class="cfg-group">
+      <label>Base ID Utilisateurs</label>
+      <input type="text" id="baseIdUsers" placeholder="appXXXXXXXXXXXXXX" style="width:160px;" />
+    </div>
+    <div class="cfg-divider"></div>
+    <div class="cfg-group date-filter-row">
+      <label>Du</label>
+      <input type="date" id="dateFrom" />
+      <label>Au</label>
+      <input type="date" id="dateTo" />
+    </div>
+    <button class="db-refresh-btn" onclick="loadAllData()">Charger</button>
+  </div>
+
+  <div class="db-body">
+    <div class="db-alert" id="configAlert">
+      <strong>Configuration requise :</strong> Entrez vos clés API Airtable et les IDs de bases ci-dessus, puis cliquez sur <strong>Charger</strong>. Les données du CSV sont préchargées pour démonstration.
+    </div>
+    <div class="error-msg" id="errorMsg"></div>
+
+    <div>
+      <div class="db-section-title">Vue générale</div>
+      <div class="metrics-grid" id="metricsGrid">
+        <div class="metric-card blue">
+          <div class="metric-label">Total Utilisateurs</div>
+          <div class="metric-value" id="mTotalUsers">—</div>
+          <div class="metric-sub">inscrits</div>
+        </div>
+        <div class="metric-card teal">
+          <div class="metric-label">Comptes Premium</div>
+          <div class="metric-value" id="mPremium">—</div>
+          <div class="metric-sub">actifs</div>
+        </div>
+        <div class="metric-card amber">
+          <div class="metric-label">Cartes Totales</div>
+          <div class="metric-value" id="mTotalCartes">—</div>
+          <div class="metric-sub">en stock</div>
+        </div>
+        <div class="metric-card teal">
+          <div class="metric-label">Cartes Utilisées</div>
+          <div class="metric-value" id="mUsed">—</div>
+          <div class="metric-sub up" id="mUsedPct">—</div>
+        </div>
+        <div class="metric-card blue">
+          <div class="metric-label">Cartes Actives</div>
+          <div class="metric-value" id="mActive">—</div>
+          <div class="metric-sub">distribuées</div>
+        </div>
+        <div class="metric-card amber">
+          <div class="metric-label">Valeur Totale</div>
+          <div class="metric-value" id="mValeur">—</div>
+          <div class="metric-sub">HTG en stock</div>
+        </div>
+        <div class="metric-card red">
+          <div class="metric-label">Valeur Utilisée</div>
+          <div class="metric-value" id="mValeurUsed">—</div>
+          <div class="metric-sub">HTG dépensé</div>
+        </div>
+        <div class="metric-card purple">
+          <div class="metric-label">Solde Total</div>
+          <div class="metric-value" id="mSoldeTotal">—</div>
+          <div class="metric-sub">HTG cumulé</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">Statut des cartes <span class="chart-title-badge">Distribution</span></div>
+        <div class="donut-wrap">
+          <svg class="donut-svg" width="110" height="110" viewBox="0 0 110 110" role="img" aria-label="Répartition des statuts des cartes">
+            <circle cx="55" cy="55" r="40" fill="none" stroke="#1e2d4a" stroke-width="18"/>
+            <circle id="donutUsed" cx="55" cy="55" r="40" fill="none" stroke="#64ffda" stroke-width="18" stroke-dasharray="0 251.2" stroke-dashoffset="62.8" transform="rotate(-90 55 55)" style="transition:stroke-dasharray 1.2s cubic-bezier(0.4,0,0.2,1)"/>
+            <circle id="donutActive" cx="55" cy="55" r="40" fill="none" stroke="#4f9fff" stroke-width="18" stroke-dasharray="0 251.2" stroke-dashoffset="62.8" transform="rotate(-90 55 55)" style="transition:stroke-dasharray 1.2s cubic-bezier(0.4,0,0.2,1)"/>
+            <circle id="donutPending" cx="55" cy="55" r="40" fill="none" stroke="#fbbf24" stroke-width="18" stroke-dasharray="0 251.2" stroke-dashoffset="62.8" transform="rotate(-90 55 55)" style="transition:stroke-dasharray 1.2s cubic-bezier(0.4,0,0.2,1)"/>
+            <text x="55" y="50" text-anchor="middle" font-family="Space Mono,monospace" font-size="14" font-weight="700" fill="#e8eaf2" id="donutCenter">—</text>
+            <text x="55" y="65" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="#8892b0">total</text>
+          </svg>
+          <div class="donut-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#64ffda;"></div><span class="legend-name">Utilisées</span><span class="legend-val" id="lgUsed">—</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#4f9fff;"></div><span class="legend-name">Actives</span><span class="legend-val" id="lgActive">—</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#fbbf24;"></div><span class="legend-name">En attente</span><span class="legend-val" id="lgPending">—</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Types de comptes <span class="chart-title-badge">Utilisateurs</span></div>
+        <div class="bar-chart" id="typeChart">
+          <div class="loading-state"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">Inscriptions par mois <span class="chart-title-badge">Tendance</span></div>
+        <div class="timeline-wrap" id="timelineChart">
+          <div class="loading-state"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Top utilisateurs <span class="chart-title-badge">Solde</span></div>
+        <div class="top-users-list" id="topUsersList">
+          <div class="loading-state"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="db-section-title">Cartes récemment utilisées</div>
+      <div class="chart-card">
+        <div class="user-table-wrap">
+          <table class="user-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Valeur</th>
+                <th>Statut</th>
+                <th>Date utilisation</th>
+                <th>User ID</th>
+              </tr>
+            </thead>
+            <tbody id="cartesTable">
+              <tr><td colspan="5" style="text-align:center;color:#8892b0;padding:24px;">Chargement…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="db-section-title">Utilisateurs récents</div>
+      <div class="chart-card">
+        <div class="user-table-wrap">
+          <table class="user-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Solde</th>
+                <th>Type</th>
+                <th>Premium</th>
+                <th>Inscription</th>
+              </tr>
+            </thead>
+            <tbody id="usersTable">
+              <tr><td colspan="7" style="text-align:center;color:#8892b0;padding:24px;">Chargement…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CARTES_CSV = [
+  {Code:"0FD435FF9B21",Valeur:750,Statut:"Used",User_ID:"recfcTPvpeweReklm",Date_Utilisation:"4/29/2026 11:36am"},
+  {Code:"095E966C18B2",Valeur:750,Statut:"Used",User_ID:"recfcTPvpeweReklm",Date_Utilisation:"4/27/2026 6:25pm"},
+  {Code:"1047AE45C318",Valeur:750,Statut:"Used",User_ID:"receeHKLGDehlO8SD",Date_Utilisation:"5/1/2026 5:06pm"},
+  {Code:"0AA36F0FE2BF",Valeur:750,Statut:"Used",User_ID:"rec6WFjrP9V5YSp1r",Date_Utilisation:"4/30/2026 9:08am"},
+  {Code:"145DC4528F18",Valeur:750,Statut:"Used",User_ID:"rec2nqtNZIdyk3NKn",Date_Utilisation:"4/30/2026 4:33pm"},
+];
+
+const USERS_CSV_SAMPLE = [
+  {num:1,NomUtilisateur:"Mikyson Antoine",Email:"Mikkyantoine@gmail.com",Solde:250,Type:"utilisateur",EstPremium:true,DateInscription:"7/25/2025 1:47pm"},
+  {num:2,NomUtilisateur:"Mackenson Antoine",Email:"Mackenson@gmail.com",Solde:100,Type:"utilisateur",EstPremium:false,DateInscription:"7/25/2025 11:12pm"},
+  {num:3,NomUtilisateur:"Mijo Complexe",Email:"mijocomplexe@gmail.com",Solde:950,Type:"entreprise",EstPremium:false,DateInscription:"7/31/2025 3:37pm"},
+  {num:168,NomUtilisateur:"Jean Madaïna",Email:"madainajean@gmail.com",Solde:0.80,Type:"PDG",EstPremium:false,DateInscription:"1/27/2026 9:10am"},
+  {num:173,NomUtilisateur:"Antoine Carlo",Email:"carloantoine606@gmail.com",Solde:50,Type:"user",EstPremium:true,DateInscription:"3/6/2026 8:27am"},
+  {num:188,NomUtilisateur:"Accédé Alexa Stania",Email:"tanialumeus@gmail.com",Solde:400,Type:"user",EstPremium:true,DateInscription:"4/4/2026 11:35am"},
+  {num:196,NomUtilisateur:"Shaskia Tercier",Email:"terciershaskia399@gmail.com",Solde:550,Type:"user",EstPremium:true,DateInscription:"4/24/2026 5:30am"},
+  {num:204,NomUtilisateur:"Nijinsky Julemis",Email:"JulemisNijensky@gmail.com",Solde:550,Type:"user",EstPremium:true,DateInscription:"4/30/2026 4:32pm"},
+  {num:206,NomUtilisateur:"Nazaire Nedjie",Email:"Morneherculeruecharlemagneperalte@gmail.com",Solde:750,Type:"user",EstPremium:false,DateInscription:"5/1/2026 5:03pm"},
+];
+
+let allCartes = [];
+let allUsers = [];
+let dataSource = 'csv';
+
+function showAlert(msg) {
+  const el = document.getElementById('configAlert');
+  el.innerHTML = msg;
+  el.classList.add('show');
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 5000);
+}
+
+function setStatus(text, live) {
+  document.getElementById('statusText').textContent = text;
+  document.getElementById('statusDot').style.background = live ? '#64ffda' : '#fbbf24';
+}
+
+async function fetchAirtable(apiKey, baseId, tableName) {
+  const records = [];
+  let offset = '';
+  do {
+    const url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}${offset ? '?offset=' + offset : ''}`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${apiKey}` } });
+    if (!res.ok) throw new Error(`Airtable error ${res.status}: ${await res.text()}`);
+    const data = await res.json();
+    records.push(...data.records.map(r => ({ id: r.id, ...r.fields })));
+    offset = data.offset || '';
+  } while (offset);
+  return records;
+}
+
+async function loadAllData() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('loading');
+  btn.textContent = '↻ Chargement…';
+  document.getElementById('configAlert').classList.remove('show');
+
+  const apiCartes = document.getElementById('apiKeyCartes').value.trim();
+  const baseCartes = document.getElementById('baseIdCartes').value.trim();
+  const apiUsers = document.getElementById('apiKeyUsers').value.trim();
+  const baseUsers = document.getElementById('baseIdUsers').value.trim();
+
+  try {
+    if (apiCartes && baseCartes && apiUsers && baseUsers) {
+      setStatus('Connexion Airtable…', false);
+      const [cartes, users] = await Promise.all([
+        fetchAirtable(apiCartes, baseCartes, 'Stock_Cartes'),
+        fetchAirtable(apiUsers, baseUsers, 'Utilisateurs')
+      ]);
+      allCartes = cartes;
+      allUsers = users;
+      dataSource = 'airtable';
+      setStatus('Live — Airtable', true);
+    } else {
+      allCartes = buildCartesFromCSV();
+      allUsers = buildUsersFromCSV();
+      dataSource = 'csv';
+      setStatus('Démo — données CSV', false);
+      showAlert('<strong>Mode démo :</strong> Données CSV préchargées. Entrez vos clés API pour données en temps réel.');
+    }
+    renderDashboard();
+  } catch(e) {
+    showError('Erreur Airtable: ' + e.message);
+    allCartes = buildCartesFromCSV();
+    allUsers = buildUsersFromCSV();
+    dataSource = 'csv';
+    setStatus('Erreur — mode démo', false);
+    renderDashboard();
+  }
+
+  btn.classList.remove('loading');
+  btn.textContent = '↻ Actualiser';
+}
+
+function buildCartesFromCSV() {
+  const statuts = ['Pending','Pending','Pending','Pending','Pending','Pending','Pending','Active','Active','Used'];
+  const total = 300;
+  const res = [];
+  for (let i = 0; i < total; i++) {
+    const s = i < 5 ? 'Used' : i < 25 ? 'Active' : 'Pending';
+    res.push({ Code: 'CSV' + i, Valeur: 750, Statut: s });
+  }
+  CARTES_CSV.forEach((c, idx) => { res[idx] = c; });
+  return res;
+}
+
+function buildUsersFromCSV() {
+  const months = ['7/2025','8/2025','9/2025','10/2025','11/2025','12/2025','1/2026','2/2026','3/2026','4/2026','5/2026'];
+  const counts = [3,35,10,28,15,20,5,8,12,60,9];
+  const users = [];
+  let idx = 0;
+  months.forEach((m, mi) => {
+    for (let i = 0; i < counts[mi]; i++) {
+      users.push({
+        num: ++idx,
+        NomUtilisateur: 'Utilisateur ' + idx,
+        Email: 'user' + idx + '@example.com',
+        Solde: Math.random() > 0.8 ? Math.round(Math.random() * 800) : 0,
+        Type: Math.random() > 0.95 ? 'entreprise' : 'utilisateur',
+        EstPremium: Math.random() > 0.85,
+        DateInscription: m + '/01',
+      });
+    }
+  });
+  USERS_CSV_SAMPLE.forEach(u => { const idx2 = u.num - 1; if (users[idx2]) users[idx2] = {...users[idx2], ...u}; else users.push(u); });
+  return users;
+}
+
+function renderDashboard() {
+  const dateFrom = document.getElementById('dateFrom').value;
+  const dateTo = document.getElementById('dateTo').value;
+
+  let cartes = allCartes;
+  let users = allUsers;
+
+  if (dateFrom || dateTo) {
+    const from = dateFrom ? new Date(dateFrom) : new Date(0);
+    const to = dateTo ? new Date(dateTo + 'T23:59:59') : new Date();
+    users = users.filter(u => {
+      const d = new Date(u.DateInscription || u['DateInscription'] || '');
+      return d >= from && d <= to;
+    });
+    cartes = cartes.filter(c => {
+      if (!c.Date_Utilisation) return true;
+      const d = new Date(c.Date_Utilisation);
+      return d >= from && d <= to;
+    });
+  }
+
+  const totalCartes = allCartes.length;
+  const usedCartes = allCartes.filter(c => (c.Statut || c.statut || '').toLowerCase() === 'used').length;
+  const activeCartes = allCartes.filter(c => (c.Statut || c.statut || '').toLowerCase() === 'active').length;
+  const pendingCartes = allCartes.filter(c => (c.Statut || c.statut || '').toLowerCase() === 'pending').length;
+  const valeurTotale = allCartes.reduce((s, c) => s + (parseFloat(c.Valeur || c.valeur || 750)), 0);
+  const valeurUsed = usedCartes * 750;
+  const totalUsers = users.length;
+  const premiumUsers = users.filter(u => u.EstPremium || u.estpremium || u['EstPremium'] === 'checked' || u['EstPremium'] === true).length;
+  const soldeTotal = users.reduce((s, u) => s + parseFloat(u.Solde || u.solde || 0), 0);
+
+  const fmt = n => n >= 1000 ? (n/1000).toFixed(1) + 'k' : String(Math.round(n));
+
+  document.getElementById('mTotalUsers').textContent = fmt(totalUsers);
+  document.getElementById('mPremium').textContent = fmt(premiumUsers);
+  document.getElementById('mTotalCartes').textContent = fmt(totalCartes);
+  document.getElementById('mUsed').textContent = fmt(usedCartes);
+  document.getElementById('mUsedPct').textContent = totalCartes > 0 ? Math.round(usedCartes/totalCartes*100) + '% du total' : '—';
+  document.getElementById('mActive').textContent = fmt(activeCartes);
+  document.getElementById('mValeur').textContent = fmt(valeurTotale) + ' G';
+  document.getElementById('mValeurUsed').textContent = fmt(valeurUsed) + ' G';
+  document.getElementById('mSoldeTotal').textContent = fmt(soldeTotal) + ' G';
+
+  const circ = 2 * Math.PI * 40;
+  const uPct = usedCartes / totalCartes;
+  const aPct = activeCartes / totalCartes;
+  const pPct = pendingCartes / totalCartes;
+  const uDash = uPct * circ;
+  const aDash = aPct * circ;
+  const pDash = pPct * circ;
+
+  const dUsed = document.getElementById('donutUsed');
+  const dActive = document.getElementById('donutActive');
+  const dPending = document.getElementById('donutPending');
+
+  dUsed.setAttribute('stroke-dasharray', uDash + ' ' + circ);
+  dUsed.setAttribute('stroke-dashoffset', 0);
+
+  const aOffset = -uDash;
+  dActive.setAttribute('stroke-dasharray', aDash + ' ' + circ);
+  dActive.setAttribute('stroke-dashoffset', aOffset);
+
+  const pOffset = -(uDash + aDash);
+  dPending.setAttribute('stroke-dasharray', pDash + ' ' + circ);
+  dPending.setAttribute('stroke-dashoffset', pOffset);
+
+  document.getElementById('donutCenter').textContent = totalCartes;
+  document.getElementById('lgUsed').textContent = usedCartes;
+  document.getElementById('lgActive').textContent = activeCartes;
+  document.getElementById('lgPending').textContent = pendingCartes;
+
+  const typeCounts = {};
+  users.forEach(u => {
+    const t = u.Type || u['Type de compte'] || u.type || 'utilisateur';
+    typeCounts[t] = (typeCounts[t] || 0) + 1;
+  });
+  const typeColors = {utilisateur:'blue',entreprise:'teal',user:'blue',PDG:'purple','Employé 1':'amber'};
+  const typeEntries = Object.entries(typeCounts).sort((a,b) => b[1]-a[1]);
+  const maxType = Math.max(...typeEntries.map(e => e[1]));
+  const typeChart = document.getElementById('typeChart');
+  typeChart.innerHTML = typeEntries.slice(0, 6).map(([t, c]) =>
+    `<div class="bar-row">
+      <div class="bar-label">${t}</div>
+      <div class="bar-track"><div class="bar-fill ${typeColors[t]||'blue'}" style="width:${Math.round(c/maxType*100)}%">${c}</div></div>
+    </div>`
+  ).join('');
+
+  const monthCounts = {};
+  users.forEach(u => {
+    const d = new Date(u.DateInscription || u['DateInscription'] || '');
+    if (isNaN(d)) return;
+    const key = d.toLocaleString('fr-FR', {month:'short', year:'2-digit'});
+    monthCounts[key] = (monthCounts[key] || 0) + 1;
+  });
+  const monthEntries = Object.entries(monthCounts).slice(-10);
+  const maxMonth = Math.max(...monthEntries.map(e => e[1]));
+  const timeline = document.getElementById('timelineChart');
+  timeline.innerHTML = monthEntries.map(([m, c]) =>
+    `<div class="timeline-row">
+      <div class="timeline-date">${m}</div>
+      <div class="timeline-bar-wrap"><div class="timeline-bar" style="width:${Math.round(c/maxMonth*100)}%"></div></div>
+      <div class="timeline-cnt">${c}</div>
+    </div>`
+  ).join('');
+
+  const topUsers = [...users].filter(u => parseFloat(u.Solde || 0) > 0).sort((a,b) => parseFloat(b.Solde||0) - parseFloat(a.Solde||0)).slice(0,7);
+  const topList = document.getElementById('topUsersList');
+  topList.innerHTML = topUsers.map((u, i) => {
+    const name = u.NomUtilisateur || u.nomutilisateur || 'Inconnu';
+    const initials = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    return `<div class="top-user-row">
+      <div class="top-user-rank">${i+1}</div>
+      <div class="top-user-avatar">${initials}</div>
+      <div class="top-user-name">${name}</div>
+      <div class="top-user-solde">${Math.round(parseFloat(u.Solde||0))} HTG</div>
+    </div>`;
+  }).join('') || '<div style="color:#8892b0;font-size:12px;padding:12px 0;">Aucun utilisateur avec solde</div>';
+
+  const usedCartesList = allCartes.filter(c => (c.Statut||'').toLowerCase() === 'used').sort((a,b) => new Date(b.Date_Utilisation||0) - new Date(a.Date_Utilisation||0)).slice(0, 10);
+  const cartesBody = document.getElementById('cartesTable');
+  cartesBody.innerHTML = usedCartesList.length > 0 ? usedCartesList.map(c =>
+    `<tr>
+      <td style="font-family:Space Mono,monospace;font-size:11px;color:#4f9fff;">${c.Code||c.code||'—'}</td>
+      <td>${Math.round(parseFloat(c.Valeur||c.valeur||750))} HTG</td>
+      <td><span class="badge badge-used">${c.Statut||'—'}</span></td>
+      <td style="font-size:11px;color:#8892b0;">${c.Date_Utilisation||'—'}</td>
+      <td style="font-size:10px;color:#4a6080;">${(c.User_ID||'—').slice(0,16)}</td>
+    </tr>`
+  ).join('') : '<tr><td colspan="5" style="text-align:center;color:#8892b0;padding:20px;">Aucune carte utilisée dans la période</td></tr>';
+
+  const recentUsers = [...users].sort((a,b) => new Date(b.DateInscription||0) - new Date(a.DateInscription||0)).slice(0, 15);
+  const usersBody = document.getElementById('usersTable');
+  usersBody.innerHTML = recentUsers.map(u => {
+    const type = u.Type || u['Type de compte'] || 'user';
+    const isPrem = u.EstPremium || u['EstPremium'] === 'checked' || u['EstPremium'] === true;
+    const d = new Date(u.DateInscription||'');
+    const dateStr = isNaN(d) ? '—' : d.toLocaleDateString('fr-FR');
+    return `<tr>
+      <td style="font-family:Space Mono,monospace;font-size:10px;color:#4f9fff;">${u.num||'—'}</td>
+      <td style="font-weight:500;color:#e8eaf2;">${u.NomUtilisateur||'Inconnu'}</td>
+      <td style="font-size:11px;color:#8892b0;">${(u.Email||'—').slice(0,28)}</td>
+      <td style="font-family:Space Mono,monospace;font-size:11px;color:#64ffda;">${Math.round(parseFloat(u.Solde||0))} HTG</td>
+      <td><span class="badge badge-${type==='entreprise'?'entreprise':type==='PDG'?'premium':'user'}">${type}</span></td>
+      <td>${isPrem ? '<span class="badge badge-premium">Premium</span>' : '<span style="color:#4a6080;font-size:10px;">—</span>'}</td>
+      <td style="font-size:11px;color:#8892b0;">${dateStr}</td>
+    </tr>`;
+  }).join('');
+}
+
+window.addEventListener('load', () => {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('dateTo').value = today;
+  document.getElementById('dateFrom').value = '2025-07-01';
+  loadAllData();
+});
+</script>
