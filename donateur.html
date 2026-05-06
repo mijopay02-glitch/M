@@ -1,15 +1,42 @@
+<table border="1">
+  <thead>
+    <tr>
+      <th>Nom</th>
+      <th>Total</th>
+      <th>Nb Dons</th>
+      <th>Dernier Don</th>
+    </tr>
+  </thead>
+  <tbody id="tableau">
+    </tbody>
+</table>
+
 <script>
-  fetch("https://dons.mijocomplexe.workers.dev/donateurs")
-    .then(res => res.json())
-    .then(data => {
-      const liste = data.donateurs.map(d => `
-        <tr>
-          <td>${d.nom}</td>
-          <td>${d.total} HTG</td>
-          <td>${d.nbDons}</td>
-          <td>${new Date(d.dernierDon).toLocaleDateString('fr-FR')}</td>
-        </tr>
-      `).join('');
-      document.getElementById('tableau').innerHTML = liste;
-    });
+  // Utilisation de async/await pour plus de clarté
+  async function chargerDonateurs() {
+    try {
+      const res = await fetch("https://dons.mijocomplexe.workers.dev/donateurs");
+      const data = await res.json();
+
+      if (data.success && data.donateurs) {
+        const liste = data.donateurs.map(d => `
+          <tr>
+            <td>${d.nom}</td>
+            <td>${d.total} HTG</td>
+            <td>${d.nbDons}</td>
+            <td>${new Date(d.dernierDon).toLocaleDateString('fr-FR')}</td>
+          </tr>
+        `).join('');
+        
+        document.getElementById('tableau').innerHTML = liste;
+      } else {
+        console.error("Erreur API:", data.message);
+      }
+    } catch (err) {
+      console.error("Impossible de joindre le Worker:", err);
+    }
+  }
+
+  // Lancer le chargement
+  chargerDonateurs();
 </script>
