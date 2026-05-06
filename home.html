@@ -309,6 +309,18 @@
             background-color: #f7a62d; 
             background-image: linear-gradient(135deg, #f7a62d, #ffc977); 
         }
+        @keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+.animate-scroll {
+    display: flex;
+    width: max-content;
+    animation: scroll 30s linear infinite;
+}
+.animate-scroll:hover {
+    animation-play-state: paused; /* Le défilement s'arrête au survol */
+}
     </style>
 </head>
 <body>
@@ -395,6 +407,30 @@
     </div>
 
     <div class="container middle-section">
+        <section class="bg-white border-y border-gray-100 py-6 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center">
+        
+        <div class="flex items-center space-x-2 mb-4 md:mb-0 md:mr-8 bg-white z-10 pr-4">
+            <span class="flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-green-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+            </span>
+            <h3 class="font-bold text-gray-800 whitespace-nowrap">Nos Donateurs :</h3>
+        </div>
+
+        <div class="relative flex-1 overflow-hidden">
+            <div id="scroll-container" class="flex space-x-12 animate-scroll whitespace-nowrap items-center">
+                <span class="text-gray-400 italic text-sm">Chargement des contributeurs...</span>
+            </div>
+        </div>
+
+        <div class="md:ml-8 mt-4 md:mt-0 bg-white z-10 pl-4">
+            <a href="don.html" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-full hover:bg-blue-700 transition transform hover:scale-105 shadow-md">
+                Devenir Sponsor <i class="fas fa-heart ml-2 text-red-400"></i>
+            </a>
+        </div>
+    </div>
+</section>
         <div class="flyer-list">
               <a href="challenge.html" class="flyer-item" >
         <img src="https://i.postimg.cc/0N8mW562/a-realistic-business-flyer-design-with-b-w4vf-CSRr-R3u-GWd-RDF15Dg-31Hsgpj-MQq6f6ns-ENc-Hgfg-sd.jpg" alt="MIJO Business Challenge">
@@ -442,6 +478,34 @@
     </nav>
 
     <script>
+        
+    async function chargerSponsors() {
+        try {
+            const res = await fetch("https://dons.mijocomplexe.workers.dev/donateurs");
+            const data = await res.json();
+            const container = document.getElementById('scroll-container');
+
+            if (data.success && data.donateurs.length > 0) {
+                // On crée une liste de noms stylisés
+                const nomsHTML = data.donateurs.map(d => `
+                    <span class="flex items-center space-x-2">
+                        <span class="h-2 w-2 bg-blue-500 rounded-full"></span>
+                        <span class="text-gray-700 font-semibold text-lg uppercase tracking-wider">${d.nom}</span>
+                    </span>
+                `).join('');
+
+                // On injecte deux fois la liste pour l'effet de boucle infinie
+                container.innerHTML = nomsHTML + nomsHTML;
+            } else {
+                container.innerHTML = `<span class="text-gray-500 font-medium">Rejoignez l'aventure Mijo Pay !</span>`;
+            }
+        } catch (err) {
+            console.log("Erreur chargement sponsors");
+        }
+    }
+
+    chargerSponsors();
+
         // ==========================================
         // 1. CONSTANTES ET CONFIGURATION
         // ==========================================
