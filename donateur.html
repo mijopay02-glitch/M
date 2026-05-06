@@ -1,42 +1,95 @@
-<table border="1">
-  <thead>
-    <tr>
-      <th>Nom</th>
-      <th>Total</th>
-      <th>Nb Dons</th>
-      <th>Dernier Don</th>
-    </tr>
-  </thead>
-  <tbody id="tableau">
-    </tbody>
-</table>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mijo Pay - Top Donateurs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans antialiased">
 
-<script>
-  // Utilisation de async/await pour plus de clarté
-  async function chargerDonateurs() {
-    try {
-      const res = await fetch("https://dons.mijocomplexe.workers.dev/donateurs");
-      const data = await res.json();
+    <div class="max-w-4xl mx-auto py-12 px-4">
+        <div class="text-center mb-12 animate__animated animate__fadeInDown">
+            <h1 class="text-4xl font-extrabold text-blue-600 mb-2">Mijo Pay</h1>
+            <p class="text-gray-600">Tableau d'honneur de nos généreux donateurs</p>
+            <div class="mt-4 h-1 w-24 bg-blue-500 mx-auto rounded-full"></div>
+        </div>
 
-      if (data.success && data.donateurs) {
-        const liste = data.donateurs.map(d => `
-          <tr>
-            <td>${d.nom}</td>
-            <td>${d.total} HTG</td>
-            <td>${d.nbDons}</td>
-            <td>${new Date(d.dernierDon).toLocaleDateString('fr-FR')}</td>
-          </tr>
-        `).join('');
-        
-        document.getElementById('tableau').innerHTML = liste;
-      } else {
-        console.error("Erreur API:", data.message);
-      }
-    } catch (err) {
-      console.error("Impossible de joindre le Worker:", err);
-    }
-  }
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden animate__animated animate__fadeInUp">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-blue-600 text-white">
+                    <tr>
+                        <th class="py-4 px-6 font-semibold uppercase text-sm">Donateur</th>
+                        <th class="py-4 px-6 font-semibold uppercase text-sm">Montant Total</th>
+                        <th class="py-4 px-6 font-semibold uppercase text-sm text-center">Nombre de Dons</th>
+                        <th class="py-4 px-6 font-semibold uppercase text-sm text-right">Dernière activité</th>
+                    </tr>
+                </thead>
+                <tbody id="tableau" class="divide-y divide-gray-100">
+                    <tr>
+                        <td colspan="4" class="py-10 text-center text-gray-400">
+                            <i class="fas fa-circle-notch fa-spin fa-2x mb-2"></i>
+                            <p>Chargement des contributeurs...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-  // Lancer le chargement
-  chargerDonateurs();
-</script>
+        <p class="text-center mt-8 text-gray-400 text-sm">
+            Propulsé par Mijo Complexe & Cloudflare D1
+        </p>
+    </div>
+
+    <script>
+        async function chargerDonateurs() {
+            try {
+                const res = await fetch("https://dons.mijocomplexe.workers.dev/donateurs");
+                const data = await res.json();
+
+                const tbody = document.getElementById('tableau');
+
+                if (data.success && data.donateurs.length > 0) {
+                    tbody.innerHTML = data.donateurs.map((d, index) => `
+                        <tr class="hover:bg-blue-50 transition-colors duration-200 animate__animated animate__fadeIn" style="animation-delay: ${index * 0.1}s">
+                            <td class="py-4 px-6">
+                                <div class="flex items-center">
+                                    <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold mr-3">
+                                        ${d.nom.charAt(0).toUpperCase()}
+                                    </div>
+                                    <span class="font-medium text-gray-800">${d.nom}</span>
+                                </div>
+                            </td>
+                            <td class="py-4 px-6 font-bold text-green-600">
+                                ${new Intl.NumberFormat('fr-HT', { style: 'currency', currency: 'HTG' }).format(d.total)}
+                            </td>
+                            <td class="py-4 px-6 text-center">
+                                <span class="bg-gray-100 text-gray-600 py-1 px-3 rounded-full text-xs font-bold">
+                                    ${d.nbDons} dons
+                                </span>
+                            </td>
+                            <td class="py-4 px-6 text-right text-gray-500 text-sm italic">
+                                ${new Date(d.dernierDon).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" class="py-10 text-center text-gray-500 italic">Aucun donateur pour le moment. Soyez le premier !</td></tr>';
+                }
+            } catch (err) {
+                document.getElementById('tableau').innerHTML = `
+                    <tr>
+                        <td colspan="4" class="py-10 text-center text-red-500">
+                            <i class="fas fa-exclamation-triangle mb-2"></i>
+                            <p>Erreur de connexion : Vérifiez votre liaison D1 dans Cloudflare.</p>
+                        </td>
+                    </tr>`;
+            }
+        }
+
+        chargerDonateurs();
+    </script>
+</body>
+</html>
