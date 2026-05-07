@@ -618,27 +618,31 @@
     <script>
         
     async function chargerSponsors() {
-        try {
-            const res = await fetch("https://dons.mijocomplexe.workers.dev/donateurs");
-            const data = await res.json();
-            const container = document.getElementById('scroll-container');
- 
-            if (data.success && data.donateurs.length > 0) {
-                const nomsHTML = data.donateurs.map(d => `
-                    <span class="donor-chip">${d.nom}</span>
-                `).join('');
- 
-                // Double la liste pour l'effet boucle infinie
-                container.innerHTML = nomsHTML + nomsHTML;
-            } else {
-                container.innerHTML = `<span class="donor-chip donor-loading">✨ Rejoignez l'aventure Mijo Pay !</span>`;
-            }
-        } catch (err) {
-            console.log("Erreur chargement sponsors");
+    const container = document.getElementById('scroll-container');
+    try {
+        const res = await fetch("https://dons.mijocomplexe.workers.dev/donateurs");
+        
+        if (!res.ok) {
+            throw new Error(`Erreur serveur : ${res.status}`);
         }
+
+        const data = await res.json();
+
+        if (data.success && data.donateurs.length > 0) {
+            const nomsHTML = data.donateurs.map(d => `
+                <span class="donor-chip">${d.nom}</span>
+            `).join('');
+            container.innerHTML = nomsHTML + nomsHTML;
+        } else {
+            container.innerHTML = `<span class="donor-chip donor-loading">✨ Rejoignez l'aventure Mijo Pay !</span>`;
+        }
+    } catch (err) {
+        console.log("Erreur:", err);
+        // Affiche l'erreur sur la page pour comprendre le problème
+        container.innerHTML = `<span style="color:red; font-size:12px;">⚠️ Erreur de connexion au Worker (Vérifiez la liaison D1)</span>`;
     }
- 
-    chargerSponsors();
+}
+chargerSponsors();
  
         // ==========================================
         // 1. CONSTANTES ET CONFIGURATION
