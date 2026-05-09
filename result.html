@@ -251,6 +251,16 @@
     .e-feats{grid-template-columns:1fr 1fr;}
     .espace-tab{font-size:.58rem;padding:.8rem .3rem;}
   }
+  /* Assure que le lien du logo ne change pas de style */
+.nav-logo {
+  text-decoration: none;
+  cursor: none; /* Pour rester cohérent avec votre curseur personnalisé */
+}
+
+/* Effet au survol du lien Accueil pour la cohérence */
+.nav-link:hover {
+  color: var(--gold);
+}
 </style>
 </head>
 <body>
@@ -271,6 +281,7 @@
 <nav>
   <div class="nav-logo">MIJO</div>
   <div class="nav-right">
+    <a href="home.html" class="nav-link">Accueil</a>
     <a href="#champions" class="nav-link">Champions</a>
     <a href="#statistiques" class="nav-link">Statistiques</a>
     <a href="#espace" class="nav-cta">Mon Espace</a>
