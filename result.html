@@ -547,11 +547,50 @@ function switchTab(btn,pane){
 }
 
 // LOGIN
-function handleLogin(){
-  const num=document.getElementById('whatsappInput').value.trim();
-  const msg=document.getElementById('loginMsg');
-  if(!num){msg.className='e-msg gold';msg.textContent='⚠️ Veuillez entrer votre numéro WhatsApp.';msg.style.display='block';return;}
-  msg.className='e-msg green';msg.innerHTML='📬 <strong>Lien d\'accès envoyé !</strong> Vérifiez votre WhatsApp dans les prochaines heures. Votre certificat et classement seront disponibles via le lien.';msg.style.display='block';
+// LOGIN — Redirection Drive personnalisée
+const participants = {
+  "40468613":   { name: "Alexa Stania Accédé",  drive: "https://drive.google.com/drive/folders/1LYmy03ca8CmIoZ4r35Wjnbxu4nZsGuLb?usp=sharing" },
+  "50940468613":{ name: "Alexa Stania Accédé",  drive: "https://drive.google.com/drive/folders/1LYmy03ca8CmIoZ4r35Wjnbxu4nZsGuLb?usp=sharing" },
+  "46492613":   { name: "Shaskia Tercier",       drive: "https://drive.google.com/drive/folders/14vxUXQ1USMgq5rFDj_TOSpJ8phKuavk7?usp=sharing" },
+  "50946492613":{ name: "Shaskia Tercier",       drive: "https://drive.google.com/drive/folders/14vxUXQ1USMgq5rFDj_TOSpJ8phKuavk7?usp=sharing" },
+  "55713271":   { name: "Sophie Blanc",          drive: "https://drive.google.com/drive/folders/1_4Mzm-yBrIN3hROjcKeYjrQhSIIo4TS0?usp=sharing" },
+  "50955713271":{ name: "Sophie Blanc",          drive: "https://drive.google.com/drive/folders/1_4Mzm-yBrIN3hROjcKeYjrQhSIIo4TS0?usp=sharing" },
+  "44227918":   { name: "Melissa Paquitte",      drive: "https://drive.google.com/drive/folders/1tQzOH-X8yzOY4nXUXwdkOhpQIKKYXXeR?usp=sharing" },
+  "50944227918":{ name: "Melissa Paquitte",      drive: "https://drive.google.com/drive/folders/1tQzOH-X8yzOY4nXUXwdkOhpQIKKYXXeR?usp=sharing" },
+  "47019529":   { name: "Maçé Lyne Rose Darah",  drive: "https://drive.google.com/drive/folders/1BkjI8hzHFUV5mQpVt9Zpjssqwk4UX1jl?usp=sharing" },
+  "50947019529":{ name: "Maçé Lyne Rose Darah",  drive: "https://drive.google.com/drive/folders/1BkjI8hzHFUV5mQpVt9Zpjssqwk4UX1jl?usp=sharing" },
+  "43048023":   { name: "Richard Widjina",       drive: "https://drive.google.com/drive/folders/1yK9OncqRKsJ_P2RXPnhndPSpOQzcc1MT?usp=sharing" },
+  "50943048023":{ name: "Richard Widjina",       drive: "https://drive.google.com/drive/folders/1yK9OncqRKsJ_P2RXPnhndPSpOQzcc1MT?usp=sharing" },
+  "44384938":   { name: "Carlo Antieno",         drive: "https://drive.google.com/drive/folders/1HFlMjTK7V7zdlqciTGlw74tmfcaTwuIN?usp=sharing" },
+  "50944384938":{ name: "Carlo Antieno",         drive: "https://drive.google.com/drive/folders/1HFlMjTK7V7zdlqciTGlw74tmfcaTwuIN?usp=sharing" },
+  "43625021":   { name: "Marc Elie Telcy",       drive: "https://drive.google.com/drive/folders/1k99KYkfQFmxWC0IbTCvwYko9J6hx_W0Q?usp=sharing" },
+  "50943625021":{ name: "Marc Elie Telcy",       drive: "https://drive.google.com/drive/folders/1k99KYkfQFmxWC0IbTCvwYko9J6hx_W0Q?usp=sharing" },
+};
+
+function normalizePhone(raw) {
+  let n = raw.replace(/[\s\-\+\(\)]/g, '');
+  if (n.startsWith('509') && n.length === 11) n = n.slice(3);
+  return n;
+}
+
+function handleLogin() {
+  const raw = document.getElementById('whatsappInput').value.trim();
+  const msg = document.getElementById('loginMsg');
+  if (!raw) {
+    msg.className = 'e-msg gold';
+    msg.textContent = '⚠️ Veuillez entrer votre numéro WhatsApp.';
+    msg.style.display = 'block'; return;
+  }
+  const user = participants[normalizePhone(raw)];
+  if (user) {
+    msg.className = 'e-msg green'; msg.style.display = 'block';
+    msg.innerHTML = `✅ Bonjour <strong style="color:var(--gold);">${user.name}</strong> !<br>Votre dossier s'ouvre dans un nouvel onglet...<br>
+      <a href="${user.drive}" target="_blank" style="display:inline-block;margin-top:.8rem;padding:.55rem 1.3rem;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#000;border-radius:7px;font-weight:700;font-size:.82rem;text-decoration:none;">📂 Accéder à mon dossier Drive</a>`;
+    setTimeout(() => window.open(user.drive, '_blank'), 800);
+  } else {
+    msg.className = 'e-msg err'; msg.style.display = 'block';
+    msg.innerHTML = `❌ Numéro <strong>"${raw}"</strong> non reconnu.<br><span style="font-size:.78rem;color:#888;">Vérifiez que c'est le numéro de votre inscription.</span>`;
+  }
 }
 
 // CERTIFICATE
