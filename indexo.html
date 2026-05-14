@@ -189,61 +189,65 @@
 
         // --- FONCTION DE CONNEXION MODIFIÉE ---
         async function login() {
-            const cardNumber = document.getElementById("cardNumber").value.trim();
-            const cin = document.getElementById("cin").value.trim();
+    const cardNumber = document.getElementById("cardNumber").value.trim();
+    const cin = document.getElementById("cin").value.trim();
 
-            if (!cardNumber || !cin) {
-                messageDiv.style.color = "red";
-                messageDiv.innerText = "Veuillez remplir tous les champs.";
+    if (!cardNumber || !cin) {
+        messageDiv.style.color = "red";
+        messageDiv.innerText = "Veuillez remplir tous les champs.";
+        return;
+    }
+
+    loginBtn.disabled = true;
+    loginBtn.innerText = "Connexion en cours...";
+    messageDiv.innerText = "";
+
+    try {
+        // Utilise bien l'URL où tu as déployé le nouveau code Worker
+        const response = await fetch("https://mijopay.mijocomplexe.workers.dev/", {
+            method: "POST",
+            mode: "cors", // Force le mode CORS
+            headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({ 
+                action: "login_user_by_card", 
+                cardNumber: cardNumber, 
+                password: cin 
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Vérification du blocage (Nombre_Echecs doit exister dans Airtable)
+            const echecs = data.user && data.user.Nombre_Echecs ? parseInt(data.user.Nombre_Echecs) : 0;
+            
+            if (echecs >= 5) {
+                messageDiv.style.color = "#e74c3c";
+                messageDiv.innerHTML = `<i class="fa-solid fa-lock"></i> Accès refusé. Compte suspendu.`;
                 return;
             }
 
-            loginBtn.disabled = true;
-            loginBtn.innerText = "Connexion en cours...";
-            messageDiv.innerText = "";
-
-            try {
-                const response = await fetch("https://mijopay.mijocomplexe.workers.dev/", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ action: "login_user_by_card", cardNumber: cardNumber, password: cin })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    // AJOUT : Vérification du statut de blocage
-                    const echecs = parseInt(data.user.Nombre_Echecs) || 0;
-                    
-                    if (echecs >= 5) {
-                        messageDiv.style.color = "#e74c3c";
-                        messageDiv.innerHTML = `
-                            <i class="fa-solid fa-lock"></i> Accès refusé.<br>
-                            Votre compte est suspendu suite à trop de tentatives de recharge échouées.
-                        `;
-                        return; // On arrête l'exécution ici, pas de redirection !
-                    }
-
-                    // Si le compte n'est pas bloqué, on continue normalement
-                    localStorage.setItem("user", JSON.stringify(data.user));
-                    messageDiv.style.color = "green";
-                    messageDiv.innerText = "Connexion réussie ! Redirection...";
-                    setTimeout(() => { window.location.href = "home.html"; }, 1000);
-                } else {
-                    messageDiv.style.color = "red";
-                    messageDiv.innerText = data.error || "Numéro de carte ou CIN incorrect.";
-                }
-            } catch (err) {
-                messageDiv.style.color = "red";
-                messageDiv.innerText = "Erreur de connexion avec le serveur.";
-            } finally {
-                if(messageDiv.innerHTML.indexOf('lock') === -1) { 
-                    loginBtn.disabled = false;
-                }
-                loginBtn.innerText = "Se connecter";
-            }
+            localStorage.setItem("user", JSON.stringify(data.user));
+            messageDiv.style.color = "green";
+            messageDiv.innerText = "Connexion réussie ! Redirection...";
+            setTimeout(() => { window.location.href = "home.html"; }, 1000);
+        } else {
+            messageDiv.style.color = "red";
+            // Si le Worker renvoie une erreur détaillée (ex: Quota), on l'affiche
+            messageDiv.innerText = data.details ? `Erreur: ${data.error}` : (data.error || "Identifiants incorrects.");
         }
-
+    } catch (err) {
+        console.error("Erreur Fetch:", err);
+        messageDiv.style.color = "red";
+        messageDiv.innerText = "Le serveur ne répond pas. Vérifiez votre connexion.";
+    } finally {
+        loginBtn.disabled = false;
+        loginBtn.innerText = "Se connecter";
+    }
+}
         async function inscrire() {
             const nom = document.getElementById("nomcomplet").value.trim();
             const pays = document.getElementById("pays").value.trim();
