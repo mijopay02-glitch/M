@@ -1,340 +1,854 @@
+Mijo roue drapeau · HTML
+Copy
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIJO PAY - Spécial Fête des Mères</title>
-    <style>
-        :root {
-            --mijo-gold: #D4AF37;
-            --mijo-black: #1A1A1A;
-            --mijo-dark: #111111;
-        }
-
-        body {
-            background-color: var(--mijo-black);
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        header {
-            width: 100%;
-            padding: 20px 0;
-            text-align: center;
-            background: linear-gradient(to bottom, #222, var(--mijo-black));
-            border-bottom: 1px solid var(--mijo-gold);
-            margin-bottom: 30px;
-        }
-
-        .logo { width: 150px; filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.5)); }
-
-        h1 {
-            color: var(--mijo-gold);
-            font-size: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 10px;
-        }
-
-        .wheel-container {
-            position: relative;
-            width: 320px;
-            height: 320px;
-            margin-bottom: 40px;
-        }
-
-        #wheelCanvas {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 8px solid var(--mijo-gold);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
-            transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1);
-        }
-
-        .pointer {
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            z-index: 10;
-            filter: drop-shadow(0 2px 5px black);
-        }
-
-        .btn-spin {
-            background: linear-gradient(45deg, var(--mijo-gold), #f1d56e);
-            color: black;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-
-        .btn-spin:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background: var(--mijo-dark);
-            border: 2px solid var(--mijo-gold);
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 400px;
-        }
-
-        .modal-title { color: var(--mijo-gold); font-size: 1.8rem; margin-bottom: 15px; }
-        .btn-modal {
-            display: block; width: 100%; background: var(--mijo-gold);
-            color: black; text-decoration: none; padding: 12px;
-            border-radius: 10px; font-weight: bold; margin-top: 20px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIJO PAY - Fête du Drapeau</title>
+<style>
+:root {
+  --gold: #D4AF37;
+  --gold2: #F5D76E;
+  --bg: #0a0c14;
+  --card: #13162a;
+  --card2: #1a1f38;
+  --blue-ht: #00209F;
+  --red-ht: #D21034;
+  --text: #f0f4ff;
+  --muted: #7b82a8;
+  --border: rgba(212,175,55,0.2);
+}
+ 
+* { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+ 
+/* PARTICLES */
+.particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  animation: float linear infinite;
+  opacity: 0;
+}
+@keyframes float {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.6; }
+  100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+}
+ 
+/* HEADER */
+header {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  text-align: center;
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(0,32,159,0.15) 0%, transparent 100%);
+}
+ 
+.logo { width: 100px; filter: drop-shadow(0 0 12px rgba(212,175,55,0.4)); }
+ 
+.flag-stripe {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin: 12px auto 8px;
+  width: 120px;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.flag-stripe .s1 { flex: 1; background: var(--blue-ht); }
+.flag-stripe .s2 { flex: 1; background: var(--red-ht); }
+ 
+h1 {
+  color: var(--gold);
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px rgba(212,175,55,0.4);
+}
+ 
+.subtitle {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-top: 4px;
+  letter-spacing: 1px;
+}
+ 
+/* MAIN */
+main {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+  padding: 24px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+ 
+/* USER BADGE */
+.user-badge {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  padding: 8px 20px;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.user-badge .dot {
+  width: 8px; height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #22c55e;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.user-badge strong { color: var(--gold); }
+ 
+/* WHEEL WRAPPER */
+.wheel-wrapper {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  margin-bottom: 8px;
+}
+ 
+/* Outer glow ring */
+.wheel-glow {
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--blue-ht) 0deg 180deg,
+    var(--red-ht) 180deg 360deg
+  );
+  opacity: 0.15;
+  animation: rotateGlow 8s linear infinite;
+  filter: blur(8px);
+}
+@keyframes rotateGlow { to { transform: rotate(360deg); } }
+ 
+/* Gold ring */
+.wheel-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 3px solid var(--gold);
+  box-shadow: 0 0 20px rgba(212,175,55,0.3), inset 0 0 20px rgba(212,175,55,0.1);
+}
+ 
+/* Decorative dots on ring */
+.wheel-dots {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+}
+.wheel-dot {
+  position: absolute;
+  width: 8px; height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--gold);
+  transform-origin: 162px 162px;
+}
+ 
+canvas#wheelCanvas {
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+  transition: transform 5.5s cubic-bezier(0.12, 0, 0.08, 1);
+}
+ 
+/* POINTER */
+.pointer {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
+}
+.pointer svg { display: block; }
+ 
+/* Center hub */
+.wheel-hub {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: 44px; height: 44px;
+  background: radial-gradient(circle, #f5d76e 0%, var(--gold) 60%, #a07c1e 100%);
+  border-radius: 50%;
+  border: 3px solid #fff2;
+  box-shadow: 0 0 15px rgba(212,175,55,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+ 
+/* Spin count badge */
+.spin-badge {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+.spin-badge span { color: var(--gold); font-weight: 700; }
+ 
+/* SPIN BUTTON */
+.btn-spin {
+  position: relative;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 50%, var(--gold) 100%);
+  background-size: 200% 100%;
+  color: #1a0e00;
+  border: none;
+  padding: 16px 48px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  border-radius: 50px;
+  cursor: pointer;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  box-shadow: 0 6px 30px rgba(212,175,55,0.4), 0 2px 0 rgba(0,0,0,0.3);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: shimmer 3s infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 0%; }
+  100% { background-position: 0% 0%; }
+}
+.btn-spin::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+.btn-spin:hover::before { left: 100%; }
+.btn-spin:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(212,175,55,0.5); }
+.btn-spin:active:not(:disabled) { transform: translateY(1px); }
+.btn-spin:disabled { opacity: 0.5; cursor: not-allowed; animation: none; }
+ 
+/* PRIZES PREVIEW */
+.prizes-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.prize-chip {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.prize-chip.locked { opacity: 0.5; }
+.prize-dot { width: 8px; height: 8px; border-radius: 50%; }
+ 
+/* MODAL OVERLAY */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(6px);
+}
+.modal.open { display: flex; }
+ 
+.modal-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 36px 28px 28px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 0 60px rgba(212,175,55,0.15);
+}
+@keyframes popIn {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+ 
+.modal-icon {
+  font-size: 64px;
+  margin-bottom: 12px;
+  display: block;
+  animation: bounceIn 0.6s 0.2s both;
+}
+@keyframes bounceIn {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+ 
+.modal-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--gold);
+  margin-bottom: 10px;
+  text-shadow: 0 0 20px rgba(212,175,55,0.4);
+}
+ 
+.modal-body {
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+}
+.modal-body b { color: var(--text); }
+ 
+.modal-prize-amount {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--gold);
+  display: block;
+  margin: 12px 0;
+}
+ 
+.btn-modal {
+  display: block;
+  width: 100%;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #1a0e00;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.2s;
+  margin-bottom: 10px;
+}
+.btn-modal:hover { opacity: 0.9; transform: translateY(-1px); }
+ 
+.btn-modal-secondary {
+  display: block;
+  width: 100%;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.btn-modal-secondary:hover { background: var(--card2); }
+ 
+/* CONFETTI */
+.confetti-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 150;
+  overflow: hidden;
+}
+.confetto {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: -10px;
+  animation: confettiFall linear forwards;
+  opacity: 0;
+}
+@keyframes confettiFall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+ 
+/* TICK ANIMATION */
+@keyframes wheelTick { 0%,100%{transform:translateX(-50%) rotate(0deg)} 50%{transform:translateX(-50%) rotate(-8deg)} }
+ 
+/* ALREADY PLAYED */
+.played-msg {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 16px;
+}
+</style>
 </head>
 <body>
-
-    <header>
-        <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY" class="logo">
-        <h1>Cadeau Fête des Mères</h1>
-    </header>
-
-    <div class="wheel-container">
-        <svg class="pointer" viewBox="0 0 30 40">
-            <path d="M15 40 L30 0 L0 0 Z" fill="#D4AF37"/>
-        </svg>
-        <canvas id="wheelCanvas" width="400" height="400"></canvas>
+ 
+<!-- Particles -->
+<div class="particles" id="particles"></div>
+ 
+<!-- Confetti container -->
+<div class="confetti-container" id="confettiContainer"></div>
+ 
+<!-- Header -->
+<header>
+  <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY" class="logo">
+  <div class="flag-stripe"><div class="s1"></div><div class="s2"></div></div>
+  <h1>🎉 Fête du Drapeau</h1>
+  <p class="subtitle">18 MAI 2026 • CADEAU SPÉCIAL</p>
+</header>
+ 
+<!-- Main -->
+<main>
+ 
+  <!-- User badge -->
+  <div class="user-badge">
+    <div class="dot"></div>
+    Connecté : <strong id="userName">...</strong>
+  </div>
+ 
+  <!-- Wheel -->
+  <div class="wheel-wrapper">
+    <div class="wheel-glow"></div>
+    <div class="wheel-ring"></div>
+    <div class="wheel-dots" id="wheelDots"></div>
+ 
+    <!-- Pointer -->
+    <div class="pointer" id="pointer">
+      <svg width="36" height="44" viewBox="0 0 36 44">
+        <polygon points="18,44 36,4 28,0 18,12 8,0 0,4" fill="#D4AF37"/>
+        <polygon points="18,36 30,8 18,14 6,8" fill="#F5D76E"/>
+        <circle cx="18" cy="10" r="5" fill="#fff" opacity="0.3"/>
+      </svg>
     </div>
-
-    <button id="spinBtn" class="btn-spin" onclick="startSpin()">LANCER LA ROUE</button>
-
-    <div id="resultModal" class="modal">
-        <div class="modal-content">
-            <div id="modalTitle" class="modal-title"></div>
-            <div id="modalBody" class="modal-body" style="margin-bottom: 20px; line-height: 1.5;"></div>
-            <div id="modalFooter"></div>
-        </div>
-    </div>
-
-    <script>
-    // 1. CONFIGURATION GLOBALE
-    const PROMO_WORKER_URL = "https://rough-heart-d656.mijocomplexe.workers.dev/"; 
-    const PDF_LINK = "https://drive.google.com/file/d/1OSdjQgjPRDMV_yNUHje69qG_v2EqToFY/view?usp=sharing";
-
-    // AJOUT : La propriété 'amount' pour savoir combien créditer
-    const segments = [
-        { label: "5 $ US", type: "usd", amount: 5 },         // 0
-        { label: "10 $ US", type: "usd", amount: 10 },       // 1
-        { label: "15 $ US", type: "usd", amount: 15 },       // 2
-        { label: "50 HTG", type: "promo", amount: 50 },      // 3
-        { label: "100 HTG", type: "blocked", amount: 100 },  // 4
-        { label: "250 HTG", type: "blocked", amount: 250 },  // 5
-        { label: "Livre PDF", type: "promo", amount: 0 },    // 6
-        { label: "Ciné +", type: "promo", amount: 0 }        // 7
-    ];
-
-    let canvas = document.getElementById('wheelCanvas');
-    let ctx = canvas.getContext('2d');
-    let spinBtn = document.getElementById('spinBtn');
-    
-    // VARIABLES D'ÉTAT
-    let currentRotation = 0; 
-    let lastResultIndex = null; 
-    let userData = null;
-
-    // 2. INITIALISATION
-    window.addEventListener('DOMContentLoaded', () => {
-        const storedUser = localStorage.getItem('user');
-        if (!storedUser) { 
-            window.location.href = 'index.html'; 
-            return; 
-        }
-        userData = JSON.parse(storedUser);
-        if (userData.Promo_Meres_Joue === true || userData.Promo_Meres_Joue === "OUI") {
-            spinBtn.disabled = true;
-            spinBtn.innerText = "DÉJÀ JOUÉ";
-            alert("Vous avez déjà récupéré votre cadeau pour la Fête des Mères !");
-        }
-        drawWheel();
+ 
+    <canvas id="wheelCanvas" width="300" height="300"></canvas>
+ 
+    <!-- Hub -->
+    <div class="wheel-hub">🇭🇹</div>
+  </div>
+ 
+  <!-- Spin badge -->
+  <div class="spin-badge">Chaque utilisateur a <span>1 spin</span> gratuit</div>
+ 
+  <!-- Spin button -->
+  <button id="spinBtn" class="btn-spin" onclick="startSpin()">
+    🎰 LANCER LA ROUE
+  </button>
+ 
+  <!-- Already played message (hidden by default) -->
+  <div id="playedMsg" class="played-msg" style="display:none;">
+    ✅ Vous avez déjà réclamé votre cadeau Fête du Drapeau.<br>
+    Merci d'utiliser MIJO PAY !
+  </div>
+ 
+  <!-- Prize chips -->
+  <div class="prizes-row">
+    <div class="prize-chip"><div class="prize-dot" style="background:#22c55e"></div>5$ US</div>
+    <div class="prize-chip"><div class="prize-dot" style="background:#3b82f6"></div>10$ US</div>
+    <div class="prize-chip"><div class="prize-dot" style="background:#8b5cf6"></div>15$ US</div>
+    <div class="prize-chip locked"><div class="prize-dot" style="background:var(--gold)"></div>50 HTG</div>
+    <div class="prize-chip locked"><div class="prize-dot" style="background:#f97316"></div>Livre PDF</div>
+    <div class="prize-chip locked"><div class="prize-dot" style="background:#ec4899"></div>Ciné +</div>
+  </div>
+ 
+</main>
+ 
+<!-- Modal -->
+<div class="modal" id="resultModal">
+  <div class="modal-box">
+    <span class="modal-icon" id="modalIcon">🎁</span>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div id="modalFooter"></div>
+  </div>
+</div>
+ 
+<script>
+const PROMO_WORKER_URL = "https://rough-heart-d656.mijocomplexe.workers.dev/";
+const PDF_LINK = "https://drive.google.com/file/d/1OSdjQgjPRDMV_yNUHje69qG_v2EqToFY/view?usp=sharing";
+ 
+const segments = [
+  { label: "5 $ US",   type: "usd",     amount: 5,   color: "#00209F", light: "#4a6fd4" },
+  { label: "10 $ US",  type: "usd",     amount: 10,  color: "#D21034", light: "#e84d6a" },
+  { label: "15 $ US",  type: "usd",     amount: 15,  color: "#00209F", light: "#4a6fd4" },
+  { label: "50 HTG",   type: "promo",   amount: 50,  color: "#1a1f38", light: "#2d3561" },
+  { label: "100 HTG",  type: "blocked", amount: 100, color: "#111827", light: "#1f2937" },
+  { label: "250 HTG",  type: "blocked", amount: 250, color: "#111827", light: "#1f2937" },
+  { label: "Livre PDF",type: "promo",   amount: 0,   color: "#1a1f38", light: "#2d3561" },
+  { label: "Ciné +",   type: "promo",   amount: 0,   color: "#1a1f38", light: "#2d3561" }
+];
+ 
+const canvas = document.getElementById('wheelCanvas');
+const ctx = canvas.getContext('2d');
+let currentRotation = 0;
+let lastResultIndex = null;
+let userData = null;
+let isSpinning = false;
+ 
+// ── INIT ──────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const stored = localStorage.getItem('user');
+  if (!stored) { window.location.href = 'index.html'; return; }
+  userData = JSON.parse(stored);
+ 
+  document.getElementById('userName').textContent =
+    userData.Nom || userData.NumeroCarte || 'Utilisateur';
+ 
+  if (userData.Promo_Drapeau_Joue === true || userData.Promo_Drapeau_Joue === "OUI") {
+    document.getElementById('spinBtn').disabled = true;
+    document.getElementById('spinBtn').textContent = '✅ DÉJÀ JOUÉ';
+    document.getElementById('playedMsg').style.display = 'block';
+  }
+ 
+  drawWheel();
+  createParticles();
+  createWheelDots();
+});
+ 
+// ── PARTICLES ─────────────────────────────────
+function createParticles() {
+  const container = document.getElementById('particles');
+  const colors = ['#D4AF37','#00209F','#D21034','#F5D76E','#ffffff'];
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left: ${Math.random()*100}%;
+      background: ${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration: ${6 + Math.random()*8}s;
+      animation-delay: ${Math.random()*8}s;
+      width: ${2+Math.random()*4}px;
+      height: ${2+Math.random()*4}px;
+    `;
+    container.appendChild(p);
+  }
+}
+ 
+// ── WHEEL DOTS ────────────────────────────────
+function createWheelDots() {
+  const container = document.getElementById('wheelDots');
+  for (let i = 0; i < 16; i++) {
+    const d = document.createElement('div');
+    d.className = 'wheel-dot';
+    d.style.transform = `rotate(${i * 22.5}deg) translate(0, -162px)`;
+    container.appendChild(d);
+  }
+}
+ 
+// ── DRAW WHEEL ────────────────────────────────
+function drawWheel() {
+  const cx = 150, cy = 150, r = 145;
+  const arc = (2 * Math.PI) / segments.length;
+ 
+  for (let i = 0; i < segments.length; i++) {
+    const startAngle = i * arc - Math.PI / 2;
+    const endAngle = startAngle + arc;
+    const seg = segments[i];
+ 
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, startAngle, endAngle);
+    ctx.closePath();
+    ctx.fillStyle = seg.color;
+    ctx.fill();
+ 
+    ctx.strokeStyle = 'rgba(212,175,55,0.4)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+ 
+    const midAngle = startAngle + arc / 2;
+    const textR = r * 0.65;
+    const tx = cx + Math.cos(midAngle) * textR;
+    const ty = cy + Math.sin(midAngle) * textR;
+ 
+    ctx.save();
+    ctx.translate(tx, ty);
+    ctx.rotate(midAngle + Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+ 
+    if (seg.type === 'usd') {
+      ctx.font = 'bold 15px Arial';
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = 'rgba(0,0,0,0.5)';
+      ctx.shadowBlur = 4;
+    } else if (seg.type === 'promo') {
+      ctx.font = 'bold 13px Arial';
+      ctx.fillStyle = '#D4AF37';
+      ctx.shadowColor = 'rgba(0,0,0,0.5)';
+      ctx.shadowBlur = 4;
+    } else {
+      ctx.font = '12px Arial';
+      ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    }
+ 
+    ctx.fillText(seg.label, 0, 0);
+    ctx.restore();
+  }
+ 
+  // Outer ring decoration
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+  ctx.strokeStyle = 'rgba(212,175,55,0.6)';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+ 
+  // Inner circle
+  ctx.beginPath();
+  ctx.arc(cx, cy, 24, 0, 2 * Math.PI);
+  ctx.fillStyle = '#0a0c14';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(212,175,55,0.5)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+ 
+// ── SPIN ──────────────────────────────────────
+async function startSpin() {
+  if (isSpinning) return;
+  if (userData.Promo_Drapeau_Joue === true || userData.Promo_Drapeau_Joue === "OUI") return;
+ 
+  isSpinning = true;
+  const btn = document.getElementById('spinBtn');
+  btn.disabled = true;
+  btn.textContent = '🌀 EN COURS...';
+ 
+  const isUsActive = userData.Compte_US_Actif === "OUI" || userData.Compte_US_Actif === true;
+ 
+  let choices = isUsActive
+    ? segments.filter((s, i) => s.type === "promo" && i !== lastResultIndex)
+    : segments.filter((s, i) => s.type === "usd" && i !== lastResultIndex);
+ 
+  if (choices.length === 0) {
+    choices = isUsActive
+      ? segments.filter(s => s.type === "promo")
+      : segments.filter(s => s.type === "usd");
+  }
+ 
+  const winner = choices[Math.floor(Math.random() * choices.length)];
+  const targetIndex = segments.indexOf(winner);
+  lastResultIndex = targetIndex;
+ 
+  const degPerSeg = 360 / segments.length;
+  const targetAngle = 247.5 - (targetIndex * degPerSeg);
+  const extra = 3960 + (targetAngle - (currentRotation % 360) + 360) % 360;
+  currentRotation += extra;
+ 
+  canvas.style.transform = `rotate(${currentRotation}deg)`;
+ 
+  // Pointer tick animation
+  animatePointerTick();
+ 
+  if (isUsActive) {
+    registerPlay(userData.userId || userData.NumeroCarte);
+  }
+ 
+  setTimeout(() => {
+    isSpinning = false;
+    showResult(winner, isUsActive);
+  }, 5800);
+}
+ 
+function animatePointerTick() {
+  const pointer = document.getElementById('pointer');
+  let ticks = 0;
+  const maxTicks = 80;
+  let interval = 60;
+ 
+  function tick() {
+    pointer.style.animation = 'wheelTick 0.1s ease';
+    setTimeout(() => { pointer.style.animation = ''; }, 100);
+    ticks++;
+    interval = Math.min(interval * 1.04, 300);
+    if (ticks < maxTicks) setTimeout(tick, interval);
+  }
+  tick();
+}
+ 
+// ── SHOW RESULT ───────────────────────────────
+function showResult(segment, isUsActive) {
+  const modal = document.getElementById('resultModal');
+  const icon = document.getElementById('modalIcon');
+  const title = document.getElementById('modalTitle');
+  const body = document.getElementById('modalBody');
+  const footer = document.getElementById('modalFooter');
+ 
+  if (!isUsActive) {
+    icon.textContent = '🔒';
+    title.textContent = 'Compte US requis !';
+    body.innerHTML = `
+      Vous avez aligné <b>${segment.label}</b> !<br><br>
+      Ce lot est réservé aux comptes <b>internationaux</b>.<br>
+      Activez votre compte USD pour débloquer vos gains et relancer la roue.
+    `;
+    footer.innerHTML = `
+      <button onclick="activateUS()" class="btn-modal">🌍 ACTIVER MON COMPTE USD (200G)</button>
+      <a href="home.html" class="btn-modal-secondary">Retour au portefeuille</a>
+    `;
+  } else {
+    if (segment.label === "Livre PDF") {
+      icon.textContent = '📚';
+      title.textContent = 'Bravo !';
+      body.innerHTML = `Vous gagnez :<br><b>"30 Idées de Business à Petit Budget"</b><br><br>Votre guide offert par MIJO PAY 🎁`;
+      footer.innerHTML = `
+        <a href="${PDF_LINK}" target="_blank" class="btn-modal">📥 TÉLÉCHARGER MAINTENANT</a>
+        <a href="home.html" class="btn-modal-secondary">Retour au portefeuille</a>
+      `;
+    } else if (segment.label === "Ciné +") {
+      icon.textContent = '🎬';
+      title.textContent = 'Ciné + Gagné !';
+      body.innerHTML = `Votre accès <b>MIJO CINÉ+</b> a été activé.<br>Profitez de vos films & séries ! 🎉`;
+      footer.innerHTML = `
+        <a href="home.html" class="btn-modal">🏠 RETOUR AU PORTEFEUILLE</a>
+      `;
+    } else {
+      icon.textContent = '💰';
+      title.textContent = 'Félicitations !';
+      body.innerHTML = `
+        Vous avez gagné :<br>
+        <span class="modal-prize-amount">${segment.label}</span>
+        Ce montant sera crédité sur votre balance MIJO PAY. 🎊
+      `;
+      footer.innerHTML = `
+        <a href="home.html" class="btn-modal">🏠 VOIR MON SOLDE</a>
+      `;
+      claimWin(segment.amount);
+      launchConfetti();
+    }
+    if (segment.label === "50 HTG") {
+      icon.textContent = '🎁';
+      claimWin(segment.amount);
+      launchConfetti();
+    }
+  }
+ 
+  setTimeout(() => { modal.classList.add('open'); }, 300);
+}
+ 
+// ── CONFETTI ──────────────────────────────────
+function launchConfetti() {
+  const container = document.getElementById('confettiContainer');
+  const colors = ['#D4AF37','#F5D76E','#00209F','#D21034','#ffffff','#22c55e'];
+  for (let i = 0; i < 80; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetto';
+    const size = 6 + Math.random() * 10;
+    c.style.cssText = `
+      left: ${Math.random() * 100}%;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      width: ${size}px;
+      height: ${size}px;
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+      animation-duration: ${1.5 + Math.random() * 2}s;
+      animation-delay: ${Math.random() * 0.5}s;
+    `;
+    container.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+}
+ 
+// ── NETWORK ───────────────────────────────────
+async function registerPlay(userId) {
+  try {
+    await fetch(PROMO_WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'mark_played' })
     });
-
-    // 3. DESSIN DE LA ROUE
-    function drawWheel() {
-        let arc = (2 * Math.PI) / segments.length;
-        for (let i = 0; i < segments.length; i++) {
-            let angle = i * arc;
-            ctx.fillStyle = (i % 2 === 0) ? "#1A1A1A" : "#222";
-            ctx.beginPath();
-            ctx.moveTo(200, 200);
-            ctx.arc(200, 200, 190, angle, angle + arc);
-            ctx.fill();
-            ctx.strokeStyle = "#D4AF37";
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            ctx.save();
-            ctx.translate(200, 200);
-            ctx.rotate(angle + arc / 2);
-            ctx.textAlign = "right";
-            ctx.fillStyle = "#D4AF37";
-            ctx.font = "bold 16px Arial";
-            ctx.fillText(segments[i].label, 170, 10);
-            ctx.restore();
-        }
+    userData.Promo_Drapeau_Joue = true;
+    localStorage.setItem('user', JSON.stringify(userData));
+  } catch(e) { console.error(e); }
+}
+ 
+async function claimWin(amount) {
+  if (!amount || amount <= 0) return;
+  try {
+    const res = await fetch(PROMO_WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: userData.userId || userData.NumeroCarte, action: 'claim_prize', amount })
+    });
+    const data = await res.json();
+    if (data.nouveauSolde !== undefined) {
+      userData.Solde = data.nouveauSolde;
+      localStorage.setItem('user', JSON.stringify(userData));
     }
-
-    // 4. LOGIQUE DE LANCEMENT
-    async function startSpin() {
-        if (userData.Promo_Meres_Joue === true || userData.Promo_Meres_Joue === "OUI") return;
-        spinBtn.disabled = true;
-        const isUsActive = userData.Compte_US_Actif === "OUI" || userData.Compte_US_Actif === true;
-        
-        let possibleChoices = isUsActive 
-            ? segments.filter((s, idx) => s.type === "promo" && idx !== lastResultIndex) 
-            : segments.filter((s, idx) => s.type === "usd" && idx !== lastResultIndex);
-
-        if (possibleChoices.length === 0) {
-            possibleChoices = isUsActive 
-                ? segments.filter(s => s.type === "promo") 
-                : segments.filter(s => s.type === "usd");
-        }
-
-        const winner = possibleChoices[Math.floor(Math.random() * possibleChoices.length)];
-        const targetIndex = segments.indexOf(winner);
-        
-        lastResultIndex = targetIndex;
-
-        const degPerSegment = 360 / segments.length;
-        const targetAngle = 247.5 - (targetIndex * degPerSegment);
-        const rotationSupplementaire = 3600 + (targetAngle - (currentRotation % 360));
-        currentRotation += rotationSupplementaire;
-        
-        canvas.style.transform = `rotate(${currentRotation}deg)`;
-        
-        registerPlay(userData.userId);
-
-        setTimeout(() => {
-            showResult(winner, isUsActive);
-        }, 5500);
+  } catch(e) { console.error(e); }
+}
+ 
+async function activateUS() {
+  const btn = document.querySelector('.btn-modal');
+  btn.textContent = '⏳ ACTIVATION...';
+  btn.disabled = true;
+  try {
+    const res = await fetch(PROMO_WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: userData.userId || userData.NumeroCarte, action: 'activate_us' })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      userData.Compte_US_Actif = true;
+      if (data.nouveauSolde !== undefined) userData.Solde = data.nouveauSolde;
+      localStorage.setItem('user', JSON.stringify(userData));
+      document.getElementById('resultModal').classList.remove('open');
+      setTimeout(() => window.location.reload(), 300);
+    } else {
+      alert("Erreur : " + (data.message || "Fonds insuffisants."));
+      btn.textContent = '🌍 ACTIVER MON COMPTE USD (200G)';
+      btn.disabled = false;
     }
-
-    // 5. AFFICHAGE RÉSULTAT ET CRÉDIT DES GAINS
-    function showResult(segment, isUsActive) {
-        const modal = document.getElementById('resultModal');
-        const title = document.getElementById('modalTitle');
-        const body = document.getElementById('modalBody');
-        const footer = document.getElementById('modalFooter');
-
-        if (!isUsActive) {
-            title.innerText = "ÉLIGIBILITÉ DÉTECTÉE !";
-            body.innerHTML = `Félicitations ! Vous avez aligné le lot : <b>${segment.label}</b>.<br><br><span style="color:#ff4d4d">🔒 ACCÈS RESTREINT</span><br>Votre compte n'est pas encore "International". Activez-le pour débloquer vos gains.`;
-            footer.innerHTML = `<button onclick="activateUS()" class="btn-modal">ACTIVER MON COMPTE USD (200G)</button>`;
-        } else {
-            title.innerText = "BRAVO !";
-            if (segment.label === "Livre PDF") {
-                body.innerHTML = `Vous gagnez : <br><b>"30 Idées de Business à Petit Budget"</b>.`;
-                footer.innerHTML = `<a href="${PDF_LINK}" target="_blank" class="btn-modal">TÉLÉCHARGER MAINTENANT</a>`;
-            } else if (segment.label === "Ciné +") {
-                body.innerHTML = `Gagné : <b>${segment.label}</b> ! <br>Ce lot sera ajouté à votre profil.`;
-                footer.innerHTML = `<a href="home.html" class="btn-modal">RETOUR AU PORTEFEUILLE</a>`;
-            } else {
-                body.innerHTML = `Gagné : <b>${segment.label}</b> ! <br>Ce montant sera ajouté à votre balance MIJO PAY.`;
-                footer.innerHTML = `<a href="home.html" class="btn-modal">RETOUR AU PORTEFEUILLE</a>`;
-                
-                // AJOUT : On appelle la fonction pour créditer l'argent réel
-                claimWin(segment.amount);
-            }
-        }
-        modal.style.display = "flex";
-    }
-
-    // 6. FONCTIONS RÉSEAU
-    async function registerPlay(userId) {
-        try { fetch(PROMO_WORKER_URL, { method: 'POST', body: JSON.stringify({ userId, action: 'mark_played' }) }); } catch(e){}
-    }
-
-    // NOUVELLE FONCTION : Pour créditer les gains sur Airtable et dans le LocalStorage
-    async function claimWin(amount) {
-        if (!amount || amount <= 0) return; 
-
-        try {
-            const res = await fetch(PROMO_WORKER_URL, { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    userId: userData.userId, 
-                    action: 'claim_prize',
-                    amount: amount
-                }) 
-            });
-
-            const data = await res.json();
-            
-            if (res.ok && data.nouveauSolde !== undefined) {
-                // Mise à jour du solde dans le navigateur
-                userData.Solde = data.nouveauSolde;
-                localStorage.setItem('user', JSON.stringify(userData));
-                console.log("Gain crédité avec succès ! Nouveau solde :", userData.Solde);
-            }
-        } catch(e) { 
-            console.error("Erreur lors du crédit :", e);
-        }
-    }
-
-    async function activateUS() {
-        try {
-            console.log("Tentative d'activation pour :", userData.userId);
-            
-            const res = await fetch(PROMO_WORKER_URL, { 
-                method: 'POST', 
-                headers: { 
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ 
-                    userId: userData.userId, 
-                    action: 'activate_us' 
-                }) 
-            });
-
-            const data = await res.json();
-
-            if (res.ok) {
-                alert("Succès : " + data.message);
-                
-                // CORRECTION : On met à jour l'état et l'argent dans le stockage local
-                userData.Compte_US_Actif = true;
-                if (data.nouveauSolde !== undefined) {
-                    userData.Solde = data.nouveauSolde;
-                }
-                
-                localStorage.setItem('user', JSON.stringify(userData));
-                window.location.reload();
-            } else {
-                alert("Erreur MIJO PAY : " + (data.message || "Erreur inconnue"));
-            }
-        } catch(e) { 
-            console.error("Détail de l'erreur :", e);
-            alert("Impossible de joindre le serveur. Vérifiez votre connexion ou si le Worker est bien déployé."); 
-        }
-    }
+  } catch(e) {
+    alert("Connexion impossible. Vérifiez votre internet.");
+    btn.textContent = '🌍 ACTIVER MON COMPTE USD (200G)';
+    btn.disabled = false;
+  }
+}
 </script>
 </body>
 </html>
+   
