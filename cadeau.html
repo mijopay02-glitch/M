@@ -1,6 +1,3 @@
-Mijo roue drapeau · HTML
-Copy
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -9,431 +6,74 @@ Copy
 <title>MIJO PAY - Fête du Drapeau</title>
 <style>
 :root {
-  --gold: #D4AF37;
-  --gold2: #F5D76E;
-  --bg: #0a0c14;
-  --card: #13162a;
-  --card2: #1a1f38;
-  --blue-ht: #00209F;
-  --red-ht: #D21034;
-  --text: #f0f4ff;
-  --muted: #7b82a8;
-  --border: rgba(212,175,55,0.2);
+  --gold: #D4AF37; --gold2: #F5D76E;
+  --bg: #0a0c14; --card: #13162a; --card2: #1a1f38;
+  --blue-ht: #00209F; --red-ht: #D21034;
+  --text: #f0f4ff; --muted: #7b82a8; --border: rgba(212,175,55,0.2);
 }
- 
 * { box-sizing: border-box; margin: 0; padding: 0; }
- 
-body {
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
- 
-/* PARTICLES */
-.particles {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-}
-.particle {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  animation: float linear infinite;
-  opacity: 0;
-}
-@keyframes float {
-  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-  10% { opacity: 0.6; }
-  90% { opacity: 0.6; }
-  100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
-}
- 
-/* HEADER */
-header {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  text-align: center;
-  padding: 24px 20px 20px;
-  border-bottom: 1px solid var(--border);
-  background: linear-gradient(180deg, rgba(0,32,159,0.15) 0%, transparent 100%);
-}
- 
-.logo { width: 100px; filter: drop-shadow(0 0 12px rgba(212,175,55,0.4)); }
- 
-.flag-stripe {
-  display: flex;
-  justify-content: center;
-  gap: 0;
-  margin: 12px auto 8px;
-  width: 120px;
-  height: 6px;
-  border-radius: 3px;
-  overflow: hidden;
-}
-.flag-stripe .s1 { flex: 1; background: var(--blue-ht); }
-.flag-stripe .s2 { flex: 1; background: var(--red-ht); }
- 
-h1 {
-  color: var(--gold);
-  font-size: 1.3rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  text-shadow: 0 0 20px rgba(212,175,55,0.4);
-}
- 
-.subtitle {
-  color: var(--muted);
-  font-size: 0.8rem;
-  margin-top: 4px;
-  letter-spacing: 1px;
-}
- 
-/* MAIN */
-main {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 440px;
-  padding: 24px 20px 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
- 
-/* USER BADGE */
-.user-badge {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 30px;
-  padding: 8px 20px;
-  font-size: 13px;
-  color: var(--muted);
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.user-badge .dot {
-  width: 8px; height: 8px;
-  background: #22c55e;
-  border-radius: 50%;
-  box-shadow: 0 0 6px #22c55e;
-  animation: pulse 2s infinite;
-}
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-.user-badge strong { color: var(--gold); }
- 
-/* WHEEL WRAPPER */
-.wheel-wrapper {
-  position: relative;
-  width: 300px;
-  height: 300px;
-  margin-bottom: 8px;
-}
- 
-/* Outer glow ring */
-.wheel-glow {
-  position: absolute;
-  inset: -16px;
-  border-radius: 50%;
-  background: conic-gradient(
-    var(--blue-ht) 0deg 180deg,
-    var(--red-ht) 180deg 360deg
-  );
-  opacity: 0.15;
-  animation: rotateGlow 8s linear infinite;
-  filter: blur(8px);
-}
-@keyframes rotateGlow { to { transform: rotate(360deg); } }
- 
-/* Gold ring */
-.wheel-ring {
-  position: absolute;
-  inset: -8px;
-  border-radius: 50%;
-  border: 3px solid var(--gold);
-  box-shadow: 0 0 20px rgba(212,175,55,0.3), inset 0 0 20px rgba(212,175,55,0.1);
-}
- 
-/* Decorative dots on ring */
-.wheel-dots {
-  position: absolute;
-  inset: -12px;
-  border-radius: 50%;
-}
-.wheel-dot {
-  position: absolute;
-  width: 8px; height: 8px;
-  background: var(--gold);
-  border-radius: 50%;
-  box-shadow: 0 0 6px var(--gold);
-  transform-origin: 162px 162px;
-}
- 
-canvas#wheelCanvas {
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  position: relative;
-  z-index: 2;
-  transition: transform 5.5s cubic-bezier(0.12, 0, 0.08, 1);
-}
- 
-/* POINTER */
-.pointer {
-  position: absolute;
-  top: -28px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
-}
-.pointer svg { display: block; }
- 
-/* Center hub */
-.wheel-hub {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  width: 44px; height: 44px;
-  background: radial-gradient(circle, #f5d76e 0%, var(--gold) 60%, #a07c1e 100%);
-  border-radius: 50%;
-  border: 3px solid #fff2;
-  box-shadow: 0 0 15px rgba(212,175,55,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
- 
-/* Spin count badge */
-.spin-badge {
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 6px 16px;
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 20px;
-}
-.spin-badge span { color: var(--gold); font-weight: 700; }
- 
-/* SPIN BUTTON */
-.btn-spin {
-  position: relative;
-  background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 50%, var(--gold) 100%);
-  background-size: 200% 100%;
-  color: #1a0e00;
-  border: none;
-  padding: 16px 48px;
-  font-size: 1.1rem;
-  font-weight: 800;
-  border-radius: 50px;
-  cursor: pointer;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  box-shadow: 0 6px 30px rgba(212,175,55,0.4), 0 2px 0 rgba(0,0,0,0.3);
-  overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
-  animation: shimmer 3s infinite;
-}
-@keyframes shimmer {
-  0% { background-position: 0% 0%; }
-  50% { background-position: 100% 0%; }
-  100% { background-position: 0% 0%; }
-}
-.btn-spin::before {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%;
-  width: 100%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  transition: left 0.5s;
-}
-.btn-spin:hover::before { left: 100%; }
-.btn-spin:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(212,175,55,0.5); }
-.btn-spin:active:not(:disabled) { transform: translateY(1px); }
-.btn-spin:disabled { opacity: 0.5; cursor: not-allowed; animation: none; }
- 
-/* PRIZES PREVIEW */
-.prizes-row {
-  display: flex;
-  gap: 8px;
-  margin-top: 24px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.prize-chip {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 6px 14px;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.prize-chip.locked { opacity: 0.5; }
-.prize-dot { width: 8px; height: 8px; border-radius: 50%; }
- 
-/* MODAL OVERLAY */
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
-  z-index: 200;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  backdrop-filter: blur(6px);
-}
-.modal.open { display: flex; }
- 
-.modal-box {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 36px 28px 28px;
-  max-width: 380px;
-  width: 100%;
-  text-align: center;
-  position: relative;
-  animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
-  box-shadow: 0 0 60px rgba(212,175,55,0.15);
-}
-@keyframes popIn {
-  from { transform: scale(0.7); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
- 
-.modal-icon {
-  font-size: 64px;
-  margin-bottom: 12px;
-  display: block;
-  animation: bounceIn 0.6s 0.2s both;
-}
-@keyframes bounceIn {
-  0% { transform: scale(0); }
-  60% { transform: scale(1.2); }
-  100% { transform: scale(1); }
-}
- 
-.modal-title {
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: var(--gold);
-  margin-bottom: 10px;
-  text-shadow: 0 0 20px rgba(212,175,55,0.4);
-}
- 
-.modal-body {
-  color: var(--muted);
-  line-height: 1.7;
-  font-size: 0.95rem;
-  margin-bottom: 24px;
-}
-.modal-body b { color: var(--text); }
- 
-.modal-prize-amount {
-  font-size: 2rem;
-  font-weight: 900;
-  color: var(--gold);
-  display: block;
-  margin: 12px 0;
-}
- 
-.btn-modal {
-  display: block;
-  width: 100%;
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  color: #1a0e00;
-  font-weight: 800;
-  font-size: 1rem;
-  letter-spacing: 0.5px;
-  border: none;
-  border-radius: 14px;
-  padding: 14px;
-  cursor: pointer;
-  text-decoration: none;
-  transition: opacity 0.2s, transform 0.2s;
-  margin-bottom: 10px;
-}
-.btn-modal:hover { opacity: 0.9; transform: translateY(-1px); }
- 
-.btn-modal-secondary {
-  display: block;
-  width: 100%;
-  background: transparent;
-  color: var(--muted);
-  font-size: 0.9rem;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 12px;
-  cursor: pointer;
-  text-decoration: none;
-  transition: background 0.2s;
-}
-.btn-modal-secondary:hover { background: var(--card2); }
- 
-/* CONFETTI */
-.confetti-container {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 150;
-  overflow: hidden;
-}
-.confetto {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  top: -10px;
-  animation: confettiFall linear forwards;
-  opacity: 0;
-}
-@keyframes confettiFall {
-  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-}
- 
-/* TICK ANIMATION */
-@keyframes wheelTick { 0%,100%{transform:translateX(-50%) rotate(0deg)} 50%{transform:translateX(-50%) rotate(-8deg)} }
- 
-/* ALREADY PLAYED */
-.played-msg {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 20px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.9rem;
-  margin-top: 16px;
-}
+body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column; align-items: center; }
+.particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.particle { position: absolute; border-radius: 50%; animation: floatUp linear infinite; opacity: 0; }
+@keyframes floatUp { 0%{transform:translateY(100vh) rotate(0deg);opacity:0} 10%{opacity:.7} 90%{opacity:.7} 100%{transform:translateY(-10vh) rotate(720deg);opacity:0} }
+header { position: relative; z-index: 1; width: 100%; text-align: center; padding: 24px 20px 20px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg,rgba(0,32,159,.12) 0%,transparent 100%); }
+.logo { width: 100px; filter: drop-shadow(0 0 12px rgba(212,175,55,.4)); }
+.flag-stripe { display: flex; justify-content: center; margin: 12px auto 8px; width: 120px; height: 6px; border-radius: 3px; overflow: hidden; }
+.flag-stripe .s1 { flex:1; background:var(--blue-ht); } .flag-stripe .s2 { flex:1; background:var(--red-ht); }
+h1 { color:var(--gold); font-size:1.3rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; text-shadow:0 0 20px rgba(212,175,55,.4); }
+.subtitle { color:var(--muted); font-size:.8rem; margin-top:4px; letter-spacing:1px; }
+main { position:relative; z-index:1; width:100%; max-width:440px; padding:24px 20px 40px; display:flex; flex-direction:column; align-items:center; }
+.user-badge { background:var(--card); border:1px solid var(--border); border-radius:30px; padding:8px 20px; font-size:13px; color:var(--muted); margin-bottom:24px; display:flex; align-items:center; gap:8px; }
+.user-badge .dot { width:8px; height:8px; background:#22c55e; border-radius:50%; box-shadow:0 0 6px #22c55e; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.user-badge strong { color:var(--gold); }
+.wheel-wrapper { position:relative; width:310px; height:310px; margin-bottom:10px; }
+.wheel-glow { position:absolute; inset:-20px; border-radius:50%; background:conic-gradient(var(--blue-ht) 0deg 180deg,var(--red-ht) 180deg 360deg); opacity:.12; filter:blur(10px); animation:rotateGlow 10s linear infinite; }
+@keyframes rotateGlow { to{transform:rotate(360deg)} }
+.wheel-ring { position:absolute; inset:-7px; border-radius:50%; border:3px solid var(--gold); box-shadow:0 0 25px rgba(212,175,55,.35),inset 0 0 15px rgba(212,175,55,.1); }
+.wheel-dots { position:absolute; inset:-11px; border-radius:50%; }
+.wheel-dot { position:absolute; width:7px; height:7px; background:var(--gold); border-radius:50%; box-shadow:0 0 5px var(--gold); transform-origin:166px 166px; }
+canvas#wheelCanvas { width:310px; height:310px; border-radius:50%; position:relative; z-index:2; }
+.pointer { position:absolute; top:-30px; left:50%; transform:translateX(-50%); z-index:10; filter:drop-shadow(0 4px 8px rgba(0,0,0,.7)); transition:transform .08s ease; }
+.pointer.tick { transform:translateX(-50%) rotate(-14deg); }
+.wheel-hub { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:10; width:46px; height:46px; background:radial-gradient(circle,#f5d76e 0%,var(--gold) 60%,#a07c1e 100%); border-radius:50%; border:3px solid rgba(255,255,255,.15); box-shadow:0 0 18px rgba(212,175,55,.6); display:flex; align-items:center; justify-content:center; font-size:20px; }
+.spin-badge { background:var(--card2); border:1px solid var(--border); border-radius:20px; padding:6px 16px; font-size:12px; color:var(--muted); margin-bottom:20px; }
+.spin-badge span { color:var(--gold); font-weight:700; }
+.btn-spin { position:relative; background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 50%,var(--gold) 100%); background-size:200% 100%; color:#1a0e00; border:none; padding:16px 48px; font-size:1.1rem; font-weight:800; border-radius:50px; cursor:pointer; letter-spacing:1.5px; text-transform:uppercase; box-shadow:0 6px 30px rgba(212,175,55,.4),0 2px 0 rgba(0,0,0,.3); overflow:hidden; animation:shimmer 3s infinite; }
+@keyframes shimmer { 0%{background-position:0% 0%} 50%{background-position:100% 0%} 100%{background-position:0% 0%} }
+.btn-spin::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent); transition:left .5s; }
+.btn-spin:hover::before { left:100%; }
+.btn-spin:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 10px 40px rgba(212,175,55,.5); }
+.btn-spin:active:not(:disabled) { transform:translateY(1px); }
+.btn-spin:disabled { opacity:.5; cursor:not-allowed; animation:none; }
+.prizes-row { display:flex; gap:8px; margin-top:24px; flex-wrap:wrap; justify-content:center; }
+.prize-chip { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:6px 14px; font-size:12px; display:flex; align-items:center; gap:5px; }
+.prize-chip.locked { opacity:.4; }
+.prize-dot { width:8px; height:8px; border-radius:50%; }
+.modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.88); z-index:200; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(8px); }
+.modal.open { display:flex; }
+.modal-box { background:var(--card); border:1px solid var(--border); border-radius:24px; padding:36px 28px 28px; max-width:380px; width:100%; text-align:center; animation:popIn .4s cubic-bezier(.34,1.56,.64,1); box-shadow:0 0 60px rgba(212,175,55,.2); }
+@keyframes popIn { from{transform:scale(.7);opacity:0} to{transform:scale(1);opacity:1} }
+.modal-icon { font-size:64px; margin-bottom:12px; display:block; animation:bounceIn .6s .2s both; }
+@keyframes bounceIn { 0%{transform:scale(0)} 60%{transform:scale(1.2)} 100%{transform:scale(1)} }
+.modal-title { font-size:1.6rem; font-weight:800; color:var(--gold); margin-bottom:10px; }
+.modal-body { color:var(--muted); line-height:1.7; font-size:.95rem; margin-bottom:24px; }
+.modal-body b { color:var(--text); }
+.modal-prize-amount { font-size:2rem; font-weight:900; color:var(--gold); display:block; margin:12px 0; }
+.btn-modal { display:block; width:100%; background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#1a0e00; font-weight:800; font-size:1rem; border:none; border-radius:14px; padding:14px; cursor:pointer; text-decoration:none; margin-bottom:10px; }
+.btn-modal-secondary { display:block; width:100%; background:transparent; color:var(--muted); font-size:.9rem; border:1px solid var(--border); border-radius:14px; padding:12px; cursor:pointer; text-decoration:none; }
+.btn-modal-secondary:hover { background:var(--card2); }
+.confetti-container { position:fixed; inset:0; pointer-events:none; z-index:150; overflow:hidden; }
+.confetto { position:absolute; top:-10px; animation:confettiFall linear forwards; opacity:0; }
+@keyframes confettiFall { 0%{transform:translateY(0) rotate(0deg);opacity:1} 100%{transform:translateY(110vh) rotate(720deg);opacity:0} }
+.played-msg { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; text-align:center; color:var(--muted); font-size:.9rem; margin-top:16px; }
 </style>
 </head>
 <body>
  
-<!-- Particles -->
 <div class="particles" id="particles"></div>
- 
-<!-- Confetti container -->
 <div class="confetti-container" id="confettiContainer"></div>
  
-<!-- Header -->
 <header>
   <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY" class="logo">
   <div class="flag-stripe"><div class="s1"></div><div class="s2"></div></div>
@@ -441,22 +81,16 @@ canvas#wheelCanvas {
   <p class="subtitle">18 MAI 2026 • CADEAU SPÉCIAL</p>
 </header>
  
-<!-- Main -->
 <main>
- 
-  <!-- User badge -->
   <div class="user-badge">
     <div class="dot"></div>
     Connecté : <strong id="userName">...</strong>
   </div>
  
-  <!-- Wheel -->
   <div class="wheel-wrapper">
     <div class="wheel-glow"></div>
     <div class="wheel-ring"></div>
     <div class="wheel-dots" id="wheelDots"></div>
- 
-    <!-- Pointer -->
     <div class="pointer" id="pointer">
       <svg width="36" height="44" viewBox="0 0 36 44">
         <polygon points="18,44 36,4 28,0 18,12 8,0 0,4" fill="#D4AF37"/>
@@ -464,28 +98,16 @@ canvas#wheelCanvas {
         <circle cx="18" cy="10" r="5" fill="#fff" opacity="0.3"/>
       </svg>
     </div>
- 
-    <canvas id="wheelCanvas" width="300" height="300"></canvas>
- 
-    <!-- Hub -->
+    <canvas id="wheelCanvas" width="310" height="310"></canvas>
     <div class="wheel-hub">🇭🇹</div>
   </div>
  
-  <!-- Spin badge -->
   <div class="spin-badge">Chaque utilisateur a <span>1 spin</span> gratuit</div>
- 
-  <!-- Spin button -->
-  <button id="spinBtn" class="btn-spin" onclick="startSpin()">
-    🎰 LANCER LA ROUE
-  </button>
- 
-  <!-- Already played message (hidden by default) -->
+  <button id="spinBtn" class="btn-spin" onclick="startSpin()">🎰 LANCER LA ROUE</button>
   <div id="playedMsg" class="played-msg" style="display:none;">
-    ✅ Vous avez déjà réclamé votre cadeau Fête du Drapeau.<br>
-    Merci d'utiliser MIJO PAY !
+    ✅ Vous avez déjà réclamé votre cadeau Fête du Drapeau.<br>Merci d'utiliser MIJO PAY !
   </div>
  
-  <!-- Prize chips -->
   <div class="prizes-row">
     <div class="prize-chip"><div class="prize-dot" style="background:#22c55e"></div>5$ US</div>
     <div class="prize-chip"><div class="prize-dot" style="background:#3b82f6"></div>10$ US</div>
@@ -494,10 +116,8 @@ canvas#wheelCanvas {
     <div class="prize-chip locked"><div class="prize-dot" style="background:#f97316"></div>Livre PDF</div>
     <div class="prize-chip locked"><div class="prize-dot" style="background:#ec4899"></div>Ciné +</div>
   </div>
- 
 </main>
  
-<!-- Modal -->
 <div class="modal" id="resultModal">
   <div class="modal-box">
     <span class="modal-icon" id="modalIcon">🎁</span>
@@ -511,344 +131,381 @@ canvas#wheelCanvas {
 const PROMO_WORKER_URL = "https://rough-heart-d656.mijocomplexe.workers.dev/";
 const PDF_LINK = "https://drive.google.com/file/d/1OSdjQgjPRDMV_yNUHje69qG_v2EqToFY/view?usp=sharing";
  
+// Segments dessinés dans l'ordre HORAIRE à partir de 12h (angle -90°)
+// Index 0 = segment du haut (12h), tourne dans le sens horaire
 const segments = [
-  { label: "5 $ US",   type: "usd",     amount: 5,   color: "#00209F", light: "#4a6fd4" },
-  { label: "10 $ US",  type: "usd",     amount: 10,  color: "#D21034", light: "#e84d6a" },
-  { label: "15 $ US",  type: "usd",     amount: 15,  color: "#00209F", light: "#4a6fd4" },
-  { label: "50 HTG",   type: "promo",   amount: 50,  color: "#1a1f38", light: "#2d3561" },
-  { label: "100 HTG",  type: "blocked", amount: 100, color: "#111827", light: "#1f2937" },
-  { label: "250 HTG",  type: "blocked", amount: 250, color: "#111827", light: "#1f2937" },
-  { label: "Livre PDF",type: "promo",   amount: 0,   color: "#1a1f38", light: "#2d3561" },
-  { label: "Ciné +",   type: "promo",   amount: 0,   color: "#1a1f38", light: "#2d3561" }
+  { label:"5 $ US",    type:"usd",     amount:5,   baseColor:"#00209F", glowColor:"#4a8fff" },
+  { label:"10 $ US",   type:"usd",     amount:10,  baseColor:"#D21034", glowColor:"#ff5577" },
+  { label:"15 $ US",   type:"usd",     amount:15,  baseColor:"#00209F", glowColor:"#4a8fff" },
+  { label:"50 HTG",    type:"promo",   amount:50,  baseColor:"#1a1f38", glowColor:"#D4AF37" },
+  { label:"100 HTG",   type:"blocked", amount:100, baseColor:"#0d0f1e", glowColor:"#555" },
+  { label:"250 HTG",   type:"blocked", amount:250, baseColor:"#0d0f1e", glowColor:"#555" },
+  { label:"Livre PDF", type:"promo",   amount:0,   baseColor:"#1a1f38", glowColor:"#f97316" },
+  { label:"Ciné +",    type:"promo",   amount:0,   baseColor:"#1a1f38", glowColor:"#ec4899" }
 ];
  
-const canvas = document.getElementById('wheelCanvas');
-const ctx = canvas.getContext('2d');
-let currentRotation = 0;
-let lastResultIndex = null;
-let userData = null;
-let isSpinning = false;
+const N = segments.length;
+const DEG = 360 / N;          // 45° per segment
+const RAD = (2*Math.PI) / N;
+const CX = 155, CY = 155, R = 148;
  
-// ── INIT ──────────────────────────────────────
+const canvas = document.getElementById('wheelCanvas');
+const ctx    = canvas.getContext('2d');
+ 
+let totalRotation = 0;   // cumulative CSS rotation of canvas
+let isSpinning    = false;
+let winnerIdx     = null;
+let userData      = null;
+let pulseInterval = null;
+ 
+// ── INIT ──────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   const stored = localStorage.getItem('user');
   if (!stored) { window.location.href = 'index.html'; return; }
   userData = JSON.parse(stored);
- 
   document.getElementById('userName').textContent =
     userData.Nom || userData.NumeroCarte || 'Utilisateur';
  
-  if (userData.Promo_Drapeau_Joue === true || userData.Promo_Drapeau_Joue === "OUI") {
+  const joue = userData.Promo_Drapeau_Joue;
+  if (joue === true || joue === "OUI") {
     document.getElementById('spinBtn').disabled = true;
     document.getElementById('spinBtn').textContent = '✅ DÉJÀ JOUÉ';
     document.getElementById('playedMsg').style.display = 'block';
   }
  
-  drawWheel();
-  createParticles();
-  createWheelDots();
+  drawWheel(null);
+  spawnParticles();
+  spawnDots();
 });
  
-// ── PARTICLES ─────────────────────────────────
-function createParticles() {
-  const container = document.getElementById('particles');
-  const colors = ['#D4AF37','#00209F','#D21034','#F5D76E','#ffffff'];
-  for (let i = 0; i < 30; i++) {
+// ── PARTICLES ─────────────────────────────────────────────
+function spawnParticles() {
+  const wrap = document.getElementById('particles');
+  const cols = ['#D4AF37','#00209F','#D21034','#F5D76E','#fff'];
+  for (let i = 0; i < 28; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
-    p.style.cssText = `
-      left: ${Math.random()*100}%;
-      background: ${colors[Math.floor(Math.random()*colors.length)]};
-      animation-duration: ${6 + Math.random()*8}s;
-      animation-delay: ${Math.random()*8}s;
-      width: ${2+Math.random()*4}px;
-      height: ${2+Math.random()*4}px;
-    `;
-    container.appendChild(p);
+    const sz = 2 + Math.random()*4;
+    p.style.cssText = `left:${Math.random()*100}%;background:${cols[i%cols.length]};
+      width:${sz}px;height:${sz}px;
+      animation-duration:${7+Math.random()*7}s;
+      animation-delay:${Math.random()*8}s;`;
+    wrap.appendChild(p);
   }
 }
  
-// ── WHEEL DOTS ────────────────────────────────
-function createWheelDots() {
-  const container = document.getElementById('wheelDots');
+function spawnDots() {
+  const wrap = document.getElementById('wheelDots');
   for (let i = 0; i < 16; i++) {
     const d = document.createElement('div');
     d.className = 'wheel-dot';
-    d.style.transform = `rotate(${i * 22.5}deg) translate(0, -162px)`;
-    container.appendChild(d);
+    d.style.transform = `rotate(${i*22.5}deg) translate(0,-166px)`;
+    wrap.appendChild(d);
   }
 }
  
-// ── DRAW WHEEL ────────────────────────────────
-function drawWheel() {
-  const cx = 150, cy = 150, r = 145;
-  const arc = (2 * Math.PI) / segments.length;
+// ── DRAW WHEEL ────────────────────────────────────────────
+// winIdx = segment index to highlight, null = none
+function drawWheel(winIdx) {
+  ctx.clearRect(0, 0, 310, 310);
  
-  for (let i = 0; i < segments.length; i++) {
-    const startAngle = i * arc - Math.PI / 2;
-    const endAngle = startAngle + arc;
+  for (let i = 0; i < N; i++) {
+    const a0 = i * RAD - Math.PI/2;       // start angle (12h = top)
+    const a1 = a0 + RAD;                  // end angle
     const seg = segments[i];
+    const win = (winIdx === i);
  
+    // ── Fill ──
     ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, r, startAngle, endAngle);
+    ctx.moveTo(CX, CY);
+    ctx.arc(CX, CY, R, a0, a1);
     ctx.closePath();
-    ctx.fillStyle = seg.color;
+ 
+    if (win) {
+      const g = ctx.createRadialGradient(CX, CY, 8, CX, CY, R);
+      g.addColorStop(0, lighten(seg.baseColor, 70));
+      g.addColorStop(1, lighten(seg.baseColor, 30));
+      ctx.fillStyle = g;
+    } else {
+      ctx.fillStyle = seg.baseColor;
+    }
     ctx.fill();
  
-    ctx.strokeStyle = 'rgba(212,175,55,0.4)';
-    ctx.lineWidth = 1.5;
+    // ── Dividers ──
+    ctx.strokeStyle = win ? 'rgba(255,255,255,0.6)' : 'rgba(212,175,55,0.35)';
+    ctx.lineWidth   = win ? 2.5 : 1.2;
     ctx.stroke();
  
-    const midAngle = startAngle + arc / 2;
-    const textR = r * 0.65;
-    const tx = cx + Math.cos(midAngle) * textR;
-    const ty = cy + Math.sin(midAngle) * textR;
+    // ── Winner rim glow ──
+    if (win) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(CX, CY, R-5, a0+0.05, a1-0.05);
+      ctx.strokeStyle = seg.glowColor;
+      ctx.lineWidth   = 10;
+      ctx.globalAlpha = 0.6;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+ 
+      // Sparkle rays
+      for (let s = 0; s < 5; s++) {
+        const ang = a0 + (s+0.5)*(RAD/5);
+        ctx.beginPath();
+        ctx.moveTo(CX + Math.cos(ang)*R*0.42, CY + Math.sin(ang)*R*0.42);
+        ctx.lineTo(CX + Math.cos(ang)*R*0.88, CY + Math.sin(ang)*R*0.88);
+        ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+ 
+    // ── Label ──
+    const mid = a0 + RAD/2;
+    const tx  = CX + Math.cos(mid) * R * 0.64;
+    const ty  = CY + Math.sin(mid) * R * 0.64;
  
     ctx.save();
     ctx.translate(tx, ty);
-    ctx.rotate(midAngle + Math.PI / 2);
+    ctx.rotate(mid + Math.PI/2);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
  
     if (seg.type === 'usd') {
-      ctx.font = 'bold 15px Arial';
-      ctx.fillStyle = '#ffffff';
-      ctx.shadowColor = 'rgba(0,0,0,0.5)';
-      ctx.shadowBlur = 4;
+      ctx.font      = win ? 'bold 16px Arial' : 'bold 14px Arial';
+      ctx.fillStyle = win ? '#ffffff' : '#ddeeff';
+      if (win) { ctx.shadowColor = '#fff'; ctx.shadowBlur = 8; }
     } else if (seg.type === 'promo') {
-      ctx.font = 'bold 13px Arial';
-      ctx.fillStyle = '#D4AF37';
-      ctx.shadowColor = 'rgba(0,0,0,0.5)';
-      ctx.shadowBlur = 4;
+      ctx.font      = win ? 'bold 14px Arial' : 'bold 12px Arial';
+      ctx.fillStyle = win ? '#FFE066' : '#D4AF37';
+      if (win) { ctx.shadowColor = '#D4AF37'; ctx.shadowBlur = 10; }
     } else {
-      ctx.font = '12px Arial';
-      ctx.fillStyle = 'rgba(255,255,255,0.25)';
+      ctx.font      = '11px Arial';
+      ctx.fillStyle = 'rgba(255,255,255,0.2)';
     }
- 
     ctx.fillText(seg.label, 0, 0);
+    ctx.shadowBlur = 0;
     ctx.restore();
   }
  
-  // Outer ring decoration
+  // Outer ring
   ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, 2 * Math.PI);
-  ctx.strokeStyle = 'rgba(212,175,55,0.6)';
-  ctx.lineWidth = 3;
+  ctx.arc(CX, CY, R, 0, 2*Math.PI);
+  ctx.strokeStyle = 'rgba(212,175,55,0.55)';
+  ctx.lineWidth   = 3;
   ctx.stroke();
  
-  // Inner circle
+  // Hub background circle
   ctx.beginPath();
-  ctx.arc(cx, cy, 24, 0, 2 * Math.PI);
+  ctx.arc(CX, CY, 25, 0, 2*Math.PI);
   ctx.fillStyle = '#0a0c14';
   ctx.fill();
-  ctx.strokeStyle = 'rgba(212,175,55,0.5)';
+  ctx.strokeStyle = 'rgba(212,175,55,0.6)';
   ctx.lineWidth = 2;
   ctx.stroke();
 }
  
-// ── SPIN ──────────────────────────────────────
+function lighten(hex, amt) {
+  const n = parseInt(hex.replace('#',''), 16);
+  return `rgb(${Math.min(255,(n>>16)+amt)},${Math.min(255,((n>>8)&0xff)+amt)},${Math.min(255,(n&0xff)+amt)})`;
+}
+ 
+// ── SPIN ──────────────────────────────────────────────────
+/*
+  GEOMETRY:
+  - Canvas is drawn with segment 0 centred at 12 o'clock (top).
+  - Pointer is fixed at 12 o'clock.
+  - We rotate the canvas element CW by `totalRotation` degrees via CSS.
+  - After CSS rotation of R°, the canvas "sees" its own coordinate system
+    rotated, so the point that was at angle θ in canvas coords now appears
+    at angle (θ + R) visually.
+  - To bring segment i to 12 o'clock visually we need:
+      (centre of seg i in canvas coords) + cssRotation ≡ 0  (mod 360)
+    Centre of seg i = i * DEG + DEG/2  (degrees from 12 o'clock, CW)
+    → cssRotation = -(i * DEG + DEG/2)  mod 360
+                  = (360 - (i*DEG + DEG/2)%360) % 360
+*/
 async function startSpin() {
   if (isSpinning) return;
-  if (userData.Promo_Drapeau_Joue === true || userData.Promo_Drapeau_Joue === "OUI") return;
+  const joue = userData.Promo_Drapeau_Joue;
+  if (joue === true || joue === "OUI") return;
  
   isSpinning = true;
-  const btn = document.getElementById('spinBtn');
-  btn.disabled = true;
-  btn.textContent = '🌀 EN COURS...';
+  document.getElementById('spinBtn').disabled = true;
+  document.getElementById('spinBtn').textContent = '🌀 EN COURS...';
  
-  const isUsActive = userData.Compte_US_Actif === "OUI" || userData.Compte_US_Actif === true;
+  const isUS = userData.Compte_US_Actif === "OUI" || userData.Compte_US_Actif === true;
  
-  let choices = isUsActive
-    ? segments.filter((s, i) => s.type === "promo" && i !== lastResultIndex)
-    : segments.filter((s, i) => s.type === "usd" && i !== lastResultIndex);
+  // Pick winner
+  const pool   = isUS
+    ? segments.filter(s => s.type === 'promo')
+    : segments.filter(s => s.type === 'usd');
+  const winner = pool[Math.floor(Math.random() * pool.length)];
+  winnerIdx    = segments.indexOf(winner);
  
-  if (choices.length === 0) {
-    choices = isUsActive
-      ? segments.filter(s => s.type === "promo")
-      : segments.filter(s => s.type === "usd");
-  }
+  // Target CSS rotation so winner lands at pointer (top)
+  const segCentreDeg = winnerIdx * DEG + DEG/2;   // degrees from top in canvas coords
+  const targetMod    = (360 - segCentreDeg%360) % 360;   // CSS rotation needed (0-360)
  
-  const winner = choices[Math.floor(Math.random() * choices.length)];
-  const targetIndex = segments.indexOf(winner);
-  lastResultIndex = targetIndex;
+  // Delta from current position
+  const curMod = ((totalRotation % 360) + 360) % 360;
+  let delta    = targetMod - curMod;
+  if (delta < 5) delta += 360;                    // always spin at least one segment extra
  
-  const degPerSeg = 360 / segments.length;
-  const targetAngle = 247.5 - (targetIndex * degPerSeg);
-  const extra = 3960 + (targetAngle - (currentRotation % 360) + 360) % 360;
-  currentRotation += extra;
+  totalRotation += 10*360 + delta;                // 10 full spins + landing
  
-  canvas.style.transform = `rotate(${currentRotation}deg)`;
+  // Animate
+  canvas.style.transition = 'transform 5.5s cubic-bezier(0.12,0,0.08,1)';
+  canvas.style.transform  = `rotate(${totalRotation}deg)`;
  
-  // Pointer tick animation
-  animatePointerTick();
+  pointerTick(5500);
  
-  if (isUsActive) {
-    registerPlay(userData.userId || userData.NumeroCarte);
-  }
+  if (isUS) registerPlay(userData.userId || userData.NumeroCarte);
  
   setTimeout(() => {
-    isSpinning = false;
-    showResult(winner, isUsActive);
-  }, 5800);
+    // Redraw with highlight — canvas is now rotated so segment winnerIdx is at top
+    drawWheel(winnerIdx);
+    pulsate();
+    setTimeout(() => { isSpinning = false; showResult(winner, isUS); }, 900);
+  }, 5500);
 }
  
-function animatePointerTick() {
-  const pointer = document.getElementById('pointer');
-  let ticks = 0;
-  const maxTicks = 80;
-  let interval = 60;
+// ── PULSE ─────────────────────────────────────────────────
+function pulsate() {
+  clearInterval(pulseInterval);
+  let a = 0, dir = 1;
+  const seg = segments[winnerIdx];
+  const a0  = winnerIdx * RAD - Math.PI/2;
+  const a1  = a0 + RAD;
  
-  function tick() {
-    pointer.style.animation = 'wheelTick 0.1s ease';
-    setTimeout(() => { pointer.style.animation = ''; }, 100);
-    ticks++;
-    interval = Math.min(interval * 1.04, 300);
-    if (ticks < maxTicks) setTimeout(tick, interval);
+  pulseInterval = setInterval(() => {
+    drawWheel(winnerIdx);
+    a += dir * 0.06;
+    if (a >= 1) { a=1; dir=-1; } else if (a <= 0) { a=0; dir=1; }
+    ctx.save();
+    ctx.globalAlpha = a * 0.28;
+    ctx.beginPath(); ctx.moveTo(CX,CY);
+    ctx.arc(CX, CY, R, a0, a1); ctx.closePath();
+    ctx.fillStyle = seg.glowColor; ctx.fill();
+    ctx.restore();
+  }, 40);
+ 
+  setTimeout(() => { clearInterval(pulseInterval); drawWheel(winnerIdx); }, 4000);
+}
+ 
+// ── POINTER TICK ──────────────────────────────────────────
+function pointerTick(totalMs) {
+  const el = document.getElementById('pointer');
+  let elapsed = 0, gap = 75;
+  function t() {
+    if (elapsed >= totalMs) return;
+    el.classList.add('tick');
+    setTimeout(() => el.classList.remove('tick'), 60);
+    elapsed += gap;
+    gap = Math.min(gap * 1.035, 420);
+    setTimeout(t, gap);
   }
-  tick();
+  t();
 }
  
-// ── SHOW RESULT ───────────────────────────────
-function showResult(segment, isUsActive) {
-  const modal = document.getElementById('resultModal');
-  const icon = document.getElementById('modalIcon');
-  const title = document.getElementById('modalTitle');
-  const body = document.getElementById('modalBody');
+// ── SHOW RESULT ───────────────────────────────────────────
+function showResult(segment, isUS) {
+  const modal  = document.getElementById('resultModal');
+  const icon   = document.getElementById('modalIcon');
+  const title  = document.getElementById('modalTitle');
+  const body   = document.getElementById('modalBody');
   const footer = document.getElementById('modalFooter');
  
-  if (!isUsActive) {
-    icon.textContent = '🔒';
+  if (!isUS) {
+    icon.textContent  = '🔒';
     title.textContent = 'Compte US requis !';
-    body.innerHTML = `
-      Vous avez aligné <b>${segment.label}</b> !<br><br>
+    body.innerHTML = `Vous avez aligné <b>${segment.label}</b> !<br><br>
       Ce lot est réservé aux comptes <b>internationaux</b>.<br>
-      Activez votre compte USD pour débloquer vos gains et relancer la roue.
-    `;
+      Activez votre compte USD pour débloquer et relancer la roue.`;
     footer.innerHTML = `
       <button onclick="activateUS()" class="btn-modal">🌍 ACTIVER MON COMPTE USD (200G)</button>
-      <a href="home.html" class="btn-modal-secondary">Retour au portefeuille</a>
-    `;
+      <a href="home.html" class="btn-modal-secondary">Retour au portefeuille</a>`;
+  } else if (segment.label === 'Livre PDF') {
+    icon.textContent  = '📚';
+    title.textContent = 'Bravo !';
+    body.innerHTML    = `Vous gagnez :<br><b>"30 Idées de Business à Petit Budget"</b><br><br>Votre guide offert par MIJO PAY 🎁`;
+    footer.innerHTML  = `
+      <a href="${PDF_LINK}" target="_blank" class="btn-modal">📥 TÉLÉCHARGER</a>
+      <a href="home.html" class="btn-modal-secondary">Retour au portefeuille</a>`;
+  } else if (segment.label === 'Ciné +') {
+    icon.textContent  = '🎬';
+    title.textContent = 'Ciné + Gagné !';
+    body.innerHTML    = `Votre accès <b>MIJO CINÉ+</b> a été activé. Profitez ! 🎉`;
+    footer.innerHTML  = `<a href="home.html" class="btn-modal">🏠 RETOUR AU PORTEFEUILLE</a>`;
   } else {
-    if (segment.label === "Livre PDF") {
-      icon.textContent = '📚';
-      title.textContent = 'Bravo !';
-      body.innerHTML = `Vous gagnez :<br><b>"30 Idées de Business à Petit Budget"</b><br><br>Votre guide offert par MIJO PAY 🎁`;
-      footer.innerHTML = `
-        <a href="${PDF_LINK}" target="_blank" class="btn-modal">📥 TÉLÉCHARGER MAINTENANT</a>
-        <a href="home.html" class="btn-modal-secondary">Retour au portefeuille</a>
-      `;
-    } else if (segment.label === "Ciné +") {
-      icon.textContent = '🎬';
-      title.textContent = 'Ciné + Gagné !';
-      body.innerHTML = `Votre accès <b>MIJO CINÉ+</b> a été activé.<br>Profitez de vos films & séries ! 🎉`;
-      footer.innerHTML = `
-        <a href="home.html" class="btn-modal">🏠 RETOUR AU PORTEFEUILLE</a>
-      `;
-    } else {
-      icon.textContent = '💰';
-      title.textContent = 'Félicitations !';
-      body.innerHTML = `
-        Vous avez gagné :<br>
-        <span class="modal-prize-amount">${segment.label}</span>
-        Ce montant sera crédité sur votre balance MIJO PAY. 🎊
-      `;
-      footer.innerHTML = `
-        <a href="home.html" class="btn-modal">🏠 VOIR MON SOLDE</a>
-      `;
-      claimWin(segment.amount);
-      launchConfetti();
-    }
-    if (segment.label === "50 HTG") {
-      icon.textContent = '🎁';
-      claimWin(segment.amount);
-      launchConfetti();
-    }
+    icon.textContent  = '💰';
+    title.textContent = 'Félicitations !';
+    body.innerHTML    = `Vous avez gagné :<br>
+      <span class="modal-prize-amount">${segment.label}</span>
+      Montant crédité sur votre balance MIJO PAY. 🎊`;
+    footer.innerHTML  = `<a href="home.html" class="btn-modal">🏠 VOIR MON SOLDE</a>`;
+    claimWin(segment.amount);
+    launchConfetti();
   }
  
-  setTimeout(() => { modal.classList.add('open'); }, 300);
+  setTimeout(() => modal.classList.add('open'), 400);
 }
  
-// ── CONFETTI ──────────────────────────────────
+// ── CONFETTI ──────────────────────────────────────────────
 function launchConfetti() {
-  const container = document.getElementById('confettiContainer');
-  const colors = ['#D4AF37','#F5D76E','#00209F','#D21034','#ffffff','#22c55e'];
-  for (let i = 0; i < 80; i++) {
-    const c = document.createElement('div');
-    c.className = 'confetto';
-    const size = 6 + Math.random() * 10;
-    c.style.cssText = `
-      left: ${Math.random() * 100}%;
-      background: ${colors[Math.floor(Math.random() * colors.length)]};
-      width: ${size}px;
-      height: ${size}px;
-      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
-      animation-duration: ${1.5 + Math.random() * 2}s;
-      animation-delay: ${Math.random() * 0.5}s;
-    `;
-    container.appendChild(c);
-    setTimeout(() => c.remove(), 4000);
+  const wrap = document.getElementById('confettiContainer');
+  const cols = ['#D4AF37','#F5D76E','#00209F','#D21034','#fff','#22c55e'];
+  for (let i = 0; i < 90; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetto';
+    const sz = 6 + Math.random()*10;
+    el.style.cssText = `left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};
+      width:${sz}px;height:${sz}px;border-radius:${Math.random()>.5?'50%':'2px'};
+      animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*.4}s;`;
+    wrap.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
   }
 }
  
-// ── NETWORK ───────────────────────────────────
+// ── NETWORK ───────────────────────────────────────────────
 async function registerPlay(userId) {
   try {
-    await fetch(PROMO_WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, action: 'mark_played' })
-    });
+    await fetch(PROMO_WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({userId,action:'mark_played'})});
     userData.Promo_Drapeau_Joue = true;
     localStorage.setItem('user', JSON.stringify(userData));
-  } catch(e) { console.error(e); }
+  } catch(e){ console.error(e); }
 }
  
 async function claimWin(amount) {
-  if (!amount || amount <= 0) return;
+  if (!amount || amount<=0) return;
   try {
-    const res = await fetch(PROMO_WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: userData.userId || userData.NumeroCarte, action: 'claim_prize', amount })
-    });
+    const res  = await fetch(PROMO_WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({userId:userData.userId||userData.NumeroCarte,action:'claim_prize',amount})});
     const data = await res.json();
-    if (data.nouveauSolde !== undefined) {
-      userData.Solde = data.nouveauSolde;
-      localStorage.setItem('user', JSON.stringify(userData));
-    }
-  } catch(e) { console.error(e); }
+    if (data.nouveauSolde!==undefined){ userData.Solde=data.nouveauSolde; localStorage.setItem('user',JSON.stringify(userData)); }
+  } catch(e){ console.error(e); }
 }
  
 async function activateUS() {
-  const btn = document.querySelector('.btn-modal');
-  btn.textContent = '⏳ ACTIVATION...';
-  btn.disabled = true;
+  const btn = document.querySelector('#modalFooter .btn-modal');
+  btn.textContent='⏳ ACTIVATION...'; btn.disabled=true;
   try {
-    const res = await fetch(PROMO_WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: userData.userId || userData.NumeroCarte, action: 'activate_us' })
-    });
+    const res  = await fetch(PROMO_WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({userId:userData.userId||userData.NumeroCarte,action:'activate_us'})});
     const data = await res.json();
-    if (res.ok) {
-      userData.Compte_US_Actif = true;
-      if (data.nouveauSolde !== undefined) userData.Solde = data.nouveauSolde;
-      localStorage.setItem('user', JSON.stringify(userData));
+    if (res.ok){
+      userData.Compte_US_Actif=true;
+      if (data.nouveauSolde!==undefined) userData.Solde=data.nouveauSolde;
+      localStorage.setItem('user',JSON.stringify(userData));
       document.getElementById('resultModal').classList.remove('open');
-      setTimeout(() => window.location.reload(), 300);
+      setTimeout(()=>window.location.reload(),300);
     } else {
-      alert("Erreur : " + (data.message || "Fonds insuffisants."));
-      btn.textContent = '🌍 ACTIVER MON COMPTE USD (200G)';
-      btn.disabled = false;
+      alert('Erreur : '+(data.message||'Fonds insuffisants.'));
+      btn.textContent='🌍 ACTIVER MON COMPTE USD (200G)'; btn.disabled=false;
     }
-  } catch(e) {
-    alert("Connexion impossible. Vérifiez votre internet.");
-    btn.textContent = '🌍 ACTIVER MON COMPTE USD (200G)';
-    btn.disabled = false;
-  }
+  } catch(e){ alert('Connexion impossible.'); btn.textContent='🌍 ACTIVER MON COMPTE USD (200G)'; btn.disabled=false; }
 }
 </script>
 </body>
 </html>
-   
