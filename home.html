@@ -843,32 +843,45 @@
  
     <!-- ═══ SCRIPTS ═══════════════════════════════════ -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        <script>
+    document.addEventListener("DOMContentLoaded", function() {
         
-      
-        
-        let hasPlayed = false;
-
-        // On vérifie si userData existe et si la promo a déjà été jouée
-        if (typeof userData !== 'undefined') {
-           
-            if (userData.Promo_Meres_Joue === true || userData.Promo_Meres_Joue === "true") {
-                hasPlayed = true;
-            }
-        }
-
-        if (!hasPlayed) {
+        // On crée une vérification en boucle pour attendre qu'Airtable charge userData
+        let checkDataInterval = setInterval(function() {
             
-            setTimeout(() => {
-                document.getElementById('drapeauPromoPopup').style.display = 'flex';
-            }, 500);
-        }
+            // On vérifie si userData existe ET s'il a bien fini de charger (il n'est pas vide)
+            if (typeof userData !== 'undefined' && userData !== null && Object.keys(userData).length > 0) {
+                
+                // Les données sont arrivées ! On arrête la boucle d'attente.
+                clearInterval(checkDataInterval);
+                
+                let hasPlayed = false;
+
+                // On vérifie ta condition (j'ajoute même le 1 au cas où Airtable l'enverrait sous forme de chiffre)
+                if (userData.Promo_Meres_Joue === true || userData.Promo_Meres_Joue === "true" || userData.Promo_Meres_Joue === 1) {
+                    hasPlayed = true;
+                }
+
+                // Si l'utilisateur n'a pas joué, on affiche le Pop-up
+                if (!hasPlayed) {
+                    setTimeout(() => {
+                        document.getElementById('drapeauPromoPopup').style.display = 'flex';
+                    }, 500);
+                }
+            }
+        }, 200); // Vérifie toutes les 200 millisecondes
+        
+        // Sécurité : on arrête de chercher après 5 secondes pour éviter que la boucle tourne à l'infini si le visiteur n'est pas connecté
+        setTimeout(() => {
+            clearInterval(checkDataInterval);
+        }, 5000);
     });
 
     // Fonction pour fermer le Pop-up manuellement
     function closeMijoPopup() {
         document.getElementById('drapeauPromoPopup').style.display = 'none';
     }
+</script>
  
     /* ── DONORS ──────────────────────────────────────── */
     async function chargerSponsors() {
