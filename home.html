@@ -645,7 +645,19 @@
             background: linear-gradient(145deg, #D97706 0%, #B45309 60%, #92400E 100%);
             box-shadow: 0 8px 30px rgba(180,83,9,.35);
         }
- 
+          @keyframes fadeInBlur {
+        from { opacity: 0; backdrop-filter: blur(0px); }
+        to { opacity: 1; backdrop-filter: blur(8px); }
+    }
+    @keyframes popInModal {
+        0% { transform: scale(0.8) translateY(20px); opacity: 0; }
+        100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    @keyframes pulseButton {
+        0% { box-shadow: 0 0 0 0 rgba(204, 0, 0, 0.7); }
+        70% { box-shadow: 0 0 0 15px rgba(204, 0, 0, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(204, 0, 0, 0); }
+    }
     </style>
 </head>
 <body>
@@ -657,6 +669,28 @@
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
  
     <!-- ═══ HEADER ═══════════════════════════════════ -->
+    <div id="drapeauPromoPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 999999; justify-content: center; align-items: center; padding: 20px; font-family: 'Segoe UI', sans-serif; animation: fadeInBlur 0.4s ease-out forwards;">
+    
+    <div style="background: linear-gradient(145deg, #111111, #1a1a1a); border: 2px solid #D4AF37; border-radius: 20px; padding: 40px 30px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(214, 175, 55, 0.2); animation: popInModal 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; position: relative;">
+        
+        <span onclick="closeMijoPopup()" style="position: absolute; top: 15px; right: 20px; color: #888; font-size: 1.8rem; cursor: pointer; transition: 0.3s;" onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#888'">&times;</span>
+
+        <div style="font-size: 3.5rem; margin-bottom: 10px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));">🇭🇹</div>
+        
+        <h2 style="color: #ffffff; font-size: 1.8rem; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px;">
+            Spécial <span style="color: #D4AF37;">18 Mai</span>
+        </h2>
+        
+        <p style="color: #cccccc; font-size: 1.05rem; line-height: 1.5; margin-bottom: 25px;">
+            L'événement exclusif de la Fête du Drapeau a commencé ! Ne ratez pas votre chance de réclamer des prix et des primes exceptionnelles.
+        </p>
+
+        <button onclick="window.location.href='cadeau.html'" style="background: linear-gradient(45deg, #002060, #cc0000); color: #ffffff; border: none; padding: 15px 30px; font-size: 1.1rem; font-weight: bold; border-radius: 12px; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 1px; animation: pulseButton 2s infinite; transition: transform 0.2s;" onmousedown="this.style.transform='scale(0.96)'" onmouseup="this.style.transform='scale(1)'">
+            TENTER MA CHANCE
+        </button>
+
+    </div>
+</div>
     <div class="header-card" id="top-section">
  
         <div class="header-top">
@@ -809,6 +843,32 @@
  
     <!-- ═══ SCRIPTS ═══════════════════════════════════ -->
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+        
+      
+        
+        let hasPlayed = false;
+
+        // On vérifie si userData existe et si la promo a déjà été jouée
+        if (typeof userData !== 'undefined') {
+           
+            if (userData.Promo_Meres_Joue === true || userData.Promo_Meres_Joue === "true") {
+                hasPlayed = true;
+            }
+        }
+
+        if (!hasPlayed) {
+            
+            setTimeout(() => {
+                document.getElementById('drapeauPromoPopup').style.display = 'flex';
+            }, 500);
+        }
+    });
+
+    // Fonction pour fermer le Pop-up manuellement
+    function closeMijoPopup() {
+        document.getElementById('drapeauPromoPopup').style.display = 'none';
+    }
  
     /* ── DONORS ──────────────────────────────────────── */
     async function chargerSponsors() {
