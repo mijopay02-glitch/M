@@ -472,7 +472,7 @@ async function registerPlay(userId) {
   try {
     await fetch(PROMO_WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({userId,action:'mark_played'})});
-    userData.Promo_Drapeau_Joue = true;
+    userData.Promo_Meres_Joue = true;
     localStorage.setItem('user', JSON.stringify(userData));
   } catch(e){ console.error(e); }
 }
@@ -483,7 +483,7 @@ async function claimWin(amount) {
     const res  = await fetch(PROMO_WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({userId:userData.userId||userData.NumeroCarte,action:'claim_prize',amount})});
     const data = await res.json();
-    if (data.nouveauSolde!==undefined){ userData.Solde=data.nouveauSolde; localStorage.setItem('user',JSON.stringify(userData)); }
+    if (data.nouveauSolde!==undefined){ userData.Promo_Meres_Joue = true; userData.Solde=data.nouveauSolde; localStorage.setItem('user',JSON.stringify(userData)); }
   } catch(e){ console.error(e); }
 }
  
