@@ -844,34 +844,39 @@
     <!-- ═══ SCRIPTS ═══════════════════════════════════ -->
     <script>
         
-    document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function() {
         
-        // On crée une vérification en boucle pour attendre qu'Airtable charge userData
+        // On crée une vérification en boucle pour attendre que la session soit chargée dans le localStorage
         let checkDataInterval = setInterval(function() {
+            const storedUser = localStorage.getItem('user');
             
-            // On vérifie si userData existe ET s'il a bien fini de charger (il n'est pas vide)
-            if (typeof userData !== 'undefined' && userData !== null && Object.keys(userData).length > 0) {
-                
-                // Les données sont arrivées ! On arrête la boucle d'attente.
+            if (storedUser) {
+                // Les données sont trouvées ! On arrête la boucle d'attente.
                 clearInterval(checkDataInterval);
                 
-                let hasPlayed = false;
+                try {
+                    const user = JSON.parse(storedUser);
+                    let hasPlayed = false;
 
-                // On vérifie ta condition (j'ajoute même le 1 au cas où Airtable l'enverrait sous forme de chiffre)
-                if (userData.Promo_Meres_Joue === true || userData.Promo_Meres_Joue === "true" || userData.Promo_Meres_Joue === 1) {
-                    hasPlayed = true;
-                }
+                    // 🎯 ICI : On utilise les vraies variables de ton application "user" au lieu de "userData"
+                    if (user.Promo_Meres_Joue === true || user.Promo_Meres_Joue === "true" || user.Promo_Meres_Joue === 1) {
+                        hasPlayed = true;
+                    }
 
-                // Si l'utilisateur n'a pas joué, on affiche le Pop-up
-                if (!hasPlayed) {
-                    setTimeout(() => {
-                        document.getElementById('drapeauPromoPopup').style.display = 'flex';
-                    }, 500);
+                    // Si la case décochée sur Airtable est bien synchronisée locale à "false", on affiche !
+                    if (!hasPlayed) {
+                        setTimeout(() => {
+                            const popup = document.getElementById('drapeauPromoPopup');
+                            if (popup) popup.style.display = 'flex';
+                        }, 500);
+                    }
+                } catch (e) {
+                    console.error("Erreur lors de la lecture de la session pour le pop-up");
                 }
             }
         }, 200); // Vérifie toutes les 200 millisecondes
         
-        // Sécurité : on arrête de chercher après 5 secondes pour éviter que la boucle tourne à l'infini si le visiteur n'est pas connecté
+        // Sécurité : arrêt après 5 secondes
         setTimeout(() => {
             clearInterval(checkDataInterval);
         }, 5000);
@@ -881,7 +886,6 @@
     function closeMijoPopup() {
         document.getElementById('drapeauPromoPopup').style.display = 'none';
     }
-
  
     /* ── DONORS ──────────────────────────────────────── */
     async function chargerSponsors() {
