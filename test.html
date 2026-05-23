@@ -819,9 +819,7 @@
                 updateUI();
 
                 // 3. Rediriger ou recharger APRÈS un court délai (100ms) pour laisser le temps au stockage
-                setTimeout(() => {
-                    window.location.href = "home.html"; // Mieux que reload() pour forcer la lecture du nouveau solde
-                }, 100);
+                
             } else {
                 const errorMsg = results.find(r => !r.success)?.message || "Erreur serveur";
                 alert("❌ " + errorMsg);
