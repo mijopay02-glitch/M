@@ -1,338 +1,837 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-K43FXR4W');</script>
-    <meta property="og:image" content="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized.jpg">
-    <meta property="og:image:type" content="image/jpeg">
-    <meta property="og:image:width" content="500">
-    <meta property="og:image:height" content="500">
-    <meta name="image" content="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized.jpg">
-    <link rel="image_src" href="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized.jpg">
-    <meta name="author" content="MIJO COMPLEXE">
-    <meta name="publisher" content="MIJO COMPLEXE">
-    <meta name="keywords" content="MIJO PAY, application financière Haïti, dépôt, retrait, carte numérique, argent en ligne, programme d’affiliation, fintech haïtienne">
-    <meta name="robots" content="index, follow">
-    <link rel="me" href="https://www.facebook.com/mijocomplexe">
-    <link rel="me" href="https://www.instagram.com/mijocomplexe">
-    <link rel="me" href="https://www.youtube.com/@mijocomplexe">
-
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:image" content="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized.jpg">
-
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIJO PAY - Connexion & Inscription Automatique</title>
-    <meta name="description" content="Connectez-vous à MIJO PAY, votre plateforme sécurisée pour toutes vos transactions et gestions de compte en ligne.">
-    <link rel="icon" type="image/png" href="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized-sma-e-Nct-Kg2v-RGmg-UPTRI4-Zs-UA-3q5o-P2yu-Q4yup5-Nnqd9-D-g.jpg" sizes="32x32">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MIJO STORE | Marketplace Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        /* --- CORRECTION MAJEURE : Empêche le débordement horizontal --- */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+        /* ------------------------------------------------------------- */
+
+        :root {
+            --primary: #2196F3;
+            --primary-dark: #1976D2;
+            --accent: #FFC107;
+            --success: #4CAF50;
+            --text: #1a1a1a;
+            --text-light: #757575;
+            --bg: #f8f9fa;
+            --white: #ffffff;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --radius: 12px;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            padding-bottom: 80px;
+        }
+
+        /* Header & Search */
+        header {
+            background: var(--white);
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            width: 100%;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .search-bar {
+            margin-top: 15px;
+            display: flex;
+            background: #f1f3f4;
+            border-radius: 8px;
+            padding: 8px 15px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            padding: 5px;
+            outline: none;
+        }
+
+        /* Trust Badges */
+        .trust-badges {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 10px;
+            background: var(--white);
+            margin-bottom: 20px;
+            font-size: 0.8rem;
+            text-align: center;
+            flex-wrap: wrap; /* Permet de s'adapter si l'écran est trop petit */
+            gap: 10px;
+        }
+
+        .badge-item span { display: block; font-weight: 600; color: var(--primary); }
+
+        /* Grid System */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+            width: 100%;
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0 20px;
+        }
+
+        .section-title h2 { font-size: 1.3rem; margin: 0; }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+        }
+
+        @media (min-width: 600px) {
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 20px;
+            }
+        }
+
+        /* Product Card */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            width: 90%;
-            max-width: 380px;
-            text-align: center;
-        }
-        img {
-            max-width: 120px;
-            margin-bottom: 20px;
-        }
-        input {
-            box-sizing: border-box;
             width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border: 1px solid #ccc;
-            border-radius: 8px;
         }
-        button {
+
+        .card-title {
+            font-size: 0.85rem;
+            line-height: 1.2;
+            height: 38px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 15px 35px rgba(33, 150, 243, 0.2);
+        }
+
+        .card-img-wrapper {
+            position: relative;
+            height: 180px;
             width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            background: #2196F3;
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .promo-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--accent);
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            z-index: 10;
+        }
+
+        .card-content {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-category {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-light);
+            letter-spacing: 0.5px;
+        }
+
+        .card-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 5px;
+        }
+
+        .seller-info {
+            font-size: 0.7rem;
+            margin-top: auto;
+            color: var(--text-light);
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+        }
+
+        .buy-btn {
+            width: 100%;
+            background: var(--primary);
             color: white;
             border: none;
+            padding: 10px;
             border-radius: 8px;
+            margin-top: 12px;
             cursor: pointer;
-            transition: background-color 0.3s, opacity 0.3s;
-            font-weight: bold;
+            font-weight: 600;
+            transition: 0.3s;
         }
-        button:hover {
-            background: #0b7dda;
-        }
-        button:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-        .link-btn {
-            background: #4CAF50;
-        }
-        .link-btn:hover {
-            background: #45a049;
-        }
-        #message, #inscriptionMessage {
-            margin-top: 15px;
-            font-weight: bold;
-        }
-        .credentials-box {
-            background: #e8f5e9;
-            border: 1px solid #4CAF50;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            display: none;
-            color: #2e7d32;
-        }
-        
-        /* AJOUT : Style pour le bouton WhatsApp */
-        .whatsapp-btn {
-            display: inline-flex;
+
+        .buy-btn:hover { background: var(--primary-dark); }
+
+        /* Floating Cart Icon */
+        #cart-trigger {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            margin-top: 25px;
-            background-color: #25D366;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.95rem;
-            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
-            transition: transform 0.3s, box-shadow 0.3s;
-            width: 100%;
-            box-sizing: border-box;
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+            cursor: pointer;
+            z-index: 999;
         }
-        .whatsapp-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(37, 211, 102, 0.4);
-            color: white;
-        }
-       
-@keyframes mijoPopIn {
-    0% { transform: scale(0.85); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-}
-@keyframes mijoFloat {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-8px); }
-    100% { transform: translateY(0px); }
-}
 
+        .cart-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: red;
+            font-size: 0.7rem;
+            padding: 3px 7px;
+            border-radius: 50%;
+        }
+
+        /* Modal Cart */
+        .cart-modal {
+            position: fixed;
+            top: 0;
+            right: -100vw; /* Utilisation de vw pour plus de sécurité */
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            background: var(--white);
+            z-index: 2000;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+            transition: right 0.4s ease;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-modal.active { right: 0; }
+
+        /* Footer Menu */
+        .footer-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--white);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom, 10px); /* Support pour iPhone */
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: var(--text-light);
+            text-align: center;
+            font-size: 0.7rem;
+        }
+
+        .nav-item.active { color: var(--primary); }
+        .nav-item i { display: block; font-size: 1.2rem; margin-bottom: 2px; }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            z-index: 3000;
+            display: none;
+            animation: fadeInOut 2s;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; top: 0; }
+            20% { opacity: 1; top: 20px; }
+            80% { opacity: 1; top: 20px; }
+            100% { opacity: 0; top: 0; }
+        }
+
+        /* Mode focus pour un seul produit */
+        .single-product-view .product-grid {
+            grid-template-columns: 1fr;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .single-product-view .card {
+            transform: none !important;
+            box-shadow: none;
+            border: none;
+        }
+
+        .back-to-store {
+            display: none;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .single-product-view .back-to-store {
+            display: block;
+        }
+
+        .single-product-view .section-title, 
+        .single-product-view .trust-badges {
+            display: none;
+        }
     </style>
+    
+    <meta property="og:title" content="MIJO STORE | La Boutique Officielle des Solutions Digitale">
+    <meta property="og:description" content="Découvrez MIJO STORE : votre marketplace de confiance pour télécharger des applications , des ebooks exclusifs et des outils IA innovants dès maintenant">
+    <meta property="og:image" content="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png">
+    <meta property="og:url" content="https://mijopay.com">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#2196F3">
 </head>
 <body>
-  
-    
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K43FXR4W" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <div class="container" id="loginContainer">
-        <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY Logo">
-        <h2>Connexion</h2>
+
+<div id="toast" class="toast"></div>
+
+<header>
+    <div class="container">
+        <div class="back-to-store">
+            <button onclick="window.location.href='store.html'" style="background:none; border:1px solid var(--primary); color:var(--primary); padding:10px 20px; border-radius:20px; cursor:pointer;">
+                ⬅️ Voir toute la boutique MIJO
+            </button>
+        </div>
         
-        <div id="successCredentials" class="credentials-box">
-            <h4>Inscription Réussie ! 🎉</h4>
-            <p>Carte : <strong id="displayCard"></strong></p>
-            <p>CIN : <strong id="displayCin"></strong></p>
-            <p style="font-size: 12px;">Vos identifiants ont été pré-remplis ci-dessous.</p>
+        <div class="header-top">
+            <a href="#" class="logo">
+                <img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png" height="30" style="margin-right:10px" alt="Logo">
+                MIJO STORE
+            </a>
+            <div style="font-size: 1.2rem;">👤</div>
+        </div>
+        
+        <div class="search-bar">
+            <span>🔍</span>
+            <input type="text" id="searchInput" placeholder="Rechercher une application, un ebook...">
+        </div>
+    </div> 
+</header>
+
+<div class="trust-badges">
+    <div class="badge-item"><span>🔒 Sécurisé</span>MIJO Pay</div>
+    <div class="badge-item"><span>⚡ Instantané</span>Livraison</div>
+    <div class="badge-item"><span>🤝 Support</span>H24</div>
+</div>
+
+<div class="container">
+    
+    <div class="section-title">
+        <h2>🔥 Boutique  MIJO</h2>
+        <a href="#" style="color:var(--primary); text-decoration:none; font-size:0.8rem;">Voir tout</a>
+    </div>
+
+    <div class="product-grid">
+        
+        <div class="card">
+            <div class="card-img-wrapper">
+                <img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png" alt="Mijo Apk">
+            </div>
+            <div class="card-content">
+                <div class="card-category">Application Pro</div>
+                <div class="card-title">Mijo Apk Premium Pro</div>
+                <div class="card-price">500 G</div>
+                <div class="seller-info">Vendu par: MIJO Official</div>
+                <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
+                    <button class="share-btn" onclick="shareProduct('Mijo apk pro', 'Mij-1')" 
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
+                <button class="buy-btn" onclick="addToCart('Mijo apk pro', 500, 'Mij-1', 'Lien_ici', 'recfcTPvpeweReklm')">Acheter</button>
+            </div>
+        </div>
+<div class="card">
+            <div class="card-img-wrapper">
+                <span class="promo-badge">Chaud🔥</span>
+                <img src="data:image/png;base64,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" alt="Laiser baiser">
+            </div>
+            <div class="card-content">
+                <div class="card-category">E-Book</div>
+                <div class="card-title">L'art de baiser</div>
+                <div class="card-price">400 G</div>
+                <div class="seller-info">Vendu par: Vincent Body</div>
+                <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
+                    <button class="share-btn" onclick="shareProduct('Laiser baiser', 'LB-18')" 
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
+                <button class="buy-btn" onclick="addToCart('Laiser baiser', 400, 'LB-18', 'LINK_IN_AIRTABLE', 'recfcTPvpeweReklm')">Acheter</button>
+            </div>
         </div>
 
-        <input type="text" id="cardNumber" placeholder="Numéro de carte MIJO">
-        <input type="password" id="cin" placeholder="Mot de passe (CIN)">
-        <button id="loginButton" onclick="login()">Se connecter</button>
-        <button class="link-btn" onclick="showInscription()">Créer un compte</button>
-        <div id="message"></div>
+        <div class="card">
+            <div class="card-img-wrapper">
+                <span class="promo-badge">POPULAIRE</span>
+                <img src="https://i.postimg.cc/qMtVXW87/a-clean-modern-book-cover-design-blendin-k-Efi-VZax-Rr2-Z6-q2n-HBHf-Q-TU-he66-MQ4-GNnncvt-Br-W8g.jpg" alt="Chimie industrielle">
+            </div>
+            <div class="card-content">
+                <div class="card-category">E-Book</div>
+                <div class="card-title">Chimie industrielle (+50 recettes)</div>
+                <div class="card-price">250 G</div>
+                <div class="seller-info">Vendu par: Académie MIJO</div>
+                <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
+                    <button class="share-btn" onclick="shareProduct('Chimie industrielle', 'Chi-3')" 
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
+                <button class="buy-btn" onclick="addToCart('Chimie industrielle', 250, 'Chi-3', 'LINK_IN_AIRTABLE', 'recfcTPvpeweReklm')">Acheter</button>
+            </div>
+        </div>
 
-        <a href="https://wa.me/50944990203?text=Bonjour,%20j'ai%20besoin%20d'aide%20avec%20mon%20compte%20MIJO%20PAY." class="whatsapp-btn" target="_blank">
-            <i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> Assistance WhatsApp
-        </a>
+        <div class="card">
+            <div class="card-img-wrapper">
+                <img src="https://i.postimg.cc/vHfmQ1cM/a-clean-modern-book-cover-illustration-f-o79-YAln7-Tnao8fxz6p9-Pd-Q-g0-P-NGZVTcu08-SDb-QHh-Yy-Q.jpg" alt="Gestion de Stock">
+            </div>
+            <div class="card-content">
+                <div class="card-category">E-Book</div>
+                <div class="card-title">Gestion de Stock Moderne</div>
+                <div class="card-price">200 G</div>
+                <div class="seller-info">Vendu par: Académie MIJO</div>
+                <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
+                    <button class="share-btn" onclick="shareProduct('Gestion de Stock', 'Ges-4')" 
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
+                <button class="buy-btn" onclick="addToCart('Gestion de Stock', 200, 'Ges-4', 'LINK_IN_AIRTABLE', 'recfcTPvpeweReklm')">Acheter</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-img-wrapper">
+                <img src="https://i.postimg.cc/T3yXc1WF/calculator-385506-640.jpg" alt="Comptabilité 1">
+            </div>
+            <div class="card-content">
+                <div class="card-category">E-Book</div>
+                <div class="card-title">Comptabilité 1 : Introduction</div>
+                <div class="card-price">150 G</div>
+                <div class="seller-info">Vendu par: Académie MIJO</div>
+                 <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
+                    <button class="share-btn" onclick="shareProduct('Comptabilité 1', 'Com-5')" 
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
+                <button class="buy-btn" onclick="addToCart('Comptabilité 1', 150, 'Com-5', 'LINK_IN_AIRTABLE', 'recfcTPvpeweReklm')">Acheter</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-img-wrapper">
+                <img src="https://i.postimg.cc/9X7c7VkJ/later-on-5012455-1280.jpg" alt="Vers soi">
+            </div>
+            <div class="card-content">
+                <div class="card-category">Développement Personnel</div>
+                <div class="card-title">Vers soi et au-delà</div>
+                <div class="card-price">150 G</div>
+                <div class="seller-info">Vendu par: Académie MIJO</div>
+                 <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
+                <button class="share-btn" onclick="shareProduct('Vers soi et au-delà', 'Ver-6')" 
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
+                <button class="buy-btn" onclick="addToCart('Vers soi et au-delà', 150, 'Ver-6', 'LINK_IN_AIRTABLE', 'recfcTPvpeweReklm')">Acheter</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-img-wrapper">
+                <span class="promo-badge">TOP VENTE</span>
+                <img src="https://i.postimg.cc/NMCNMn3W/coins-4421639-640.jpg" alt="Business Ideas">
+            </div>
+            <div class="card-content">
+                <div class="card-category">Business</div>
+                <div class="card-title">30 Idées de Business à Petit Budget</div>
+                <div class="card-price">200 G</div>
+                <div class="seller-info">Vendu par: Académie MIJO</div>
+                 <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
+                <button class="share-btn" onclick="shareProduct('30 Idées de Business', '30I-7')" 
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
+                <button class="buy-btn" onclick="addToCart('30 Idées de Business', 200, '30I-7', 'LINK_IN_AIRTABLE', 'recfcTPvpeweReklm')">Acheter</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-img-wrapper">
+                <img src="https://i.postimg.cc/DZHbZVgJ/ai-generated-8540913-1280.jpg" alt="Guide IA">
+            </div>
+            <div class="card-content">
+                <div class="card-category">Intelligence Artificielle</div>
+                <div class="card-title">Guide des Outils IA Gratuits</div>
+                <div class="card-price">200 G</div>
+                <div class="seller-info">Vendu par: Académie MIJO</div>
+                <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
+                <button class="share-btn" onclick="shareProduct('Guide IA', 'Gui-8')" 
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
+                <button class="buy-btn" onclick="addToCart('Guide IA', 200, 'Gui-8', 'LINK_IN_AIRTABLE', 'recfcTPvpeweReklm')">Acheter</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-img-wrapper">
+                <img src="https://i.postimg.cc/PfzjTgMP/model-1335984-1920.jpg" alt="Charisme">
+            </div>
+            <div class="card-content">
+                <div class="card-category">Soft Skills</div>
+                <div class="card-title">Le Charisme Intérieur</div>
+                <div class="card-price">150 G</div>
+                <div class="seller-info">Vendu par: Académie MIJO</div>
+                <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
+                <button class="share-btn" onclick="shareProduct('Le Charisme Intérieur', 'LeC-9')" 
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
+                <button class="buy-btn" onclick="addToCart('Le Charisme Intérieur', 150, 'LeC-9', 'LINK_IN_AIRTABLE', 'recfcTPvpeweReklm')">Acheter</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-img-wrapper">
+                <img src="https://i.postimg.cc/MGMhfNJ2/digital-marketing-5816304-640.jpg" alt="Marketing">
+            </div>
+            <div class="card-content">
+                <div class="card-category">Marketing</div>
+                <div class="card-title">Les piliers du Marketing Digital</div>
+                <div class="card-price">250 G</div>
+                <div class="seller-info">Vendu par: Académie MIJO</div>
+                <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
+                <button class="share-btn" onclick="shareProduct('Marketing digital', 'Mar-10')" 
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
+                <button class="buy-btn" onclick="addToCart('Marketing digital', 250, 'Mar-10', 'LINK_IN_AIRTABLE', 'recfcTPvpeweReklm')">Acheter</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-img-wrapper">
+                <img src="https://i.postimg.cc/d1597ZZR/image-(2).png" alt="Etapes dans dans la vie des erudits">
+            </div>
+            <div class="card-content">
+                <div class="card-category">ebook</div>
+                <div class="card-title">Etapes dans la vie des erudits</div>
+                <div class="card-price">1250 G</div>
+                <div class="seller-info">Vendu par: Emmanuel Tessier</div>
+                 <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
+                <button class="share-btn" onclick="shareProduct('Etapes dans dans la vie des erudits', 'EV-18')" 
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
+                <button class="buy-btn" onclick="addToCart('Etapes dans dans la vie des erudits', 1250, 'EV-18', 'Lien_ici', 'recU6pHDrmLQJhenM')">Acheter</button>
+            </div>
+        </div>
+             <div class="card">
+            <div class="card-img-wrapper">
+                <img src="https://i.postimg.cc/rmk5q7cr/Screenshot-2026-04-03-18-10-45.png" alt="Soufrance invisible">
+            </div>
+            <div class="card-content">
+                <div class="card-category">ebook</div>
+                <div class="card-title">Soufrance invisible</div>
+                <div class="card-price">1000 G</div>
+                <div class="seller-info">Vendu par: Emmanuel Tessier</div>
+                 <div class="share-container" style="margin-top: 10px; display: flex; gap: 10px;">
+                <button class="share-btn" onclick="shareProduct('Soufrance invisible', 'SF-20')" 
+                        style="background: #e3f2fd; color: #2196F3; border: none; padding: 8px; border-radius: 6px; flex: 1; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                        🔗 Partager & Gagner
+                    </button>
+                </div>
+                <button class="buy-btn" onclick="addToCart('Soufrance invisible', 1000, 'SF-20', 'Lien_ici', 'recU6pHDrmLQJhenM')">Acheter</button>
+            </div>
+        </div>
+    </div> </div> <div id="cart-trigger" onclick="toggleCart()">
+    <span>🛒</span>
+    <span class="cart-badge" id="cart-count-badge">0</span>
+</div>
+
+<div class="cart-modal" id="cart-modal">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px">
+        <h3>Mon Panier</h3>
+        <button onclick="toggleCart()" style="border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
     </div>
-
-    <div class="container" id="inscriptionForm" style="display:none;">
-        <h2>Créer un compte</h2>
-        <input type="text" id="nomcomplet" placeholder="Nom complet">
-        <input type="text" id="pays" placeholder="Pays">
-        <input type="email" id="adresseemail" placeholder="Adresse email">
-        <input type="tel" id="telephone" placeholder="Numéro WhatsApp">
-        <button id="inscriptionButton" onclick="inscrire()">Valider et Générer ma carte</button>
-        <button onclick="hideInscription()" style="background: #f44336;">Annuler</button>
-        <div id="inscriptionMessage"></div>
+    <div id="cart-items-list" style="flex-grow:1; overflow-y:auto; padding:10px 0;">
+        </div>
+    <div style="border-top:1px solid #eee; padding-top:15px">
+        <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:15px">
+            <span>Total</span>
+            <span id="cart-total-modal">0 G</span>
+        </div>
+        <button id="checkout-btn-modal" class="buy-btn" style="padding:15px">CONFIRMER L'ACHAT</button>
     </div>
+</div>
 
-    <script>
-        window.addEventListener("DOMContentLoaded", () => {
-            const savedUser = JSON.parse(localStorage.getItem("user"));
-            if (savedUser && savedUser.NumeroCarte) {
-                document.getElementById("cardNumber").value = savedUser.NumeroCarte;
-            }
+<nav class="footer-nav">
+    <a href="home.html" class="nav-item"><i>🏠</i>Accueil</a>
+    <a href="store.html" class="nav-item active"><i>🛒</i>Store</a>
+    <a href="mes-produits.html" class="nav-item"><i>📦</i>Mes Biens</a>
+</nav>
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const cardNumberFromQr = urlParams.get('cardNumber'); 
-            if (cardNumberFromQr) {
-                document.getElementById("cardNumber").value = cardNumberFromQr.trim();
-                document.getElementById("message").style.color = "blue";
-                document.getElementById("message").innerText = "Carte scannée. Entrez votre CIN.";
-                document.getElementById("cin").focus();
-            }
-        });
 
-        const workerUrl = "https://test.mijocomplexe.workers.dev/";
-        const loginBtn = document.getElementById('loginButton');
-        const inscriptionBtn = document.getElementById('inscriptionButton');
-        const messageDiv = document.getElementById('message');
-        const inscriptionMessageDiv = document.getElementById('inscriptionMessage');
+<script>
+    let cart = [];
+    const storeScriptUrl = "https://test.mijocomplexe.workers.dev/";
 
-        // --- FONCTION DE CONNEXION MODIFIÉE ---
-        async function login() {
-    const cardNumber = document.getElementById("cardNumber").value.trim();
-    const cin = document.getElementById("cin").value.trim();
+    // 1. Initialisation au chargement
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const prodCode = urlParams.get('prod');
 
-    if (!cardNumber || !cin) {
-        messageDiv.style.color = "red";
-        messageDiv.innerText = "Veuillez remplir tous les champs.";
-        return;
-    }
+        if (prodCode) {
+            const container = document.querySelector('.container');
+            const cards = document.querySelectorAll('.card');
+            let productFound = false;
 
-    loginBtn.disabled = true;
-    loginBtn.innerText = "Connexion en cours...";
-    messageDiv.innerText = "";
-
-    try {
-        // Utilise bien l'URL où tu as déployé le nouveau code Worker
-        const response = await fetch("https://test.mijocomplexe.workers.dev/", {
-            method: "POST",
-            mode: "cors", // Force le mode CORS
-            headers: { 
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify({ 
-                action: "login_user_by_card", 
-                cardNumber: cardNumber, 
-                password: cin 
-            })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            // Vérification du blocage (Nombre_Echecs doit exister dans Airtable)
-            const echecs = data.user && data.user.Nombre_Echecs ? parseInt(data.user.Nombre_Echecs) : 0;
-            
-            if (echecs >= 5) {
-                messageDiv.style.color = "#e74c3c";
-                messageDiv.innerHTML = `<i class="fa-solid fa-lock"></i> Accès refusé. Compte suspendu.`;
-                return;
-            }
-
-            localStorage.setItem("user", JSON.stringify(data.user));
-            messageDiv.style.color = "green";
-            messageDiv.innerText = "Connexion réussie ! Redirection...";
-            setTimeout(() => { window.location.href = "home.html"; }, 1000);
-        } else {
-            messageDiv.style.color = "red";
-            // Si le Worker renvoie une erreur détaillée (ex: Quota), on l'affiche
-            messageDiv.innerText = data.details ? `Erreur: ${data.error}` : (data.error || "Identifiants incorrects.");
-        }
-    } catch (err) {
-        console.error("Erreur Fetch:", err);
-        messageDiv.style.color = "red";
-        messageDiv.innerText = "Le serveur ne répond pas. Vérifiez votre connexion.";
-    } finally {
-        loginBtn.disabled = false;
-        loginBtn.innerText = "Se connecter";
-    }
-}
-        async function inscrire() {
-            const nom = document.getElementById("nomcomplet").value.trim();
-            const pays = document.getElementById("pays").value.trim();
-            const email = document.getElementById("adresseemail").value.trim();
-            const telephone = document.getElementById("telephone").value.trim();
-
-            if (!nom || !pays || !email || !telephone) {
-                inscriptionMessageDiv.style.color = "red";
-                inscriptionMessageDiv.innerText = "Veuillez remplir tous les champs.";
-                return;
-            }
-
-            inscriptionBtn.disabled = true;
-            inscriptionBtn.innerText = "Création de votre carte en cours...";
-            inscriptionMessageDiv.innerText = "";
-
-            try {
-                const response = await fetch(workerUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        action: "auto_register",
-                        nom: nom,
-                        pays: pays,
-                        email: email,
-                        telephone: telephone
-                    })
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.status === 'success') {
-                    const newUserCredentials = { NumeroCarte: data.card, CIN: data.cin };
-                    localStorage.setItem("user", JSON.stringify(newUserCredentials));
-
-                    document.getElementById("cardNumber").value = data.card;
-                    document.getElementById("cin").value = data.cin;
-
-                    document.getElementById("displayCard").innerText = data.card;
-                    document.getElementById("displayCin").innerText = data.cin;
-                    document.getElementById("successCredentials").style.display = "block";
-
-                    document.getElementById("nomcomplet").value = "";
-                    document.getElementById("pays").value = "";
-                    document.getElementById("adresseemail").value = "";
-                    document.getElementById("telephone").value = "";
-                    
-                    hideInscription();
+            cards.forEach(card => {
+                const btn = card.querySelector('.buy-btn');
+                // Correction : On vérifie si le code est présent dans l'appel de fonction
+                if (btn && btn.getAttribute('onclick').includes(`'${prodCode}'`)) {
+                    card.style.display = "block";
+                    productFound = true;
                 } else {
-                    throw new Error(data.message || "Erreur lors de la création.");
+                    card.style.display = "none";
+                }
+            });
+
+            if (productFound) {
+                container.classList.add('single-product-view');
+                document.title = "Produit MIJO | " + prodCode;
+            }
+        }
+    };
+
+    // 2. Logique de RECHERCHE (Améliorée)
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const text = e.target.value.toLowerCase();
+        const cards = document.querySelectorAll('.card');
+        const container = document.querySelector('.container');
+
+        // Si on commence à chercher, on annule la vue "Produit Unique"
+        if (text.length > 0) {
+            container.classList.remove('single-product-view');
+        }
+
+        cards.forEach(card => {
+            const title = card.querySelector('.card-title').innerText.toLowerCase();
+            const category = card.querySelector('.card-category').innerText.toLowerCase();
+            
+            if (title.includes(text) || category.includes(text)) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    });
+
+    // 3. Fonctions du Panier et Utilitaires
+    function toggleCart() {
+        document.getElementById('cart-modal').classList.toggle('active');
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        if(t) {
+            t.innerText = msg;
+            t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 2000);
+        } else {
+            alert(msg);
+        }
+    }
+
+    function addToCart(name, price, code, link, sellerId) {
+        if(cart.find(item => item.code === code)) {
+            showToast("Déjà dans le panier !");
+            return;
+        }
+        cart.push({name, price, code, link, sellerId});
+        updateUI();
+        showToast("Ajouté au panier 🛍️");
+    }
+
+    function updateUI() {
+        const list = document.getElementById('cart-items-list');
+        const badge = document.getElementById('cart-count-badge');
+        const totalDisplay = document.getElementById('cart-total-modal');
+        
+        list.innerHTML = '';
+        let total = 0;
+
+        cart.forEach((item, index) => {
+            total += item.price;
+            list.innerHTML += `
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; background:#f9f9f9; padding:10px; border-radius:8px">
+                    <div>
+                        <div style="font-weight:600; font-size:0.9rem">${item.name}</div>
+                        <div style="color:var(--primary); font-size:0.8rem">${item.price} G</div>
+                    </div>
+                    <button onclick="removeItem(${index})" style="border:none; color:red; background:none;">🗑️</button>
+                </div>
+            `;
+        });
+
+        badge.innerText = cart.length;
+        totalDisplay.innerText = total + " G";
+    }
+
+    function removeItem(index) {
+        cart.splice(index, 1);
+        updateUI();
+    }
+
+    function shareProduct(name, code) {
+        const shareUrl = window.location.origin + window.location.pathname + "?prod=" + code;
+        if (navigator.share) {
+            navigator.share({ title: name, text: `Découvre ${name} sur MIJO STORE !`, url: shareUrl });
+        } else {
+            navigator.clipboard.writeText(shareUrl);
+            showToast("Lien de partage copié !");
+        }
+    }
+
+    // 4. Checkout
+    document.getElementById('checkout-btn-modal').addEventListener('click', async () => {
+        const userString = localStorage.getItem('user');
+        if (!userString) { alert("Connectez-vous"); return; }
+        const user = JSON.parse(userString);
+        
+        if (cart.length === 0) return;
+        alert("🛒 Validation de votre commande...");
+
+        let promises = cart.map(item => {
+            return fetch(storeScriptUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: user.userId,      
+                    productId: item.code,    
+                    sellerId: item.sellerId, 
+                    amount: item.price,      
+                    productName: item.name   
+                })
+            }).then(res => res.json());
+        });
+
+        try {
+            const results = await Promise.all(promises);
+            
+            if (results.every(r => r.success)) {
+                // 1. Récupérer le solde depuis le DERNIER résultat du Worker
+                const lastResult = results[results.length - 1];
+                
+                if (lastResult.newBalance !== undefined) {
+                    const user = JSON.parse(localStorage.getItem('user'));
+                    user.Solde = lastResult.newBalance; // On met à jour l'objet
+                    localStorage.setItem('user', JSON.stringify(user)); // On écrase l'ancien
+                    
+                    console.log("Nouveau solde enregistré :", user.Solde);
                 }
 
-            } catch (err) {
-                console.error("Erreur Inscription:", err);
-                inscriptionMessageDiv.style.color = "red";
-                inscriptionMessageDiv.innerText = "Une erreur est survenue : " + err.message;
-            } finally {
-                inscriptionBtn.disabled = false;
-                inscriptionBtn.innerText = "Valider et Générer ma carte";
+                alert("✅ Achat réussi !");
+                
+                // 2. Vider le panier AVANT de recharger
+                cart = [];
+                updateUI();
+
+                // 3. Rediriger ou recharger APRÈS un court délai (100ms) pour laisser le temps au stockage
+                setTimeout(() => {
+                    window.location.href = "home.html"; // Mieux que reload() pour forcer la lecture du nouveau solde
+                }, 100);
+            } else {
+                const errorMsg = results.find(r => !r.success)?.message || "Erreur serveur";
+                alert("❌ " + errorMsg);
             }
+        } catch (e) {
+            console.error("Erreur lors de l'achat:", e);
+            alert("Erreur réseau ou technique.");
         }
+    }); // <-- C'est cette ligne et celles juste au-dessus qui manquaient !
+</script>
 
-        function showInscription() {
-            document.getElementById("loginContainer").style.display = "none";
-            document.getElementById("inscriptionForm").style.display = "block";
-            document.getElementById("successCredentials").style.display = "none";
-        }
-
-        function hideInscription() {
-            document.getElementById("loginContainer").style.display = "block";
-            document.getElementById("inscriptionForm").style.display = "none";
-        }  
-    </script>
 </body>
 </html>
