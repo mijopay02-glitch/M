@@ -295,7 +295,7 @@
         /* ── FLOATING NAV BUTTONS ── */
         .float-nav {
             position: fixed;
-            bottom: 28px;
+            bottom: 120px; /* monté pour éviter le bouton IA */
             right: 20px;
             display: flex;
             flex-direction: column;
@@ -315,22 +315,30 @@
             cursor: pointer;
             text-decoration: none;
             overflow: hidden;
-            /* Collapsed: only icon visible */
+            position: relative;
             width: 52px;
             height: 52px;
-            transition: width .4s cubic-bezier(.34,1.56,.64,1),
+            transition: width .45s cubic-bezier(.34,1.56,.64,1),
                         box-shadow .3s ease,
                         transform .2s ease;
             white-space: nowrap;
         }
  
-        .float-btn:hover {
+        /* Expanded state via JS class */
+        .float-btn.expanded {
             width: 160px;
             box-shadow: 0 10px 32px rgba(26,111,232,.28);
-            transform: translateY(-2px);
         }
  
-        .float-btn:active { transform: scale(.95) translateY(0); }
+        .float-btn.store.expanded {
+            box-shadow: 0 10px 32px rgba(26,111,232,.28);
+        }
+ 
+        .float-btn.tx.expanded {
+            box-shadow: 0 10px 32px rgba(245,158,11,.28);
+        }
+ 
+        .float-btn:active { transform: scale(.95); }
  
         .float-btn-icon {
             width: 52px;
@@ -351,11 +359,11 @@
             padding-right: 16px;
             opacity: 0;
             transform: translateX(-8px);
-            transition: opacity .25s ease .1s, transform .25s ease .1s;
+            transition: opacity .2s ease, transform .2s ease;
             pointer-events: none;
         }
  
-        .float-btn:hover .float-btn-label {
+        .float-btn.expanded .float-btn-label {
             opacity: 1;
             transform: translateX(0);
         }
@@ -564,7 +572,7 @@
     // Workers — chacun garde son rôle
     const loginUrl      = "https://mijopayv2.mijocomplexe.workers.dev/";
     const transferUrl   = "https://transfert.mijocomplexe.workers.dev/";
-    const activateUrl   = "https://test.mijocomplexe.workers.dev/";
+    const activateUrl   = "https://steep-cell-904c.mijocomplexe.workers.dev/";
  
     // ══════════════════════════════════════════════════
     // SUPABASE REALTIME
@@ -973,6 +981,90 @@
     document.getElementById('transferModal').addEventListener('click', function(e) {
         if (e.target === this) hideTransferModal();
     });
+ 
+    // ══════════════════════════════════════════════════
+    // AUTO EXPAND / COLLAPSE DES BOUTONS FLOTTANTS
+    // ══════════════════════════════════════════════════
+    (function() {
+        const btns = document.querySelectorAll('.float-btn');
+ 
+        // Durée de chaque état (ms)
+        const EXPAND_DURATION   = 2000;  // resté ouvert 2 secondes
+        const COLLAPSE_DURATION = 3000;  // resté fermé 3 secondes
+        const STAGGER           = 400;   // décalage entre les deux boutons
+ 
+        let autoTimer = null;
+        let isUserInteracting = false;
+ 
+        function expandBtn(btn, delay) {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    btn.classList.add('expanded');
+                    resolve();
+                }, delay);
+            });
+        }
+ 
+        function collapseBtn(btn, delay) {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    btn.classList.remove('expanded');
+                    resolve();
+                }, delay);
+            });
+        }
+ 
+        async function runCycle() {
+            if (isUserInteracting) return;
+ 
+            // 1. Dérouler bouton 1
+            await expandBtn(btns[0], 0);
+            // 2. Dérouler bouton 2 avec décalage
+            await expandBtn(btns[1], STAGGER);
+ 
+            // 3. Attendre pendant EXPAND_DURATION
+            await new Promise(r => setTimeout(r, EXPAND_DURATION));
+ 
+            if (isUserInteracting) return;
+ 
+            // 4. Enrouler bouton 1
+            await collapseBtn(btns[0], 0);
+            // 5. Enrouler bouton 2 avec décalage
+            await collapseBtn(btns[1], STAGGER);
+ 
+            // 6. Attendre pendant COLLAPSE_DURATION puis recommencer
+            autoTimer = setTimeout(runCycle, COLLAPSE_DURATION);
+        }
+ 
+        // Démarrer après que les boutons sont entrés (animation initiale)
+        setTimeout(runCycle, 1200);
+ 
+        // Pause si l'utilisateur interagit avec la page
+        btns.forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                isUserInteracting = true;
+                clearTimeout(autoTimer);
+                // Expand manuellement au hover
+                btn.classList.add('expanded');
+            });
+ 
+            btn.addEventListener('mouseleave', () => {
+                btn.classList.remove('expanded');
+                // Reprendre le cycle après 3 secondes d'inactivité
+                clearTimeout(autoTimer);
+                autoTimer = setTimeout(() => {
+                    isUserInteracting = false;
+                    runCycle();
+                }, 3000);
+            });
+ 
+            // Touch support (mobile)
+            btn.addEventListener('touchstart', (e) => {
+                // Sur mobile — laisser naviguer normalement
+                // Le click suit automatiquement
+            }, { passive: true });
+        });
+    })();
     </script>
 </body>
 </html>
