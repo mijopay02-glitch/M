@@ -272,6 +272,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
             try {
                 const response = await fetch(leaderboardUrl, {
+                      action: get_leaderboard
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
                 });
