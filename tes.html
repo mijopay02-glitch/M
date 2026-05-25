@@ -1,775 +1,462 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-K43FXR4W');</script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Faire un Don — MIJO PAY</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
- 
-:root{
-  --ink:   #0A0E1A;
-  --cream: #F7F3EE;
-  --gold:  #F5A623;
-  --gold2: #FF6B35;
-  --green: #00C896;
-  --blue:  #1A6FE8;
-  --card:  #FFFFFF;
-  --muted: #8892A4;
-  --r:     16px;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIJO Pay - Abonnement Premium</title>
+    <link rel="stylesheet" href="style.css">
+   <style>body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    text-align: center;
 }
- 
-html{scroll-behavior:smooth}
- 
-body{
-  font-family:'DM Sans',sans-serif;
-  background:var(--ink);
-  color:var(--cream);
-  min-height:100vh;
-  overflow-x:hidden;
+
+header {
+    background-color: #007bff;
+    color: white;
+    padding: 20px 0;
+    margin-bottom: 20px;
 }
- 
-/* ── CANVAS HERO PARTICLES ─────────────────── */
-#hero-canvas{
-  position:fixed;top:0;left:0;
-  width:100%;height:100%;
-  pointer-events:none;
-  z-index:0;
-  opacity:.35;
+
+.premium-section {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
 }
- 
-/* ── BACK BUTTON ───────────────────────────── */
-.back-btn{
-  position:fixed;top:18px;left:18px;
-  z-index:100;
-  display:flex;align-items:center;gap:7px;
-  padding:8px 16px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:30px;
-  color:rgba(255,255,255,.8);
-  text-decoration:none;
-  font-size:.8em;font-weight:600;
-  backdrop-filter:blur(10px);
-  transition:background .2s;
+
+.user-info-card, .activation-card, .auto-renew-card { /* Ajout de auto-renew-card */
+    background: white;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-.back-btn:active{background:rgba(255,255,255,.15)}
- 
-/* ── HERO ──────────────────────────────────── */
-.hero{
-  position:relative;
-  min-height:100vh;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  text-align:center;
-  padding:100px 24px 60px;
-  z-index:1;
+
+/* Styles pour le statut */
+#premiumStatusDisplay, #autoRenewStatusDisplay {
+    font-weight: bold;
 }
- 
-.hero-eyebrow{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:6px 16px;
-  background:rgba(245,166,35,.12);
-  border:1px solid rgba(245,166,35,.3);
-  border-radius:30px;
-  font-size:.75em;font-weight:600;
-  color:var(--gold);
-  letter-spacing:.8px;text-transform:uppercase;
-  margin-bottom:24px;
-  animation:fadeUp .7s ease both;
+.premium-active, .renew-active {
+    color: green;
 }
- 
-.hero-title{
-  font-family:'Syne',sans-serif;
-  font-size:clamp(2.4em,9vw,4.8em);
-  font-weight:800;
-  line-height:1.05;
-  letter-spacing:-2px;
-  margin-bottom:20px;
-  animation:fadeUp .7s .1s ease both;
+.premium-inactive, .renew-inactive {
+    color: red;
 }
- 
-.hero-title span{
-  background:linear-gradient(135deg,var(--gold),var(--gold2));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+
+
+/* Styles des boutons */
+button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
 }
- 
-.hero-sub{
-  font-size:1.05em;
-  color:rgba(247,243,238,.6);
-  max-width:480px;
-  line-height:1.7;
-  margin-bottom:40px;
-  animation:fadeUp .7s .2s ease both;
+
+button:hover {
+    background-color: #1e7e34;
 }
- 
- 
- 
-.cta-scroll{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:14px 32px;
-  background:linear-gradient(135deg,var(--gold),var(--gold2));
-  color:white;
-  font-weight:700;font-size:1em;
-  border-radius:50px;
-  text-decoration:none;
-  box-shadow:0 8px 32px rgba(245,166,35,.4);
-  animation:fadeUp .7s .4s ease both, pulse-glow 2.5s 1.5s ease-in-out infinite;
-  transition:transform .2s;
+
+.secondary-button {
+    background-color: #dc3545; /* Rouge pour désactiver */
 }
-.cta-scroll:active{transform:scale(.96)}
- 
-@keyframes pulse-glow{
-  0%,100%{box-shadow:0 8px 32px rgba(245,166,35,.4)}
-  50%{box-shadow:0 8px 48px rgba(245,166,35,.75)}
+
+.secondary-button:hover {
+    background-color: #c82333;
 }
- 
-.scroll-arrow{animation:bounce .9s ease-in-out infinite}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
- 
-/* ── SECTION WRAPPER ───────────────────────── */
-.section{
-  position:relative;z-index:1;
-  padding:60px 20px;
-  max-width:700px;
-  margin:0 auto;
+
+.note {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 15px;
 }
- 
-.section-title{
-  font-family:'Syne',sans-serif;
-  font-size:1.6em;font-weight:800;
-  letter-spacing:-1px;
-  margin-bottom:6px;
+
+/* Style de l'historique */
+#premiumHistory {
+    text-align: left;
+    background: #e9ecef;
+    padding: 20px;
+    border-radius: 8px;
 }
-.section-sub{font-size:.88em;color:var(--muted);margin-bottom:28px;}
- 
-/* ── CAUSES CARDS ──────────────────────────── */
-.causes-grid{
-  display:grid;gap:14px;
-  grid-template-columns:1fr;
+
+#transactionList {
+    list-style: none;
+    padding: 0;
 }
- 
-.cause-card{
-  background:rgba(255,255,255,.05);
-  border:1.5px solid rgba(255,255,255,.08);
-  border-radius:var(--r);
-  padding:20px;
-  display:flex;align-items:flex-start;gap:16px;
-  cursor:pointer;
-  transition:border-color .25s, background .25s, transform .2s;
-  position:relative;
-  overflow:hidden;
-}
-.cause-card::before{
-  content:'';
-  position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(245,166,35,.08),transparent);
-  opacity:0;transition:opacity .3s;
-}
-.cause-card:hover::before,.cause-card.selected::before{opacity:1}
-.cause-card.selected{
-  border-color:var(--gold);
-  background:rgba(245,166,35,.07);
-}
-.cause-card:active{transform:scale(.99)}
- 
-.cause-icon{
-  width:48px;height:48px;
-  border-radius:14px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.4em;
-  flex-shrink:0;
-}
-.cause-card:nth-child(1) .cause-icon{background:rgba(245,166,35,.15)}
-.cause-card:nth-child(2) .cause-icon{background:rgba(0,200,150,.15)}
-.cause-card:nth-child(3) .cause-icon{background:rgba(26,111,232,.15)}
-.cause-card:nth-child(4) .cause-icon{background:rgba(255,107,53,.15)}
- 
-.cause-body{flex:1}
-.cause-name{
-  font-family:'Syne',sans-serif;
-  font-size:1em;font-weight:700;
-  margin-bottom:4px;
-}
-.cause-desc{font-size:.8em;color:var(--muted);line-height:1.5;margin-bottom:12px}
- 
-.cause-check{
-  width:22px;height:22px;
-  border-radius:50%;
-  border:2px solid rgba(255,255,255,.2);
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;
-  transition:all .2s;
-  font-size:.7em;
-}
-.cause-card.selected .cause-check{
-  background:var(--gold);
-  border-color:var(--gold);
-  color:white;
-}
- 
-/* ── AMOUNT SECTION ────────────────────────── */
-.amount-section{
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:20px;
-  padding:28px 22px;
-}
- 
-.amount-label{
-  font-size:.75em;font-weight:600;
-  text-transform:uppercase;letter-spacing:.6px;
-  color:var(--muted);margin-bottom:14px;
-}
- 
-.quick-amounts{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:10px;margin-bottom:18px;
-}
- 
-.qa-btn{
-  padding:12px 8px;
-  background:rgba(255,255,255,.06);
-  border:1.5px solid rgba(255,255,255,.1);
-  border-radius:12px;
-  color:var(--cream);
-  font-family:inherit;font-size:.88em;font-weight:600;
-  cursor:pointer;transition:all .2s;
-}
-.qa-btn:hover{background:rgba(245,166,35,.1);border-color:var(--gold)}
-.qa-btn.active{
-  background:rgba(245,166,35,.15);
-  border-color:var(--gold);
-  color:var(--gold);
-}
- 
-.amount-input-wrap{
-  position:relative;
-  margin-bottom:10px;
-}
-.amount-currency{
-  position:absolute;left:16px;top:50%;transform:translateY(-50%);
-  font-family:'Syne',sans-serif;font-weight:700;font-size:1.1em;
-  color:var(--gold);pointer-events:none;
-}
-.amount-input{
-  width:100%;
-  padding:16px 16px 16px 48px;
-  background:rgba(255,255,255,.07);
-  border:1.5px solid rgba(255,255,255,.12);
-  border-radius:12px;
-  color:var(--cream);
-  font-family:'Syne',sans-serif;font-size:1.3em;font-weight:700;
-  outline:none;
-  transition:border-color .2s;
-}
-.amount-input:focus{border-color:var(--gold)}
-.amount-input::placeholder{color:rgba(247,243,238,.2)}
- 
-.anon-row{
-  display:flex;align-items:center;gap:10px;
-  margin-top:14px;
-  cursor:pointer;
-  padding:10px 0;
-}
-.anon-check{
-  width:20px;height:20px;
-  border:2px solid rgba(255,255,255,.2);
-  border-radius:6px;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .2s;font-size:.7em;flex-shrink:0;
-}
-.anon-check.on{background:var(--green);border-color:var(--green);color:white}
-.anon-text{font-size:.82em;color:var(--muted)}
- 
-/* ── DONATE BUTTON ─────────────────────────── */
-.btn-donate{
-  width:100%;
-  padding:18px;
-  background:linear-gradient(135deg,var(--gold),var(--gold2));
-  color:white;
-  border:none;
-  border-radius:14px;
-  font-family:'Syne',sans-serif;font-size:1.05em;font-weight:800;
-  cursor:pointer;
-  box-shadow:0 8px 28px rgba(245,166,35,.35);
-  transition:transform .15s, box-shadow .15s, opacity .2s;
-  letter-spacing:.3px;
-  position:relative;
-  overflow:hidden;
-  margin-top:22px;
-}
-.btn-donate::after{
-  content:'';
-  position:absolute;top:0;left:-100%;
-  width:60%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
-  transition:left .4s;
-}
-.btn-donate:hover::after{left:150%}
-.btn-donate:active{transform:scale(.97);opacity:.9}
-.btn-donate:disabled{opacity:.5;cursor:not-allowed}
- 
-/* ── SUCCESS SCREEN ────────────────────────── */
-.success-screen{
-  display:none;
-  position:fixed;inset:0;
-  background:var(--ink);
-  z-index:200;
-  flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:32px;
-}
-.success-screen.show{display:flex}
- 
-#confetti-canvas{
-  position:fixed;inset:0;pointer-events:none;z-index:199;
-}
- 
-.success-icon{
-  width:90px;height:90px;
-  background:linear-gradient(135deg,var(--gold),var(--gold2));
-  border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:2.5em;
-  margin-bottom:24px;
-  box-shadow:0 0 60px rgba(245,166,35,.5);
-  animation:popIn .6s cubic-bezier(.22,.68,0,1.5) both;
-}
-@keyframes popIn{
-  from{transform:scale(0);opacity:0}
-  to{transform:scale(1);opacity:1}
-}
- 
-.success-title{
-  font-family:'Syne',sans-serif;
-  font-size:2em;font-weight:800;
-  margin-bottom:10px;
-  animation:fadeUp .5s .3s both;
-}
-.success-msg{
-  font-size:.95em;color:var(--muted);
-  max-width:320px;line-height:1.6;
-  margin-bottom:32px;
-  animation:fadeUp .5s .4s both;
-}
-.success-back{
-  padding:14px 32px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:50px;
-  color:var(--cream);
-  text-decoration:none;font-weight:600;
-  animation:fadeUp .5s .5s both;
-}
- 
-/* ── TOAST ─────────────────────────────────── */
-.toast{
-  position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);
-  background:rgba(15,20,40,.95);
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:12px;
-  padding:14px 20px;
-  font-size:.85em;font-weight:500;
-  color:var(--cream);
-  z-index:300;
-  transition:transform .35s cubic-bezier(.22,.68,0,1.2);
-  backdrop-filter:blur(12px);
-  white-space:nowrap;
-}
-.toast.show{transform:translateX(-50%) translateY(0)}
-.toast.error{border-color:rgba(239,68,68,.4);color:#fca5a5}
-.toast.success{border-color:rgba(0,200,150,.4);color:#6ee7b7}
- 
-/* ── ANIMATIONS ────────────────────────────── */
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(22px)}
-  to{opacity:1;transform:translateY(0)}
-}
- 
-.reveal{
-  opacity:0;transform:translateY(28px);
-  transition:opacity .6s ease, transform .6s ease;
-}
-.reveal.visible{opacity:1;transform:translateY(0)}
- 
-/* ── DIVIDER ───────────────────────────────── */
-.divider{
-  height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);
-  margin:0 auto;max-width:700px;
-}
- 
-/* scrollbar */
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:var(--ink)}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
-</style>
+
+#transactionList li {
+    background: white;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    border-left: 5px solid #007bff;
+    display: flex;
+    justify-content: space-between;
+}</style> 
 </head>
 <body>
- 
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K43FXR4W"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
- 
-<!-- bg canvas -->
-<canvas id="hero-canvas"></canvas>
- 
-<!-- back -->
-<a href="home_pro.html" class="back-btn">← Retour</a>
- 
-<!-- ═══ HERO ════════════════════════════════════ -->
-<section class="hero">
-  <div class="hero-eyebrow">❤️ Programme Solidarité MIJO</div>
- 
-  <h1 class="hero-title">
-    Chaque don<br>
-    <span>change une vie</span>
-  </h1>
- 
-  <p class="hero-sub">
-    Votre générosité finance les rêves des jeunes entrepreneurs haïtiens.
-    Ensemble, construisons une économie plus forte.
-  </p>
-  <a href="#causes" class="cta-scroll">
-    Choisir une cause <span class="scroll-arrow">↓</span>
-  </a>
-</section>
- 
-<div class="divider"></div>
- 
-<!-- ═══ CAUSES ══════════════════════════════════ -->
-<section class="section reveal" id="causes">
-  <div class="section-title">Où va votre don ?</div>
-  <div class="section-sub">Choisissez la cause qui vous touche le plus</div>
- 
-  <div class="causes-grid" id="causes-grid">
- 
-    <div class="cause-card selected" data-cause="challenge" onclick="selectCause(this)">
-      <div class="cause-icon">🏆</div>
-      <div class="cause-body">
-        <div class="cause-name">MIJO Business Challenge</div>
-        <div class="cause-desc">Financez la compétition qui récompense les meilleures idées de business haïtiennes. Les gagnants reçoivent un prix en argent et un accompagnement.</div>
+
+    <header>
+        <h1>MIJO Premium 👑</h1>
+    </header>
+
+    <main class="premium-section">
+        <div class="user-info-card">
+            <h2>Statut de votre compte</h2>
+            <p>ID Utilisateur: <span id="userIdDisplay">N/A</span></p>
+            <p>Solde actuel: <span id="userBalanceDisplay">N/A</span> Gdes</p>
+            <p>Statut Premium: <span id="premiumStatusDisplay">Non Actif ❌</span></p>
         </div>
-      <div class="cause-check">✓</div>
-    </div>
- 
-    <div class="cause-card" data-cause="microloans" onclick="selectCause(this)">
-      <div class="cause-icon">🌱</div>
-      <div class="cause-body">
-        <div class="cause-name">Micro-prêts Entrepreneurs</div>
-        <div class="cause-desc">Fournissez du capital de démarrage aux jeunes entrepreneurs qui n'ont pas accès aux banques traditionnelles.</div>
+
+        <div class="activation-card">
+            <h2>Abonnement Mensuel</h2>
+            <p>Profitez de tous les avantages MIJO pour seulement **150 Gdes/mois**.</p>
+            <button id="activateButton" onclick="activatePremium()">Activer MIJO Premium</button>
+            <p class="note">Le premier mois sera débité immédiatement.</p>
         </div>
-      <div class="cause-check">✓</div>
-    </div>
- 
-    <div class="cause-card" data-cause="formation" onclick="selectCause(this)">
-      <div class="cause-icon">📚</div>
-      <div class="cause-body">
-        <div class="cause-name">Ateliers de Formation</div>
-        <div class="cause-desc">Organisez des formations en gestion d'entreprise, comptabilité et marketing digital pour équiper les jeunes des outils nécessaires.</div>
+
+        <div class="auto-renew-card" id="autoRenewSection" style="display:none;">
+            <h2>Gestion du Renouvellement Automatique</h2>
+            <p>Statut Auto-Renouvellement: <span id="autoRenewStatusDisplay" class="renew-active">Actif ✅</span></p>
+            
+            <button 
+                id="toggleRenewButton" 
+                onclick="toggleAutoRenew()"
+                class="secondary-button">Désactiver l'Auto-Renouvellement</button>
+                
+            <p class="note" id="renewNote">Votre abonnement sera reconduit le mois prochain.</p>
         </div>
-      <div class="cause-check">✓</div>
-    </div>
- 
-    <div class="cause-card" data-cause="general" onclick="selectCause(this)">
-      <div class="cause-icon">💙</div>
-      <div class="cause-body">
-        <div class="cause-name">Fonds Général MIJO</div>
-        <div class="cause-desc">Votre don est réparti intelligemment là où le besoin est le plus urgent. Faites confiance à MIJO pour maximiser votre impact.</div>
-        </div>
-      <div class="cause-check">✓</div>
-    </div>
- 
-  </div>
-</section>
- 
-<div class="divider"></div>
- 
-<!-- ═══ AMOUNT + FORM ════════════════════════════ -->
-<section class="section reveal" id="donate-form">
-  <div class="section-title">Votre contribution</div>
-  <div class="section-sub">Chaque gourde compte. Même 100 G fait la différence.</div>
- 
-  <div class="amount-section">
-    <div class="amount-label">Choisir un montant</div>
- 
-    <div class="quick-amounts">
-      <button class="qa-btn" onclick="setAmount(200)">200 G</button>
-      <button class="qa-btn" onclick="setAmount(500)">500 G</button>
-      <button class="qa-btn active" onclick="setAmount(1000)">1 000 G</button>
-      <button class="qa-btn" onclick="setAmount(2500)">2 500 G</button>
-      <button class="qa-btn" onclick="setAmount(5000)">5 000 G</button>
-      <button class="qa-btn" onclick="setAmount(null)">Autre</button>
-    </div>
- 
-    <div class="amount-input-wrap">
-      <span class="amount-currency">G</span>
-      <input type="number"
-             id="montant"
-             class="amount-input"
-             placeholder="1000"
-             value="1000"
-             min="1">
-    </div>
- 
-    <div class="anon-row" onclick="toggleAnon()">
-      <div class="anon-check" id="anon-check"></div>
-      <span class="anon-text">Faire ce don de manière anonyme (votre nom n'apparaîtra pas)</span>
-    </div>
-  </div>
- 
-  <button class="btn-donate" id="btn-donate" onclick="handleDonate()">
-    ❤️ &nbsp;Faire mon don maintenant
-  </button>
- 
-  <p style="text-align:center;font-size:.73em;color:var(--muted);margin-top:14px;line-height:1.6">
-    🔒 Transaction sécurisée via MIJO PAY &nbsp;·&nbsp; Reçu envoyé par email
-  </p>
-</section>
- 
- 
-<!-- ═══ SUCCESS SCREEN ══════════════════════════ -->
-<canvas id="confetti-canvas"></canvas>
- 
-<div class="success-screen" id="success-screen">
-  <div class="success-icon">🎉</div>
-  <div class="success-title">Merci infiniment !</div>
-  <p class="success-msg" id="success-msg">
-    Votre don a bien été reçu. Vous contribuez à changer des vies en Haïti. 🇭🇹
-  </p>
-  <a href="home_pro.html" class="success-back">← Retour à l'accueil</a>
-</div>
- 
-<!-- toast -->
-<div class="toast" id="toast"></div>
- 
-<script>
-/* ── HERO CANVAS PARTICLES ─────────────────── */
-(function(){
-  const c = document.getElementById('hero-canvas');
-  const ctx = c.getContext('2d');
-  let W,H,pts=[];
- 
-  function resize(){
-    W=c.width=window.innerWidth;
-    H=c.height=window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize',resize);
- 
-  for(let i=0;i<55;i++) pts.push({
-    x:Math.random()*1,y:Math.random()*1,
-    vx:(Math.random()-.5)*.0004,
-    vy:(Math.random()-.5)*.0004,
-    r:1+Math.random()*2
-  });
- 
-  function draw(){
-    ctx.clearRect(0,0,W,H);
-    pts.forEach(p=>{
-      p.x+=p.vx;p.y+=p.vy;
-      if(p.x<0)p.x=1;if(p.x>1)p.x=0;
-      if(p.y<0)p.y=1;if(p.y>1)p.y=0;
-      ctx.beginPath();
-      ctx.arc(p.x*W,p.y*H,p.r,0,Math.PI*2);
-      ctx.fillStyle='rgba(245,166,35,.8)';
-      ctx.fill();
-    });
-    for(let i=0;i<pts.length;i++){
-      for(let j=i+1;j<pts.length;j++){
-        const dx=(pts[i].x-pts[j].x)*W,dy=(pts[i].y-pts[j].y)*H;
-        const d=Math.sqrt(dx*dx+dy*dy);
-        if(d<90){
-          ctx.beginPath();
-          ctx.moveTo(pts[i].x*W,pts[i].y*H);
-          ctx.lineTo(pts[j].x*W,pts[j].y*H);
-          ctx.strokeStyle=`rgba(245,166,35,${.15*(1-d/90)})`;
-          ctx.lineWidth=.6;
-          ctx.stroke();
+
+        
+    </main>
+
+    <script>// --- CONSTANTES GLOBALES ---
+const PREMIUM_PRICE = 150;
+const STORE_SCRIPT_URL = "https://test.mijocomplexe.workers.dev/";
+// Worker gérant le débit (activation Premium)
+const GLOBAL_HISTORY_WORKER_URL = "https://votre-worker-global-history.workers.dev/"; 
+// Worker spécifique pour la désactivation de l'auto-renouvellement (mise à jour du casier 'Automatique')
+const AUTORENEW_TOGGLE_WORKER_URL = "https://votre-worker-autorenew-toggle.workers.dev/"; 
+
+// --- FONCTIONS AUXILIAIRES ---
+
+/**
+ * Met à jour l'interface utilisateur avec les dernières données de l'utilisateur.
+ * Inclut la gestion de l'auto-renouvellement.
+ * @param {object} user - L'objet utilisateur du localStorage.
+ */
+function updateUI(user) {
+    const userIdDisplay = document.getElementById('userIdDisplay');
+    const userBalanceDisplay = document.getElementById('userBalanceDisplay');
+    const premiumStatusDisplay = document.getElementById('premiumStatusDisplay');
+    const autoRenewSection = document.getElementById('autoRenewSection');
+    const autoRenewStatusDisplay = document.getElementById('autoRenewStatusDisplay');
+    const toggleRenewButton = document.getElementById('toggleRenewButton');
+    const renewNote = document.getElementById('renewNote');
+    const activateButton = document.getElementById('activateButton');
+
+    if (user && user.userId) {
+        userIdDisplay.textContent = user.userId;
+        userBalanceDisplay.textContent = user.Solde !== undefined ? user.Solde.toFixed(2) : 'N/A';
+        
+        const isPremium = user.EstPremium === true;
+        const autoRenewActive = user.AutoRenew === true; // NOUVEAU: Par défaut, supposons 'true' après activation
+        
+        // --- Statut Premium ---
+        premiumStatusDisplay.textContent = isPremium ? 'Actif ✅' : 'Non Actif ❌';
+        premiumStatusDisplay.classList.toggle('premium-active', isPremium);
+        premiumStatusDisplay.classList.toggle('premium-inactive', !isPremium);
+        activateButton.disabled = isPremium;
+        activateButton.textContent = isPremium ? 'Abonnement Déjà Actif' : `Activer MIJO Premium (${PREMIUM_PRICE} Gdes/mois)`;
+
+        // --- Section Auto-Renouvellement ---
+        autoRenewSection.style.display = isPremium ? 'block' : 'none';
+
+        if (isPremium) {
+            autoRenewStatusDisplay.textContent = autoRenewActive ? 'Actif ✅' : 'Désactivé ❌';
+            autoRenewStatusDisplay.classList.toggle('renew-active', autoRenewActive);
+            autoRenewStatusDisplay.classList.toggle('renew-inactive', !autoRenewActive);
+
+            toggleRenewButton.textContent = autoRenewActive ? 'Désactiver l\'Auto-Renouvellement' : 'Réactiver l\'Auto-Renouvellement';
+            toggleRenewButton.classList.toggle('secondary-button', autoRenewActive); // Rouge pour désactiver
+            toggleRenewButton.classList.toggle('secondary-button', !autoRenewActive); // Vert pour réactiver (il faudra ajuster le CSS si vous voulez une autre couleur pour réactiver)
+            
+            renewNote.textContent = autoRenewActive 
+                ? 'Votre abonnement sera reconduit le mois prochain (prélèvement automatique).' 
+                : 'L\'abonnement ne sera pas renouvelé automatiquement. Vous perdrez l\'accès à la fin du cycle.';
         }
-      }
-    }
-    requestAnimationFrame(draw);
-  }
-  draw();
-})();
- 
- 
-/* scroll reveal observer */
-const revealObs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      e.target.classList.add('visible');
- 
-    }
-  });
-},{threshold:.1});
-document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
- 
-/* ── CAUSE SELECTION ───────────────────────── */
-let selectedCause='challenge';
-function selectCause(card){
-  document.querySelectorAll('.cause-card').forEach(c=>c.classList.remove('selected'));
-  card.classList.add('selected');
-  selectedCause=card.dataset.cause;
-}
- 
-/* ── QUICK AMOUNTS ─────────────────────────── */
-let isAnon=false;
- 
-function setAmount(v){
-  document.querySelectorAll('.qa-btn').forEach(b=>b.classList.remove('active'));
-  if(v===null){
-    document.getElementById('montant').value='';
-    document.getElementById('montant').focus();
-    event.target.classList.add('active');
-  } else {
-    document.getElementById('montant').value=v;
-    event.target.classList.add('active');
-  }
-}
- 
-function toggleAnon(){
-  isAnon=!isAnon;
-  document.getElementById('anon-check').classList.toggle('on',isAnon);
-}
- 
-/* ── TOAST ─────────────────────────────────── */
-function showToast(msg,type=''){
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.className='toast '+(type?type:'');
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3200);
-}
- 
-/* ── CONFETTI ──────────────────────────────── */
-function launchConfetti(){
-  const canvas=document.getElementById('confetti-canvas');
-  canvas.width=window.innerWidth;
-  canvas.height=window.innerHeight;
-  const ctx=canvas.getContext('2d');
-  const pieces=[];
-  const colors=['#F5A623','#FF6B35','#00C896','#1A6FE8','#ffffff','#fcd34d'];
- 
-  for(let i=0;i<160;i++){
-    pieces.push({
-      x:Math.random()*canvas.width,
-      y:-20-Math.random()*canvas.height*.5,
-      w:6+Math.random()*10,
-      h:3+Math.random()*6,
-      color:colors[Math.floor(Math.random()*colors.length)],
-      angle:Math.random()*Math.PI*2,
-      vx:(Math.random()-.5)*3,
-      vy:2+Math.random()*4,
-      va:(Math.random()-.5)*.15,
-      opacity:1
-    });
-  }
- 
-  let frame=0;
-  function draw(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    pieces.forEach(p=>{
-      p.x+=p.vx;p.y+=p.vy;p.angle+=p.va;
-      if(frame>80)p.opacity=Math.max(0,p.opacity-.012);
-      ctx.save();
-      ctx.globalAlpha=p.opacity;
-      ctx.translate(p.x,p.y);
-      ctx.rotate(p.angle);
-      ctx.fillStyle=p.color;
-      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
-      ctx.restore();
-    });
-    frame++;
-    if(pieces.some(p=>p.opacity>0))requestAnimationFrame(draw);
-    else ctx.clearRect(0,0,canvas.width,canvas.height);
-  }
-  draw();
-}
- 
-/* ── MAIN DONATE HANDLER ───────────────────── */
-async function handleDonate(){
-  const montant=parseFloat(document.getElementById('montant').value);
-  const btn=document.getElementById('btn-donate');
- 
-  if(!montant||montant<=0){
-    showToast('❌ Veuillez entrer un montant valide','error');
-    document.getElementById('montant').focus();
-    return;
-  }
- 
-  const userString=localStorage.getItem('user');
-  if(!userString){
-    showToast('❌ Veuillez vous connecter d\'abord','error');
-    setTimeout(()=>window.location.href='index.html',1500);
-    return;
-  }
- 
-  const user=JSON.parse(userString);
-  const userId=user.userId;
-  const nom=isAnon?'Anonyme':(user.NomUtilisateur||'Donateur');
- 
-  btn.disabled=true;
-  btn.textContent='⏳  Traitement en cours…';
- 
-  try{
-    const res=await fetch('https://test.mijocomplexe.workers.dev/',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({userId,montant,nom,cause:selectedCause})
-    });
- 
-    if(!res.ok)throw new Error('Réponse serveur invalide');
-    const data=await res.json();
- 
-    if(data.success){
-      if(data.nouveauSoldeUser!==undefined){
-        user.Solde=data.nouveauSoldeUser;
-        localStorage.setItem('user',JSON.stringify(user));
-      }
- 
-      // success!
-      launchConfetti();
-      document.getElementById('success-msg').textContent=
-        `Votre don de ${montant.toLocaleString()} G pour "${getCauseName()}" a bien été reçu. Merci ${isAnon?'':nom} ! 🇭🇹`;
-      document.getElementById('success-screen').classList.add('show');
- 
+
+        displayLocalHistory(user.userId);
     } else {
-      showToast('❌ '+(data.message||'Échec du don'),'error');
-      btn.disabled=false;
-      btn.innerHTML='❤️ &nbsp;Faire mon don maintenant';
+        // Utilisateur non connecté ou données manquantes
+        userIdDisplay.textContent = 'Non Connecté';
+        userBalanceDisplay.textContent = 'N/A';
+        premiumStatusDisplay.textContent = 'Non Actif ❌';
+        autoRenewSection.style.display = 'none';
+        activateButton.disabled = false;
+        activateButton.textContent = `Activer MIJO Premium (${PREMIUM_PRICE} Gdes/mois)`;
     }
-  }catch(err){
-    showToast('❌ Erreur de connexion. Réessayez.','error');
-    btn.disabled=false;
-    btn.innerHTML='❤️ &nbsp;Faire mon don maintenant';
-  }
 }
- 
-function getCauseName(){
-  const names={
-    challenge:'MIJO Business Challenge',
-    microloans:'Micro-prêts Entrepreneurs',
-    formation:'Ateliers de Formation',
-    general:'Fonds Général MIJO'
-  };
-  return names[selectedCause]||selectedCause;
+
+/**
+ * Enregistre une transaction dans l'historique local de l'utilisateur.
+ * (Fonction inchangée)
+ */
+function saveToHistory(type, amount, status, recipient, userId) {
+    const historyKey = `transactions_${userId}`;
+    let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+    const newTransaction = {
+        id: Date.now(),
+        type: type,
+        amount: amount,
+        status: status,
+        recipient: recipient,
+        date: new Date().toLocaleString()
+    };
+    history.unshift(newTransaction);
+    localStorage.setItem(historyKey, JSON.stringify(history));
+    displayLocalHistory(userId);
 }
- 
-/* sync quick-amount buttons with manual input */
-document.getElementById('montant').addEventListener('input',function(){
-  const v=parseFloat(this.value);
-  document.querySelectorAll('.qa-btn').forEach(b=>{
-    b.classList.toggle('active',parseFloat(b.textContent.replace(/\s|G/g,'').replace(',',''))===v);
-  });
-});
-</script>
+
+/**
+ * Affiche l'historique des transactions locales.
+ * (Fonction inchangée)
+ */
+function displayLocalHistory(userId) {
+    const transactionList = document.getElementById('transactionList');
+    transactionList.innerHTML = ''; 
+
+    if (!userId) return;
+
+    const historyKey = `transactions_${userId}`;
+    let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+
+    if (history.length === 0) {
+        transactionList.innerHTML = '<li>Aucune transaction enregistrée localement.</li>';
+        return;
+    }
+
+    history.forEach(tx => {
+        const listItem = document.createElement('li');
+        const statusColor = tx.status === 'Succès' ? 'green' : (tx.status.includes('Échec') || tx.status.includes('Réseau') ? 'red' : 'orange');
+        
+        listItem.innerHTML = `
+            <div>
+                <strong>${tx.type}</strong> (${tx.date})<br>
+                À: ${tx.recipient}
+            </div>
+            <div>
+                <span style="color: ${statusColor}; font-weight: bold;">${tx.status}</span>
+                <br>
+                ${tx.type === "Abonnement Premium" ? '-' : ''}${tx.amount} Gdes
+            </div>
+        `;
+        transactionList.appendChild(listItem);
+    });
+}
+
+/**
+ * Enregistre la transaction dans le KV Global via le Worker de transaction.
+ * (Fonction inchangée)
+ */
+async function saveToGlobalKV(senderId, amount, senderName) {
+    const transactionData = {
+        action: "transfer_money",
+        amount: amount,
+        senderId: senderId, 
+        senderName: senderName || "Utilisateur MIJO",
+        recipient: "MIJO CINÉ / Entreprise",
+        type: "Abonnement Premium CINÉ"
+    };
+    
+    try {
+        const response = await fetch(GLOBAL_HISTORY_WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(transactionData)
+        });
+
+        if (!response.ok) {
+            console.error("Échec de l'enregistrement KV global, Statut:", response.status);
+        }
+    } catch (error) {
+        console.error("Erreur de connexion lors de l'enregistrement KV global:", error);
+    }
+}
+
+/**
+ * Gère l'activation ou la désactivation de l'auto-renouvellement.
+ */
+async function toggleAutoRenew() {
+    const userString = localStorage.getItem('user');
+    let user = JSON.parse(userString);
+    
+    if (!user || !user.userId) {
+        alert("Utilisateur non connecté.");
+        return;
+    }
+    
+    // Si AutoRenew n'est pas défini, on suppose qu'il est actif par défaut
+    const currentState = user.AutoRenew === true; 
+    const newState = !currentState;
+    
+    const actionText = newState ? "Réactiver" : "Désactiver";
+    const confirmation = confirm(`Voulez-vous ${actionText} le renouvellement automatique de votre abonnement Premium ?`);
+    
+    if (!confirmation) {
+        return;
+    }
+
+    const toggleButton = document.getElementById('toggleRenewButton');
+    toggleButton.disabled = true;
+    toggleButton.textContent = `Traitement de la ${actionText} des paiements...`;
+
+    try {
+        // Envoi de la requête au Worker pour mettre à jour la base de données (Airtable/KV)
+        const response = await fetch(AUTORENEW_TOGGLE_WORKER_URL, {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: "toggle_autorenew", // Action pour votre Worker
+                userId: user.userId,
+                newState: newState // true ou false
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            // Mettre à jour l'état local de l'utilisateur
+            user.AutoRenew = newState;
+            localStorage.setItem('user', JSON.stringify(user));
+            
+            updateUI(user);
+            alert(`Renouvellement automatique ${newState ? 'réactivé' : 'désactivé'} avec succès.`);
+        } else {
+            alert(data.error || `Échec de la ${actionText} du renouvellement automatique.`);
+        }
+
+    } catch (error) {
+        console.error("Erreur lors de la requête de bascule d'auto-renouvellement:", error);
+        alert(`Erreur de connexion lors de la ${actionText} du renouvellement.`);
+    } finally {
+        // Réactiver le bouton
+        updateUI(user);
+    }
+}
+
+/**
+ * Gère le processus d'activation de l'abonnement Premium.
+ * (Mise à jour pour définir AutoRenew à 'true' par défaut après l'achat initial)
+ */
+async function activatePremium() {
+    // ... (Code de vérification d'utilisateur inchangé) ...
+    const userString = localStorage.getItem('user');
+    let user;
+    try {
+        user = JSON.parse(userString);
+    } catch (e) {
+        alert("Erreur de données utilisateur. Veuillez vous reconnecter.");
+        window.location.href = "index.html";
+        return;
+    }
+
+    if (!user || !user.userId) {
+        alert("Utilisateur non connecté ou données manquantes.");
+        return;
+    }
+    
+    if (user.EstPremium === true) {
+        alert("Votre abonnement Premium est déjà actif.");
+        return;
+    }
+    
+    const confirmation = confirm(`Voulez-vous activer MIJO Premium ? Prix : ${PREMIUM_PRICE} Gdes/mois. Le prélèvement sera effectué maintenant.`);
+    if (!confirmation) { return; }
+
+    const activateButton = document.getElementById('activateButton');
+    activateButton.disabled = true;
+    activateButton.textContent = "Traitement...";
+
+    try {
+        const response = await fetch(STORE_SCRIPT_URL, {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: "pay_premium",
+                senderId: user.userId,
+                amount: PREMIUM_PRICE
+            })
+        });
+
+        const data = await response.json();
+        let transactionStatus = "Échec";
+
+        if (data.success && data.user && data.user.Solde !== undefined) {
+            // Mise à jour de l'objet utilisateur
+            user.Solde = data.user.Solde; 
+            user.EstPremium = true;
+            user.AutoRenew = true; // DEFINI L'AUTO-RENOUVELLEMENT A TRUE LORS DE LA PREMIERE ACTIVATION
+            transactionStatus = "Succès";
+            
+            // 1. Mettez à jour le localStorage
+            localStorage.setItem('user', JSON.stringify(user));
+            
+            // 2. Mettez à jour l'affichage de la page IMMÉDIATEMENT
+            updateUI(user);
+            
+            // 3. Enregistrer l'historique
+            saveToHistory("Abonnement Premium", PREMIUM_PRICE, transactionStatus, "MIJO PAY", user.userId);
+            await saveToGlobalKV(user.userId, PREMIUM_PRICE, user.nom);
+            
+            alert("Abonnement Premium activé avec succès ! Le renouvellement automatique est actif par défaut.");
+        } else {
+            alert(data.error || "Échec de l'activation de l'abonnement Premium. Solde insuffisant ou erreur serveur.");
+            saveToHistory("Abonnement Premium", PREMIUM_PRICE, transactionStatus, "MIJO PAY", user.userId);
+        }
+    } catch (error) {
+        console.error("Erreur lors de la requête:", error);
+        alert("Erreur de connexion. Veuillez vérifier votre connexion ou le lien du serveur.");
+        saveToHistory("Abonnement Premium", PREMIUM_PRICE, "Échec Réseau", "MIJO PAY", user.userId);
+    } finally {
+        updateUI(user); 
+    }
+}
+
+/**
+ * Vérifie le statut de l'utilisateur au chargement de la page et met à jour l'UI.
+ */
+function checkUserStatus() {
+    const userString = localStorage.getItem('user');
+    let user = null;
+    
+    try {
+        user = JSON.parse(userString);
+        // Initialiser AutoRenew à true si EstPremium est true mais AutoRenew est manquant (pour la migration des anciens utilisateurs)
+        if (user && user.EstPremium === true && user.AutoRenew === undefined) {
+             user.AutoRenew = true;
+             localStorage.setItem('user', JSON.stringify(user));
+        }
+    } catch (e) {
+        console.error("Erreur de données utilisateur dans localStorage.", e);
+    }
+
+    if (!user || !user.userId) {
+        // Optionnel: alert("Veuillez vous connecter pour gérer votre abonnement Premium.");
+    }
+    
+    updateUI(user);
+}
+
+
+// --- Initialisation au chargement de la page ---
+document.addEventListener('DOMContentLoaded', checkUserStatus);</script>
 </body>
 </html>
