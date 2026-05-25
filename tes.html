@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-      <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-K43FXR4W');</script>
-<!-- End Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-K43FXR4W');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Réclamer Bonus</title>
@@ -130,10 +128,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     </style>
 </head>
 <body>
-       <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K43FXR4W"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K43FXR4W"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="card">
         <h2>🎁 Bonus Affilié</h2>
         <p>Nombre d’affiliés : <span id="nbreAffiche">0</span></p>
@@ -146,8 +142,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <th>Montant du Bonus</th>
                 </tr>
             </thead>
-            <tbody>
-                </tbody>
+            <tbody></tbody>
         </table>
 
         <p class="bonus-dispo">Bonus disponible : <span id="bonusMontant">Aucun</span></p>
@@ -167,7 +162,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // 📌 Charger l'utilisateur depuis localStorage
         const userString = localStorage.getItem("user");
         let nbreAffilie = 0;
-        let dernierBonusReclame = 0; // Nouveau: pour stocker le dernier bonus réclamé
+        let dernierBonusReclame = 0;
         let userId = null;
         let userObj = null;
 
@@ -175,7 +170,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             try {
                 userObj = JSON.parse(userString);
                 nbreAffilie = parseInt(userObj.nbreaffilie || "0", 10);
-                dernierBonusReclame = parseInt(userObj.dernierBonusReclame || "0", 10); // Récupère le dernier bonus
+                dernierBonusReclame = parseInt(userObj.dernierBonusReclame || "0", 10);
                 userId = userObj.userId || userObj.id || userObj.userid || null;
             } catch (e) {
                 console.error("Erreur parsing user:", e);
@@ -193,7 +188,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             row.innerHTML = `<td>${palier.seuil}</td><td>${palier.montant} HTG</td>`;
             tableBody.appendChild(row);
 
-            // Déterminer le palier que l'utilisateur peut réclamer
+            // Déterminer le palier que l'utilisateur peut réclamer normalement
             if (nbreAffilie >= palier.seuil && palier.montant > dernierBonusReclame) {
                 row.classList.add("highlight");
                 bonusDisponible = palier;
@@ -208,14 +203,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             bonusMontantSpan.textContent = bonusDisponible.montant + " HTG";
             btnBonus.disabled = false;
         } else {
-            bonusMontantSpan.textContent = bonusDisponible.montant + " HTG"
-            btnBonus.disabled = false;
+            // Modification ici : Si aucun bonus n'est dispo, on affiche la valeur par défaut (5 affiliés = 250 HTG)
+            bonusMontantSpan.textContent = "250 HTG (Valeur par défaut)";
+            btnBonus.disabled = false; 
         }
 
         // 📌 Action du bouton : envoie la demande au backend
         btnBonus.addEventListener("click", async () => {
-            if (!bonusDisponible) return alert("Aucun bonus disponible.");
             if (!userId) return alert("Erreur: utilisateur non identifié.");
+
+            // Définition du montant final : prend le bonus disponible, sinon force à 250 HTG
+            const montantFinal = bonusDisponible ? bonusDisponible.montant : 250;
 
             btnBonus.textContent = "⏳ Transaction en cours...";
             btnBonus.disabled = true;
@@ -226,21 +224,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         userId: userId,
-                        montant: bonusDisponible.montant
+                        montant: montantFinal // Envoie toujours au moins 250
                     })
                 });
 
                 const data = await res.json();
                 if (data.status === "success") {
-                    alert(`🎉 Bonus de ${bonusDisponible.montant} HTG crédité sur votre compte !`);
+                    alert(`🎉 Bonus de ${montantFinal} HTG crédité sur votre compte !`);
 
                     // Mettre à jour localStorage avec le nouveau bonus
-                    userObj.Solde = data.newSolde;
-                    userObj.dernierBonusReclame = bonusDisponible.montant;
-                    localStorage.setItem("user", JSON.stringify(userObj));
+                    if (userObj) {
+                        userObj.Solde = data.newSolde;
+                        userObj.dernierBonusReclame = montantFinal;
+                        localStorage.setItem("user", JSON.stringify(userObj));
+                    }
 
                     // Mettre à jour l'affichage
-                    location.reload(); // Recharger la page pour une mise à jour visuelle simple
+                    location.reload(); 
                 } else {
                     alert("Erreur: " + data.message);
                     btnBonus.disabled = false;
