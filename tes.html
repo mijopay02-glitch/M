@@ -10,164 +10,26 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon compte Affilié - MIJO</title>
+    <title>Dépôt Agent MIJO</title>
     <style>
-        /* Styles existants (inchangés) */
-        body {
-            background-color: #0d1a3e; /* Fond plus sombre pour correspondre au classement */
-            color: #333;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        .dashboard-header {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #fff;
-        }
-        .card {
-            background-color: #fff;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .card h2 {
-            margin-top: 0;
-            color: #2c3e50;
-            font-size: 1.5em;
-        }
-        .card p {
-            color: #7f8c8d;
-            font-size: 1em;
-        }
-        .affiliate-code-display {
-            background-color: #ecf0f1;
-            padding: 15px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-        }
-        .affiliate-code-text {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 1.2em;
-            color: #2980b9;
-            font-weight: bold;
-        }
-        .copy-btn {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
-        .copy-btn:hover {
-            background-color: #2980b9;
-        }
-        .category-badge {
-            display: inline-block;
-            padding: 8px 15px;
-            border-radius: 20px;
-            color: white;
-            font-weight: bold;
-            font-size: 0.9em;
-            margin-top: 15px;
-        }
-        .bronze { background-color: #a56121; }
-        .silver { background-color: #95a5a6; }
-        .gold { background-color: #f1c40f; }
-
-        /* --- NOUVEAUX STYLES POUR LE CLASSEMENT --- */
-        .leaderboard-card {
-            background: linear-gradient(145deg, #1e3a8a, #2563eb);
-            border: 2px solid #3b82f6;
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-            text-align: left;
-            color: #fff;
-            position: relative;
-            overflow: hidden;
-        }
-        .leaderboard-card::before, .leaderboard-card::after {
-            content: '';
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
-            border-radius: 50%;
-        }
-        .leaderboard-card::before {
-            top: -50px;
-            right: -50px;
-        }
-        .leaderboard-card::after {
-            bottom: -80px;
-            left: -30px;
-            opacity: 0.7;
-        }
-        .leaderboard-card h2 {
-            text-align: center;
-            color: #fff;
-            font-size: 1.8em;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 10px;
-        }
-        .leaderboard-entry {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            margin-bottom: 8px;
-            background-color: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            transition: background-color 0.3s;
-        }
-        .leaderboard-entry:hover {
-            background-color: rgba(255, 255, 255, 0.15);
-        }
-        .rank {
-            font-size: 1.4em;
-            font-weight: bold;
-            width: 40px;
-            text-align: center;
-            flex-shrink: 0;
-            color: #a7c5ff;
-        }
-        .avatar {
-            font-size: 2em;
-            margin: 0 10px;
-        }
-        .player-info {
-            flex-grow: 1;
-        }
-        .player-name {
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-        .stars {
-            color: #f1c40f;
-            font-size: 0.9em;
-        }
-        .score {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #fff;
-            padding-left: 15px;
-        }
-
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .container { background-color: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); text-align: center; width: 90%; max-width: 500px; }
+        h1 { color: #333; }
+        .agent-info { font-size: 1.2em; margin-bottom: 20px; }
+        #agent-solde { font-weight: bold; color: #28a745; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
+        .form-group input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .action-button { width: 100%; padding: 15px; font-size: 1em; color: #fff; background-color: #007BFF; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease; }
+        .action-button:hover { background-color: #0056b3; }
+        #status-message { margin-top: 20px; font-weight: bold; }
+        /* Style pour le spinner */
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 24px; height: 24px; animation: spin 2s linear infinite; display: none; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Style pour la confirmation */
+        .confirmation-box { display: none; margin-top: 20px; border: 1px solid #ddd; padding: 15px; border-radius: 5px; background-color: #f9f9f9; }
+        .confirmation-box p { margin: 0 0 10px; }
+        .confirmation-buttons button { padding: 10px; margin: 0 5px; }
     </style>
 </head>
 <body>
@@ -176,189 +38,208 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
     <div class="container">
-        <div class="dashboard-header">
-            <h1>Tableau de Bord Affilié</h1>
-            <p>Bienvenue, <span id="userName" style="font-weight:bold;"></span> !</p>
+        <h1>Dépôt Agent MIJO</h1>
+        
+        <div class="agent-info">
+            <p>Connecté en tant que : <span id="agent-name"></span></p>
+            <p>Solde de votre compte : <span id="agent-solde"></span> Gourdes</p>
         </div>
 
-        <div class="card">
-            <h2>Votre Code de Parrainage</h2>
-            <div class="affiliate-code-display">
-                <span id="affiliateCode" class="affiliate-code-text">Non disponible</span>
-                <button class="copy-btn" onclick="copyCode()">Copier</button>
+        <form id="depot-form">
+            <div class="form-group">
+                <label for="numero-carte">Numéro de carte du client</label>
+                <input type="text" id="numero-carte" required>
+            </div>
+            <div class="form-group">
+                <label for="montant">Montant à déposer</label>
+                <input type="number" id="montant" required>
+            </div>
+            <div class="loader" id="search-spinner"></div>
+            <button type="button" id="search-btn" class="action-button">Rechercher le client</button>
+            <div id="status-message"></div>
+        </form>
+
+        <div class="confirmation-box" id="confirmation-box">
+            <p>Voulez-vous faire un dépôt de <span id="montant-confirm"></span> Gourdes à :</p>
+            <p><strong id="client-name-confirm"></strong></p>
+            <div class="confirmation-buttons">
+                <button id="confirm-yes-btn" class="action-button">Oui, confirmer</button>
+                <button id="confirm-no-btn" class="action-button" style="background-color: #dc3545;">Non, annuler</button>
             </div>
         </div>
-        
-        <div class="card">
-            <h2>Votre Statut</h2>
-            <p>Nombre d'affiliés : <span id="affiliatesCount">0</span></p>
-            <span id="categoryBadge" class="category-badge">Bronze</span>
-        </div>
-
-        <div class="card">
-            <h2>Bonus</h2>
-            <p>Cliquez pour accéder à vos bonus !</p>
-            <button id="bonusBtn" class="copy-btn">Voir les Bonus</button>
-        </div>
-
-        <div class="card">
-            <h2>Outils Marketing</h2>
-            <p>Téléchargez les ressources pour promouvoir MIJO.</p>
-             <button id="outilBtn" class="copy-btn">Voir les outil</button>
-        </div>
-
-        <div class="card leaderboard-card">
-            <button id="loadLeaderboardBtn" class="copy-btn" style="display:block; margin: 0 auto 20px auto;">Voir le Classement</button>
-            <div id="leaderboardList" style="display:none;">
-                </div>
-        </div>
     </div>
-    
+
     <script>
-        document.getElementById('loadLeaderboardBtn').addEventListener('click', () => {
-            const leaderboardList = document.getElementById('leaderboardList');
-            const button = document.getElementById('loadLeaderboardBtn');
-            
-            button.style.display = 'none'; // Cacher le bouton après le clic
-            leaderboardList.style.display = 'block';
-            leaderboardList.innerHTML = "<p style='text-align:center;'>Chargement du classement...</p>";  
-            fetchLeaderboard();
-        });
+        const form = document.getElementById('depot-form');
+        const searchBtn = document.getElementById('search-btn');
+        const searchSpinner = document.getElementById('search-spinner');
+        const confirmBox = document.getElementById('confirmation-box');
+        const confirmYesBtn = document.getElementById('confirm-yes-btn');
+        const confirmNoBtn = document.getElementById('confirm-no-btn');
+        const agentNameSpan = document.getElementById('agent-name');
+        const agentSoldeSpan = document.getElementById('agent-solde');
+        const clientNameConfirmSpan = document.getElementById('client-name-confirm');
+        const montantConfirmSpan = document.getElementById('montant-confirm');
+        const statusMessage = document.getElementById('status-message');
 
-        document.getElementById('bonusBtn').addEventListener('click', () => {
-            window.location.href = 'bonus.html';
-        });
-           document.getElementById('outilBtn').addEventListener('click', () => {
-            window.location.href = 'outil.html';
-        });
+        const API_URL = 'https://test.mijocomplexe.workers.dev/';
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const userString = localStorage.getItem('user');
-            if (!userString) {
-                alert("Veuillez vous connecter pour accéder à cette page.");
-                window.location.href = "index.html";
-                return;
-            }
+        let user = JSON.parse(localStorage.getItem('user'));
+        let clientRecordId = null;
 
-            const user = JSON.parse(userString);
-
-            if (!user.Estafilia) {
-                alert("Vous n'êtes pas un affilié. Veuillez vous inscrire d'abord.");
-                window.location.href = "mijo-affiliate-inscription.html";
-                return;
-            }
-
-            document.getElementById('userName').innerText = user.NomUtilisateur || "Utilisateur";
-            document.getElementById('affiliateCode').innerText = user.LienAffiliation || "Non disponible";
-            document.getElementById('affiliatesCount').innerText = user.nbreaffilie || 0;
-
-            const affiliateCount = user.nbreaffilie || 0;
-            const categoryBadge = document.getElementById('categoryBadge');
-            
-            if (affiliateCount >= 50) {
-                categoryBadge.innerText = "Or";
-                categoryBadge.className = 'category-badge gold';
-            } else if (affiliateCount >= 10) {
-                categoryBadge.innerText = "Argent";
-                categoryBadge.className = 'category-badge silver';
+        // Fonction pour afficher le solde de l'agent
+        function displayAgentData() {
+            if (user && user.Solde) {
+                agentNameSpan.textContent = user.nom;
+                agentSoldeSpan.textContent = user.Solde.toFixed(2);
+                statusMessage.textContent = "";
             } else {
-                categoryBadge.innerText = "Bronze";
-                categoryBadge.className = 'category-badge bronze';
+                // Rediriger si l'utilisateur n'est pas connecté ou les données manquent
+                window.location.href = 'agent.html'; 
             }
-        });
+        }
+        
+        displayAgentData(); // Afficher les données de l'agent au chargement de la page
 
-       async function fetchLeaderboard() {
-            const leaderboardUrl = "https://test.mijocomplexe.workers.dev/";
+        // Étape 1 : Recherche du client avec spinner
+        searchBtn.addEventListener('click', async function() {
+            const numeroCarte = document.getElementById('numero-carte').value;
+            const montant = parseFloat(document.getElementById('montant').value);
+
+            if (!numeroCarte || isNaN(montant) || montant <= 0) {
+                statusMessage.textContent = "Veuillez remplir tous les champs correctement.";
+                statusMessage.style.color = "red";
+                return;
+            }
+            if (montant > parseFloat(user.Solde)) {
+                statusMessage.textContent = "Solde de l'agent insuffisant pour ce dépôt.";
+                statusMessage.style.color = "red";
+                return;
+            }
+
+            statusMessage.textContent = "";
+            searchBtn.style.display = 'none';
+            searchSpinner.style.display = 'block';
 
             try {
-                const response = await fetch(leaderboardUrl, {
-                      action: get_leaderboard
-                    method: 'GET',
+                const response = await fetch(API_URL, {
+                    method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'rechercherClient', numeroCarte: numeroCarte })
                 });
 
                 if (!response.ok) {
-                    throw new Error('Échec du chargement du classement.');
+                    throw new Error(`Erreur HTTP: ${response.status}`);
                 }
 
-                const leaderboardData = await response.json();
-                
-                // ➡️ AJOUTEZ CETTE LIGNE POUR TRIER LE CLASSEMENT
-                leaderboardData.sort((a, b) => b.nbreaffilie - a.nbreaffilie);
+                const result = await response.json();
 
-                displayLeaderboard(leaderboardData);
-
+                if (result.status === "success") {
+                    clientRecordId = result.client.id;
+                    clientNameConfirmSpan.textContent = result.client.nomUtilisateur;
+                    montantConfirmSpan.textContent = montant;
+                    confirmBox.style.display = 'block';
+                    statusMessage.textContent = "";
+                } else {
+                    statusMessage.textContent = `Erreur : ${result.message}`;
+                    statusMessage.style.color = "red";
+                }
             } catch (error) {
-                console.error("Erreur lors de la récupération du classement:", error);
-                const leaderboardList = document.getElementById('leaderboardList');
-                leaderboardList.innerHTML = "<p style='text-align:center;'>Impossible de charger le classement pour le moment.</p>";
+                console.error('Erreur de recherche:', error);
+                statusMessage.textContent = `Erreur de connexion au serveur. ${error.message}`;
+                statusMessage.style.color = "red";
+            } finally {
+                searchSpinner.style.display = 'none';
+                searchBtn.style.display = 'block';
             }
+        });
+
+        // Étape 2 : Confirmer la transaction (dépôt)
+        confirmYesBtn.addEventListener('click', async function() {
+    const montant = parseFloat(document.getElementById('montant').value);
+    // Récupérer le nom du client qui est déjà dans le DOM
+    const clientName = clientNameConfirmSpan.textContent;
+    
+    statusMessage.textContent = "Traitement du dépôt en cours...";
+    statusMessage.style.color = "blue";
+    confirmBox.style.display = 'none';
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                action: 'depot', 
+                agentId: user.id, 
+                clientId: clientRecordId, 
+                montant: montant 
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
         }
 
-        // Fonction pour afficher le classement (MISE À JOUR)
-        function displayLeaderboard(data) {
-            const leaderboardList = document.getElementById('leaderboardList');
-            leaderboardList.innerHTML = '<h2>LEADERBOARD</h2>'; // Efface le message et ajoute le titre
+        const result = await response.json();
 
-            if (data.length === 0) {
-                leaderboardList.innerHTML += "<p style='text-align:center;'>Aucun classement disponible.</p>";
-                return;
-            }
+        if (result.status === "success") {
+            // Mettre à jour le solde dans localStorage et sur la page
+            user.Solde = result.newAgentSolde;
+            localStorage.setItem('user', JSON.stringify(user));
+            displayAgentData();
 
-            data.forEach((entry, index) => {
-                const rank = index + 1;
-                let rankDisplay;
+            // === NOUVEAU CODE POUR ENREGISTRER L'HISTORIQUE ===
+            const transactionDetails = {
+                type: "Dépôt",
+                montant: result.transactionDetails.montant,
+                recipient: clientName, // Utilise le nom du client récupéré plus tôt
+                date: new Date().toLocaleDateString('fr-FR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            };
 
-                // Attribue les médailles pour le top 3
-                if (rank === 1) rankDisplay = '🥇';
-                else if (rank === 2) rankDisplay = '🥈';
-                else if (rank === 3) rankDisplay = '🥉';
-                else rankDisplay = rank;
+            // Stocker la transaction dans le localStorage de l'agent
+            const historyKey = `transactions_${user.id}`;
+            const history = JSON.parse(localStorage.getItem(historyKey)) || [];
+            history.push(transactionDetails);
+            localStorage.setItem(historyKey, JSON.stringify(history));
 
-                // Détermine les étoiles et la catégorie basées sur le score
-               // NOUVELLE LOGIQUE POUR LES ÉTOILES À 5 PALIERS
-const affiliateCount = entry.nbreaffilie || 0;
-let starsHTML = '';
-
-if (affiliateCount >= 50) {
-    starsHTML = '★★★★★';
-} else if (affiliateCount >= 25) {
-    starsHTML = '★★★★☆';
-} else if (affiliateCount >= 10) {
-    starsHTML = '★★★☆☆';
-} else if (affiliateCount >= 5) {
-    starsHTML = '★★☆☆☆';
-} else if (affiliateCount >= 1) {
-    starsHTML = '★☆☆☆☆';
-} else {
-    starsHTML = '☆☆☆☆☆'; // Cas pour 0 affilié
-}
-                
-                // Crée l'élément HTML pour chaque affilié
-                const entryHTML = `
-                    <div class="leaderboard-entry">
-                        <div class="rank">${rankDisplay}</div>
-                        <div class="avatar">👤</div>
-                        <div class="player-info">
-                            <div class="player-name">${entry.NomUtilisateur}</div>
-                            <div class="stars">${starsHTML}</div>
-                        </div>
-                        <div class="score">${affiliateCount}</div>
-                    </div>
-                `;
-
-                leaderboardList.innerHTML += entryHTML;
+            // Stocker la transaction dans le localStorage général pour mijo
+            const globalHistory = JSON.parse(localStorage.getItem('all_transactions')) || [];
+            globalHistory.push({
+                ...transactionDetails,
+                agentName: user.nom
             });
-        }
+            localStorage.setItem('all_transactions', JSON.stringify(globalHistory));
+            // === FIN DU NOUVEAU CODE ===
 
-        function copyCode() {
-            const affiliateCode = document.getElementById('affiliateCode').innerText;
-            navigator.clipboard.writeText(affiliateCode).then(() => {
-                alert("Code copié dans le presse-papiers !");
-            }).catch(err => {
-                console.error("Erreur lors de la copie du code:", err);
-            });
+            statusMessage.textContent = `Dépôt de ${montant} Gourdes réussi.`;
+            statusMessage.style.color = "green";
+            form.reset();
+            clientRecordId = null;
+        } else {
+            statusMessage.textContent = `Erreur : ${result.message}`;
+            statusMessage.style.color = "red";
         }
+    } catch (error) {
+        console.error('Erreur de dépôt:', error);
+        statusMessage.textContent = `Erreur de connexion au serveur. ${error.message}`;
+        statusMessage.style.color = "red";
+    }
+});
+
+// ... (votre code
+
+        // Bouton d'annulation
+        confirmNoBtn.addEventListener('click', function() {
+            confirmBox.style.display = 'none';
+            statusMessage.textContent = "Dépôt annulé.";
+            statusMessage.style.color = "red";
+        });
     </script>
 </body>
 </html>
