@@ -1563,7 +1563,7 @@ async function fetchInvestorData() {
   }
 
   try {
-    const res = await fetch(WORKER_URL, {
+    const res = await fetch("https://central.mijocomplexe.workers.dev/get_investor_data", {
       method: "POST",
   headers: {
     "Content-Type": "application/json",
