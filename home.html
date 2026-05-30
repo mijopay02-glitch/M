@@ -643,7 +643,7 @@
     function checkUserSession() {
         const storedUser = localStorage.getItem('user');
         const storedToken = localStorage.getItem('token'); // On récupère le token sauvegardé à la connexion
-        console.log("Vérification session:", { storedUser, storedToken });
+        
         if (!storedUser || !storedToken) return window.location.href = 'index.html';
         try {
             const user = JSON.parse(storedUser);
