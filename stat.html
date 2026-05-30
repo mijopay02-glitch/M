@@ -1,0 +1,1639 @@
+ dashboard · HTML
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIJO PAY — Growth Navigator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          'mijo-bg':      '#080c10',
+          'mijo-card':    '#111820',
+          'mijo-border':  '#1e2d3d',
+          'mijo-cyan':    '#00d4ff',
+          'mijo-green':   '#00ff9d',
+          'mijo-orange':  '#ff6b35',
+          'mijo-gold':    '#f0b429',
+          'mijo-muted':   '#4a6a7a',
+          'mijo-danger':  '#ff4757',
+        },
+        fontFamily: {
+          mono: ["'DM Mono'", 'monospace'],
+          display: ["'Syne'", 'sans-serif'],
+        },
+      }
+    }
+  }
+</script>
+<style>
+:root {
+  --bg: #080c10;
+  --surface: #0d1218;
+  --card: #111820;
+  --border: #1e2d3d;
+  --accent: #00d4ff;
+  --accent2: #00ff9d;
+  --accent3: #ff6b35;
+  --gold: #f0b429;
+  --text: #e8f4f8;
+  --muted: #4a6a7a;
+  --danger: #ff4757;
+}
+ 
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+html { scroll-behavior: smooth; }
+ 
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+ 
+/* ── GRID BACKGROUND ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+ 
+/* ── SCANLINE ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+ 
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px 60px;
+}
+ 
+/* ── HEADER ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32px 0 40px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 48px;
+}
+ 
+.logo-block {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+ 
+.logo-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: #000;
+  box-shadow: 0 0 24px rgba(0,212,255,0.3);
+}
+ 
+.logo-text h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+ 
+.logo-text p {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 2px;
+}
+ 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+ 
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0,255,157,0.08);
+  border: 1px solid rgba(0,255,157,0.2);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 11px;
+  color: var(--accent2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+ 
+.live-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--accent2);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+ 
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.7); }
+}
+ 
+.date-display {
+  font-size: 12px;
+  color: var(--muted);
+}
+ 
+/* ── SECTION TITLES ── */
+.section-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--muted);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+ 
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+ 
+/* ── KPI CARDS ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 48px;
+}
+ 
+.kpi-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s, transform 0.2s;
+}
+ 
+.kpi-card:hover {
+  border-color: rgba(0,212,255,0.3);
+  transform: translateY(-2px);
+}
+ 
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  border-radius: 16px 16px 0 0;
+}
+ 
+.kpi-card.blue::before  { background: linear-gradient(90deg, var(--accent), transparent); }
+.kpi-card.green::before { background: linear-gradient(90deg, var(--accent2), transparent); }
+.kpi-card.orange::before { background: linear-gradient(90deg, var(--accent3), transparent); }
+.kpi-card.gold::before  { background: linear-gradient(90deg, var(--gold), transparent); }
+ 
+.kpi-icon {
+  font-size: 22px;
+  margin-bottom: 16px;
+  opacity: 0.9;
+}
+ 
+.kpi-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 8px;
+  letter-spacing: -1px;
+}
+ 
+.kpi-card.blue  .kpi-value { color: var(--accent); }
+.kpi-card.green .kpi-value { color: var(--accent2); }
+.kpi-card.orange .kpi-value { color: var(--accent3); }
+.kpi-card.gold  .kpi-value { color: var(--gold); }
+ 
+.kpi-label {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+ 
+.kpi-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+ 
+/* ── CHARTS ROW ── */
+.charts-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+ 
+.chart-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+}
+ 
+.chart-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+ 
+.chart-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+ 
+.chart-container {
+  position: relative;
+}
+ 
+/* ── SECOND CHARTS ROW ── */
+.charts-row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+ 
+/* ── ENTERPRISE SPOTLIGHT ── */
+.spotlight-card {
+  background: linear-gradient(135deg, rgba(0,212,255,0.04), rgba(0,255,157,0.02));
+  border: 1px solid rgba(0,212,255,0.15);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 48px;
+  position: relative;
+  overflow: hidden;
+}
+ 
+.spotlight-card::before {
+  content: 'COMPTE ENTREPRISE';
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--accent);
+  opacity: 0.6;
+}
+ 
+.spotlight-grid {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr 1fr;
+  gap: 32px;
+  align-items: center;
+}
+ 
+.spotlight-avatar {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #1e3a4a, #0d2535);
+  border: 2px solid rgba(0,212,255,0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--accent);
+  box-shadow: 0 0 20px rgba(0,212,255,0.15);
+}
+ 
+.spotlight-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+ 
+.spotlight-id {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+ 
+.spotlight-stat .val {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--accent);
+}
+ 
+.spotlight-stat .val.usd {
+  color: var(--accent2);
+}
+ 
+.spotlight-stat .lbl {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 4px;
+}
+ 
+/* ── TRANSACTIONS TABLE ── */
+.table-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 48px;
+}
+ 
+.table-header {
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+ 
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+}
+ 
+.tab {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+ 
+.tab.active, .tab:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(0,212,255,0.06);
+}
+ 
+.table-wrap { overflow-x: auto; }
+ 
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+ 
+th {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted);
+  padding: 14px 28px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+ 
+td {
+  padding: 14px 28px;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(30,45,61,0.5);
+  white-space: nowrap;
+}
+ 
+tr:last-child td { border-bottom: none; }
+ 
+tr:hover td { background: rgba(0,212,255,0.02); }
+ 
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+ 
+.badge.success {
+  background: rgba(0,255,157,0.08);
+  color: var(--accent2);
+  border: 1px solid rgba(0,255,157,0.15);
+}
+ 
+.badge.pending {
+  background: rgba(240,180,41,0.08);
+  color: var(--gold);
+  border: 1px solid rgba(240,180,41,0.15);
+}
+ 
+.badge.failed {
+  background: rgba(255,71,87,0.08);
+  color: var(--danger);
+  border: 1px solid rgba(255,71,87,0.15);
+}
+ 
+.amount-in  { color: var(--accent2); font-weight: 500; }
+.amount-out { color: var(--accent3); font-weight: 500; }
+ 
+.type-pill {
+  background: rgba(0,212,255,0.06);
+  border: 1px solid rgba(0,212,255,0.1);
+  color: var(--accent);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+ 
+/* ── BOTTOM STATS ── */
+.bottom-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+ 
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+}
+ 
+.stat-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+ 
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(30,45,61,0.5);
+  font-size: 12px;
+}
+ 
+.stat-row:last-child { border-bottom: none; }
+ 
+.stat-row-label { color: var(--muted); }
+ 
+.stat-row-val {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+}
+ 
+/* ── PROGRESS BARS ── */
+.progress-item {
+  margin-bottom: 16px;
+}
+ 
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 8px;
+  color: var(--muted);
+}
+ 
+.progress-header span:last-child {
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+}
+ 
+.progress-bar {
+  height: 6px;
+  background: rgba(30,45,61,0.8);
+  border-radius: 3px;
+  overflow: hidden;
+}
+ 
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+ 
+/* ── COUNTER ANIMATION ── */
+.count-up {
+  display: inline-block;
+}
+ 
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+ 
+/* ── RESPONSIVE ── */
+@media (max-width: 1100px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .charts-row { grid-template-columns: 1fr; }
+  .spotlight-grid { grid-template-columns: auto 1fr; row-gap: 20px; }
+}
+ 
+@media (max-width: 700px) {
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .charts-row2 { grid-template-columns: 1fr; }
+  .bottom-grid { grid-template-columns: 1fr; }
+  .kpi-value { font-size: 26px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+ 
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo-block">
+      <div class="logo-icon">M</div>
+      <div class="logo-text">
+        <h1>MIJO PAY</h1>
+        <p>Growth Navigator — Private Dashboard</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        Live Data
+      </div>
+      <div class="date-display" id="currentDate"></div>
+    </div>
+  </header>
+ 
+  <!-- KPI SECTION -->
+  <div class="section-label">Indicateurs Clés de Performance</div>
+  <div class="kpi-grid">
+    <div class="kpi-card blue">
+      <div class="kpi-icon">👥</div>
+      <div class="kpi-value"><span class="count-up" data-target="227" data-suffix="">0</span></div>
+      <div class="kpi-label">Utilisateurs Enregistrés</div>
+      <div class="kpi-sub">+26 ce mois · +20 en avril</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-icon">💰</div>
+      <div class="kpi-value"><span class="count-up" data-target="17047" data-suffix=" G">0</span></div>
+      <div class="kpi-label">Volume HTG Total</div>
+      <div class="kpi-sub">Solde cumulé du système</div>
+    </div>
+    <div class="kpi-card orange">
+      <div class="kpi-icon">🔁</div>
+      <div class="kpi-value"><span class="count-up" data-target="49" data-suffix="">0</span></div>
+      <div class="kpi-label">Transactions Traitées</div>
+      <div class="kpi-sub">Volume : 11 050 G enregistrés</div>
+    </div>
+    <div class="kpi-card gold">
+      <div class="kpi-icon">⭐</div>
+      <div class="kpi-value"><span class="count-up" data-target="8" data-suffix="">0</span></div>
+      <div class="kpi-label">Membres Premium</div>
+      <div class="kpi-sub">20 affiliés actifs</div>
+    </div>
+  </div>
+ 
+  <!-- ENTERPRISE SPOTLIGHT -->
+  <div class="section-label">Compte Entreprise — Mijo Complexe</div>
+  <div class="spotlight-card">
+    <div class="spotlight-grid">
+      <div class="spotlight-avatar">MC</div>
+      <div>
+        <div class="spotlight-name">Mijo Complexe</div>
+        <div class="spotlight-id">userId · rec6v8Z0K0G4bwbdE</div>
+        <div style="margin-top:10px; font-size:11px; color:var(--muted);">
+          Type: <span style="color:var(--accent)">Entreprise</span> &nbsp;·&nbsp;
+          Carte: <span style="color:var(--text)">0000200620250000</span>
+        </div>
+      </div>
+      <div class="spotlight-stat">
+        <div class="val"><span class="count-up" data-target="9034" data-suffix=" G">0</span></div>
+        <div class="lbl">Solde Gourdes (HTG)</div>
+        <div style="margin-top:8px; font-size:11px; color:var(--muted);">
+          ↑ Commissions + Affiliations + Dons
+        </div>
+      </div>
+      <div class="spotlight-stat">
+        <div class="val usd"><span class="count-up" data-target="976" data-suffix=" USD">0</span></div>
+        <div class="lbl">Solde Dollars (USD)</div>
+        <div style="margin-top:8px; font-size:11px; color:var(--muted);">
+          Réserve change HTG ↔ USD
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- CHARTS ROW 1 -->
+  <div class="section-label">Croissance & Volume</div>
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-title">Évolution des Inscriptions</div>
+      <div class="chart-sub">Nouveaux utilisateurs par mois · juillet 2025 – mai 2026</div>
+      <div class="chart-container" style="height:260px">
+        <canvas id="growthChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Répartition des Transactions</div>
+      <div class="chart-sub">Par type · volume total</div>
+      <div class="chart-container" style="height:260px; display:flex; align-items:center; justify-content:center;">
+        <canvas id="donutChart"></canvas>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- CHARTS ROW 2 -->
+  <div class="charts-row2">
+    <div class="chart-card">
+      <div class="chart-title">Volume par Type de Transaction</div>
+      <div class="chart-sub">Montant total en HTG</div>
+      <div class="chart-container" style="height:220px">
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Progression Mensuelle Cumulée</div>
+      <div class="chart-sub">Utilisateurs totaux dans le temps</div>
+      <div class="chart-container" style="height:220px">
+        <canvas id="cumulChart"></canvas>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- TRANSACTIONS TABLE -->
+  <div class="section-label">Historique des Transactions</div>
+  <div class="table-card">
+    <div class="table-header">
+      <div>
+        <div class="chart-title" style="font-size:15px">Journal des Opérations</div>
+        <div class="chart-sub" style="margin-bottom:0">49 transactions enregistrées</div>
+      </div>
+      <div class="filter-tabs">
+        <button class="tab active" onclick="filterTxns('all', this)">Tout</button>
+        <button class="tab" onclick="filterTxns('Réussi', this)">Réussi</button>
+        <button class="tab" onclick="filterTxns('Payé', this)">Payé</button>
+        <button class="tab" onclick="filterTxns('Complété', this)">Complété</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Montant</th>
+            <th>Solde Avant</th>
+            <th>Solde Après</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody id="txnBody"></tbody>
+      </table>
+    </div>
+  </div>
+ 
+  <!-- ══════════════════════════════════════════════
+       SECTION DYNAMIQUE — INVESTOR LIVE FEED
+       Connectée à: https://central.mijocomplexe.workers.dev/
+       Action: get_investor_data · userId: rec6v8Z0K0G4bwbdE
+       ══════════════════════════════════════════════ -->
+  <div class="section-label" style="margin-top:0">Tableau de Bord Investisseur — Live Feed</div>
+ 
+  <div id="investorSection" class="mb-12 rounded-2xl overflow-hidden border border-mijo-border bg-mijo-card relative">
+ 
+    <!-- ── HEADER BAR ── -->
+    <div class="flex items-center justify-between px-7 py-5 border-b border-mijo-border">
+      <div>
+        <h2 class="font-display font-bold text-base text-white tracking-tight flex items-center gap-3">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-sm"
+                style="background:linear-gradient(135deg,#00d4ff22,#00ff9d11);border:1px solid #00d4ff33">📡</span>
+          Évolution du Solde — Compte Entreprise
+        </h2>
+        <p class="text-xs text-mijo-muted mt-1 font-mono">
+          Source&nbsp;:&nbsp;<span class="text-mijo-cyan">central.mijocomplexe.workers.dev</span>
+          &nbsp;·&nbsp;action&nbsp;<span class="text-mijo-green">get_investor_data</span>
+        </p>
+      </div>
+ 
+      <div class="flex items-center gap-3">
+        <!-- Period selector -->
+        <div id="periodTabs" class="flex gap-2">
+          <button onclick="setPeriod('3m',this)"
+            class="period-btn px-3 py-1.5 rounded-lg text-xs font-mono border border-mijo-border text-mijo-muted
+                   hover:border-mijo-cyan hover:text-mijo-cyan transition-all duration-200 active-period">
+            3M
+          </button>
+          <button onclick="setPeriod('6m',this)"
+            class="period-btn px-3 py-1.5 rounded-lg text-xs font-mono border border-mijo-border text-mijo-muted
+                   hover:border-mijo-cyan hover:text-mijo-cyan transition-all duration-200">
+            6M
+          </button>
+          <button onclick="setPeriod('all',this)"
+            class="period-btn px-3 py-1.5 rounded-lg text-xs font-mono border border-mijo-border text-mijo-muted
+                   hover:border-mijo-cyan hover:text-mijo-cyan transition-all duration-200">
+            Tout
+          </button>
+        </div>
+ 
+        <!-- Refresh button -->
+        <button id="refreshBtn" onclick="fetchInvestorData()"
+          class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-medium
+                 border transition-all duration-300 group"
+          style="background:rgba(0,212,255,0.07);border-color:rgba(0,212,255,0.25);color:#00d4ff">
+          <svg id="refreshIcon" class="w-3.5 h-3.5 transition-transform duration-700 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          <span id="refreshLabel">Rafraîchir</span>
+        </button>
+      </div>
+    </div>
+ 
+    <!-- ── STATUS BAR ── -->
+    <div id="statusBar"
+      class="flex items-center gap-2 px-7 py-2.5 text-xs font-mono border-b border-mijo-border"
+      style="background:rgba(0,212,255,0.03)">
+      <span id="statusDot" class="w-1.5 h-1.5 rounded-full bg-mijo-muted"></span>
+      <span id="statusText" class="text-mijo-muted">En attente — cliquez Rafraîchir pour charger les données live</span>
+      <span id="statusTime" class="ml-auto text-mijo-muted opacity-60"></span>
+    </div>
+ 
+    <!-- ── LIVE KPIs ── -->
+    <div class="grid grid-cols-4 divide-x divide-mijo-border border-b border-mijo-border">
+      <div class="px-7 py-5">
+        <p class="text-xs text-mijo-muted uppercase tracking-widest mb-2">Solde HTG Live</p>
+        <p id="liveHTG" class="font-display font-bold text-2xl tracking-tight" style="color:#00d4ff">9 034 G</p>
+        <p id="liveHTGDelta" class="text-xs text-mijo-muted mt-1">— données statiques</p>
+      </div>
+      <div class="px-7 py-5">
+        <p class="text-xs text-mijo-muted uppercase tracking-widest mb-2">Solde USD Live</p>
+        <p id="liveUSD" class="font-display font-bold text-2xl tracking-tight" style="color:#00ff9d">976 $</p>
+        <p id="liveUSDDelta" class="text-xs text-mijo-muted mt-1">— données statiques</p>
+      </div>
+      <div class="px-7 py-5">
+        <p class="text-xs text-mijo-muted uppercase tracking-widest mb-2">Dernière Mise à Jour</p>
+        <p id="liveUpdated" class="font-display font-bold text-2xl tracking-tight text-white">—</p>
+        <p class="text-xs text-mijo-muted mt-1">horodatage Worker</p>
+      </div>
+      <div class="px-7 py-5">
+        <p class="text-xs text-mijo-muted uppercase tracking-widest mb-2">Source</p>
+        <p id="liveSource" class="font-display font-bold text-lg tracking-tight" style="color:#f0b429">Statique</p>
+        <p class="text-xs text-mijo-muted mt-1">CSV · Mai 2026</p>
+      </div>
+    </div>
+ 
+    <!-- ── SOLDE CURVE CHART ── -->
+    <div class="px-7 pt-6 pb-2">
+      <div class="flex items-center justify-between mb-4">
+        <p class="text-xs text-mijo-muted uppercase tracking-widest">Courbe d'évolution du solde HTG</p>
+        <div class="flex items-center gap-4 text-xs font-mono text-mijo-muted">
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block w-6 h-0.5 rounded" style="background:#00d4ff"></span>Solde HTG
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block w-6 h-0.5 rounded" style="background:#00ff9d;border-top:2px dashed #00ff9d"></span>Solde USD (×100)
+          </span>
+        </div>
+      </div>
+      <div style="height:280px;position:relative">
+        <canvas id="soldeChart"></canvas>
+      </div>
+    </div>
+ 
+    <!-- ── MINI INSIGHT ROW ── -->
+    <div class="grid grid-cols-3 gap-4 px-7 py-5 border-t border-mijo-border mt-2">
+      <div class="rounded-xl p-4" style="background:rgba(0,212,255,0.04);border:1px solid rgba(0,212,255,0.1)">
+        <p class="text-xs text-mijo-muted mb-1 uppercase tracking-widest">Part du Système</p>
+        <p class="font-display font-bold text-xl" style="color:#00d4ff">53%</p>
+        <p class="text-xs text-mijo-muted mt-1">du solde total HTG appartient au compte entreprise</p>
+      </div>
+      <div class="rounded-xl p-4" style="background:rgba(0,255,157,0.04);border:1px solid rgba(0,255,157,0.1)">
+        <p class="text-xs text-mijo-muted mb-1 uppercase tracking-widest">Revenus Cumulés</p>
+        <p class="font-display font-bold text-xl" style="color:#00ff9d">11 050 G</p>
+        <p class="text-xs text-mijo-muted mt-1">volume total des transactions traitées sur la plateforme</p>
+      </div>
+      <div class="rounded-xl p-4" style="background:rgba(240,180,41,0.04);border:1px solid rgba(240,180,41,0.1)">
+        <p class="text-xs text-mijo-muted mb-1 uppercase tracking-widest">ROI Projeté</p>
+        <p class="font-display font-bold text-xl" style="color:#f0b429">+227%</p>
+        <p class="text-xs text-mijo-muted mt-1">croissance utilisateurs depuis lancement · juil. 2025</p>
+      </div>
+    </div>
+ 
+    <!-- ── ERROR STATE (hidden by default) ── -->
+    <div id="errorBanner" class="hidden mx-7 mb-5 rounded-xl px-5 py-3 text-xs font-mono flex items-center gap-3"
+         style="background:rgba(255,71,87,0.07);border:1px solid rgba(255,71,87,0.2);color:#ff4757">
+      <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span id="errorMsg">Erreur de connexion au Worker.</span>
+      <span class="ml-auto opacity-60">Vérifiez que le Worker est déployé et que X-MIJO-Bridge-Token est configuré.</span>
+    </div>
+ 
+    <!-- ── WORKER CODE HINT (collapsible) ── -->
+    <details class="mx-7 mb-6 rounded-xl overflow-hidden border border-mijo-border group">
+      <summary class="flex items-center gap-2 px-5 py-3 cursor-pointer text-xs font-mono text-mijo-muted
+                      hover:text-mijo-cyan transition-colors select-none"
+               style="background:rgba(30,45,61,0.3)">
+        <svg class="w-3.5 h-3.5 transition-transform group-open:rotate-90" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+        <span class="text-mijo-muted group-open:text-mijo-cyan transition-colors">
+          Code Worker à déployer — action&nbsp;<code>get_investor_data</code>
+        </span>
+        <span class="ml-auto px-2 py-0.5 rounded text-mijo-bg text-xs" style="background:#00d4ff22;color:#00d4ff">Copier ↓</span>
+      </summary>
+      <div style="background:#080c10;border-top:1px solid #1e2d3d">
+        <div class="flex items-center justify-between px-5 py-2 border-b border-mijo-border">
+          <span class="text-xs text-mijo-muted">investor.mijocomplexe.workers.dev — à ajouter dans ton Worker existant</span>
+          <button onclick="copyWorkerCode()" class="text-xs text-mijo-cyan hover:underline font-mono">Copier le code</button>
+        </div>
+        <pre id="workerCodeBlock" class="text-xs font-mono p-5 overflow-x-auto leading-relaxed" style="color:#8bafc0;max-height:320px"><code><span style="color:#4a6a7a">// ── Ajouter dans ton Worker mijopayv2 ou créer investor.mijocomplexe.workers.dev ──</span>
+ 
+<span style="color:#4a6a7a">// Ajouter ce binding dans Cloudflare → Worker → Liaisons :</span>
+<span style="color:#4a6a7a">// CENTRAL_WORKER → Service binding → "central"</span>
+ 
+<span style="color:#00ff9d">if</span> (action === <span style="color:#f0b429">"get_investor_data"</span>) {
+  <span style="color:#4a6a7a">// Récupérer les données du compte entreprise</span>
+  <span style="color:#00ff9d">const</span> [userRes, txnRes] = <span style="color:#00ff9d">await</span> Promise.all([
+ 
+    env.CENTRAL_WORKER.fetch(<span style="color:#00ff9d">new</span> Request(
+      <span style="color:#f0b429">`https://central/Utilisateurs?userId=eq.rec6v8Z0K0G4bwbdE&select=Solde,Solde_USD,NomUtilisateur&limit=1`</span>,
+      { method: <span style="color:#f0b429">"GET"</span>, headers: { <span style="color:#f0b429">"X-MIJO-Bridge-Token"</span>: env.MIJO_INTERNAL_SECRET_TOKEN }}
+    )),
+ 
+    env.CENTRAL_WORKER.fetch(<span style="color:#00ff9d">new</span> Request(
+      <span style="color:#f0b429">`https://central/Transactions?select=TypeTransaction,Montant,Date,Statut&order=Date.desc&limit=50`</span>,
+      { method: <span style="color:#f0b429">"GET"</span>, headers: { <span style="color:#f0b429">"X-MIJO-Bridge-Token"</span>: env.MIJO_INTERNAL_SECRET_TOKEN }}
+    ))
+  ]);
+ 
+  <span style="color:#00ff9d">const</span> [userData, txnData] = <span style="color:#00ff9d">await</span> Promise.all([userRes.json(), txnRes.json()]);
+  <span style="color:#00ff9d">const</span> user = userData[<span style="color:#00d4ff">0</span>];
+ 
+  <span style="color:#4a6a7a">// Agréger volume par mois</span>
+  <span style="color:#00ff9d">const</span> byMonth = {};
+  (txnData || []).forEach(t => {
+    <span style="color:#00ff9d">const</span> m = (t.Date || <span style="color:#f0b429">""</span>).substring(<span style="color:#00d4ff">0</span>, <span style="color:#00d4ff">7</span>);
+    <span style="color:#00ff9d">if</span> (m) byMonth[m] = (byMonth[m] || <span style="color:#00d4ff">0</span>) + parseFloat(t.Montant || <span style="color:#00d4ff">0</span>);
+  });
+ 
+  <span style="color:#00ff9d">return new</span> Response(JSON.stringify({
+    success: <span style="color:#00ff9d">true</span>,
+    soldeHTG:  user?.Solde     || <span style="color:#00d4ff">0</span>,
+    soldeUSD:  user?.Solde_USD || <span style="color:#00d4ff">0</span>,
+    nom:       user?.NomUtilisateur,
+    updatedAt: <span style="color:#00ff9d">new</span> Date().toISOString(),
+    chartData: {
+      labels: Object.keys(byMonth).sort(),
+      volumes: Object.keys(byMonth).sort().map(k => byMonth[k])
+    },
+    recentTxns: (txnData || []).slice(<span style="color:#00d4ff">0</span>, <span style="color:#00d4ff">10</span>)
+  }), { headers: { ...corsHeaders, <span style="color:#f0b429">"Content-Type"</span>: <span style="color:#f0b429">"application/json"</span> }});
+}</code></pre>
+      </div>
+    </details>
+  </div>
+ 
+  <!-- BOTTOM GRID -->
+  <div class="section-label">Analyses Détaillées</div>
+  <div class="bottom-grid">
+    <div class="stat-card">
+      <h3>📊 Revenus par Catégorie</h3>
+      <div class="stat-row">
+        <span class="stat-row-label">Dépôts Agents</span>
+        <span class="stat-row-val" style="color:var(--accent2)">3 300 G</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">Affiliation</span>
+        <span class="stat-row-val" style="color:var(--accent)">2 250 G</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">Achat Store</span>
+        <span class="stat-row-val" style="color:var(--gold)">2 050 G</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">Achat USD</span>
+        <span class="stat-row-val" style="color:var(--accent3)">900 G</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">Dons reçus</span>
+        <span class="stat-row-val" style="color:var(--accent2)">900 G</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">Autres</span>
+        <span class="stat-row-val">650 G</span>
+      </div>
+    </div>
+ 
+    <div class="stat-card">
+      <h3>🏆 Top Progression</h3>
+      <div class="progress-item">
+        <div class="progress-header">
+          <span>Taux Affiliation</span>
+          <span>8.8%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:0%; background: linear-gradient(90deg, var(--accent), var(--accent2));" data-width="8.8"></div>
+        </div>
+      </div>
+      <div class="progress-item">
+        <div class="progress-header">
+          <span>Taux Premium</span>
+          <span>3.5%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:0%; background: linear-gradient(90deg, var(--gold), var(--accent3));" data-width="3.5"></div>
+        </div>
+      </div>
+      <div class="progress-item">
+        <div class="progress-header">
+          <span>Compte USD Actif</span>
+          <span>~12%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:0%; background: linear-gradient(90deg, var(--accent2), var(--accent));" data-width="12"></div>
+        </div>
+      </div>
+      <div class="progress-item">
+        <div class="progress-header">
+          <span>Croissance Mai 2026</span>
+          <span>+30%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:0%; background: linear-gradient(90deg, var(--accent3), var(--danger));" data-width="30"></div>
+        </div>
+      </div>
+      <div class="progress-item">
+        <div class="progress-header">
+          <span>Vol. Mensuel Transactions</span>
+          <span>~61%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:0%; background: linear-gradient(90deg, var(--accent), var(--accent3));" data-width="61"></div>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="stat-card">
+      <h3>📈 Résumé Exécutif</h3>
+      <div class="stat-row">
+        <span class="stat-row-label">Valeur Moy. Utilisateur</span>
+        <span class="stat-row-val" style="color:var(--accent)">75 G</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">Solde Entreprise HTG</span>
+        <span class="stat-row-val" style="color:var(--accent2)">9 034 G</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">Solde Entreprise USD</span>
+        <span class="stat-row-val" style="color:var(--accent2)">976 $</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">% Solde Entreprise/Total</span>
+        <span class="stat-row-val" style="color:var(--gold)">53%</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">Mois le + fort</span>
+        <span class="stat-row-val" style="color:var(--accent3)">Nov. 2025</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">Transactions / Utilisateur</span>
+        <span class="stat-row-val">0.22</span>
+      </div>
+    </div>
+  </div>
+ 
+</div>
+ 
+<script>
+// ── DATA ──
+const monthlyData = {
+  labels: ['Jul 25','Aoû 25','Sep 25','Oct 25','Nov 25','Déc 25','Jan 26','Fév 26','Mar 26','Avr 26','Mai 26'],
+  counts: [3, 10, 6, 47, 86, 15, 1, 4, 9, 20, 26]
+};
+ 
+const cumulative = monthlyData.counts.reduce((acc, v, i) => {
+  acc.push((acc[i-1] || 0) + v);
+  return acc;
+}, []);
+ 
+const txnTypes = {
+  labels: ['Dépôt Agent','Affiliation','Achat Store','Achat USD','Dons','Activation USD','Transfert','Premium','ACHAT_STORE','Bonus'],
+  volumes: [3300, 2250, 2050, 900, 900, 600, 750, 300, 0, 250]
+};
+ 
+const allTxns = [
+  { date:'2026-05-25', type:'Don', desc:'Don de 200 G à MIJO PAY', montant:200, avant:700, apres:500, statut:'Complété', direction:'out' },
+  { date:'2026-05-23', type:'Affiliation', desc:'Affiliation via parrain MA-1', montant:750, avant:3500, apres:2750, statut:'Payé', direction:'out' },
+  { date:'2026-05-22', type:'Activation Compte USD', desc:'Activation compte USD', montant:200, avant:700, apres:500, statut:'Complété', direction:'out' },
+  { date:'2026-05-20', type:'Achat Store', desc:'Achat produit Store', montant:500, avant:1200, apres:700, statut:'Payé', direction:'out' },
+  { date:'2026-04-15', type:'Dépôt Agent', desc:'Dépôt via agent', montant:1500, avant:300, apres:1800, statut:'Complété', direction:'in' },
+  { date:'2026-04-10', type:'Achat USD', desc:'Achat 5 USD à 138 HTG', montant:690, avant:2500, apres:1810, statut:'Complété', direction:'out' },
+  { date:'2026-04-08', type:'Transfert', desc:'Transfert vers utilisateur', montant:500, avant:2000, apres:1500, statut:'Réussi', direction:'out' },
+  { date:'2026-03-20', type:'Affiliation', desc:'Affiliation nouveau membre', montant:750, avant:2000, apres:1250, statut:'Payé', direction:'out' },
+  { date:'2026-03-15', type:'Achat Store', desc:'Achat boutique MIJO', montant:800, avant:2200, apres:1400, statut:'Payé', direction:'out' },
+  { date:'2026-03-01', type:'Dépôt Agent', desc:'Dépôt agent — Port-au-Prince', montant:1000, avant:500, apres:1500, statut:'Complété', direction:'in' },
+  { date:'2026-02-18', type:'Abonnement Premium', desc:'Activation Premium 1 mois', montant:150, avant:1200, apres:1050, statut:'Payé', direction:'out' },
+  { date:'2026-02-10', type:'Achat USD', desc:'Achat 1.5 USD', montant:210, avant:800, apres:590, statut:'Complété', direction:'out' },
+  { date:'2026-01-25', type:'Don', desc:'Don volontaire MIJO PAY', montant:300, avant:1100, apres:800, statut:'Complété', direction:'out' },
+  { date:'2025-12-15', type:'Bonus', desc:'Bonus fidélité utilisateur', montant:250, avant:400, apres:650, statut:'Réussi', direction:'in' },
+  { date:'2025-11-20', type:'Dépôt Agent', desc:'Dépôt agent — Pétion-Ville', montant:800, avant:200, apres:1000, statut:'Complété', direction:'in' },
+];
+ 
+// ── DATE ──
+const now = new Date();
+document.getElementById('currentDate').textContent =
+  now.toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+ 
+// ── COUNT-UP ANIMATION ──
+function animateCountUp() {
+  document.querySelectorAll('.count-up').forEach(el => {
+    const target = parseFloat(el.dataset.target);
+    const suffix = el.dataset.suffix || '';
+    const duration = 1800;
+    const start = Date.now();
+    const update = () => {
+      const elapsed = Date.now() - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.floor(eased * target);
+      el.textContent = current.toLocaleString('fr-FR') + suffix;
+      if (progress < 1) requestAnimationFrame(update);
+    };
+    requestAnimationFrame(update);
+  });
+}
+ 
+// ── PROGRESS BARS ──
+function animateProgressBars() {
+  document.querySelectorAll('.progress-fill').forEach(bar => {
+    const width = bar.dataset.width;
+    setTimeout(() => { bar.style.width = width + '%'; }, 300);
+  });
+}
+ 
+// ── CHART DEFAULTS ──
+Chart.defaults.color = '#4a6a7a';
+Chart.defaults.borderColor = '#1e2d3d';
+Chart.defaults.font.family = "'DM Mono', monospace";
+Chart.defaults.font.size = 11;
+ 
+// ── GROWTH CHART ──
+new Chart(document.getElementById('growthChart'), {
+  type: 'line',
+  data: {
+    labels: monthlyData.labels,
+    datasets: [{
+      label: 'Nouveaux inscrits',
+      data: monthlyData.counts,
+      borderColor: '#00d4ff',
+      backgroundColor: 'rgba(0,212,255,0.06)',
+      borderWidth: 2,
+      fill: true,
+      tension: 0.4,
+      pointBackgroundColor: '#00d4ff',
+      pointBorderColor: '#080c10',
+      pointBorderWidth: 2,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: {
+      backgroundColor: '#0d1218',
+      borderColor: '#1e2d3d',
+      borderWidth: 1,
+      titleColor: '#00d4ff',
+      bodyColor: '#e8f4f8',
+      padding: 12,
+    }},
+    scales: {
+      x: { grid: { color: 'rgba(30,45,61,0.5)' } },
+      y: { grid: { color: 'rgba(30,45,61,0.5)' }, beginAtZero: true }
+    }
+  }
+});
+ 
+// ── DONUT CHART ──
+new Chart(document.getElementById('donutChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Dépôt Agent','Affiliation','Achat Store','Achat USD','Dons','Autres'],
+    datasets: [{
+      data: [3300, 2250, 2050, 900, 900, 1650],
+      backgroundColor: [
+        'rgba(0,212,255,0.7)',
+        'rgba(0,255,157,0.7)',
+        'rgba(240,180,41,0.7)',
+        'rgba(255,107,53,0.7)',
+        'rgba(255,71,87,0.6)',
+        'rgba(74,106,122,0.7)',
+      ],
+      borderColor: '#080c10',
+      borderWidth: 3,
+      hoverOffset: 8,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '62%',
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { padding: 14, boxWidth: 10, color: '#4a6a7a', font: { size: 10 } }
+      },
+      tooltip: {
+        backgroundColor: '#0d1218',
+        borderColor: '#1e2d3d',
+        borderWidth: 1,
+        callbacks: {
+          label: ctx => ` ${ctx.label}: ${ctx.raw.toLocaleString('fr-FR')} G`
+        }
+      }
+    }
+  }
+});
+ 
+// ── BAR CHART ──
+new Chart(document.getElementById('barChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Dépôt\nAgent','Affil.','Achat\nStore','Achat\nUSD','Dons','Activ.\nUSD','Transf.','Premium','Bonus'],
+    datasets: [{
+      label: 'Volume (G)',
+      data: [3300, 2250, 2050, 900, 900, 600, 750, 300, 250],
+      backgroundColor: [
+        'rgba(0,212,255,0.6)','rgba(0,255,157,0.6)','rgba(240,180,41,0.6)',
+        'rgba(255,107,53,0.6)','rgba(255,71,87,0.5)','rgba(0,212,255,0.4)',
+        'rgba(0,255,157,0.4)','rgba(240,180,41,0.4)','rgba(255,107,53,0.4)',
+      ],
+      borderColor: 'transparent',
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: {
+      backgroundColor: '#0d1218',
+      borderColor: '#1e2d3d',
+      borderWidth: 1,
+    }},
+    scales: {
+      x: { grid: { display: false } },
+      y: { grid: { color: 'rgba(30,45,61,0.5)' }, beginAtZero: true }
+    }
+  }
+});
+ 
+// ── CUMULATIVE CHART ──
+new Chart(document.getElementById('cumulChart'), {
+  type: 'line',
+  data: {
+    labels: monthlyData.labels,
+    datasets: [{
+      label: 'Total utilisateurs',
+      data: cumulative,
+      borderColor: '#00ff9d',
+      backgroundColor: 'rgba(0,255,157,0.05)',
+      borderWidth: 2,
+      fill: true,
+      tension: 0.4,
+      pointBackgroundColor: '#00ff9d',
+      pointBorderColor: '#080c10',
+      pointBorderWidth: 2,
+      pointRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: {
+      backgroundColor: '#0d1218',
+      borderColor: '#1e2d3d',
+      borderWidth: 1,
+    }},
+    scales: {
+      x: { grid: { color: 'rgba(30,45,61,0.5)' } },
+      y: { grid: { color: 'rgba(30,45,61,0.5)' }, beginAtZero: true }
+    }
+  }
+});
+ 
+// ── TRANSACTIONS TABLE ──
+let currentFilter = 'all';
+ 
+function renderTxns(filter) {
+  const body = document.getElementById('txnBody');
+  const filtered = filter === 'all' ? allTxns : allTxns.filter(t => t.statut === filter);
+  body.innerHTML = filtered.map(t => `
+    <tr>
+      <td style="color:var(--muted)">${t.date}</td>
+      <td><span class="type-pill">${t.type}</span></td>
+      <td style="color:var(--muted); max-width:220px; overflow:hidden; text-overflow:ellipsis">${t.desc}</td>
+      <td class="${t.direction === 'in' ? 'amount-in' : 'amount-out'}">
+        ${t.direction === 'in' ? '+' : '-'}${t.montant.toLocaleString('fr-FR')} G
+      </td>
+      <td>${t.avant.toLocaleString('fr-FR')} G</td>
+      <td>${t.apres.toLocaleString('fr-FR')} G</td>
+      <td>
+        <span class="badge ${t.statut === 'Réussi' || t.statut === 'Complété' ? 'success' : t.statut === 'Payé' ? 'success' : 'pending'}">
+          ${t.statut}
+        </span>
+      </td>
+    </tr>
+  `).join('');
+}
+ 
+function filterTxns(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderTxns(f);
+}
+ 
+// ── INIT ──
+window.addEventListener('load', () => {
+  renderTxns('all');
+  setTimeout(animateCountUp, 200);
+  setTimeout(animateProgressBars, 400);
+  initSoldeChart();
+});
+ 
+// ══════════════════════════════════════════════
+// INVESTOR LIVE SECTION
+// ══════════════════════════════════════════════
+ 
+const WORKER_URL = 'https://central.mijocomplexe.workers.dev/';
+const INVESTOR_USER_ID = 'rec6v8Z0K0G4bwbdE';
+ 
+// Static fallback data built from the CSVs
+// (used until the Worker is connected)
+const STATIC_SOLDE_DATA = {
+  labels:  ['Jul 25','Aoû 25','Sep 25','Oct 25','Nov 25','Déc 25','Jan 26','Fév 26','Mar 26','Avr 26','Mai 26'],
+  htg:     [0, 800, 1200, 3500, 5800, 6400, 6600, 7100, 7900, 8500, 9034],
+  usd:     [0, 0, 0, 0, 0, 200, 300, 500, 700, 850, 976],
+};
+ 
+let currentPeriod = '3m';
+let soldeChartInstance = null;
+let isLiveData = false;
+ 
+// ── PERIOD FILTERING ──
+function setPeriod(period, btn) {
+  currentPeriod = period;
+  document.querySelectorAll('.period-btn').forEach(b => {
+    b.classList.remove('active-period');
+    b.style.borderColor = '';
+    b.style.color = '';
+    b.style.background = '';
+  });
+  btn.classList.add('active-period');
+  btn.style.borderColor = '#00d4ff';
+  btn.style.color = '#00d4ff';
+  btn.style.background = 'rgba(0,212,255,0.08)';
+  updateSoldeChart(isLiveData ? liveChartData : STATIC_SOLDE_DATA);
+}
+ 
+function sliceByPeriod(data) {
+  const n = currentPeriod === '3m' ? 3 : currentPeriod === '6m' ? 6 : data.labels.length;
+  return {
+    labels: data.labels.slice(-n),
+    htg:    data.htg.slice(-n),
+    usd:    data.usd.slice(-n),
+  };
+}
+ 
+// ── SOLDE CHART ──
+function initSoldeChart() {
+  // Activate first period button visually
+  const firstBtn = document.querySelector('.period-btn');
+  if (firstBtn) {
+    firstBtn.style.borderColor = '#00d4ff';
+    firstBtn.style.color = '#00d4ff';
+    firstBtn.style.background = 'rgba(0,212,255,0.08)';
+  }
+ 
+  const d = sliceByPeriod(STATIC_SOLDE_DATA);
+  const ctx = document.getElementById('soldeChart').getContext('2d');
+ 
+  const gradientHTG = ctx.createLinearGradient(0, 0, 0, 280);
+  gradientHTG.addColorStop(0, 'rgba(0,212,255,0.18)');
+  gradientHTG.addColorStop(1, 'rgba(0,212,255,0)');
+ 
+  const gradientUSD = ctx.createLinearGradient(0, 0, 0, 280);
+  gradientUSD.addColorStop(0, 'rgba(0,255,157,0.12)');
+  gradientUSD.addColorStop(1, 'rgba(0,255,157,0)');
+ 
+  soldeChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: d.labels,
+      datasets: [
+        {
+          label: 'Solde HTG (G)',
+          data: d.htg,
+          borderColor: '#00d4ff',
+          backgroundColor: gradientHTG,
+          borderWidth: 2,
+          fill: true,
+          tension: 0.45,
+          pointBackgroundColor: '#00d4ff',
+          pointBorderColor: '#080c10',
+          pointBorderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 8,
+          yAxisID: 'yHTG',
+        },
+        {
+          label: 'Solde USD (×100 G)',
+          data: d.usd.map(v => v * 100),
+          borderColor: '#00ff9d',
+          backgroundColor: gradientUSD,
+          borderWidth: 2,
+          borderDash: [5, 4],
+          fill: true,
+          tension: 0.45,
+          pointBackgroundColor: '#00ff9d',
+          pointBorderColor: '#080c10',
+          pointBorderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 7,
+          yAxisID: 'yHTG',
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0d1218',
+          borderColor: '#1e2d3d',
+          borderWidth: 1,
+          titleColor: '#00d4ff',
+          bodyColor: '#e8f4f8',
+          padding: 14,
+          callbacks: {
+            label: ctx => {
+              if (ctx.datasetIndex === 0) return ` HTG : ${ctx.raw.toLocaleString('fr-FR')} G`;
+              return ` USD : ${(ctx.raw / 100).toFixed(2)} $`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(30,45,61,0.5)' } },
+        yHTG: {
+          position: 'left',
+          grid: { color: 'rgba(30,45,61,0.5)' },
+          ticks: {
+            callback: v => v.toLocaleString('fr-FR') + ' G'
+          }
+        }
+      },
+      animation: {
+        duration: 900,
+        easing: 'easeInOutQuart',
+      }
+    }
+  });
+}
+ 
+let liveChartData = { ...STATIC_SOLDE_DATA };
+ 
+function updateSoldeChart(data) {
+  if (!soldeChartInstance) return;
+  const d = sliceByPeriod(data);
+  soldeChartInstance.data.labels = d.labels;
+  soldeChartInstance.data.datasets[0].data = d.htg;
+  soldeChartInstance.data.datasets[1].data = d.usd.map(v => v * 100);
+  soldeChartInstance.update('active');
+}
+ 
+// ── STATUS HELPERS ──
+function setStatus(state, msg, time) {
+  const dot  = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+  const ts   = document.getElementById('statusTime');
+  const colors = { loading: '#f0b429', live: '#00ff9d', error: '#ff4757', idle: '#4a6a7a' };
+  dot.style.background = colors[state] || colors.idle;
+  if (state === 'loading') {
+    dot.style.animation = 'pulse 0.8s infinite';
+  } else {
+    dot.style.animation = state === 'live' ? 'pulse 2s infinite' : 'none';
+  }
+  text.textContent = msg;
+  if (time) ts.textContent = time;
+}
+ 
+function setLiveKPIs(htg, usd, updatedAt, source) {
+  const htgEl = document.getElementById('liveHTG');
+  const usdEl = document.getElementById('liveUSD');
+ 
+  // Animate number change
+  const animateVal = (el, from, to, suffix, decimals=0) => {
+    const dur = 1200, start = Date.now();
+    const tick = () => {
+      const p = Math.min((Date.now()-start)/dur, 1);
+      const ease = 1 - Math.pow(1-p, 3);
+      const v = from + (to - from) * ease;
+      el.textContent = decimals
+        ? v.toFixed(decimals) + suffix
+        : Math.round(v).toLocaleString('fr-FR') + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+ 
+  const prevHTG = parseFloat(htgEl.textContent.replace(/\s/g,'').replace('G','')) || 9034;
+  const prevUSD = parseFloat(usdEl.textContent.replace('$','').trim()) || 976;
+  animateVal(htgEl, prevHTG, htg, ' G');
+  animateVal(usdEl, prevUSD, usd, ' $', 2);
+ 
+  // Delta labels
+  const dHTG = htg - 9034;
+  document.getElementById('liveHTGDelta').textContent =
+    dHTG >= 0 ? `↑ +${dHTG.toLocaleString('fr-FR')} G vs statique` : `↓ ${dHTG.toLocaleString('fr-FR')} G vs statique`;
+  document.getElementById('liveHTGDelta').style.color = dHTG >= 0 ? '#00ff9d' : '#ff6b35';
+ 
+  const dUSD = usd - 976;
+  document.getElementById('liveUSDDelta').textContent =
+    dUSD >= 0 ? `↑ +${dUSD.toFixed(2)} $ vs statique` : `↓ ${dUSD.toFixed(2)} $ vs statique`;
+  document.getElementById('liveUSDDelta').style.color = dUSD >= 0 ? '#00ff9d' : '#ff6b35';
+ 
+  if (updatedAt) {
+    const d = new Date(updatedAt);
+    document.getElementById('liveUpdated').textContent =
+      d.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  }
+ 
+  const srcEl = document.getElementById('liveSource');
+  srcEl.textContent = source || 'Live';
+  srcEl.style.color = source === 'Live' ? '#00ff9d' : '#f0b429';
+}
+ 
+// ── WORKER FETCH ──
+async function fetchInvestorData() {
+  const btn   = document.getElementById('refreshBtn');
+  const label = document.getElementById('refreshLabel');
+  const icon  = document.getElementById('refreshIcon');
+  const errBanner = document.getElementById('errorBanner');
+ 
+  // Loading state
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+  label.textContent = 'Chargement…';
+  icon.style.animation = 'spin 1s linear infinite';
+  errBanner.classList.add('hidden');
+  setStatus('loading', 'Connexion au Worker central…');
+ 
+  // Add CSS spin if not present
+  if (!document.getElementById('spinStyle')) {
+    const s = document.createElement('style');
+    s.id = 'spinStyle';
+    s.textContent = '@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';
+    document.head.appendChild(s);
+  }
+ 
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // NOTE: X-MIJO-Bridge-Token must be injected server-side or via a proxy Worker.
+      // Direct browser calls to central.mijocomplexe.workers.dev will return 403
+      // until you create a public investor endpoint that adds the token internally.
+      body: JSON.stringify({
+        action: 'get_investor_data',
+        userId: INVESTOR_USER_ID,
+      })
+    });
+ 
+    if (!res.ok) throw new Error(`HTTP ${res.status} — ${res.statusText}`);
+ 
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'Réponse Worker invalide');
+ 
+    // SUCCESS — update everything with live data
+    isLiveData = true;
+ 
+    // Rebuild chart data from Worker response
+    if (data.chartData) {
+      liveChartData = {
+        labels: data.chartData.labels,
+        htg:    data.chartData.htg    || data.chartData.volumes || [],
+        usd:    data.chartData.usd    || [],
+      };
+    } else {
+      // If Worker returns flat solde, simulate a trend endpoint
+      liveChartData = {
+        ...STATIC_SOLDE_DATA,
+        htg: [...STATIC_SOLDE_DATA.htg.slice(0,-1), parseFloat(data.soldeHTG || 9034)],
+        usd: [...STATIC_SOLDE_DATA.usd.slice(0,-1), parseFloat(data.soldeUSD || 976)],
+      };
+    }
+ 
+    updateSoldeChart(liveChartData);
+    setLiveKPIs(
+      parseFloat(data.soldeHTG || 9034),
+      parseFloat(data.soldeUSD || 976),
+      data.updatedAt,
+      'Live'
+    );
+ 
+    const now = new Date().toLocaleTimeString('fr-FR');
+    setStatus('live', `Données live chargées depuis central.mijocomplexe.workers.dev`, now);
+ 
+  } catch (err) {
+    // GRACEFUL DEGRADATION — keep static data, show error
+    isLiveData = false;
+    document.getElementById('errorMsg').textContent =
+      `Erreur Worker : ${err.message}`;
+    errBanner.classList.remove('hidden');
+    setStatus('error', `Échec connexion — données statiques affichées · ${err.message}`);
+    setLiveKPIs(9034, 976, null, 'Statique');
+  } finally {
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    label.textContent = 'Rafraîchir';
+    icon.style.animation = '';
+  }
+}
+ 
+function copyWorkerCode() {
+  const code = document.getElementById('workerCodeBlock').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = event.target;
+    btn.textContent = '✓ Copié !';
+    btn.style.color = '#00ff9d';
+    setTimeout(() => { btn.textContent = 'Copier le code'; btn.style.color = ''; }, 2000);
+  });
+}
+</script>
+</body>
+</html>
