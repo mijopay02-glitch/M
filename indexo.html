@@ -244,6 +244,7 @@
             }
 
             localStorage.setItem("user", JSON.stringify(data.user));
+            localStorage.setItem('token', data.token);
             messageDiv.style.color = "green";
             messageDiv.innerText = "Connexion réussie ! Redirection...";
             setTimeout(() => { window.location.href = "home.html"; }, 1000);
