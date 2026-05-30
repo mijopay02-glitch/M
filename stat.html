@@ -1,4 +1,4 @@
-
+y dashboard · HTML
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -1329,8 +1329,7 @@ window.addEventListener('load', () => {
  
 const WORKER_URL = 'https://central.mijocomplexe.workers.dev/';
 const INVESTOR_USER_ID = 'rec6v8Z0K0G4bwbdE';
-  const BRIDGE_TOKEN = "MijoPay_Secure_Bridge_2026_@_Tr0pPuissant_xyz!";
-  
+ 
 // Static fallback data built from the CSVs
 // (used until the Worker is connected)
 const STATIC_SOLDE_DATA = {
@@ -1561,51 +1560,100 @@ async function fetchInvestorData() {
     s.textContent = '@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';
     document.head.appendChild(s);
   }
-
+ 
   try {
     const res = await fetch("https://central.mijocomplexe.workers.dev/get_investor_data", {
-      method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "X-MIJO-Bridge-Token": BRIDGE_TOKEN 
-  },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json',
+               "X-MIJO-Bridge-Token": "MijoPay_Secure_Bridge_2026_@_Tr0pPuissant_xyz!"},
+      
+      
       body: JSON.stringify({
-    action: 'get_investor_data',
-    userId: INVESTOR_USER_ID,
-    startDate: "2026-01-01", 
-    endDate: "2026-05-30"
-  })
-});
+        action: 'get_investor_data',
+        userId: INVESTOR_USER_ID,
+      })
+    });
  
     if (!res.ok) throw new Error(`HTTP ${res.status} — ${res.statusText}`);
  
     const data = await res.json();
-    if (!data.success) throw new Error(data.error || 'Réponse Worker invalide');
+ 
+    // Worker renvoie { status: 'success', soldeActuel: ..., historique: [...] }
+    // ou ancien format { success: true, soldeHTG: ..., soldeUSD: ... }
+    const isSuccess = data.status === 'success' || data.success === true;
+    if (!isSuccess) throw new Error(data.error || data.message || 'Réponse Worker invalide');
  
     // SUCCESS — update everything with live data
     isLiveData = true;
  
-    // Rebuild chart data from Worker response
-    if (data.chartData) {
+    // ── Normaliser le solde ──
+    // Supporte: { soldeActuel } (nouveau Worker) et { soldeHTG } (ancien format)
+    const soldeHTG = parseFloat(data.soldeActuel ?? data.soldeHTG ?? 9034);
+    const soldeUSD = parseFloat(data.soldeUSD ?? 0);
+ 
+    // ── Reconstruire les données du graphique ──
+    if (data.chartData && data.chartData.labels) {
+      // Worker envoie déjà des données formatées pour Chart.js
       liveChartData = {
         labels: data.chartData.labels,
         htg:    data.chartData.htg    || data.chartData.volumes || [],
         usd:    data.chartData.usd    || [],
       };
+ 
+    } else if (Array.isArray(data.historique) && data.historique.length > 0) {
+      // Nouveau format: { historique: [ { date, montant, soldeApres, type }, ... ] }
+      // On groupe par mois pour construire la courbe de solde
+      const byMonth = {};
+      data.historique.forEach(t => {
+        const raw = t.date || t.Date || t.DateTransaction || '';
+        const m = raw.substring(0, 7); // 'YYYY-MM'
+        if (!m) return;
+        // On garde le dernier soldeApres connu pour ce mois
+        if (t.soldeApres != null || t.SoldeApres != null) {
+          byMonth[m] = parseFloat(t.soldeApres ?? t.SoldeApres ?? 0);
+        }
+      });
+ 
+      const sortedMonths = Object.keys(byMonth).sort();
+ 
+      if (sortedMonths.length > 0) {
+        // Formater en étiquettes lisibles: '2026-04' → 'Avr 26'
+        const FR_MONTHS = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+        const labels = sortedMonths.map(m => {
+          const [y, mo] = m.split('-');
+          return `${FR_MONTHS[parseInt(mo)-1]} ${y.slice(2)}`;
+        });
+        liveChartData = {
+          labels,
+          htg: sortedMonths.map(m => byMonth[m]),
+          usd: new Array(sortedMonths.length).fill(soldeUSD),
+        };
+      } else {
+        // historique présent mais sans soldeApres — on met à jour seulement le dernier point
+        liveChartData = {
+          ...STATIC_SOLDE_DATA,
+          htg: [...STATIC_SOLDE_DATA.htg.slice(0, -1), soldeHTG],
+          usd: [...STATIC_SOLDE_DATA.usd.slice(0, -1), soldeUSD],
+        };
+      }
+ 
+      // Remplir aussi la table des transactions avec l'historique reçu
+      if (data.historique.length > 0) renderLiveHistory(data.historique);
+ 
     } else {
-      // If Worker returns flat solde, simulate a trend endpoint
+      // Fallback: Worker renvoie seulement un solde plat, on met à jour le dernier point
       liveChartData = {
         ...STATIC_SOLDE_DATA,
-        htg: [...STATIC_SOLDE_DATA.htg.slice(0,-1), parseFloat(data.soldeHTG || 9034)],
-        usd: [...STATIC_SOLDE_DATA.usd.slice(0,-1), parseFloat(data.soldeUSD || 976)],
+        htg: [...STATIC_SOLDE_DATA.htg.slice(0, -1), soldeHTG],
+        usd: [...STATIC_SOLDE_DATA.usd.slice(0, -1), soldeUSD],
       };
     }
  
     updateSoldeChart(liveChartData);
     setLiveKPIs(
-      parseFloat(data.soldeHTG || 9034),
-      parseFloat(data.soldeUSD || 976),
-      data.updatedAt,
+      soldeHTG,
+      soldeUSD,
+      data.updatedAt || new Date().toISOString(),
       'Live'
     );
  
