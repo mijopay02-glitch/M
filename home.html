@@ -580,55 +580,45 @@
     let supabaseClient  = null;
     let realtimeChannel = null;
  
-    function initRealtime(userId) {
-        if (!userId) return;
+    function initRealtime(userId, token) {
+        if (!userId || !token) return;
         try {
-            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+            // On s'identifie avec le token reçu à la connexion !
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
+                global: {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            });
+
             realtimeChannel = supabaseClient
                 .channel('solde-live-' + userId)
                 .on(
                     'postgres_changes',
-                    {
-                        event: 'UPDATE',
-                        schema: 'public',
-                        table: 'Utilisateurs',
-                        filter: `userId=eq.${userId}`
-                    },
+                    { event: 'UPDATE', schema: 'public', table: 'Utilisateurs', filter: `userId=eq.${userId}` },
                     (payload) => {
                         const nouveau = payload.new;
                         const balanceEl = document.getElementById('balance');
                         const ancienSolde = parseFloat(balanceEl.innerText) || 0;
                         const nouveauSolde = parseFloat(nouveau.Solde || 0);
- 
-                        // Flash animation selon direction
+
                         balanceEl.classList.remove('flash-up', 'flash-down');
-                        if (nouveauSolde > ancienSolde) {
-                            balanceEl.classList.add('flash-up');
-                        } else if (nouveauSolde < ancienSolde) {
-                            balanceEl.classList.add('flash-down');
-                        }
+                        if (nouveauSolde > ancienSolde) balanceEl.classList.add('flash-up');
+                        else if (nouveauSolde < ancienSolde) balanceEl.classList.add('flash-down');
                         setTimeout(() => balanceEl.classList.remove('flash-up', 'flash-down'), 1800);
- 
-                        // Mettre à jour localStorage
+
                         const userData = JSON.parse(localStorage.getItem('user')) || {};
-                        const updatedUser = {
-                            ...userData,
-                            Solde:           nouveau.Solde,
-                            Solde_USD:       nouveau.Solde_USD,
-                            Compte_US_Actif: nouveau.Compte_US_Actif,
-                            EstPremium:      nouveau.EstPremium,
-                            Estafilia:       nouveau.Estafilia
-                        };
+                        const updatedUser = { ...userData, Solde: nouveau.Solde, Solde_USD: nouveau.Solde_USD };
                         localStorage.setItem('user', JSON.stringify(updatedUser));
                         updateUI(updatedUser);
                     }
                 )
-                .subscribe();
-        } catch(e) {
-            console.warn("Realtime non disponible:", e.message);
-        }
+                .subscribe((status) => {
+                    console.log("Statut Realtime Sécurisé :", status);
+                });
+        } catch(e) { console.warn("Erreur Realtime:", e.message); }
     }
- 
     function stopRealtime() {
         try {
             if (realtimeChannel && supabaseClient) {
@@ -652,16 +642,17 @@
  
     function checkUserSession() {
         const storedUser = localStorage.getItem('user');
-        if (!storedUser) return window.location.href = 'index.html';
+        const storedToken = localStorage.getItem('token'); // On récupère le token sauvegardé à la connexion
+        
+        if (!storedUser || !storedToken) return window.location.href = 'index.html';
         try {
             const user = JSON.parse(storedUser);
             if (user && user.userId) {
                 updateUI(user);
-                initRealtime(user.userId); // ← Lancer le solde live
+                initRealtime(user.userId, storedToken); // On passe le token ici
             } else throw new Error("Session invalide");
         } catch (e) { logout(); }
     }
- 
     // ══════════════════════════════════════════════════
     // UPDATE UI
     // ══════════════════════════════════════════════════
