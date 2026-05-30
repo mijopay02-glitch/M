@@ -1329,7 +1329,8 @@ window.addEventListener('load', () => {
  
 const WORKER_URL = 'https://central.mijocomplexe.workers.dev/';
 const INVESTOR_USER_ID = 'rec6v8Z0K0G4bwbdE';
- 
+  const BRIDGE_TOKEN = "MijoPay_Secure_Bridge_2026_@_Tr0pPuissant_xyz!";
+  
 // Static fallback data built from the CSVs
 // (used until the Worker is connected)
 const STATIC_SOLDE_DATA = {
@@ -1560,20 +1561,21 @@ async function fetchInvestorData() {
     s.textContent = '@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';
     document.head.appendChild(s);
   }
- 
+
   try {
     const res = await fetch(WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      // NOTE: X-MIJO-Bridge-Token must be injected server-side or via a proxy Worker.
-      // Direct browser calls to central.mijocomplexe.workers.dev will return 403
-      // until you create a public investor endpoint that adds the token internally.
+      method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "X-MIJO-Bridge-Token": BRIDGE_TOKEN 
+  },
       body: JSON.stringify({
-        action: 'get_investor_data',
-        userId: INVESTOR_USER_ID,
-        "X-MIJO-Bridge-Token": "MijoPay_Secure_Bridge_2026_@_Tr0pPuissant_xyz!"
-      })
-    });
+    action: 'get_investor_data',
+    userId: INVESTOR_USER_ID,
+    startDate: "2026-01-01", 
+    endDate: "2026-05-30"
+  })
+});
  
     if (!res.ok) throw new Error(`HTTP ${res.status} — ${res.statusText}`);
  
