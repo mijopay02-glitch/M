@@ -1,4 +1,4 @@
-y dashboard · HTML
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -621,6 +621,10 @@ tr:hover td { background: rgba(0,212,255,0.02); }
         Live Data
       </div>
       <div class="date-display" id="currentDate"></div>
+    </div>
+    <button onclick="clearDashboard()" class="px-4 py-2 bg-mijo-danger text-white rounded hover:opacity-80 transition">
+  Vider les données
+</button>
     </div>
   </header>
  
@@ -1675,7 +1679,25 @@ async function fetchInvestorData() {
     icon.style.animation = '';
   }
 }
- 
+ function clearDashboard() {
+  // 1. Réinitialiser les données globales
+  liveChartData = {
+    labels: [],
+    htg: [],
+    usd: []
+  };
+
+  // 2. Vider visuellement le graphique
+  updateSoldeChart(liveChartData);
+
+  // 3. Réinitialiser les KPIs (compteurs)
+  setLiveKPIs(0, 0, '—', 'Réinitialisé');
+
+  // 4. Vider le tableau des transactions
+  document.getElementById('txnBody').innerHTML = '<tr><td colspan="7" class="text-center">Données effacées. Cliquez sur Rafraîchir pour charger.</td></tr>';
+
+  console.log("Dashboard vidé avec succès.");
+}
 function copyWorkerCode() {
   const code = document.getElementById('workerCodeBlock').innerText;
   navigator.clipboard.writeText(code).then(() => {
