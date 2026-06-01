@@ -1,462 +1,851 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIJO Pay - Abonnement Premium</title>
-    <link rel="stylesheet" href="style.css">
-   <style>body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    color: #333;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-}
-
-header {
-    background-color: #007bff;
-    color: white;
-    padding: 20px 0;
-    margin-bottom: 20px;
-}
-
-.premium-section {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.user-info-card, .activation-card, .auto-renew-card { /* Ajout de auto-renew-card */
-    background: white;
-    padding: 25px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Styles pour le statut */
-#premiumStatusDisplay, #autoRenewStatusDisplay {
-    font-weight: bold;
-}
-.premium-active, .renew-active {
-    color: green;
-}
-.premium-inactive, .renew-inactive {
-    color: red;
-}
-
-
-/* Styles des boutons */
-button {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 10px;
-    transition: background-color 0.3s;
-}
-
-button:hover {
-    background-color: #1e7e34;
-}
-
-.secondary-button {
-    background-color: #dc3545; /* Rouge pour désactiver */
-}
-
-.secondary-button:hover {
-    background-color: #c82333;
-}
-
-.note {
-    font-size: 0.9em;
-    color: #666;
-    margin-top: 15px;
-}
-
-/* Style de l'historique */
-#premiumHistory {
-    text-align: left;
-    background: #e9ecef;
-    padding: 20px;
-    border-radius: 8px;
-}
-
-#transactionList {
-    list-style: none;
-    padding: 0;
-}
-
-#transactionList li {
-    background: white;
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 4px;
-    border-left: 5px solid #007bff;
-    display: flex;
-    justify-content: space-between;
-}</style> 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIJO PAY — Premium</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #080A0E;
+      --bg2:       #0D1018;
+      --bg3:       #131720;
+      --gold:      #F0C040;
+      --gold2:     #C9982A;
+      --gold3:     #FFE08A;
+      --border:    rgba(240,192,64,0.12);
+      --border2:   rgba(240,192,64,0.25);
+      --text:      #F5F0E8;
+      --text2:     #9A8E78;
+      --text3:     #5A5245;
+      --green:     #2ECC8A;
+      --red:       #E05555;
+      --radius:    20px;
+    }
+ 
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    html { scroll-behavior: smooth; }
+ 
+    body {
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+ 
+    /* ── Noise grain overlay ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: .4;
+    }
+ 
+    /* ── Ambient glow ── */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(240,192,64,0.07) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+ 
+    /* ── Header ── */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(8,10,14,0.9);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+    }
+    .header-inner {
+      max-width: 460px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      height: 58px;
+      gap: 14px;
+    }
+    .back-btn {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none;
+      transition: all .2s;
+      flex-shrink: 0;
+    }
+    .back-btn:hover { border-color: var(--border2); color: var(--gold); }
+ 
+    .header-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      flex: 1;
+    }
+    .header-logo span { color: var(--gold); }
+ 
+    .header-crown {
+      font-size: 18px;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-3px); }
+    }
+ 
+    /* ── Content ── */
+    .content {
+      position: relative;
+      z-index: 1;
+      max-width: 460px;
+      margin: 0 auto;
+      padding: 28px 18px 100px;
+    }
+ 
+    /* ── Hero section ── */
+    .hero {
+      text-align: center;
+      padding: 12px 0 36px;
+      animation: fadeUp .6s ease forwards;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+ 
+    .hero-crown {
+      font-size: 52px;
+      display: block;
+      margin-bottom: 16px;
+      filter: drop-shadow(0 0 20px rgba(240,192,64,0.4));
+    }
+ 
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 34px;
+      font-weight: 900;
+      color: var(--gold);
+      line-height: 1.1;
+      margin-bottom: 10px;
+      text-shadow: 0 0 40px rgba(240,192,64,0.3);
+    }
+ 
+    .hero-sub {
+      font-size: 15px;
+      color: var(--text2);
+      line-height: 1.6;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+ 
+    /* ── Status card ── */
+    .status-card {
+      background: linear-gradient(135deg, #141008 0%, #0D0C08 100%);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 22px 22px 20px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp .6s .1s ease both;
+    }
+    .status-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+ 
+    .status-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+ 
+    .status-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .status-name small {
+      display: block;
+      font-size: 12px;
+      color: var(--text3);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+ 
+    .status-badge {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .5px;
+    }
+    .status-badge.active {
+      background: rgba(46,204,138,0.12);
+      border: 1px solid rgba(46,204,138,0.3);
+      color: var(--green);
+    }
+    .status-badge.inactive {
+      background: rgba(90,82,69,0.2);
+      border: 1px solid rgba(90,82,69,0.4);
+      color: var(--text3);
+    }
+ 
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .status-row:last-child { border-bottom: none; }
+ 
+    .status-row-label {
+      font-size: 13px;
+      color: var(--text2);
+    }
+    .status-row-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .status-row-value.gold { color: var(--gold); }
+    .status-row-value.green { color: var(--green); }
+    .status-row-value.red { color: var(--red); }
+ 
+    /* ── Benefits grid ── */
+    .benefits-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text3);
+      margin: 28px 0 14px;
+      animation: fadeUp .6s .2s ease both;
+    }
+ 
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 24px;
+      animation: fadeUp .6s .25s ease both;
+    }
+ 
+    .benefit-item {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 14px;
+      transition: all .2s;
+    }
+    .benefit-item:hover {
+      border-color: var(--border2);
+      transform: translateY(-2px);
+    }
+    .benefit-icon { font-size: 22px; margin-bottom: 8px; display: block; }
+    .benefit-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+    .benefit-desc { font-size: 11px; color: var(--text3); line-height: 1.4; }
+ 
+    /* ── Price card ── */
+    .price-card {
+      background: linear-gradient(135deg, #16110A 0%, #100D07 100%);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 24px 22px;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp .6s .3s ease both;
+    }
+ 
+    .price-shimmer {
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(240,192,64,0.04), transparent);
+      animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer {
+      to { left: 150%; }
+    }
+ 
+    .price-top {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .price-amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 44px;
+      font-weight: 900;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .price-currency {
+      font-size: 16px;
+      color: var(--gold2);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+ 
+    .price-period {
+      font-size: 13px;
+      color: var(--text3);
+      margin-bottom: 18px;
+    }
+ 
+    /* ── Activate button ── */
+    .btn-activate {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
+      color: #080A0E;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .3px;
+      position: relative;
+      overflow: hidden;
+      transition: all .25s;
+      box-shadow: 0 8px 24px rgba(240,192,64,0.2);
+    }
+    .btn-activate::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .btn-activate:hover:not(:disabled)::after { opacity: 1; }
+    .btn-activate:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 32px rgba(240,192,64,0.3);
+    }
+    .btn-activate:active:not(:disabled) { transform: translateY(0); }
+    .btn-activate:disabled {
+      background: linear-gradient(135deg, #2A2510, #1E1A0A);
+      color: var(--text3);
+      cursor: not-allowed;
+      box-shadow: none;
+      border: 1px solid var(--border);
+    }
+ 
+    .btn-note {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text3);
+      margin-top: 10px;
+    }
+ 
+    /* ── Auto-renew card ── */
+    .renew-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      margin-bottom: 14px;
+      display: none;
+      animation: fadeUp .4s ease both;
+    }
+    .renew-card.visible { display: block; }
+ 
+    .renew-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .renew-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+ 
+    /* Toggle switch */
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .toggle-label {
+      font-size: 12px;
+      color: var(--text2);
+    }
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      cursor: pointer;
+    }
+    .toggle input { display: none; }
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      transition: all .3s;
+    }
+    .toggle input:checked ~ .toggle-track {
+      background: rgba(240,192,64,0.2);
+      border-color: var(--gold2);
+    }
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      background: var(--text3);
+      border-radius: 50%;
+      transition: all .3s cubic-bezier(.34,1.56,.64,1);
+    }
+    .toggle input:checked ~ .toggle-thumb {
+      left: 23px;
+      background: var(--gold);
+    }
+ 
+    .renew-note {
+      font-size: 12px;
+      color: var(--text3);
+      line-height: 1.5;
+      padding: 10px 14px;
+      background: var(--bg3);
+      border-radius: 10px;
+    }
+ 
+    /* ── Expiry badge ── */
+    .expiry-wrap {
+      display: none;
+      margin-bottom: 14px;
+      animation: fadeUp .4s ease both;
+    }
+    .expiry-wrap.visible { display: block; }
+    .expiry-inner {
+      background: rgba(46,204,138,0.06);
+      border: 1px solid rgba(46,204,138,0.2);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .expiry-icon { font-size: 20px; }
+    .expiry-text { font-size: 13px; color: var(--text2); line-height: 1.4; }
+    .expiry-text strong { color: var(--green); }
+ 
+    /* ── Loading spinner ── */
+    .btn-spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(8,10,14,0.4);
+      border-top-color: #080A0E;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+ 
+    /* ── Toast notification ── */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 14px;
+      padding: 13px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      z-index: 500;
+      transition: transform .4s cubic-bezier(.34,1.56,.64,1);
+      white-space: nowrap;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { border-color: rgba(46,204,138,0.4); color: var(--green); }
+    .toast.error   { border-color: rgba(224,85,85,0.4);  color: var(--red); }
+  </style>
 </head>
 <body>
-
-    <header>
-        <h1>MIJO Premium 👑</h1>
-    </header>
-
-    <main class="premium-section">
-        <div class="user-info-card">
-            <h2>Statut de votre compte</h2>
-            <p>ID Utilisateur: <span id="userIdDisplay">N/A</span></p>
-            <p>Solde actuel: <span id="userBalanceDisplay">N/A</span> Gdes</p>
-            <p>Statut Premium: <span id="premiumStatusDisplay">Non Actif ❌</span></p>
-        </div>
-
-        <div class="activation-card">
-            <h2>Abonnement Mensuel</h2>
-            <p>Profitez de tous les avantages MIJO pour seulement **150 Gdes/mois**.</p>
-            <button id="activateButton" onclick="activatePremium()">Activer MIJO Premium</button>
-            <p class="note">Le premier mois sera débité immédiatement.</p>
-        </div>
-
-        <div class="auto-renew-card" id="autoRenewSection" style="display:none;">
-            <h2>Gestion du Renouvellement Automatique</h2>
-            <p>Statut Auto-Renouvellement: <span id="autoRenewStatusDisplay" class="renew-active">Actif ✅</span></p>
-            
-            <button 
-                id="toggleRenewButton" 
-                onclick="toggleAutoRenew()"
-                class="secondary-button">Désactiver l'Auto-Renouvellement</button>
-                
-            <p class="note" id="renewNote">Votre abonnement sera reconduit le mois prochain.</p>
-        </div>
-
-        
-    </main>
-
-    <script>// --- CONSTANTES GLOBALES ---
-const PREMIUM_PRICE = 150;
-const STORE_SCRIPT_URL = "https://mijopaypremium.mijocomplexe.workers.dev/";
-// Worker gérant le débit (activation Premium)
-const GLOBAL_HISTORY_WORKER_URL = "https://votre-worker-global-history.workers.dev/"; 
-// Worker spécifique pour la désactivation de l'auto-renouvellement (mise à jour du casier 'Automatique')
-const AUTORENEW_TOGGLE_WORKER_URL = "https://votre-worker-autorenew-toggle.workers.dev/"; 
-
-// --- FONCTIONS AUXILIAIRES ---
-
-/**
- * Met à jour l'interface utilisateur avec les dernières données de l'utilisateur.
- * Inclut la gestion de l'auto-renouvellement.
- * @param {object} user - L'objet utilisateur du localStorage.
- */
+ 
+<!-- ── Header ── -->
+<div class="header">
+  <div class="header-inner">
+    <a href="home.html" class="back-btn">&#8592;</a>
+    <div class="header-logo">MIJO <span>PAY</span></div>
+    <div class="header-crown">👑</div>
+  </div>
+</div>
+ 
+<!-- ── Content ── -->
+<div class="content">
+ 
+  <!-- Hero -->
+  <div class="hero">
+    <span class="hero-crown">✨</span>
+    <h1 class="hero-title">MIJO Premium</h1>
+    <p class="hero-sub">Akè tout avantaj MIJO PAY san limit, chak mwa.</p>
+  </div>
+ 
+  <!-- Status card -->
+  <div class="status-card">
+    <div class="status-top">
+      <div class="status-name">
+        <span id="userName">—</span>
+        <small>Manm MIJO PAY</small>
+      </div>
+      <div class="status-badge inactive" id="statusBadge">Non aktif</div>
+    </div>
+ 
+    <div class="status-row">
+      <span class="status-row-label">Solde disponib</span>
+      <span class="status-row-value gold" id="userBalance">— G</span>
+    </div>
+    <div class="status-row">
+      <span class="status-row-label">Statut Premium</span>
+      <span class="status-row-value" id="premiumStatus">Non aktif ❌</span>
+    </div>
+  </div>
+ 
+  <!-- Expiry (shown if premium active) -->
+  <div class="expiry-wrap" id="expiryWrap">
+    <div class="expiry-inner">
+      <span class="expiry-icon">📅</span>
+      <div class="expiry-text">
+        Abonman ou aktif jiska <strong id="expiryDate">—</strong>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- Benefits -->
+  <div class="benefits-title">Avantaj Premium</div>
+  <div class="benefits-grid">
+    <div class="benefit-item">
+      <span class="benefit-icon">🎬</span>
+      <div class="benefit-name">MIJO CINÉ</div>
+      <div class="benefit-desc">Aksè konplè ak fim ak seri</div>
+    </div>
+    <div class="benefit-item">
+      <span class="benefit-icon">💼</span>
+      <div class="benefit-name">Business Helper</div>
+      <div class="benefit-desc">Zouti pou biznis ou</div>
+    </div>
+    <div class="benefit-item">
+      <span class="benefit-icon">⚡</span>
+      <div class="benefit-name">Priorite</div>
+      <div class="benefit-desc">Sèvis pi rapid pou ou</div>
+    </div>
+    <div class="benefit-item">
+      <span class="benefit-icon">🏆</span>
+      <div class="benefit-name">Bonus Eksklusif</div>
+      <div class="benefit-desc">Rèkonpans espesyal chak mwa</div>
+    </div>
+    <div class="benefit-item">
+      <span class="benefit-icon">📊</span>
+      <div class="benefit-name">Analiz</div>
+      <div class="benefit-desc">Rapò sou depans ou</div>
+    </div>
+    <div class="benefit-item">
+      <span class="benefit-icon">🔒</span>
+      <div class="benefit-name">Sekirite +</div>
+      <div class="benefit-desc">Pwoteksyon ranfòse</div>
+    </div>
+  </div>
+ 
+  <!-- Price + Activate -->
+  <div class="price-card">
+    <div class="price-shimmer"></div>
+    <div class="price-top">
+      <span class="price-amount">150</span>
+      <span class="price-currency">Gdes</span>
+    </div>
+    <div class="price-period">Chak mwa · San angajman</div>
+ 
+    <button class="btn-activate" id="activateBtn" onclick="activatePremium()">
+      👑 Aktive MIJO Premium
+    </button>
+    <div class="btn-note">Premye mwa w ap peye kounye a.</div>
+  </div>
+ 
+  <!-- Auto-renew (shown if premium active) -->
+  <div class="renew-card" id="renewCard">
+    <div class="renew-header">
+      <div class="renew-title">Renouvèlman Otomatik</div>
+      <div class="toggle-wrap">
+        <span class="toggle-label" id="renewLabel">Aktif</span>
+        <label class="toggle">
+          <input type="checkbox" id="autoRenewToggle" onchange="toggleAutoRenew()">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+    </div>
+    <div class="renew-note" id="renewNote">
+      Abonman ou a pral renouvle otomatikman mwa pwochèn.
+    </div>
+  </div>
+ 
+</div>
+ 
+<!-- ── Toast ── -->
+<div class="toast" id="toast"></div>
+ 
+<script>
+// ══════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════
+const PREMIUM_PRICE          = 150;
+const STORE_SCRIPT_URL       = "https://mijopaypremium.mijocomplexe.workers.dev/";
+const AUTORENEW_TOGGLE_URL   = "https://votre-worker-autorenew.mijocomplexe.workers.dev/";
+ 
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+document.addEventListener("DOMContentLoaded", () => {
+  const user = getUser();
+  if (!user || !user.userId) {
+    window.location.href = "index.html";
+    return;
+  }
+  // Migration AutoRenew
+  if (user.EstPremium === true && user.AutoRenew === undefined) {
+    user.AutoRenew = true;
+    saveUser(user);
+  }
+  updateUI(user);
+});
+ 
+// ══════════════════════════════════════════
+// HELPERS localStorage
+// ══════════════════════════════════════════
+function getUser() {
+  try { return JSON.parse(localStorage.getItem("user")); }
+  catch { return null; }
+}
+function saveUser(user) {
+  localStorage.setItem("user", JSON.stringify(user));
+}
+ 
+// ══════════════════════════════════════════
+// UPDATE UI
+// ══════════════════════════════════════════
 function updateUI(user) {
-    const userIdDisplay = document.getElementById('userIdDisplay');
-    const userBalanceDisplay = document.getElementById('userBalanceDisplay');
-    const premiumStatusDisplay = document.getElementById('premiumStatusDisplay');
-    const autoRenewSection = document.getElementById('autoRenewSection');
-    const autoRenewStatusDisplay = document.getElementById('autoRenewStatusDisplay');
-    const toggleRenewButton = document.getElementById('toggleRenewButton');
-    const renewNote = document.getElementById('renewNote');
-    const activateButton = document.getElementById('activateButton');
-
-    if (user && user.userId) {
-        userIdDisplay.textContent = user.userId;
-        userBalanceDisplay.textContent = user.Solde !== undefined ? user.Solde.toFixed(2) : 'N/A';
-        
-        const isPremium = user.EstPremium === true;
-        const autoRenewActive = user.AutoRenew === true; // NOUVEAU: Par défaut, supposons 'true' après activation
-        
-        // --- Statut Premium ---
-        premiumStatusDisplay.textContent = isPremium ? 'Actif ✅' : 'Non Actif ❌';
-        premiumStatusDisplay.classList.toggle('premium-active', isPremium);
-        premiumStatusDisplay.classList.toggle('premium-inactive', !isPremium);
-        activateButton.disabled = isPremium;
-        activateButton.textContent = isPremium ? 'Abonnement Déjà Actif' : `Activer MIJO Premium (${PREMIUM_PRICE} Gdes/mois)`;
-
-        // --- Section Auto-Renouvellement ---
-        autoRenewSection.style.display = isPremium ? 'block' : 'none';
-
-        if (isPremium) {
-            autoRenewStatusDisplay.textContent = autoRenewActive ? 'Actif ✅' : 'Désactivé ❌';
-            autoRenewStatusDisplay.classList.toggle('renew-active', autoRenewActive);
-            autoRenewStatusDisplay.classList.toggle('renew-inactive', !autoRenewActive);
-
-            toggleRenewButton.textContent = autoRenewActive ? 'Désactiver l\'Auto-Renouvellement' : 'Réactiver l\'Auto-Renouvellement';
-            toggleRenewButton.classList.toggle('secondary-button', autoRenewActive); // Rouge pour désactiver
-            toggleRenewButton.classList.toggle('secondary-button', !autoRenewActive); // Vert pour réactiver (il faudra ajuster le CSS si vous voulez une autre couleur pour réactiver)
-            
-            renewNote.textContent = autoRenewActive 
-                ? 'Votre abonnement sera reconduit le mois prochain (prélèvement automatique).' 
-                : 'L\'abonnement ne sera pas renouvelé automatiquement. Vous perdrez l\'accès à la fin du cycle.';
-        }
-
-        displayLocalHistory(user.userId);
-    } else {
-        // Utilisateur non connecté ou données manquantes
-        userIdDisplay.textContent = 'Non Connecté';
-        userBalanceDisplay.textContent = 'N/A';
-        premiumStatusDisplay.textContent = 'Non Actif ❌';
-        autoRenewSection.style.display = 'none';
-        activateButton.disabled = false;
-        activateButton.textContent = `Activer MIJO Premium (${PREMIUM_PRICE} Gdes/mois)`;
-    }
-}
-
-/**
- * Enregistre une transaction dans l'historique local de l'utilisateur.
- * (Fonction inchangée)
- */
-function saveToHistory(type, amount, status, recipient, userId) {
-    const historyKey = `transactions_${userId}`;
-    let history = JSON.parse(localStorage.getItem(historyKey)) || [];
-    const newTransaction = {
-        id: Date.now(),
-        type: type,
-        amount: amount,
-        status: status,
-        recipient: recipient,
-        date: new Date().toLocaleString()
-    };
-    history.unshift(newTransaction);
-    localStorage.setItem(historyKey, JSON.stringify(history));
-    displayLocalHistory(userId);
-}
-
-/**
- * Affiche l'historique des transactions locales.
- * (Fonction inchangée)
- */
-function displayLocalHistory(userId) {
-    const transactionList = document.getElementById('transactionList');
-    transactionList.innerHTML = ''; 
-
-    if (!userId) return;
-
-    const historyKey = `transactions_${userId}`;
-    let history = JSON.parse(localStorage.getItem(historyKey)) || [];
-
-    if (history.length === 0) {
-        transactionList.innerHTML = '<li>Aucune transaction enregistrée localement.</li>';
-        return;
-    }
-
-    history.forEach(tx => {
-        const listItem = document.createElement('li');
-        const statusColor = tx.status === 'Succès' ? 'green' : (tx.status.includes('Échec') || tx.status.includes('Réseau') ? 'red' : 'orange');
-        
-        listItem.innerHTML = `
-            <div>
-                <strong>${tx.type}</strong> (${tx.date})<br>
-                À: ${tx.recipient}
-            </div>
-            <div>
-                <span style="color: ${statusColor}; font-weight: bold;">${tx.status}</span>
-                <br>
-                ${tx.type === "Abonnement Premium" ? '-' : ''}${tx.amount} Gdes
-            </div>
-        `;
-        transactionList.appendChild(listItem);
+  if (!user || !user.userId) return;
+ 
+  const isPremium      = user.EstPremium === true;
+  const autoRenewOn    = user.AutoRenew  !== false; // true par défaut
+  const solde          = typeof user.Solde === "number"
+                         ? user.Solde.toLocaleString("fr") + " G"
+                         : (user.Solde || "—") + " G";
+  const nomAffiche     = user.NomUtilisateur || user.nom || "Manm";
+ 
+  // ── Status card ──
+  document.getElementById("userName").textContent    = nomAffiche;
+  document.getElementById("userBalance").textContent = solde;
+ 
+  const badge = document.getElementById("statusBadge");
+  if (isPremium) {
+    badge.textContent  = "✦ Premium";
+    badge.className    = "status-badge active";
+    document.getElementById("premiumStatus").textContent  = "Aktif ✅";
+    document.getElementById("premiumStatus").style.color = "var(--green)";
+  } else {
+    badge.textContent  = "Non aktif";
+    badge.className    = "status-badge inactive";
+    document.getElementById("premiumStatus").textContent  = "Non aktif ❌";
+    document.getElementById("premiumStatus").style.color = "var(--text3)";
+  }
+ 
+  // ── Expiry ──
+  const expiryWrap = document.getElementById("expiryWrap");
+  if (isPremium && user.DateExpirationPremium) {
+    const expDate = new Date(user.DateExpirationPremium);
+    document.getElementById("expiryDate").textContent = expDate.toLocaleDateString("fr-FR", {
+      day: "2-digit", month: "long", year: "numeric"
     });
+    expiryWrap.classList.add("visible");
+  } else {
+    expiryWrap.classList.remove("visible");
+  }
+ 
+  // ── Activate button ──
+  const btn = document.getElementById("activateBtn");
+  btn.disabled    = isPremium;
+  btn.textContent = isPremium ? "✦ Abonman ou aktif deja" : "👑 Aktive MIJO Premium";
+ 
+  // ── Auto-renew card ──
+  const renewCard = document.getElementById("renewCard");
+  if (isPremium) {
+    renewCard.classList.add("visible");
+ 
+    const toggle = document.getElementById("autoRenewToggle");
+    toggle.checked = autoRenewOn;
+ 
+    document.getElementById("renewLabel").textContent = autoRenewOn ? "Aktif" : "Dezaktive";
+    document.getElementById("renewNote").textContent  = autoRenewOn
+      ? "Abonman ou a pral renouvle otomatikman mwa pwochèn."
+      : "Abonman ou p ap renouvle otomatikman. Ou pral pèdi aksè a lafendumwa.";
+  } else {
+    renewCard.classList.remove("visible");
+  }
 }
-
-/**
- * Enregistre la transaction dans le KV Global via le Worker de transaction.
- * (Fonction inchangée)
- */
-async function saveToGlobalKV(senderId, amount, senderName) {
-    const transactionData = {
-        action: "transfer_money",
-        amount: amount,
-        senderId: senderId, 
-        senderName: senderName || "Utilisateur MIJO",
-        recipient: "MIJO CINÉ / Entreprise",
-        type: "Abonnement Premium CINÉ"
-    };
-    
-    try {
-        const response = await fetch(GLOBAL_HISTORY_WORKER_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(transactionData)
-        });
-
-        if (!response.ok) {
-            console.error("Échec de l'enregistrement KV global, Statut:", response.status);
-        }
-    } catch (error) {
-        console.error("Erreur de connexion lors de l'enregistrement KV global:", error);
-    }
-}
-
-/**
- * Gère l'activation ou la désactivation de l'auto-renouvellement.
- */
-async function toggleAutoRenew() {
-    const userString = localStorage.getItem('user');
-    let user = JSON.parse(userString);
-    
-    if (!user || !user.userId) {
-        alert("Utilisateur non connecté.");
-        return;
-    }
-    
-    // Si AutoRenew n'est pas défini, on suppose qu'il est actif par défaut
-    const currentState = user.AutoRenew === true; 
-    const newState = !currentState;
-    
-    const actionText = newState ? "Réactiver" : "Désactiver";
-    const confirmation = confirm(`Voulez-vous ${actionText} le renouvellement automatique de votre abonnement Premium ?`);
-    
-    if (!confirmation) {
-        return;
-    }
-
-    const toggleButton = document.getElementById('toggleRenewButton');
-    toggleButton.disabled = true;
-    toggleButton.textContent = `Traitement de la ${actionText} des paiements...`;
-
-    try {
-        // Envoi de la requête au Worker pour mettre à jour la base de données (Airtable/KV)
-        const response = await fetch(AUTORENEW_TOGGLE_WORKER_URL, {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: "toggle_autorenew", // Action pour votre Worker
-                userId: user.userId,
-                newState: newState // true ou false
-            })
-        });
-
-        const data = await response.json();
-        
-        if (data.success) {
-            // Mettre à jour l'état local de l'utilisateur
-            user.AutoRenew = newState;
-            localStorage.setItem('user', JSON.stringify(user));
-            
-            updateUI(user);
-            alert(`Renouvellement automatique ${newState ? 'réactivé' : 'désactivé'} avec succès.`);
-        } else {
-            alert(data.error || `Échec de la ${actionText} du renouvellement automatique.`);
-        }
-
-    } catch (error) {
-        console.error("Erreur lors de la requête de bascule d'auto-renouvellement:", error);
-        alert(`Erreur de connexion lors de la ${actionText} du renouvellement.`);
-    } finally {
-        // Réactiver le bouton
-        updateUI(user);
-    }
-}
-
-/**
- * Gère le processus d'activation de l'abonnement Premium.
- * (Mise à jour pour définir AutoRenew à 'true' par défaut après l'achat initial)
- */
+ 
+// ══════════════════════════════════════════
+// ACTIVATE PREMIUM
+// ══════════════════════════════════════════
 async function activatePremium() {
-    // ... (Code de vérification d'utilisateur inchangé) ...
-    const userString = localStorage.getItem('user');
-    let user;
-    try {
-        user = JSON.parse(userString);
-    } catch (e) {
-        alert("Erreur de données utilisateur. Veuillez vous reconnecter.");
-        window.location.href = "index.html";
-        return;
+  const user = getUser();
+  if (!user || !user.userId) {
+    showToast("Konekte anvan pou aktive Premium.", "error");
+    return;
+  }
+  if (user.EstPremium === true) {
+    showToast("Abonman ou deja aktif !", "error");
+    return;
+  }
+ 
+  const confirmed = confirm(`Aktive MIJO Premium pou ${PREMIUM_PRICE} Gdes ?`);
+  if (!confirmed) return;
+ 
+  const btn = document.getElementById("activateBtn");
+  btn.disabled   = true;
+  btn.innerHTML  = `<span class="btn-spinner"></span>Ap trete...`;
+ 
+  try {
+    const res  = await fetch(STORE_SCRIPT_URL, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ senderId: user.userId })
+    });
+ 
+    const data = await res.json();
+ 
+    if (data.success) {
+      // Mettre à jour localStorage
+      user.Solde                = data.user?.Solde                ?? user.Solde - PREMIUM_PRICE;
+      user.EstPremium           = true;
+      user.AutoRenew            = true;
+      user.DateExpirationPremium = data.user?.DateExpirationPremium ?? null;
+      saveUser(user);
+      updateUI(user);
+      showToast("✦ Premium aktive ak siksè !", "success");
+    } else {
+      showToast(data.error || "Erè pandan aktivasyon an.", "error");
+      btn.disabled  = false;
+      btn.textContent = "👑 Aktive MIJO Premium";
     }
-
-    if (!user || !user.userId) {
-        alert("Utilisateur non connecté ou données manquantes.");
-        return;
-    }
-    
-    if (user.EstPremium === true) {
-        alert("Votre abonnement Premium est déjà actif.");
-        return;
-    }
-    
-    const confirmation = confirm(`Voulez-vous activer MIJO Premium ? Prix : ${PREMIUM_PRICE} Gdes/mois. Le prélèvement sera effectué maintenant.`);
-    if (!confirmation) { return; }
-
-    const activateButton = document.getElementById('activateButton');
-    activateButton.disabled = true;
-    activateButton.textContent = "Traitement...";
-
-    try {
-        const response = await fetch(STORE_SCRIPT_URL, {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: "pay_premium",
-                senderId: user.userId,
-                amount: PREMIUM_PRICE
-            })
-        });
-
-        const data = await response.json();
-        let transactionStatus = "Échec";
-
-        if (data.success && data.user && data.user.Solde !== undefined) {
-            // Mise à jour de l'objet utilisateur
-            user.Solde = data.user.Solde; 
-            user.EstPremium = true;
-            user.AutoRenew = true; // DEFINI L'AUTO-RENOUVELLEMENT A TRUE LORS DE LA PREMIERE ACTIVATION
-            transactionStatus = "Succès";
-            
-            // 1. Mettez à jour le localStorage
-            localStorage.setItem('user', JSON.stringify(user));
-            
-            // 2. Mettez à jour l'affichage de la page IMMÉDIATEMENT
-            updateUI(user);
-            
-            // 3. Enregistrer l'historique
-            saveToHistory("Abonnement Premium", PREMIUM_PRICE, transactionStatus, "MIJO PAY", user.userId);
-            await saveToGlobalKV(user.userId, PREMIUM_PRICE, user.nom);
-            
-            alert("Abonnement Premium activé avec succès ! Le renouvellement automatique est actif par défaut.");
-        } else {
-            alert(data.error || "Échec de l'activation de l'abonnement Premium. Solde insuffisant ou erreur serveur.");
-            saveToHistory("Abonnement Premium", PREMIUM_PRICE, transactionStatus, "MIJO PAY", user.userId);
-        }
-    } catch (error) {
-        console.error("Erreur lors de la requête:", error);
-        alert("Erreur de connexion. Veuillez vérifier votre connexion ou le lien du serveur.");
-        saveToHistory("Abonnement Premium", PREMIUM_PRICE, "Échec Réseau", "MIJO PAY", user.userId);
-    } finally {
-        updateUI(user); 
-    }
+ 
+  } catch (err) {
+    console.error(err);
+    showToast("Erè koneksyon. Reesaye.", "error");
+    btn.disabled    = false;
+    btn.textContent = "👑 Aktive MIJO Premium";
+  }
 }
-
-/**
- * Vérifie le statut de l'utilisateur au chargement de la page et met à jour l'UI.
- */
-function checkUserStatus() {
-    const userString = localStorage.getItem('user');
-    let user = null;
-    
-    try {
-        user = JSON.parse(userString);
-        // Initialiser AutoRenew à true si EstPremium est true mais AutoRenew est manquant (pour la migration des anciens utilisateurs)
-        if (user && user.EstPremium === true && user.AutoRenew === undefined) {
-             user.AutoRenew = true;
-             localStorage.setItem('user', JSON.stringify(user));
-        }
-    } catch (e) {
-        console.error("Erreur de données utilisateur dans localStorage.", e);
+ 
+// ══════════════════════════════════════════
+// TOGGLE AUTO-RENEW
+// ══════════════════════════════════════════
+async function toggleAutoRenew() {
+  const user     = getUser();
+  if (!user || !user.userId) return;
+ 
+  const toggle   = document.getElementById("autoRenewToggle");
+  const newState = toggle.checked;
+ 
+  // Optimistic update
+  user.AutoRenew = newState;
+  saveUser(user);
+  document.getElementById("renewLabel").textContent = newState ? "Aktif" : "Dezaktive";
+  document.getElementById("renewNote").textContent  = newState
+    ? "Abonman ou a pral renouvle otomatikman mwa pwochèn."
+    : "Abonman ou p ap renouvle otomatikman. Ou pral pèdi aksè a lafendumwa.";
+ 
+  try {
+    const res  = await fetch(AUTORENEW_TOGGLE_URL, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({
+        action:   "toggle_autorenew",
+        userId:   user.userId,
+        newState: newState
+      })
+    });
+ 
+    const data = await res.json();
+ 
+    if (data.success) {
+      showToast(
+        newState ? "Renouvèlman otomatik aktive." : "Renouvèlman otomatik dezaktive.",
+        "success"
+      );
+    } else {
+      // Rollback si erreur
+      user.AutoRenew = !newState;
+      saveUser(user);
+      toggle.checked = !newState;
+      updateUI(user);
+      showToast(data.error || "Erè. Reesaye.", "error");
     }
-
-    if (!user || !user.userId) {
-        // Optionnel: alert("Veuillez vous connecter pour gérer votre abonnement Premium.");
-    }
-    
+ 
+  } catch (err) {
+    // Rollback
+    user.AutoRenew = !newState;
+    saveUser(user);
+    toggle.checked = !newState;
     updateUI(user);
+    showToast("Erè koneksyon.", "error");
+  }
 }
-
-
-// --- Initialisation au chargement de la page ---
-document.addEventListener('DOMContentLoaded', checkUserStatus);</script>
+ 
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+let toastTimer;
+function showToast(msg, type = "") {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className   = `toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 3200);
+}
+</script>
 </body>
 </html>
