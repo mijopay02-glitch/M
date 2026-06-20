@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil - MIJO PAY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-4 md:p-8">
+
+    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-6">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">Mes Informations</h2>
+
+        <!-- Informations affichées -->
+        <div class="space-y-4">
+            <!-- 1. Numero de Carte -->
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase">Numéro de carte</label>
+                <div class="flex items-center gap-2">
+                    <input type="text" id="valNumeroCarte" readonly class="w-full bg-gray-50 p-2 rounded border font-mono">
+                    <button onclick="copyToClipboard('valNumeroCarte')" class="text-xs bg-red-600 text-white px-3 py-2 rounded">Copier</button>
+                </div>
+            </div>
+
+            <!-- 2, 3, 4 : Email, Nom, Téléphone -->
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase">Nom complet</label>
+                <p id="valNom" class="text-gray-800 font-medium"></p>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase">Email</label>
+                <p id="valEmail" class="text-gray-800 font-medium"></p>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase">Téléphone</label>
+                <p id="valTel" class="text-gray-800 font-medium"></p>
+            </div>
+
+            <!-- 5. Affiliation -->
+            <div id="sectionAffiliation" class="p-3 bg-blue-50 rounded-lg">
+                <!-- Contenu injecté par JS -->
+            </div>
+
+            <!-- 6. Statut Premium -->
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase">Statut Premium</label>
+                <p id="valPremium" class="text-gray-800 font-medium"></p>
+            </div>
+
+            <!-- 7. Mot de passe -->
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase">Mot de passe</label>
+                <div class="flex items-center justify-between">
+                    <p class="font-mono tracking-widest text-lg">*********</p>
+                    <a href="https://wa.me/50944990203?text=Bonjour, je souhaite changer mon mot de passe sur MIJO PAY" 
+                       target="_blank" class="text-sm text-green-600 font-bold hover:underline">Changer</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Charger les données (Simulé depuis ton localStorage)
+        const user = JSON.parse(localStorage.getItem('user')); 
+
+        if (user) {
+            document.getElementById('valNumeroCarte').value = user.NumeroCarte || 'Non défini';
+            document.getElementById('valNom').textContent = user.NomUtilisateur || 'N/A';
+            document.getElementById('valEmail').textContent = user.Email || 'N/A';
+            document.getElementById('valTel').textContent = user.NumeroTelephone || 'N/A';
+            document.getElementById('valPremium').textContent = user.EstPremium ? '✅ Membre Premium' : 'Membre Standard';
+
+            // Logique Affiliation
+            // Remplace la partie "Logique Affiliation" dans le script par ceci :
+const affSection = document.getElementById('sectionAffiliation');
+
+// On vérifie s'il possède déjà un lien d'affiliation (signe qu'il est actif)
+if (user.LienAffiliation && user.LienAffiliation !== "") {
+    affSection.innerHTML = `
+        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Votre lien d'affiliation</label>
+        <div class="flex items-center gap-2">
+            <input type="text" id="valLienAff" value="${user.LienAffiliation}" readonly class="w-full bg-gray-50 p-2 rounded border font-mono text-sm">
+            <button onclick="copyToClipboardValue('${user.LienAffiliation}')" class="text-xs bg-red-600 text-white px-3 py-2 rounded font-bold">Copier</button>
+        </div>
+    `;
+} else {
+    // S'il n'est pas encore affilié, on affiche le bouton pour choisir de s'inscrire
+    affSection.innerHTML = `
+        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Devenir Affilié</label>
+        <p class="text-sm text-gray-600 mb-4">Gagnez des commissions en invitant vos amis sur MIJO PAY.</p>
+        <a href="mijo-affiliate-inscription.html" class="block w-full text-center bg-black hover:bg-gray-800 text-white font-bold py-3 px-4 rounded-xl transition-colors">
+            Activer mon affiliation
+        </a>
+    `;
+}
+
+        // Fonctions utilitaires
+        function copyToClipboard(id) {
+            const copyText = document.getElementById(id);
+            copyText.select();
+            document.execCommand("copy");
+            alert("Copié !");
+        }
+
+        function copyToClipboardValue(text) {
+            navigator.clipboard.writeText(text);
+            alert("Lien copié !");
+        }
+    </script>
+</body>
+</html>
