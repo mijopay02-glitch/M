@@ -1,111 +1,669 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Profil - MIJO PAY</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIJO PAY — Mon Profil</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #0A0C10;
+      --bg2:       #0F1117;
+      --bg3:       #151820;
+      --border:    rgba(255,255,255,0.07);
+      --border2:   rgba(255,255,255,0.13);
+      --blue:      #2E7CF6;
+      --blue-dim:  rgba(46,124,246,0.15);
+      --gold:      #F5C842;
+      --gold-dim:  rgba(245,200,66,0.13);
+      --green:     #10B981;
+      --green-dim: rgba(16,185,129,0.13);
+      --text:      #F0F2F8;
+      --text2:     #8B92A5;
+      --text3:     #565E72;
+      --radius:    18px;
+      --radius2:   13px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 55% 35% at 15% 0%, rgba(46,124,246,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 45% 30% at 90% 90%, rgba(245,200,66,0.05) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Header ── */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,12,16,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+    }
+    .header-inner {
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      height: 58px;
+    }
+    .back-btn {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 17px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .back-btn:hover { background: var(--border2); }
+    .header-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 17px;
+    }
+
+    /* ── Content ── */
+    .content {
+      position: relative;
+      z-index: 1;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+
+    /* ── Profile hero ── */
+    .profile-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 16px 0 28px;
+      animation: fadeUp .5s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .avatar {
+      width: 84px; height: 84px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), #1A5FD4);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 14px;
+      box-shadow: 0 8px 30px rgba(46,124,246,0.35);
+      position: relative;
+    }
+    .avatar.premium {
+      background: linear-gradient(135deg, var(--gold), #C9982A);
+      box-shadow: 0 8px 30px rgba(245,200,66,0.35);
+    }
+    .avatar-crown {
+      position: absolute;
+      top: -10px; right: -6px;
+      font-size: 22px;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+      display: none;
+    }
+    .avatar-crown.show { display: block; }
+
+    .profile-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .profile-badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 11px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge.gold  { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(245,200,66,0.3); }
+    .badge.blue  { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(46,124,246,0.3); }
+    .badge.green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+    .badge.dim   { background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
+
+    /* ── Section label ── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text3);
+      margin: 22px 4px 10px;
+    }
+    .section-label:first-of-type { margin-top: 0; }
+
+    /* ── Info card ── */
+    .info-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      animation: fadeUp .5s .05s ease both;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 16px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .info-row:last-child { border-bottom: none; }
+
+    .info-icon {
+      width: 38px; height: 38px;
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+    .info-icon.blue  { background: var(--blue-dim); }
+    .info-icon.gold  { background: var(--gold-dim); }
+    .info-icon.green { background: var(--green-dim); }
+    .info-icon.dim   { background: var(--bg3); }
+
+    .info-body { flex: 1; min-width: 0; }
+    .info-label {
+      font-size: 11px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 3px;
+    }
+    .info-value {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .info-value.mono {
+      font-family: 'SF Mono', 'Courier New', monospace;
+      letter-spacing: .5px;
+    }
+    .info-value.dimmed { color: var(--text2); font-weight: 500; }
+
+    /* ── Action buttons inline ── */
+    .icon-btn {
+      width: 34px; height: 34px;
+      border-radius: 9px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all .2s;
+    }
+    .icon-btn:hover { background: var(--border2); color: var(--text); }
+    .icon-btn.copied {
+      background: var(--green-dim);
+      border-color: rgba(16,185,129,0.3);
+      color: var(--green);
+    }
+
+    /* ── Toggle pill ── */
+    .toggle-pill {
+      padding: 5px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .toggle-pill.on  { background: var(--green-dim); color: var(--green); }
+    .toggle-pill.off { background: var(--bg3); color: var(--text3); }
+
+    /* ── Affiliate CTA card ── */
+    .affiliate-cta {
+      background: linear-gradient(135deg, #1A2540 0%, #0F1525 100%);
+      border: 1px solid rgba(46,124,246,0.25);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      animation: fadeUp .5s .1s ease both;
+    }
+    .affiliate-cta .emoji { font-size: 30px; margin-bottom: 10px; }
+    .affiliate-cta h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .affiliate-cta p {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+    .affiliate-cta a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: var(--blue);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      transition: all .2s;
+    }
+    .affiliate-cta a:hover { background: #1A5FD4; transform: translateY(-1px); }
+
+    /* ── Affiliate share box ── */
+    .share-box {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .share-code {
+      flex: 1;
+      font-family: 'SF Mono', 'Courier New', monospace;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--blue);
+      letter-spacing: 1px;
+    }
+    .share-actions { display: flex; gap: 8px; }
+
+    /* ── Password change card ── */
+    .password-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      animation: fadeUp .5s .15s ease both;
+    }
+    .whatsapp-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      background: #1FAF55;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 11px;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+    .whatsapp-btn:hover { background: #18923f; transform: translateY(-1px); }
+
+    /* ── Logout ── */
+    .logout-btn {
+      width: 100%;
+      margin-top: 24px;
+      padding: 14px;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: #F87171;
+      border-radius: var(--radius2);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .logout-btn:hover { background: rgba(239,68,68,0.14); }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(70px);
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 14px;
+      padding: 12px 20px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text);
+      z-index: 500;
+      transition: transform .4s cubic-bezier(.34,1.56,.64,1);
+      white-space: nowrap;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
 </head>
-<body class="bg-gray-100 p-4 md:p-8">
+<body>
 
-    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-6">
-        <h2 class="text-2xl font-bold mb-6 text-gray-800">Mes Informations</h2>
+<!-- ── Header ── -->
+<div class="header">
+  <div class="header-inner">
+    <a href="home.html" class="back-btn">&#8592;</a>
+    <div class="header-title">Mon Profil</div>
+  </div>
+</div>
 
-        <!-- Informations affichées -->
-        <div class="space-y-4">
-            <!-- 1. Numero de Carte -->
-            <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase">Numéro de carte</label>
-                <div class="flex items-center gap-2">
-                    <input type="text" id="valNumeroCarte" readonly class="w-full bg-gray-50 p-2 rounded border font-mono">
-                    <button onclick="copyToClipboard('valNumeroCarte')" class="text-xs bg-red-600 text-white px-3 py-2 rounded">Copier</button>
-                </div>
-            </div>
+<!-- ── Content ── -->
+<div class="content">
 
-            <!-- 2, 3, 4 : Email, Nom, Téléphone -->
-            <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase">Nom complet</label>
-                <p id="valNom" class="text-gray-800 font-medium"></p>
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase">Email</label>
-                <p id="valEmail" class="text-gray-800 font-medium"></p>
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase">Téléphone</label>
-                <p id="valTel" class="text-gray-800 font-medium"></p>
-            </div>
+  <!-- Profile hero -->
+  <div class="profile-hero">
+    <div class="avatar" id="avatar">
+      <span id="avatarInitials">--</span>
+      <span class="avatar-crown" id="avatarCrown">👑</span>
+    </div>
+    <div class="profile-name" id="profileName">—</div>
+    <div class="profile-badges" id="profileBadges"></div>
+  </div>
 
-            <!-- 5. Affiliation -->
-            <div id="sectionAffiliation" class="p-3 bg-blue-50 rounded-lg">
-                <!-- Contenu injecté par JS -->
-            </div>
+  <!-- Infos personnelles -->
+  <div class="section-label">Informations Personnelles</div>
+  <div class="info-card">
 
-            <!-- 6. Statut Premium -->
-            <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase">Statut Premium</label>
-                <p id="valPremium" class="text-gray-800 font-medium"></p>
-            </div>
-
-            <!-- 7. Mot de passe -->
-            <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase">Mot de passe</label>
-                <div class="flex items-center justify-between">
-                    <p class="font-mono tracking-widest text-lg">*********</p>
-                    <a href="https://wa.me/50944990203?text=Bonjour, je souhaite changer mon mot de passe sur MIJO PAY" 
-                       target="_blank" class="text-sm text-green-600 font-bold hover:underline">Changer</a>
-                </div>
-            </div>
-        </div>
+    <div class="info-row">
+      <div class="info-icon blue">💳</div>
+      <div class="info-body">
+        <div class="info-label">Numéro de carte</div>
+        <div class="info-value mono" id="numeroCarte">—</div>
+      </div>
+      <button class="icon-btn" id="copyCarteBtn" onclick="copierValeur('numeroCarte', this)">📋</button>
+      <button class="icon-btn" id="shareCarteBtn" onclick="partagerCarte()">↗</button>
     </div>
 
-    <script>
-        // Charger les données (Simulé depuis ton localStorage)
-        const user = JSON.parse(localStorage.getItem('user')); 
+    <div class="info-row">
+      <div class="info-icon blue">✉️</div>
+      <div class="info-body">
+        <div class="info-label">Adresse email</div>
+        <div class="info-value" id="email">—</div>
+      </div>
+    </div>
 
-        if (user) {
-            document.getElementById('valNumeroCarte').value = user.NumeroCarte || 'Non défini';
-            document.getElementById('valNom').textContent = user.NomUtilisateur || 'N/A';
-            document.getElementById('valEmail').textContent = user.Email || 'N/A';
-            document.getElementById('valTel').textContent = user.NumeroTelephone || 'N/A';
-            document.getElementById('valPremium').textContent = user.EstPremium ? '✅ Membre Premium' : 'Membre Standard';
+    <div class="info-row">
+      <div class="info-icon blue">👤</div>
+      <div class="info-body">
+        <div class="info-label">Nom complet</div>
+        <div class="info-value" id="nom">—</div>
+      </div>
+    </div>
 
-            // Logique Affiliation
-            // Remplace la partie "Logique Affiliation" dans le script par ceci :
-const affSection = document.getElementById('sectionAffiliation');
+    <div class="info-row">
+      <div class="info-icon blue">📱</div>
+      <div class="info-body">
+        <div class="info-label">Numéro de téléphone</div>
+        <div class="info-value" id="telephone">—</div>
+      </div>
+    </div>
 
-// On vérifie s'il possède déjà un lien d'affiliation (signe qu'il est actif)
-if (user.LienAffiliation && user.LienAffiliation !== "") {
-    affSection.innerHTML = `
-        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Votre lien d'affiliation</label>
-        <div class="flex items-center gap-2">
-            <input type="text" id="valLienAff" value="${user.LienAffiliation}" readonly class="w-full bg-gray-50 p-2 rounded border font-mono text-sm">
-            <button onclick="copyToClipboardValue('${user.LienAffiliation}')" class="text-xs bg-red-600 text-white px-3 py-2 rounded font-bold">Copier</button>
-        </div>
-    `;
-} else {
-    // S'il n'est pas encore affilié, on affiche le bouton pour choisir de s'inscrire
-    affSection.innerHTML = `
-        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Devenir Affilié</label>
-        <p class="text-sm text-gray-600 mb-4">Gagnez des commissions en invitant vos amis sur MIJO PAY.</p>
-        <a href="mijo-affiliate-inscription.html" class="block w-full text-center bg-black hover:bg-gray-800 text-white font-bold py-3 px-4 rounded-xl transition-colors">
-            Activer mon affiliation
-        </a>
-    `;
+  </div>
+
+  <!-- Affiliation -->
+  <div class="section-label">Affiliation</div>
+  <div id="affiliationZone"></div>
+
+  <!-- Statut compte -->
+  <div class="section-label">Statut du Compte</div>
+  <div class="info-card">
+    <div class="info-row">
+      <div class="info-icon gold">👑</div>
+      <div class="info-body">
+        <div class="info-label">Abonnement Premium</div>
+        <div class="info-value" id="premiumStatusText">—</div>
+      </div>
+      <span class="toggle-pill" id="premiumPill">—</span>
+    </div>
+  </div>
+
+  <!-- Sécurité -->
+  <div class="section-label">Sécurité</div>
+  <div class="password-card">
+    <div class="info-icon dim">🔒</div>
+    <div class="info-body">
+      <div class="info-label">Mot de passe</div>
+      <div class="info-value mono">••••••</div>
+    </div>
+    <a href="https://wa.me/50944990203?text=Bonjour%2C%20je%20veux%20changer%20mon%20mot%20de%20passe%20MIJO%20PAY."
+       class="whatsapp-btn" target="_blank">
+      💬 Changer
+    </a>
+  </div>
+
+  <!-- Déconnexion -->
+  <button class="logout-btn" onclick="deconnexion()">Se déconnecter</button>
+
+</div>
+
+<!-- ── Toast ── -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+document.addEventListener("DOMContentLoaded", () => {
+  const user = getUser();
+  if (!user || !user.userId) {
+    window.location.href = "index.html";
+    return;
+  }
+  renderProfile(user);
+});
+
+function getUser() {
+  try { return JSON.parse(localStorage.getItem("user")); }
+  catch { return null; }
 }
 
-        // Fonctions utilitaires
-        function copyToClipboard(id) {
-            const copyText = document.getElementById(id);
-            copyText.select();
-            document.execCommand("copy");
-            alert("Copié !");
-        }
+// ══════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════
+function renderProfile(user) {
+  const nom        = user.NomUtilisateur || "Utilisateur MIJO";
+  const isPremium  = user.EstPremium === true;
+  const isAffilie  = user.Estafilia === true;
 
-        function copyToClipboardValue(text) {
-            navigator.clipboard.writeText(text);
-            alert("Lien copié !");
-        }
-    </script>
+  // ── Avatar ──
+  const initiales = nom.trim().split(" ").slice(0, 2)
+    .map(w => w[0]?.toUpperCase()).join("");
+  document.getElementById("avatarInitials").textContent = initiales || "MJ";
+
+  const avatar = document.getElementById("avatar");
+  const crown  = document.getElementById("avatarCrown");
+  if (isPremium) {
+    avatar.classList.add("premium");
+    crown.classList.add("show");
+  }
+
+  // ── Nom ──
+  document.getElementById("profileName").textContent = nom;
+
+  // ── Badges ──
+  const badges = [];
+  if (isPremium) badges.push(`<span class="badge gold">👑 Premium</span>`);
+  if (isAffilie) badges.push(`<span class="badge blue">🤝 Affilié</span>`);
+  if (user.Compte_US_Actif) badges.push(`<span class="badge green">🌐 Compte USD actif</span>`);
+  if (badges.length === 0) badges.push(`<span class="badge dim">Membre MIJO PAY</span>`);
+  document.getElementById("profileBadges").innerHTML = badges.join("");
+
+  // ── Infos personnelles ──
+  document.getElementById("numeroCarte").textContent = formatCarte(user.NumeroCarte);
+  document.getElementById("email").textContent        = user.Email || "—";
+  document.getElementById("nom").textContent           = nom;
+  document.getElementById("telephone").textContent     = user.NumeroTelephone || "—";
+
+  // ── Affiliation ──
+  const affiliationZone = document.getElementById("affiliationZone");
+  if (isAffilie && user.LienAffiliation) {
+    affiliationZone.innerHTML = `
+      <div class="info-card">
+        <div class="info-row">
+          <div class="info-icon blue">🔗</div>
+          <div class="info-body">
+            <div class="info-label">Ton lien de parrainage</div>
+            <div class="info-value mono" style="color:var(--blue)">${user.LienAffiliation}</div>
+          </div>
+        </div>
+      </div>
+      <div class="share-box">
+        <span class="share-code" id="lienAffiliationVal">${user.LienAffiliation}</span>
+        <div class="share-actions">
+          <button class="icon-btn" onclick="copierValeur('lienAffiliationVal', this)">📋</button>
+          <button class="icon-btn" onclick="partagerAffiliation('${user.LienAffiliation}')">↗</button>
+        </div>
+      </div>
+      ${user.nbreaffilie ? `
+        <div class="info-card" style="margin-top:10px">
+          <div class="info-row">
+            <div class="info-icon green">👥</div>
+            <div class="info-body">
+              <div class="info-label">Affiliés recrutés</div>
+              <div class="info-value">${user.nbreaffilie} personne${user.nbreaffilie > 1 ? "s" : ""}</div>
+            </div>
+          </div>
+        </div>` : ""
+      }
+    `;
+  } else {
+    affiliationZone.innerHTML = `
+      <div class="affiliate-cta">
+        <div class="emoji">🚀</div>
+        <h3>Active ton affiliation</h3>
+        <p>Invite tes proches et gagne une commission sur chacune de leurs transactions.</p>
+        <a href="mijo-affiliate-inscription.html">Activer maintenant →</a>
+      </div>
+    `;
+  }
+
+  // ── Statut Premium ──
+  const premiumPill = document.getElementById("premiumPill");
+  const premiumText = document.getElementById("premiumStatusText");
+
+  if (isPremium) {
+    premiumPill.textContent = "Actif";
+    premiumPill.className   = "toggle-pill on";
+    if (user.DateExpirationPremium) {
+      const exp = new Date(user.DateExpirationPremium);
+      premiumText.textContent = "Expire le " + exp.toLocaleDateString("fr-FR", {
+        day: "2-digit", month: "long", year: "numeric"
+      });
+    } else {
+      premiumText.textContent = "Abonnement actif";
+    }
+  } else {
+    premiumPill.textContent = "Inactif";
+    premiumPill.className   = "toggle-pill off";
+    premiumText.textContent = "Pas encore abonné";
+  }
+}
+
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
+function formatCarte(carte) {
+  if (!carte) return "—";
+  const str = String(carte);
+  // Groupes de 4 chiffres pour la lisibilité
+  return str.replace(/(.{4})/g, "$1 ").trim();
+}
+
+function copierValeur(elementId, btn) {
+  const el = document.getElementById(elementId);
+  const valeur = el.textContent.replace(/\s+/g, "");
+  navigator.clipboard.writeText(valeur).then(() => {
+    btn.textContent = "✓";
+    btn.classList.add("copied");
+    showToast("Copié dans le presse-papiers !");
+    setTimeout(() => {
+      btn.textContent = "📋";
+      btn.classList.remove("copied");
+    }, 1800);
+  });
+}
+
+function partagerCarte() {
+  const carte = document.getElementById("numeroCarte").textContent;
+  const texte = `Mon numéro de carte MIJO PAY : ${carte}`;
+  if (navigator.share) {
+    navigator.share({ text: texte });
+  } else {
+    navigator.clipboard.writeText(texte);
+    showToast("Copié ! Colle-le où tu veux.");
+  }
+}
+
+function partagerAffiliation(lien) {
+  const texte = `Rejoins MIJO PAY avec mon code de parrainage : ${lien} 🚀`;
+  if (navigator.share) {
+    navigator.share({ text: texte });
+  } else {
+    navigator.clipboard.writeText(texte);
+    showToast("Lien copié, partage-le !");
+  }
+}
+
+function deconnexion() {
+  if (confirm("Voulez-vous vraiment vous déconnecter ?")) {
+    localStorage.removeItem("user");
+    window.location.href = "index.html";
+  }
+}
+
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 2800);
+}
+</script>
 </body>
 </html>
