@@ -18,16 +18,21 @@
         /* ------------------------------------------------------------- */
 
         :root {
-            --primary: #2196F3;
-            --primary-dark: #1976D2;
+            --primary: #FF6A00;
+            --primary-dark: #E25800;
+            --navy: #131A2B;
+            --navy-light: #232F45;
             --accent: #FFC107;
-            --success: #4CAF50;
-            --text: #1a1a1a;
-            --text-light: #757575;
-            --bg: #f8f9fa;
+            --success: #00A65A;
+            --gold: #FFA41C;
+            --free: #00A65A;
+            --text: #14171f;
+            --text-light: #707782;
+            --bg: #F5F6F8;
             --white: #ffffff;
-            --shadow: 0 4px 20px rgba(0,0,0,0.08);
-            --radius: 12px;
+            --shadow: 0 2px 10px rgba(20,23,31,0.07);
+            --shadow-hover: 0 14px 30px rgba(20,23,31,0.16);
+            --radius: 14px;
         }
 
         body {
@@ -35,17 +40,17 @@
             margin: 0;
             background-color: var(--bg);
             color: var(--text);
-            padding-bottom: 80px;
+            padding-bottom: 86px;
         }
 
         /* Header & Search */
         header {
-            background: var(--white);
-            padding: 15px 20px;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            padding: 14px 20px 18px;
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: var(--shadow);
+            box-shadow: 0 4px 18px rgba(0,0,0,0.25);
             width: 100%;
         }
 
@@ -58,47 +63,133 @@
 
         .logo {
             font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--primary);
+            font-size: 1.15rem;
+            color: var(--white);
             display: flex;
             align-items: center;
             text-decoration: none;
+            letter-spacing: 0.3px;
         }
 
-        .search-bar {
-            margin-top: 15px;
+        .header-icons {
             display: flex;
-            background: #f1f3f4;
-            border-radius: 8px;
-            padding: 8px 15px;
+            align-items: center;
+            gap: 16px;
+            color: var(--white);
+            font-size: 1.15rem;
+        }
+
+        .header-icons a { color: var(--white); text-decoration: none; }
+
+        .search-bar {
+            margin-top: 14px;
+            display: flex;
+            align-items: center;
+            background: var(--white);
+            border-radius: 10px;
+            padding: 10px 15px;
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
             width: 100%;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.03);
         }
+
+        .search-bar span { font-size: 0.95rem; }
 
         .search-bar input {
             border: none;
             background: transparent;
             width: 100%;
-            padding: 5px;
+            padding: 5px 8px;
             outline: none;
+            font-size: 0.92rem;
+            color: var(--text);
+        }
+
+        /* Category pills bar */
+        .category-bar {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 14px 15px 4px;
+            scrollbar-width: none;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .category-bar::-webkit-scrollbar { display: none; }
+
+        .category-pill {
+            flex: 0 0 auto;
+            background: var(--white);
+            border: 1px solid #eceef1;
+            color: var(--text);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.2s;
+            box-shadow: var(--shadow);
+        }
+        .category-pill.active {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            margin: 16px auto 4px;
+            max-width: 1200px;
+            padding: 0 15px;
+        }
+        .hero-inner {
+            background: linear-gradient(120deg, #FF6A00 0%, #FFA41C 100%);
+            border-radius: var(--radius);
+            padding: 22px 24px;
+            color: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+        }
+        .hero-inner h1 {
+            font-size: 1.15rem;
+            margin: 0 0 6px;
+            font-weight: 700;
+        }
+        .hero-inner p {
+            margin: 0;
+            font-size: 0.78rem;
+            opacity: 0.95;
+            max-width: 70%;
+        }
+        .hero-emoji {
+            font-size: 2.4rem;
+            opacity: 0.9;
         }
 
         /* Trust Badges */
         .trust-badges {
             display: flex;
             justify-content: space-around;
-            padding: 20px 10px;
+            padding: 16px 10px;
             background: var(--white);
-            margin-bottom: 20px;
+            margin: 16px auto 4px;
+            max-width: 1200px;
+            border-radius: var(--radius);
             font-size: 0.8rem;
             text-align: center;
-            flex-wrap: wrap; /* Permet de s'adapter si l'écran est trop petit */
+            flex-wrap: wrap;
             gap: 10px;
+            box-shadow: var(--shadow);
         }
 
-        .badge-item span { display: block; font-weight: 600; color: var(--primary); }
+        .badge-item span { display: block; font-weight: 700; color: var(--primary); }
 
         /* Grid System */
         .container {
@@ -115,7 +206,56 @@
             margin: 30px 0 20px;
         }
 
-        .section-title h2 { font-size: 1.3rem; margin: 0; }
+        .section-title h2 { font-size: 1.25rem; margin: 0; font-weight: 700; }
+        .section-title.free-section h2 { color: var(--free); }
+
+        /* Premium lock modal */
+        .premium-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(10,12,20,0.6);
+            z-index: 5000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .premium-overlay.active { display: flex; }
+        .premium-box {
+            background: var(--white);
+            border-radius: var(--radius);
+            max-width: 360px;
+            width: 100%;
+            padding: 28px 24px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .premium-box .emoji { font-size: 2.6rem; margin-bottom: 6px; }
+        .premium-box h3 { margin: 6px 0 8px; font-size: 1.05rem; }
+        .premium-box p { font-size: 0.85rem; color: var(--text-light); margin: 0 0 18px; line-height: 1.4; }
+        .premium-cta-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(120deg, #FF6A00, #FFA41C);
+            color: var(--white);
+            border: none;
+            padding: 13px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        .premium-cancel-btn {
+            display: block;
+            width: 100%;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 0.82rem;
+            cursor: pointer;
+            padding: 6px;
+        }
 
         .product-grid {
             display: grid;
@@ -139,11 +279,15 @@
             display: flex;
             flex-direction: column;
             width: 100%;
+            border: 1px solid #eef0f3;
+            box-shadow: var(--shadow);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
         }
 
         .card-title {
             font-size: 0.85rem;
-            line-height: 1.2;
+            font-weight: 600;
+            line-height: 1.25;
             height: 38px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -152,15 +296,16 @@
         }
 
         .card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-6px);
             border-color: var(--primary);
-            box-shadow: 0 15px 35px rgba(33, 150, 243, 0.2);
+            box-shadow: var(--shadow-hover);
         }
 
         .card-img-wrapper {
             position: relative;
             height: 180px;
             width: 100%;
+            background: #f1f2f4;
         }
 
         .card img {
@@ -174,33 +319,79 @@
             top: 10px;
             left: 10px;
             background: var(--accent);
-            color: #000;
+            color: #1a1200;
+            padding: 4px 9px;
+            border-radius: 6px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            z-index: 10;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .free-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--free);
+            color: var(--white);
+            padding: 4px 9px;
+            border-radius: 6px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            z-index: 10;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .premium-lock-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(19,26,43,0.85);
+            color: var(--accent);
             padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
+            border-radius: 6px;
+            font-size: 0.68rem;
             font-weight: 700;
             z-index: 10;
         }
 
         .card-content {
-            padding: 15px;
+            padding: 14px 15px 15px;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
         }
 
         .card-category {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             text-transform: uppercase;
             color: var(--text-light);
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
+            font-weight: 600;
         }
 
+        .card-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.72rem;
+            color: var(--gold);
+            margin-top: 4px;
+        }
+        .card-rating span.count { color: var(--text-light); }
+
         .card-price {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-top: 5px;
+            font-size: 1.12rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-top: 6px;
+        }
+        .card-price.price-free { color: var(--free); }
+        .card-price small {
+            font-size: 0.65rem;
+            color: var(--text-light);
+            font-weight: 500;
+            margin-left: 4px;
         }
 
         .seller-info {
@@ -216,15 +407,36 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 11px;
+            border-radius: 9px;
             margin-top: 12px;
             cursor: pointer;
-            font-weight: 600;
-            transition: 0.3s;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: 0.2s;
         }
 
         .buy-btn:hover { background: var(--primary-dark); }
+
+        .free-btn {
+            width: 100%;
+            background: var(--free);
+            color: white;
+            border: none;
+            padding: 11px;
+            border-radius: 9px;
+            margin-top: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+        .free-btn:hover { background: #008c4c; }
+
+        .free-btn.locked {
+            background: #2a3550;
+        }
+        .free-btn.locked:hover { background: #1e2740; }
 
         /* Floating Cart Icon */
         #cart-trigger {
@@ -369,10 +581,13 @@
         
         <div class="header-top">
             <a href="#" class="logo">
-                <img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png" height="30" style="margin-right:10px" alt="Logo">
+                <img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png" height="28" style="margin-right:10px; border-radius:6px;" alt="Logo">
                 MIJO STORE
             </a>
-            <div style="font-size: 1.2rem;">👤</div>
+            <div class="header-icons">
+                <a href="premium.html" title="Premium">⭐</a>
+                <span>👤</span>
+            </div>
         </div>
         
         <div class="search-bar">
@@ -381,6 +596,25 @@
         </div>
     </div> 
 </header>
+
+<div class="category-bar">
+    <button class="category-pill active" onclick="filterByCategory('all', this)">🗂️ Tout</button>
+    <button class="category-pill" onclick="filterByCategory('application', this)">📱 Applications</button>
+    <button class="category-pill" onclick="filterByCategory('e-book', this)">📚 E-Books</button>
+    <button class="category-pill" onclick="filterByCategory('business', this)">💼 Business</button>
+    <button class="category-pill" onclick="filterByCategory('intelligence artificielle', this)">🤖 IA</button>
+    <button class="category-pill" onclick="filterByCategory('gratuit', this)">🎁 Gratuit</button>
+</div>
+
+<div class="hero-banner">
+    <div class="hero-inner">
+        <div>
+            <h1>🔥 Offres MIJO du moment</h1>
+            <p>Apps, ebooks &amp; outils IA premium. Paiement sécurisé avec MIJO Pay, livraison instantanée.</p>
+        </div>
+        <div class="hero-emoji">🛍️</div>
+    </div>
+</div>
 
 <div class="trust-badges">
     <div class="badge-item"><span>🔒 Sécurisé</span>MIJO Pay</div>
@@ -625,7 +859,73 @@
                 <button class="buy-btn" onclick="addToCart('Soufrance invisible', 1000, 'SF-20', 'Lien_ici', 'recU6pHDrmLQJhenM')">Acheter</button>
             </div>
         </div>
-    </div> </div> <div id="cart-trigger" onclick="toggleCart()">
+    </div>
+
+    <div class="section-title free-section">
+        <h2>🎁 Produits Gratuits Premium</h2>
+        <a href="premium.html" style="color:var(--free); text-decoration:none; font-size:0.8rem; font-weight:600;">Activer Premium</a>
+    </div>
+
+    <div class="product-grid free-grid">
+
+        <div class="card">
+            <div class="card-img-wrapper">
+                <span class="free-badge">GRATUIT</span>
+                <img src="https://www.google.com/imgres?q=IA&imgurl=https%3A%2F%2Fwww.genetec.com%2Fbinaries%2Fcontent%2Fgallery%2Fgenetecweb%2Fexternalupload%2Fwebgraphic_putting-ai-to-work-blog-2024.png&imgrefurl=https%3A%2F%2Fwww.genetec.com%2Ffr%2Fblog%2Fcybersecurite%2Fmettre-lia-au-service-du-secteur-de-la-securite&docid=AYLWlfavhH-kxM&tbnid=taOTGJEsMhmEjM&vet=12ahUKEwi0gcilk5iVAxURnCYFHf7XDlYQnPAOegQIQBAA..i&w=1920&h=1080&hcb=2&ved=2ahUKEwi0gcilk5iVAxURnCYFHf7XDlYQnPAOegQIQBAA" alt="Pack Prompts IA">
+            </div>
+            <div class="card-content">
+                <div class="card-category">Intelligence Artificielle</div>
+                <div class="card-title">Pack 100 Prompts IA Exclusifs</div>
+                <div class="card-price price-free">Gratuit <small>Membres Premium</small></div>
+                <div class="seller-info">Vendu par: Académie MIJO</div>
+                <button class="free-btn" onclick="getFreeProduct('Pack 100 Prompts IA Exclusifs', 'FREE-1', 'Lien_ici')">🔓 Télécharger gratuitement</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-img-wrapper">
+                <span class="free-badge">GRATUIT</span>
+                <img src="https://i.postimg.cc/MGMhfNJ2/digital-marketing-5816304-640.jpg" alt="Mini Guide Marketing">
+            </div>
+            <div class="card-content">
+                <div class="card-category">Marketing</div>
+                <div class="card-title">Mini Guide : Lancer sa Pub Facebook</div>
+                <div class="card-price price-free">Gratuit <small>Membres Premium</small></div>
+                <div class="seller-info">Vendu par: Académie MIJO</div>
+                <button class="free-btn" onclick="getFreeProduct('Mini Guide Lancer sa Pub Facebook', 'FREE-2', 'Lien_ici')">🔓 Télécharger gratuitement</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-img-wrapper">
+                <span class="free-badge">GRATUIT</span>
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRKHtJ9StvW9ta0DfykLyb5frtuzDPCh0XBLg-Pf-eqA&s=10" alt="Checklist Business">
+            </div>
+            <div class="card-content">
+                <div class="card-category">ebook</div>
+                <div class="card-title">Influence et manipulation</div>
+                <div class="card-price price-free">Gratuit <small>Membres Premium</small></div>
+                <div class="seller-info">Vendu par: Académie MIJO</div>
+                <button class="free-btn" onclick="getFreeProduct('Checklist Lancer son Business en 7 Jours', 'FREE-3', 'Lien_ici')">🔓 Télécharger gratuitement</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-img-wrapper">
+                <span class="free-badge">GRATUIT</span>
+                <img src="https://i.postimg.cc/PfzjTgMP/model-1335984-1920.jpg" alt="Ebook Confiance">
+            </div>
+            <div class="card-content">
+                <div class="card-category">ebook</div>
+                <div class="card-title">la couture pour les nuls</div>
+                <div class="card-price price-free">Gratuit <small>Membres Premium</small></div>
+                <div class="seller-info">Vendu par: Académie MIJO</div>
+                <button class="free-btn" onclick="getFreeProduct('Ebook Booster sa Confiance en Soi', 'FREE-4', 'Lien_ici')">🔓 Télécharger gratuitement</button>
+            </div>
+        </div>
+
+    </div>
+</div> <div id="cart-trigger" onclick="toggleCart()">
     <span>🛒</span>
     <span class="cart-badge" id="cart-count-badge">0</span>
 </div>
@@ -643,6 +943,16 @@
             <span id="cart-total-modal">0 G</span>
         </div>
         <button id="checkout-btn-modal" class="buy-btn" style="padding:15px">CONFIRMER L'ACHAT</button>
+    </div>
+</div>
+
+<div class="premium-overlay" id="premium-overlay">
+    <div class="premium-box">
+        <div class="emoji">🔒</div>
+        <h3>Produit réservé aux membres Premium</h3>
+        <p id="premium-modal-text">Ce produit gratuit est exclusivement réservé aux membres Premium. Active Premium dès maintenant pour le télécharger gratuitement.</p>
+        <button class="premium-cta-btn" onclick="window.location.href='premium.html'">⭐ Activer Premium</button>
+        <button class="premium-cancel-btn" onclick="closePremiumModal()">Plus tard</button>
     </div>
 </div>
 
@@ -683,6 +993,8 @@
                 document.title = "Produit MIJO | " + prodCode;
             }
         }
+
+        updateFreeButtonsState();
     };
 
     // 2. Logique de RECHERCHE (Améliorée)
@@ -711,6 +1023,90 @@
     // 3. Fonctions du Panier et Utilitaires
     function toggleCart() {
         document.getElementById('cart-modal').classList.toggle('active');
+    }
+
+    // --- Gestion Premium / Produits Gratuits ---
+    function isPremium() {
+        // 1. Clé directe "EstPremium" dans le localStorage
+        const direct = localStorage.getItem('EstPremium');
+        if (direct === 'true') return true;
+
+        // 2. Champ EstPremium à l'intérieur de l'objet "user"
+        try {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user && (user.EstPremium === true || user.EstPremium === 'true')) {
+                return true;
+            }
+        } catch (e) {}
+
+        return false;
+    }
+
+    function getFreeProduct(name, code, link) {
+        if (!isPremium()) {
+            openPremiumModal();
+            return;
+        }
+        // L'utilisateur est Premium : on débloque le produit
+        showToast("🔓 " + name + " débloqué !");
+        if (link && link !== 'Lien_ici') {
+            window.open(link, '_blank');
+        }
+    }
+
+    function openPremiumModal() {
+        document.getElementById('premium-overlay').classList.add('active');
+    }
+
+    function closePremiumModal() {
+        document.getElementById('premium-overlay').classList.remove('active');
+    }
+
+    function updateFreeButtonsState() {
+        const premium = isPremium();
+        document.querySelectorAll('.free-btn').forEach(btn => {
+            if (premium) {
+                btn.classList.remove('locked');
+                btn.innerHTML = '🎁 Télécharger gratuitement';
+            } else {
+                btn.classList.add('locked');
+                btn.innerHTML = '🔒 Réservé Premium';
+            }
+        });
+    }
+
+    // --- Filtrage par catégorie (pills) ---
+    function filterByCategory(category, btnEl) {
+        document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+        if (btnEl) btnEl.classList.add('active');
+
+        const allCards = document.querySelectorAll('.product-grid.free-grid .card, .product-grid:not(.free-grid) .card');
+        const freeSection = document.querySelector('.section-title.free-section');
+        const freeGrid = document.querySelector('.free-grid');
+        const mainGrid = document.querySelector('.product-grid:not(.free-grid)');
+
+        if (category === 'all') {
+            allCards.forEach(card => card.style.display = 'flex');
+            if (freeSection) freeSection.style.display = 'flex';
+            return;
+        }
+
+        if (category === 'gratuit') {
+            if (mainGrid) mainGrid.querySelectorAll('.card').forEach(c => c.style.display = 'none');
+            if (freeSection) freeSection.style.display = 'flex';
+            if (freeGrid) freeGrid.querySelectorAll('.card').forEach(c => c.style.display = 'flex');
+            return;
+        }
+
+        if (freeSection) freeSection.style.display = 'none';
+        if (mainGrid) {
+            mainGrid.querySelectorAll('.card').forEach(card => {
+                const cat = card.querySelector('.card-category').innerText.toLowerCase();
+                let match = cat.includes(category);
+                if (category === 'e-book') match = cat.includes('e-book') || cat.includes('ebook');
+                card.style.display = match ? 'flex' : 'none';
+            });
+        }
     }
 
     function showToast(msg) {
