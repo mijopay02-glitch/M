@@ -43,7 +43,7 @@
   const STATUS_URL = "https://moncash-connect-webhook.mijocomplexe.workers.dev/check-status";
 
   let tentatives = 0;
-  const maxTentatives = 90; 
+  const maxTentatives = 45; // Réduit car les intervalles sont plus longs maintenant
 
   async function verifierStatut() {
     tentatives++;
@@ -53,29 +53,18 @@
       const data = await res.json();
 
       if (data.status === "completed") {
-        // ══════════════════════════════════════════════════════════════════════
-        // [CORRECTION] - On définit et récupère userRaw ici pour éviter le crash
-        // ══════════════════════════════════════════════════════════════════════
         const userRaw = localStorage.getItem("user");
 
         if (userRaw) {
             try {
-                // 1. On transforme la chaîne de caractères en objet JavaScript
                 let userObj = JSON.parse(userRaw);
-                
-                // 2. On injecte le nouveau solde calculé par le Worker
                 userObj.Solde = data.newSolde;
-                
-                // 3. On ré-enregistre l'objet mis à jour dans le localStorage
                 localStorage.setItem("user", JSON.stringify(userObj));
-                
-                console.log("Solde mis à jour avec succès :", data.newSolde);
+                console.log("Solde mis à jour :", data.newSolde);
             } catch (e) {
-                console.error("Erreur lors du parsing ou de l'écriture du localStorage :", e);
+                console.error("Erreur localStorage :", e);
             }
         }
-
-        // 4. Redirection directe vers la page d'accueil (plus de boucle !)
         window.location.href = "home.html?depot=succes";
         return;
       }
@@ -89,15 +78,29 @@
       console.error("Erreur lors de la vérification :", e);
     }
 
-    // Si on arrive ici, c'est que le statut est encore "pending"
+    // ══════════════════════════════════════════════════════════════════════
+    // [OPTIMISATION] - Calcul de l'intervalle dynamique
+    // ══════════════════════════════════════════════════════════════════════
+    let prochainDelai = 3000; // 3 secondes par défaut
+
+    if (tentatives > 10 && tentatives <= 22) {
+      // Entre 30 secondes et 1m30 d'attente -> On passe à 5 secondes
+      prochainDelai = 5000;
+    } else if (tentatives > 22) {
+      // Après 1m30 d'attente -> On passe à 10 secondes
+      prochainDelai = 10000;
+    }
+
+    // Relancer la vérification avec le nouveau délai
     if (tentatives < maxTentatives) {
-      setTimeout(verifierStatut, 2000);
+      setTimeout(verifierStatut, prochainDelai);
     } else {
       document.getElementById("statusText").textContent =
-        "Ça prend plus de temps que prévu. Vérifie ton solde dans quelques minutes.";
+        "Le réseau est un peu lent. Vérifie ton solde MonCash, ton compte sera crédité d'ici peu.";
     }
   }
 
+  // Lancement de la première vérification
   verifierStatut();
 </script>
 </body>
