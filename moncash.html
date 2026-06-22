@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MonCash | MIJO PAY</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2=family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -42,21 +42,29 @@
                         <span class="text-gray-500 font-bold text-sm">HTG</span>
                     </div>
                 </div>
+                
+                <!-- Petit récapitulatif dynamique des frais -->
+                <div id="feeDisplay" class="hidden flex justify-between items-center mt-3 px-1 text-sm font-medium text-gray-500">
+                    <span>Frais MonCash :</span>
+                    <span id="feeAmount" class="text-gray-700">0.00 HTG</span>
+                </div>
+
                 <p class="text-xs text-gray-400 mt-2">Dépôt minimum obligatoire : 100 HTG</p>
             </div>
 
             <button
                 type="submit"
                 id="submitBtn"
-                class="w-full bg-[#cc0000] hover:bg-[#a30000] text-white font-bold py-4 px-4 rounded-xl shadow-lg shadow-red-100 transition-colors duration-300 flex items-center justify-center gap-2"
+                class="w-full bg-[#cc0000] hover:bg-[#a30000] text-white font-bold py-4 px-4 rounded-xl shadow-lg shadow-red-100 transition-all duration-300 flex items-center justify-center gap-2"
             >
-                <span>Continuer vers MonCash</span>
+                <span id="submitBtnText">Continuer vers MonCash</span>
             </button>
         </form>
 
         <div id="statusMessage" class="text-center text-sm font-semibold text-red-600 mt-4 h-5"></div>
     </div>
 
+    <!-- Écran d'attente mis à jour pour MonCash Connect -->
     <div id="redirecting-message" class="hidden bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center border border-gray-100">
         <div class="flex justify-center mb-6">
             <svg class="animate-spin h-12 w-12 text-[#cc0000]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -66,7 +74,7 @@
         </div>
         <h1 class="text-2xl font-bold text-gray-800 mb-2">Connexion sécurisée...</h1>
         <p class="text-gray-500 text-sm">
-            Préparation de votre facture PGecom MonCash. Veuillez ne pas fermer cette fenêtre.
+            Préparation de votre facture MonCash Connect. Veuillez ne pas fermer cette fenêtre.
         </p>
     </div>
 
@@ -76,22 +84,52 @@
 
         const paymentForm        = document.getElementById('paymentForm');
         const amountInput        = document.getElementById('amountInput');
+        const feeDisplay         = document.getElementById('feeDisplay');
+        const feeAmount          = document.getElementById('feeAmount');
+        const submitBtnText      = document.getElementById('submitBtnText');
         const statusMessageEl    = document.getElementById('statusMessage');
         const formContainer      = document.getElementById('payment-form-container');
         const redirectingMessage = document.getElementById('redirecting-message');
 
+        // ── Calcul en temps réel lors de la saisie ──
+        amountInput.addEventListener('input', function() {
+            const amount = parseFloat(amountInput.value);
+
+            if (isNaN(amount) || amount <= 0) {
+                feeDisplay.classList.add('hidden');
+                submitBtnText.textContent = 'Continuer vers MonCash';
+                return;
+            }
+
+            // Calcul des frais (5%) et du total général
+            const calculatedFee = amount * 0.05;
+            const totalToPay = amount + calculatedFee;
+
+            // Mise à jour de l'affichage discret des frais
+            feeAmount.textContent = `${calculatedFee.toFixed(2)} HTG`;
+            feeDisplay.classList.remove('hidden');
+
+            // Mise à jour du texte du bouton d'action principal
+            submitBtnText.textContent = `Payer ${totalToPay.toFixed(2)} HTG`;
+        });
+
+        // ── Traitement de la soumission du formulaire ──
         paymentForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const amount = parseFloat(amountInput.value);
+            const baseAmount = parseFloat(amountInput.value);
 
             // Validation alignée sur DEPOT_MIN = 100 dans le Worker
-            if (isNaN(amount) || amount < 100) {
+            if (isNaN(baseAmount) || baseAmount < 100) {
                 statusMessageEl.textContent = 'Le montant minimum de dépôt est de 100 HTG.';
                 return;
             }
 
             statusMessageEl.textContent = '';
+
+            // Calcul final du total à envoyer au Worker (Montant saisi + 5% de frais)
+            const calculatedFee = baseAmount * 0.05;
+            const totalWithFees = parseFloat((baseAmount + calculatedFee).toFixed(2));
 
             // Afficher l'écran d'attente
             formContainer.classList.add('hidden');
@@ -107,11 +145,11 @@
 
                 const userId = user.userId;
 
-                // Appel au Worker 1 — depot-moncash-connect
+                // Appel au Worker 1 — On passe 'totalWithFees' pour que l'API facture le montant total réel
                 const response = await fetch(WORKER_DEPOT_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId, amount })
+                    body: JSON.stringify({ userId, amount: totalWithFees })
                 });
 
                 const data = await response.json();
@@ -119,7 +157,8 @@
                 if (response.ok && data.success && data.paymentUrl) {
                     // Sauvegarder la référence pour depot-verification.html
                     localStorage.setItem('depotReference', data.reference);
-                    localStorage.setItem('montantPaiement', amount);
+                    // On stocke le montant net (ce que l'utilisateur aura réellement sur son solde après traitement)
+                    localStorage.setItem('montantPaiement', baseAmount);
 
                     // Redirection vers la passerelle MonCash Connect
                     window.location.href = data.paymentUrl;
