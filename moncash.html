@@ -56,8 +56,8 @@
 
         <div id="statusMessage" class="text-center text-sm font-semibold text-red-600 mt-4 h-5"></div>
     </div>
-    
-    <div id="redirecting-message" class="hidden bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center border border-gray-100 animate-fade-in">
+
+    <div id="redirecting-message" class="hidden bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center border border-gray-100">
         <div class="flex justify-center mb-6">
             <svg class="animate-spin h-12 w-12 text-[#cc0000]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -71,72 +71,69 @@
     </div>
 
     <script>
-        const paymentForm = document.getElementById('paymentForm');
-        const amountInput = document.getElementById('amountInput');
-        const statusMessageElement = document.getElementById('statusMessage');
-        const formContainer = document.getElementById('payment-form-container');
+        // ── Worker 1 : initialise la session de paiement MonCash Connect
+        const WORKER_DEPOT_URL = 'https://depot-moncash-connect.mijocomplexe.workers.dev';
+
+        const paymentForm        = document.getElementById('paymentForm');
+        const amountInput        = document.getElementById('amountInput');
+        const statusMessageEl    = document.getElementById('statusMessage');
+        const formContainer      = document.getElementById('payment-form-container');
         const redirectingMessage = document.getElementById('redirecting-message');
 
         paymentForm.addEventListener('submit', async function(e) {
-            e.preventDefault(); 
+            e.preventDefault();
 
             const amount = parseFloat(amountInput.value);
-            
-            // Validation stricte alignée sur le Worker (DEPOT_MIN = 100)
+
+            // Validation alignée sur DEPOT_MIN = 100 dans le Worker
             if (isNaN(amount) || amount < 100) {
-                statusMessageElement.textContent = 'Le montant minimum de dépôt est de 100 HTG.';
+                statusMessageEl.textContent = 'Le montant minimum de dépôt est de 100 HTG.';
                 return;
             }
 
-            statusMessageElement.textContent = '';
-            
-            // Basculer l'affichage vers l'écran d'attente
+            statusMessageEl.textContent = '';
+
+            // Afficher l'écran d'attente
             formContainer.classList.add('hidden');
             redirectingMessage.classList.remove('hidden');
 
             try {
-                // Récupération de la session utilisateur locale
+                // Récupérer la session utilisateur locale
                 const userRaw = localStorage.getItem('user');
-                if (!userRaw) {
-                    throw new Error('Utilisateur non identifié. Veuillez vous connecter.');
-                }
+                if (!userRaw) throw new Error('Utilisateur non identifié. Veuillez vous connecter.');
 
                 const user = JSON.parse(userRaw);
-                if (!user || !user.userId) {
-                    throw new Error('Identifiant utilisateur introuvable. Reconnectez-vous.');
-                }
-                
-                const userId = user.userId;
-                localStorage.setItem('montantPaiement', amount);
+                if (!user || !user.userId) throw new Error('Identifiant utilisateur introuvable. Reconnectez-vous.');
 
-                // URL de ton Worker central de traitement de dépôt
-                const workerUrl = 'https://depot-moncash.mijocomplexe.workers.dev'; 
-                
-                const response = await fetch(workerUrl, {
+                const userId = user.userId;
+
+                // Appel au Worker 1 — depot-moncash-connect
+                const response = await fetch(WORKER_DEPOT_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId, amount })
                 });
 
                 const data = await response.json();
 
-                if (response.ok && data.success && data.redirectUrl) {
-                    // Redirection directe vers la passerelle sécurisée
-                    window.location.href = data.redirectUrl;
+                if (response.ok && data.success && data.paymentUrl) {
+                    // Sauvegarder la référence pour depot-verification.html
+                    localStorage.setItem('depotReference', data.reference);
+                    localStorage.setItem('montantPaiement', amount);
+
+                    // Redirection vers la passerelle MonCash Connect
+                    window.location.href = data.paymentUrl;
                 } else {
-                    // Extraction de l'erreur renvoyée par le Worker
                     throw new Error(data.error || 'Impossible d\'initialiser la session de paiement.');
                 }
 
             } catch (err) {
                 console.error('Erreur transactionnelle:', err);
-                
-                // Réinitialisation de l'affichage en cas d'échec
+
+                // Remettre le formulaire en cas d'erreur
                 redirectingMessage.classList.add('hidden');
                 formContainer.classList.remove('hidden');
-                statusMessageElement.textContent = err.message;
+                statusMessageEl.textContent = err.message;
             }
         });
     </script>
