@@ -17,91 +17,142 @@
       text-align: center;
       padding: 20px;
     }
+    .card {
+      max-width: 360px;
+      width: 100%;
+    }
     .spinner {
-      width: 40px; height: 40px;
-      border: 3px solid rgba(255,255,255,0.1);
+      width: 44px;
+      height: 44px;
+      border: 3px solid rgba(255,255,255,0.08);
       border-top-color: #2E7CF6;
       border-radius: 50%;
       animation: spin .8s linear infinite;
-      margin: 0 auto 20px;
+      margin: 0 auto 24px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    h2 { font-size: 18px; margin-bottom: 8px; }
-    p { color: #8B92A5; font-size: 14px; }
+
+    /* Barre de progression discrète */
+    .progress-bar {
+      width: 100%;
+      height: 3px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 2px;
+      margin: 20px 0 0;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: #2E7CF6;
+      border-radius: 2px;
+      transition: width 0.5s ease;
+    }
+
+    h2 { font-size: 18px; margin: 0 0 8px; font-weight: 600; }
+    p  { color: #8B92A5; font-size: 14px; margin: 0; line-height: 1.5; }
+    .attempt { color: #555c6e; font-size: 12px; margin-top: 14px; }
   </style>
 </head>
 <body>
-  <div>
+  <div class="card">
     <div class="spinner"></div>
-    <h2>Vérification de ton paiement...</h2>
-    <p id="statusText">Cela prend quelques secondes.</p>
+    <h2>Vérification de ton paiement…</h2>
+    <p id="statusText">Connexion avec MonCash en cours.</p>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <p class="attempt" id="attemptText"></p>
   </div>
 
-<script>
-  const params    = new URLSearchParams(window.location.search);
-  const reference = params.get("reference");
-  const STATUS_URL = "https://moncash-connect-webhook.mijocomplexe.workers.dev/check-status";
+  <script>
+    const params    = new URLSearchParams(window.location.search);
+    const reference = params.get("reference");
+    const STATUS_URL = "https://moncash-connect-webhook.mijocomplexe.workers.dev/check-status";
 
-  let tentatives = 0;
-  const maxTentatives = 45; // Réduit car les intervalles sont plus longs maintenant
+    // ── Polling adaptatif : rapide au début, plus lent si ça dure
+    // Délais en ms : 500, 500, 1000, 1000, 2000, 2000, 2000, 4000, 4000 …
+    // Timeout total ≈ 3 minutes (couvre tous les cas réels)
+    const DELAYS   = [500, 500, 1000, 1000, 2000, 2000, 2000, 4000, 4000, 4000, 4000, 4000, 4000, 6000, 6000, 6000, 6000, 6000, 6000, 6000];
+    const MAX_TOTAL_MS = 180_000; // 3 minutes
 
-  async function verifierStatut() {
-    tentatives++;
+    let tentative   = 0;
+    let tempsEcoule = 0;
 
-    try {
-      const res  = await fetch(`${STATUS_URL}?reference=${reference}`);
-      const data = await res.json();
+    const statusTextEl  = document.getElementById("statusText");
+    const attemptTextEl = document.getElementById("attemptText");
+    const progressFill  = document.getElementById("progressFill");
 
-      if (data.status === "completed") {
-        const userRaw = localStorage.getItem("user");
+    function updateProgress() {
+      const pct = Math.min((tempsEcoule / MAX_TOTAL_MS) * 100, 99);
+      progressFill.style.width = pct + "%";
 
-        if (userRaw) {
-            try {
-                let userObj = JSON.parse(userRaw);
-                userObj.Solde = data.newSolde;
-                localStorage.setItem("user", JSON.stringify(userObj));
-                console.log("Solde mis à jour :", data.newSolde);
-            } catch (e) {
-                console.error("Erreur localStorage :", e);
+      if (tempsEcoule < 5000)       statusTextEl.textContent = "Connexion avec MonCash en cours.";
+      else if (tempsEcoule < 15000) statusTextEl.textContent = "En attente de confirmation MonCash…";
+      else if (tempsEcoule < 45000) statusTextEl.textContent = "MonCash traite la transaction…";
+      else                          statusTextEl.textContent = "Prise en compte du paiement…";
+
+      attemptTextEl.textContent = tempsEcoule > 3000
+        ? `Tentative ${tentative} — ${Math.round(tempsEcoule / 1000)}s écoulées`
+        : "";
+    }
+
+    async function verifier() {
+      tentative++;
+
+      try {
+        const res  = await fetch(`${STATUS_URL}?reference=${encodeURIComponent(reference)}`);
+        const data = await res.json();
+
+        if (data.status === "completed") {
+          // Mettre à jour le solde dans le localStorage
+          try {
+            const userRaw = localStorage.getItem("user");
+            if (userRaw && data.newSolde != null) {
+              const userObj = JSON.parse(userRaw);
+              userObj.Solde = data.newSolde;
+              localStorage.setItem("user", JSON.stringify(userObj));
             }
+          } catch (e) {
+            console.error("Erreur mise à jour localStorage :", e);
+          }
+
+          progressFill.style.width = "100%";
+          progressFill.style.background = "#22c55e";
+          window.location.href = "home.html?depot=succes";
+          return;
         }
-        window.location.href = "home.html?depot=succes";
+
+        if (data.status === "failed") {
+          window.location.href = "depot.html?statut=echec";
+          return;
+        }
+
+      } catch (e) {
+        // Erreur réseau passagère → on continue à poller
+        console.warn("Erreur réseau check-status :", e.message);
+      }
+
+      // Calculer le prochain délai
+      const delaiIdx    = Math.min(tentative - 1, DELAYS.length - 1);
+      const prochainDelai = DELAYS[delaiIdx];
+      tempsEcoule += prochainDelai;
+
+      updateProgress();
+
+      if (tempsEcoule >= MAX_TOTAL_MS) {
+        progressFill.style.background = "#f59e0b";
+        statusTextEl.textContent = "Le paiement prend plus de temps que prévu.";
+        attemptTextEl.textContent = "Vérifie ton solde dans quelques minutes.";
         return;
       }
 
-      if (data.status === "failed") {
-        window.location.href = `depot.html?statut=echec`;
-        return;
-      }
-
-    } catch (e) {
-      console.error("Erreur lors de la vérification :", e);
+      setTimeout(verifier, prochainDelai);
     }
 
-    // ══════════════════════════════════════════════════════════════════════
-    // [OPTIMISATION] - Calcul de l'intervalle dynamique
-    // ══════════════════════════════════════════════════════════════════════
-    let prochainDelai = 3000; // 3 secondes par défaut
-
-    if (tentatives > 10 && tentatives <= 22) {
-      // Entre 30 secondes et 1m30 d'attente -> On passe à 5 secondes
-      prochainDelai = 5000;
-    } else if (tentatives > 22) {
-      // Après 1m30 d'attente -> On passe à 10 secondes
-      prochainDelai = 10000;
-    }
-
-    // Relancer la vérification avec le nouveau délai
-    if (tentatives < maxTentatives) {
-      setTimeout(verifierStatut, prochainDelai);
+    if (!reference) {
+      statusTextEl.textContent = "Référence de paiement introuvable.";
     } else {
-      document.getElementById("statusText").textContent =
-        "Le réseau est un peu lent. Vérifie ton solde MonCash, ton compte sera crédité d'ici peu.";
+      verifier();
     }
-  }
-
-  // Lancement de la première vérification
-  verifierStatut();
-</script>
+  </script>
 </body>
 </html>
