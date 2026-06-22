@@ -53,6 +53,11 @@
       const data = await res.json();
 
       if (data.status === "completed") {
+        // ══════════════════════════════════════════════════════════════════════
+        // [CORRECTION] - On définit et récupère userRaw ici pour éviter le crash
+        // ══════════════════════════════════════════════════════════════════════
+        const userRaw = localStorage.getItem("user");
+
         if (userRaw) {
             try {
                 // 1. On transforme la chaîne de caractères en objet JavaScript
@@ -70,7 +75,7 @@
             }
         }
 
-        // 4. Redirection directe vers la page d'accueil
+        // 4. Redirection directe vers la page d'accueil (plus de boucle !)
         window.location.href = "home.html?depot=succes";
         return;
       }
@@ -81,9 +86,10 @@
       }
 
     } catch (e) {
-  console.error("Erreur lors de la vérification :", e);
-}
+      console.error("Erreur lors de la vérification :", e);
+    }
 
+    // Si on arrive ici, c'est que le statut est encore "pending"
     if (tentatives < maxTentatives) {
       setTimeout(verifierStatut, 2000);
     } else {
