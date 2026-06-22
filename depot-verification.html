@@ -62,7 +62,9 @@
         return;
       }
 
-    } catch (e) {}
+    } catch (e) {
+  console.error("Erreur lors de la vérification :", e);
+}
 
     if (tentatives < maxTentatives) {
       setTimeout(verifierStatut, 2000);
