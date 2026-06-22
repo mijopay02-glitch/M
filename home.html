@@ -627,11 +627,19 @@
     window.addEventListener('pageshow', init);
  
     function init() {
-        checkUserSession();
-        chargerSponsors();
-        initParticles();
-        checkPromoPopup();
+    checkUserSession();
+    chargerSponsors();
+    initParticles();
+    checkPromoPopup();
+
+    // ── NOUVEAU : dépôt confirmé par MonCash
+    if (new URLSearchParams(window.location.search).get('depot') === 'succes') {
+        // Nettoyer l'URL sans recharger la page
+        history.replaceState(null, '', 'home.html');
+        // Rafraîchir le solde depuis Supabase
+        refreshBalance(null);
     }
+}
  
     function checkUserSession() {
         const storedUser = localStorage.getItem('user');
