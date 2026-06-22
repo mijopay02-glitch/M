@@ -40,7 +40,7 @@
 <script>
   const params    = new URLSearchParams(window.location.search);
   const reference = params.get("reference");
-  const STATUS_URL = "https://moncash-connect-webhook.mijocomplexe.workers.dev/";
+  const STATUS_URL = "https://moncash-connect-webhook.mijocomplexe.workers.dev/check-status";
 
   let tentatives = 0;
   const maxTentatives = 15; // 15 x 2s = 30 secondes max
