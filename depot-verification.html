@@ -53,7 +53,25 @@
       const data = await res.json();
 
       if (data.status === "completed") {
-        window.location.href = `home.html?depot=succes`;
+        if (userRaw) {
+            try {
+                // 1. On transforme la chaîne de caractères en objet JavaScript
+                let userObj = JSON.parse(userRaw);
+                
+                // 2. On injecte le nouveau solde calculé par le Worker
+                userObj.Solde = data.newSolde;
+                
+                // 3. On ré-enregistre l'objet mis à jour dans le localStorage
+                localStorage.setItem("user", JSON.stringify(userObj));
+                
+                console.log("Solde mis à jour avec succès :", data.newSolde);
+            } catch (e) {
+                console.error("Erreur lors du parsing ou de l'écriture du localStorage :", e);
+            }
+        }
+
+        // 4. Redirection directe vers la page d'accueil
+        window.location.href = "home.html?depot=succes";
         return;
       }
 
