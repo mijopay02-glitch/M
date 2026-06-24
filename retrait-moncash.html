@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIJO PAY — Demande de Retrait</title>
+    <!-- Tailwind CSS pour un design rapide et professionnel -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Icônes Lucide pour embellir l'interface -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- En-tête / Navigation -->
+    <header class="bg-white border-b border-slate-200 py-4 px-6 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-xl font-bold tracking-tight text-indigo-600">MIJO<span class="text-slate-900">PAY</span></span>
+            </div>
+            <a href="home.html" class="flex items-center space-x-1 text-sm font-medium text-slate-500 hover:text-slate-800 transition">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span>Retour au tableau de bord</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Contenu Principal -->
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-100 w-full max-w-md transition-all">
+            
+            <!-- Écran Principal du Formulaire -->
+            <div id="retraitFormContainer">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="p-3 bg-red-50 text-red-600 rounded-xl">
+                        <i data-lucide="arrow-up-right" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-slate-900">Demander un retrait</h1>
+                        <p class="text-xs text-slate-500">Transférez vos fonds MIJO PAY vers votre compte MonCash</p>
+                    </div>
+                </div>
+
+                <!-- Message d'erreur -->
+                <div id="errorMessage" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl flex items-center space-x-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+                    <span id="errorText">Une erreur est survenue.</span>
+                </div>
+
+                <form id="retraitForm" class="space-y-5">
+                    <!-- Champ Téléphone -->
+                    <div>
+                        <label for="phone" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Numéro de téléphone MonCash</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium text-sm">
+                                +509
+                            </div>
+                            <input type="tel" id="phone" name="phone" required placeholder="34567890" pattern="[2-4]{1}[0-9]{7}"
+                                class="w-full pl-14 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white text-slate-900 transition font-medium">
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-1">Entrez les 8 chiffres de votre numéro de téléphone Haïti.</p>
+                    </div>
+
+                    <!-- Champ Montant -->
+                    <div>
+                        <label for="amount" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Montant à retirer (HTG)</label>
+                        <div class="relative">
+                            <input type="number" id="amount" name="amount" min="100" required placeholder="0.00"
+                                class="w-full pl-4 pr-14 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white text-slate-900 transition font-bold text-lg">
+                            <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400 font-bold text-sm">
+                                HTG
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-1">Montant minimum requis : 100 HTG.</p>
+                    </div>
+
+                    <!-- Bouton de soumission -->
+                    <button type="submit" id="btnSubmit"
+                        class="w-full py-3.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl shadow-lg shadow-slate-900/10 hover:shadow-xl transition flex justify-center items-center space-x-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span id="btnText">Confirmer le retrait</span>
+                        <div id="btnSpinner" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Écran de Succès (Masqué par défaut) -->
+            <div id="successScreen" class="hidden text-center py-4">
+                <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
+                    <i data-lucide="check-circle-2" class="w-10 h-10"></i>
+                </div>
+                <h2 class="text-xl font-bold text-slate-900 mb-1">Retrait réussi !</h2>
+                <p class="text-sm text-slate-500 mb-6">L'argent a été transféré instantanément sur votre compte MonCash.</p>
+
+                <div class="bg-slate-50 rounded-2xl p-4 text-left border border-slate-100 space-y-3 mb-6">
+                    <div class="flex justify-between items-center border-b border-slate-200/60 pb-2">
+                        <span class="text-xs text-slate-400 font-medium">Référence</span>
+                        <span id="resReference" class="text-xs font-mono font-bold text-slate-700">mijo-out-xxxx</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-slate-400 font-medium">Nouveau Solde</span>
+                        <span id="resSolde" class="text-sm font-bold text-slate-900">0.00 HTG</span>
+                    </div>
+                </div>
+
+                <a href="home.html" class="block w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-md transition">
+                    Retourner à l'accueil
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Pied de page -->
+    <footer class="py-4 text-center text-xs text-slate-400 border-t border-slate-200/60 bg-white">
+        &copy; 2026 MIJO PAY. Tous droits réservés. Securisé par l'infrastructure MonCash Connect.
+    </footer>
+
+    <!-- Logique JavaScript -->
+    <script>
+        // Remplace cette URL par celle de ton Cloudflare Worker de retrait réel
+        const RETRAIT_WORKER_URL = "https://retrait-moncash.mijocomplexe.workers.dev/"; 
+
+        document.getElementById("retraitForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            // Éléments du DOM
+            const phoneInput = document.getElementById("phone").value.trim();
+            const amountInput = document.getElementById("amount").value.trim();
+            const btnSubmit = document.getElementById("btnSubmit");
+            const btnText = document.getElementById("btnText");
+            const btnSpinner = document.getElementById("btnSpinner");
+            const errorMessage = document.getElementById("errorMessage");
+            const errorText = document.getElementById("errorText");
+
+            // Récupération de l'ID utilisateur (Supposé stocké au login)
+            const userId = localStorage.getItem("userId") ; // Fallback de test
+
+            // Reset des messages d'erreur
+            errorMessage.classList.add("hidden");
+
+            // Passer l'interface en mode chargement
+            btnSubmit.disabled = true;
+            btnText.textContent = "Traitement en cours...";
+            btnSpinner.classList.remove("hidden");
+
+            try {
+                const response = await fetch(RETRAIT_WORKER_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        amount: amountInput,
+                        phone: phoneInput
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Mettre à jour le solde en local storage si nécessaire pour ton app
+                    if (data.newSolde !== undefined) {
+                        localStorage.setItem("userSolde", data.newSolde);
+                    }
+
+                    // Remplir les données de l'écran de succès
+                    document.getElementById("resReference").textContent = data.reference;
+                    document.getElementById("resSolde").textContent = `${data.newSolde} HTG`;
+
+                    // Permuter les écrans
+                    document.getElementById("retraitFormContainer").classList.add("hidden");
+                    document.getElementById("successScreen").classList.remove("hidden");
+                } else {
+                    // Afficher l'erreur retournée par le Worker
+                    throw new Error(data.error || "Une erreur inattendue est survenue.");
+                }
+
+            } catch (err) {
+                // Afficher l'erreur à l'utilisateur
+                errorText.textContent = err.message;
+                errorMessage.classList.remove("hidden");
+
+                // Réinitialiser le bouton
+                btnSubmit.disabled = false;
+                btnText.textContent = "Confirmer le retrait";
+                btnSpinner.classList.add("hidden");
+            }
+        });
+
+        // Initialiser les icônes Lucide à la fin du chargement
+        lucide.createIcons();
+    </script>
+</body>
+</html>
