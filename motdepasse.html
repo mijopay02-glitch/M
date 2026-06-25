@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Changer mon mot de passe | MIJO PAY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --blue:      #1A6FE8;
+            --blue-dark: #1255C0;
+            --green:     #10B981;
+            --red:       #EF4444;
+            --text:      #111827;
+            --text-2:    #6B7280;
+            --border:    #E5E7EB;
+            --bg:        #F3F6FB;
+            --white:     #FFFFFF;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            color: var(--text);
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,.10);
+            border: 1px solid var(--border);
+            padding: 36px 28px;
+            width: 100%;
+            max-width: 420px;
+            animation: popIn .4s cubic-bezier(.22,.68,0,1.2) both;
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: translateY(24px) scale(.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Header */
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: .78em; font-weight: 600; color: var(--text-2);
+            text-decoration: none; margin-bottom: 24px;
+            transition: color .2s;
+        }
+        .back-btn:hover { color: var(--blue); }
+        .back-btn svg { width: 16px; height: 16px; }
+
+        .logo {
+            font-size: 1.5em; font-weight: 800; letter-spacing: -.5px;
+            color: var(--text); text-align: center; margin-bottom: 6px;
+        }
+        .logo span { color: var(--blue); }
+        .subtitle {
+            font-size: .82em; color: var(--text-2); text-align: center;
+            margin-bottom: 28px; line-height: 1.5;
+        }
+
+        /* Fields */
+        .field { margin-bottom: 16px; }
+        .field-label {
+            display: block; font-size: .72em; font-weight: 700;
+            color: var(--text-2); text-transform: uppercase;
+            letter-spacing: .5px; margin-bottom: 6px;
+        }
+        .field-wrap {
+            position: relative;
+        }
+        .field-input {
+            width: 100%; padding: 13px 44px 13px 14px;
+            border: 1.5px solid var(--border); border-radius: 12px;
+            font-family: inherit; font-size: .92em; color: var(--text);
+            background: var(--bg); outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .field-input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(26,111,232,.1);
+        }
+        .field-input.error { border-color: var(--red); }
+        .field-input.success { border-color: var(--green); }
+
+        /* Toggle password visibility */
+        .toggle-eye {
+            position: absolute; right: 13px; top: 50%;
+            transform: translateY(-50%);
+            background: none; border: none; cursor: pointer;
+            color: var(--text-2); padding: 2px;
+            display: flex; align-items: center;
+            transition: color .2s;
+        }
+        .toggle-eye:hover { color: var(--blue); }
+        .toggle-eye svg { width: 18px; height: 18px; }
+
+        /* Force meter */
+        .strength-bar {
+            display: none; margin-top: 8px;
+            height: 4px; border-radius: 2px;
+            background: var(--border); overflow: hidden;
+        }
+        .strength-bar.visible { display: block; }
+        .strength-fill {
+            height: 100%; border-radius: 2px;
+            transition: width .3s ease, background .3s ease;
+            width: 0%;
+        }
+        .strength-label {
+            font-size: .68em; font-weight: 600; margin-top: 4px;
+            min-height: 16px; transition: color .3s;
+        }
+
+        /* Règles mot de passe */
+        .rules {
+            background: #F8FAFF; border: 1px solid #DBEAFE;
+            border-radius: 10px; padding: 12px 14px;
+            margin-bottom: 20px; display: none;
+        }
+        .rules.visible { display: block; }
+        .rule {
+            display: flex; align-items: center; gap: 7px;
+            font-size: .73em; color: var(--text-2);
+            margin-bottom: 5px; transition: color .2s;
+        }
+        .rule:last-child { margin-bottom: 0; }
+        .rule.ok { color: var(--green); }
+        .rule-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--border); flex-shrink: 0;
+            transition: background .2s;
+        }
+        .rule.ok .rule-dot { background: var(--green); }
+
+        /* Bouton */
+        .submit-btn {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+            color: white; border: none; border-radius: 12px;
+            font-family: inherit; font-size: .92em; font-weight: 700;
+            cursor: pointer; box-shadow: 0 4px 16px rgba(26,111,232,.3);
+            transition: opacity .2s, transform .15s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .submit-btn:hover { opacity: .92; }
+        .submit-btn:active { transform: scale(.98); }
+        .submit-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+        /* Spinner */
+        .spinner {
+            width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.4);
+            border-top-color: white; border-radius: 50%;
+            animation: spin .7s linear infinite; display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Message */
+        .message {
+            margin-top: 14px; padding: 12px 14px;
+            border-radius: 10px; font-size: .82em; font-weight: 600;
+            text-align: center; display: none;
+        }
+        .message.error   { background: #FEF2F2; color: var(--red);   border: 1px solid #FECACA; display: block; }
+        .message.success { background: #ECFDF5; color: var(--green); border: 1px solid #A7F3D0; display: block; }
+
+        /* Succès final */
+        .success-screen {
+            display: none; text-align: center; padding: 12px 0;
+        }
+        .success-screen.visible { display: block; }
+        .success-icon {
+            width: 64px; height: 64px; background: #ECFDF5;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; margin: 0 auto 16px;
+            animation: bounceIn .5s cubic-bezier(.22,.68,0,1.4) both;
+        }
+        @keyframes bounceIn {
+            from { transform: scale(0); opacity: 0; }
+            to   { transform: scale(1); opacity: 1; }
+        }
+        .success-icon svg { width: 32px; height: 32px; color: var(--green); }
+        .success-title { font-size: 1.15em; font-weight: 800; margin-bottom: 6px; }
+        .success-text  { font-size: .82em; color: var(--text-2); line-height: 1.5; margin-bottom: 20px; }
+        .home-btn {
+            display: inline-block; padding: 12px 28px;
+            background: var(--blue); color: white;
+            border-radius: 12px; font-weight: 700; font-size: .88em;
+            text-decoration: none; transition: opacity .2s;
+        }
+        .home-btn:hover { opacity: .88; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <a href="profil.html" class="back-btn">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Retour au profil
+    </a>
+
+    <!-- Formulaire -->
+    <div id="form-section">
+        <div class="logo">MIJO<span>PAY</span></div>
+        <p class="subtitle">Choisissez un nouveau mot de passe sécurisé pour votre compte.</p>
+
+        <!-- Ancien mot de passe -->
+        <div class="field">
+            <label class="field-label" for="oldPassword">Mot de passe actuel</label>
+            <div class="field-wrap">
+                <input type="password" id="oldPassword" class="field-input"
+                    placeholder="Votre mot de passe actuel" autocomplete="current-password"/>
+                <button type="button" class="toggle-eye" onclick="toggleVis('oldPassword', this)">
+                    <svg id="eye-old" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Nouveau mot de passe -->
+        <div class="field">
+            <label class="field-label" for="newPassword">Nouveau mot de passe</label>
+            <div class="field-wrap">
+                <input type="password" id="newPassword" class="field-input"
+                    placeholder="Minimum 6 caractères"
+                    autocomplete="new-password"
+                    oninput="evaluerForce(this.value)"/>
+                <button type="button" class="toggle-eye" onclick="toggleVis('newPassword', this)">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="strength-bar" id="strength-bar">
+                <div class="strength-fill" id="strength-fill"></div>
+            </div>
+            <div class="strength-label" id="strength-label"></div>
+        </div>
+
+        <!-- Règles -->
+        <div class="rules" id="rules-box">
+            <div class="rule" id="rule-len">
+                <div class="rule-dot"></div> Au moins 6 caractères
+            </div>
+            <div class="rule" id="rule-letter">
+                <div class="rule-dot"></div> Contient une lettre
+            </div>
+            <div class="rule" id="rule-num">
+                <div class="rule-dot"></div> Contient un chiffre
+            </div>
+        </div>
+
+        <!-- Confirmer -->
+        <div class="field">
+            <label class="field-label" for="confirmPassword">Confirmer le nouveau mot de passe</label>
+            <div class="field-wrap">
+                <input type="password" id="confirmPassword" class="field-input"
+                    placeholder="Répétez le nouveau mot de passe"
+                    autocomplete="new-password"
+                    oninput="verifierCorrespondance()"/>
+                <button type="button" class="toggle-eye" onclick="toggleVis('confirmPassword', this)">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <button class="submit-btn" id="submitBtn" onclick="changerMotDePasse()">
+            <div class="spinner" id="spinner"></div>
+            <span id="btn-text">Changer mon mot de passe</span>
+        </button>
+
+        <div class="message" id="message"></div>
+    </div>
+
+    <!-- Écran succès -->
+    <div class="success-screen" id="success-screen">
+        <div class="success-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+        </div>
+        <div class="success-title">Mot de passe changé !</div>
+        <p class="success-text">Votre mot de passe a été mis à jour avec succès. Utilisez-le à votre prochaine connexion.</p>
+        <a href="home.html" class="home-btn">Retour à l'accueil</a>
+    </div>
+</div>
+
+<script>
+    const LOGIN_URL = 'https://mijopayv2.mijocomplexe.workers.dev/';
+
+    // ── Toggle visibilité mot de passe ──
+    function toggleVis(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const isText = input.type === 'text';
+        input.type = isText ? 'password' : 'text';
+        btn.innerHTML = isText
+            ? `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:18px;height:18px">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+               </svg>`
+            : `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:18px;height:18px">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+               </svg>`;
+    }
+
+    // ── Évaluer la force du mot de passe ──
+    function evaluerForce(val) {
+        const bar   = document.getElementById('strength-bar');
+        const fill  = document.getElementById('strength-fill');
+        const label = document.getElementById('strength-label');
+        const rules = document.getElementById('rules-box');
+
+        if (!val) {
+            bar.classList.remove('visible');
+            rules.classList.remove('visible');
+            label.textContent = '';
+            return;
+        }
+
+        bar.classList.add('visible');
+        rules.classList.add('visible');
+
+        // Règles
+        const hasLen    = val.length >= 6;
+        const hasLetter = /[a-zA-Z]/.test(val);
+        const hasNum    = /[0-9]/.test(val);
+
+        document.getElementById('rule-len').classList.toggle('ok', hasLen);
+        document.getElementById('rule-letter').classList.toggle('ok', hasLetter);
+        document.getElementById('rule-num').classList.toggle('ok', hasNum);
+
+        // Score
+        let score = 0;
+        if (hasLen)             score++;
+        if (hasLetter)          score++;
+        if (hasNum)             score++;
+        if (val.length >= 10)   score++;
+        if (/[^a-zA-Z0-9]/.test(val)) score++;
+
+        const configs = [
+            { pct: '20%', color: '#EF4444', text: 'Très faible',  textColor: '#EF4444' },
+            { pct: '40%', color: '#F97316', text: 'Faible',        textColor: '#F97316' },
+            { pct: '60%', color: '#EAB308', text: 'Moyen',         textColor: '#EAB308' },
+            { pct: '80%', color: '#10B981', text: 'Fort',          textColor: '#10B981' },
+            { pct: '100%',color: '#059669', text: 'Très fort',     textColor: '#059669' },
+        ];
+        const c = configs[Math.min(score - 1, 4)] || configs[0];
+        fill.style.width      = c.pct;
+        fill.style.background = c.color;
+        label.textContent     = c.text;
+        label.style.color     = c.textColor;
+
+        verifierCorrespondance();
+    }
+
+    // ── Vérifier correspondance ──
+    function verifierCorrespondance() {
+        const np = document.getElementById('newPassword').value;
+        const cp = document.getElementById('confirmPassword').value;
+        const input = document.getElementById('confirmPassword');
+        if (!cp) { input.classList.remove('error', 'success'); return; }
+        input.classList.toggle('error',   np !== cp);
+        input.classList.toggle('success', np === cp);
+    }
+
+    // ── Changer mot de passe ──
+    async function changerMotDePasse() {
+        const oldPwd  = document.getElementById('oldPassword').value.trim();
+        const newPwd  = document.getElementById('newPassword').value;
+        const confPwd = document.getElementById('confirmPassword').value;
+        const msgEl   = document.getElementById('message');
+
+        msgEl.className = 'message';
+        msgEl.textContent = '';
+
+        // Validations
+        if (!oldPwd) return afficherErreur('Veuillez entrer votre mot de passe actuel.');
+        if (newPwd.length < 6) return afficherErreur('Le nouveau mot de passe doit faire au moins 6 caractères.');
+        if (newPwd !== confPwd) return afficherErreur('Les deux mots de passe ne correspondent pas.');
+        if (newPwd === oldPwd) return afficherErreur('Le nouveau mot de passe doit être différent de l\'ancien.');
+
+        // Session
+        const userRaw = localStorage.getItem('user');
+        if (!userRaw) return window.location.href = 'index.html';
+        const user = JSON.parse(userRaw);
+        if (!user?.userId) return window.location.href = 'index.html';
+
+        // UI loading
+        setLoading(true);
+
+        try {
+            const res  = await fetch(LOGIN_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action:    'change_password',
+                    userId:    user.userId,
+                    oldPassword: oldPwd,
+                    newPassword: newPwd
+                })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                // Afficher succès
+                document.getElementById('form-section').style.display = 'none';
+                document.getElementById('success-screen').classList.add('visible');
+            } else {
+                afficherErreur(data.error || 'Impossible de changer le mot de passe.');
+            }
+        } catch (e) {
+            afficherErreur('Erreur de connexion. Réessayez.');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    function afficherErreur(msg) {
+        const el = document.getElementById('message');
+        el.className = 'message error';
+        el.textContent = msg;
+    }
+
+    function setLoading(on) {
+        document.getElementById('submitBtn').disabled = on;
+        document.getElementById('spinner').style.display  = on ? 'block' : 'none';
+        document.getElementById('btn-text').textContent   = on ? 'Traitement...' : 'Changer mon mot de passe';
+    }
+</script>
+</body>
+</html>
