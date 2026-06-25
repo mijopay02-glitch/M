@@ -5,51 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retrait MonCash | MIJO PAY</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn .3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
 
-    <!-- Formulaire Principal de Retrait -->
-    <div id="payment-form-container" class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full border border-gray-100 transition-all duration-300">
+    <!-- Formulaire Principal -->
+    <div id="payment-form-container" class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full border border-gray-100">
         <div class="flex items-center justify-center gap-2 mb-6">
             <span class="text-2xl font-black tracking-wider text-gray-900">MIJO<span class="text-red-600">PAY</span></span>
         </div>
 
         <h1 class="text-2xl font-bold text-gray-800 text-center mb-2">Retrait MonCash</h1>
         <p class="text-gray-500 text-sm text-center mb-8">
-            Indiquez le numéro MonCash destinataire et le montant en gourdes (HTG) à retirer de votre solde MIJO PAY.
+            Indiquez le numéro MonCash destinataire et le montant à retirer de votre solde MIJO PAY.
         </p>
 
-        <form id="payoutForm" class="space-y-6">
-            <!-- Champ Numéro de Téléphone MonCash -->
+        <form id="payoutForm" class="space-y-5">
+            <!-- Numéro -->
             <div>
                 <label for="phoneInput" class="block text-sm font-semibold text-gray-700 mb-2">
                     Numéro de téléphone MonCash
                 </label>
-                <div class="relative rounded-lg shadow-sm">
-                    <input
-                        id="phoneInput"
-                        type="tel"
-                        placeholder="Ex: 34567890"
-                        pattern="[2-4]{1}[0-9]{7}"
-                        class="w-full p-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-lg font-medium tracking-wide"
-                        required
-                    />
-                </div>
-                <p class="text-xs text-gray-400 mt-2">Entrez les 8 chiffres de votre numéro de téléphone sans le +509.</p>
+                <input
+                    id="phoneInput"
+                    type="tel"
+                    placeholder="Ex: 34567890"
+                    class="w-full p-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-lg font-medium tracking-wide"
+                    required
+                />
+                <p class="text-xs text-gray-400 mt-1">8 chiffres sans le +509</p>
             </div>
 
-            <!-- Champ Montant -->
+            <!-- Montant -->
             <div>
                 <label for="amountInput" class="block text-sm font-semibold text-gray-700 mb-2">
-                    Montant à retirer (HTG)
+                    Montant à recevoir (HTG)
                 </label>
-                <div class="relative rounded-lg shadow-sm">
+                <div class="relative">
                     <input
                         id="amountInput"
                         type="number"
@@ -57,19 +54,40 @@
                         class="w-full p-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-lg font-medium"
                         min="100"
                         required
+                        oninput="calculerFrais()"
                     />
                     <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                         <span class="text-gray-500 font-bold text-sm">HTG</span>
                     </div>
                 </div>
-                <p class="text-xs text-gray-400 mt-2">Retrait minimum obligatoire : 100 HTG</p>
+                <p class="text-xs text-gray-400 mt-1">Minimum : 100 HTG</p>
             </div>
 
-            <!-- Bouton d'action principal -->
+            <!-- Calculateur de frais -->
+            <div id="frais-box" class="hidden fade-in bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2 text-sm">
+                <div class="flex justify-between text-gray-600">
+                    <span>Montant que vous recevez</span>
+                    <span id="frais-montant" class="font-semibold text-gray-800">—</span>
+                </div>
+                <div class="flex justify-between text-gray-500">
+                    <span>Frais MIJO (5%)</span>
+                    <span id="frais-mijo" class="text-red-500">—</span>
+                </div>
+                <div class="flex justify-between text-gray-500">
+                    <span>Frais MonCash (5%)</span>
+                    <span id="frais-mcc" class="text-red-500">—</span>
+                </div>
+                <div class="border-t border-gray-200 pt-2 flex justify-between font-bold text-gray-800">
+                    <span>Total débité de votre solde</span>
+                    <span id="frais-total" class="text-red-600">—</span>
+                </div>
+            </div>
+
+            <!-- Bouton -->
             <button
                 type="submit"
                 id="submitBtn"
-                class="w-full bg-[#cc0000] hover:bg-[#a30000] text-white font-bold py-4 px-4 rounded-xl shadow-lg shadow-red-100 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
+                class="w-full bg-[#cc0000] hover:bg-[#a30000] text-white font-bold py-4 px-4 rounded-xl shadow-lg shadow-red-100 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
                 <span id="submitBtnText">Confirmer le retrait</span>
             </button>
@@ -78,7 +96,7 @@
         <div id="statusMessage" class="text-center text-sm font-semibold text-red-600 mt-4 min-h-5"></div>
     </div>
 
-    <!-- Écran d'attente pendant le traitement du retrait -->
+    <!-- Écran d'attente -->
     <div id="redirecting-message" class="hidden bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center border border-gray-100">
         <div class="flex justify-center mb-6">
             <svg class="animate-spin h-12 w-12 text-[#cc0000]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -86,99 +104,193 @@
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
         </div>
-        <h1 class="text-2xl font-bold text-gray-800 mb-2">Traitement du retrait...</h1>
-        <p class="text-gray-500 text-sm">
+        <h1 class="text-2xl font-bold text-gray-800 mb-2" id="waiting-title">Traitement du retrait...</h1>
+        <p class="text-gray-500 text-sm" id="waiting-subtitle">
             Communication sécurisée avec MonCash Connect. Veuillez ne pas fermer cette fenêtre.
         </p>
+        <div id="poll-counter" class="mt-4 text-xs text-gray-400"></div>
     </div>
 
     <script>
-        // ── URL de ton nouveau Worker pour le Retrait 
-        const WORKER_RETRAIT_URL = 'https://retrait-moncash.mijocomplexe.workers.dev';
+        const WORKER_RETRAIT_URL  = 'https://retrait-moncash.mijocomplexe.workers.dev';
+        const WEBHOOK_STATUS_URL  = 'https://moncash-connect-webhook.mijocomplexe.workers.dev/check-retrait-status';
+
+        // Frais — à synchroniser avec le worker si tu changes
+        const FRAIS_MIJO_RATE  = 0.05; // 5%
+        const FRAIS_MCC_RATE   = 0.05; // 5%
+        const FRAIS_TOTAL_RATE = 0.10; // 10%
 
         const payoutForm         = document.getElementById('payoutForm');
-        const phoneInput         = document.getElementById('phoneInput');
-        const amountInput         = document.getElementById('amountInput');
-        const submitBtnText      = document.getElementById('submitBtnText');
         const statusMessageEl    = document.getElementById('statusMessage');
         const formContainer      = document.getElementById('payment-form-container');
         const redirectingMessage = document.getElementById('redirecting-message');
 
-        // ── Traitement de la soumission du formulaire ──
+        // ── Calculateur de frais en temps réel ──
+        function calculerFrais() {
+            const montant   = parseFloat(document.getElementById('amountInput').value);
+            const fraisBox  = document.getElementById('frais-box');
+
+            if (!montant || montant < 1) {
+                fraisBox.classList.add('hidden');
+                return;
+            }
+
+            const fraisMijo  = parseFloat((montant * FRAIS_MIJO_RATE).toFixed(2));
+            const fraisMcc   = parseFloat((montant * FRAIS_MCC_RATE).toFixed(2));
+            const fraisTotal = parseFloat((montant * FRAIS_TOTAL_RATE).toFixed(2));
+            const debit      = parseFloat((montant + fraisTotal).toFixed(2));
+
+            document.getElementById('frais-montant').textContent = montant.toLocaleString('fr') + ' G';
+            document.getElementById('frais-mijo').textContent    = '−' + fraisMijo.toLocaleString('fr') + ' G';
+            document.getElementById('frais-mcc').textContent     = '−' + fraisMcc.toLocaleString('fr') + ' G';
+            document.getElementById('frais-total').textContent   = debit.toLocaleString('fr') + ' G';
+
+            fraisBox.classList.remove('hidden');
+        }
+
+        // ── Soumission ──
         payoutForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const baseAmount = parseFloat(amountInput.value);
-            const phoneNumber = phoneInput.value.trim();
+            const montant = parseFloat(document.getElementById('amountInput').value);
+            const phone   = document.getElementById('phoneInput').value.trim();
 
-            // Validation de sécurité côté client
-            if (isNaN(baseAmount) || baseAmount < 100) {
+            if (isNaN(montant) || montant < 100) {
                 statusMessageEl.className = "text-center text-sm font-semibold text-red-600 mt-4 min-h-5";
-                statusMessageEl.textContent = 'Le montant minimum de retrait est de 100 HTG.';
+                statusMessageEl.textContent = 'Le montant minimum est de 100 HTG.';
                 return;
             }
 
             statusMessageEl.textContent = '';
-
-            // Afficher l'écran d'attente
             formContainer.classList.add('hidden');
             redirectingMessage.classList.remove('hidden');
+            document.getElementById('waiting-title').textContent    = 'Traitement du retrait...';
+            document.getElementById('waiting-subtitle').textContent = 'Communication sécurisée avec MonCash Connect. Veuillez ne pas fermer cette fenêtre.';
 
             try {
-                // ── Récupérer la session utilisateur locale (Exactement comme ton dépôt) ──
                 const userRaw = localStorage.getItem('user');
                 if (!userRaw) throw new Error('Utilisateur non identifié. Veuillez vous connecter.');
-
                 const user = JSON.parse(userRaw);
-                if (!user || !user.userId) throw new Error('Identifiant utilisateur introuvable. Reconnectez-vous.');
+                if (!user?.userId) throw new Error('Session expirée. Reconnectez-vous.');
 
-                const userId = user.userId;
-
-                // ── Appel au Worker de Retrait avec les 3 paramètres obligatoires ──
                 const response = await fetch(WORKER_RETRAIT_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        userId: userId, 
-                        amount: baseAmount, 
-                        phone: phoneNumber 
-                    })
+                    body: JSON.stringify({ userId: user.userId, amount: montant, phone })
                 });
 
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    // Mettre à jour le solde local s'il est renvoyé par le Worker
+                    // Mettre à jour le solde local immédiatement (débit optimiste)
                     if (data.newSolde !== undefined) {
                         user.Solde = data.newSolde;
                         localStorage.setItem('user', JSON.stringify(user));
                     }
 
-                    // Redirection ou message de grand succès !
-                    redirectingMessage.classList.add('hidden');
-                    formContainer.classList.remove('hidden');
-                    
-                    // Style vert pour le succès
-                    statusMessageEl.className = "text-center text-sm font-semibold text-emerald-600 mt-4 min-h-5";
-                    statusMessageEl.textContent = `✅ Retrait réussi ! Réf: ${data.reference}`;
-                    
-                    // Reset du formulaire
-                    payoutForm.reset();
+                    // Passer en mode attente de confirmation webhook
+                    document.getElementById('waiting-title').textContent    = 'En attente de confirmation...';
+                    document.getElementById('waiting-subtitle').textContent = 'MonCash traite votre retrait. Cela peut prendre quelques instants.';
+
+                    // Poll le webhook jusqu'à confirmation
+                    await pollRetraitStatus(data.reference, user);
+
                 } else {
                     throw new Error(data.error || 'Impossible de valider le retrait.');
                 }
 
             } catch (err) {
-                console.error('Erreur transactionnelle Retrait:', err);
-
-                // Remettre le formulaire visible en cas d'échec
                 redirectingMessage.classList.add('hidden');
                 formContainer.classList.remove('hidden');
                 statusMessageEl.className = "text-center text-sm font-semibold text-red-600 mt-4 min-h-5";
                 statusMessageEl.textContent = err.message;
             }
         });
-    </script>
 
+        // ── Polling confirmation webhook ──
+        async function pollRetraitStatus(reference, user) {
+            const MAX     = 24;        // 24 × 5s = 2 minutes max
+            const DELAI   = 5000;
+            let essais    = 0;
+
+            const counter = document.getElementById('poll-counter');
+
+            const timer = setInterval(async () => {
+                essais++;
+                counter.textContent = `Vérification ${essais}/${MAX}…`;
+
+                try {
+                    const res  = await fetch(`${WEBHOOK_STATUS_URL}?reference=${encodeURIComponent(reference)}`);
+                    const data = await res.json();
+
+                    if (data.status === 'completed') {
+                        clearInterval(timer);
+
+                        // Mettre à jour le solde local avec la valeur confirmée
+                        if (data.newSolde !== undefined) {
+                            user.Solde = data.newSolde;
+                            localStorage.setItem('user', JSON.stringify(user));
+                        }
+
+                        afficherSucces(reference);
+
+                    } else if (data.status === 'failed') {
+                        clearInterval(timer);
+                        // Le webhook a restauré le solde — on recharge depuis le serveur
+                        await rafraichirSoldeDepuisServeur(user);
+                        afficherEchec('Le retrait a échoué. Votre solde a été remboursé.');
+
+                    } else if (essais >= MAX) {
+                        clearInterval(timer);
+                        // Timeout — le retrait est peut-être en cours, on informe l'utilisateur
+                        redirectingMessage.classList.add('hidden');
+                        formContainer.classList.remove('hidden');
+                        statusMessageEl.className = "text-center text-sm font-semibold text-amber-600 mt-4 min-h-5";
+                        statusMessageEl.textContent = '⏳ Retrait en cours de traitement. Vérifiez vos transactions plus tard.';
+                        payoutForm.reset();
+                        document.getElementById('frais-box').classList.add('hidden');
+                    }
+                } catch (e) {
+                    if (essais >= MAX) {
+                        clearInterval(timer);
+                        redirectingMessage.classList.add('hidden');
+                        formContainer.classList.remove('hidden');
+                        statusMessageEl.textContent = '⏳ Vérification interrompue. Consultez vos transactions.';
+                    }
+                }
+            }, DELAI);
+        }
+
+        function afficherSucces(reference) {
+            redirectingMessage.classList.add('hidden');
+            formContainer.classList.remove('hidden');
+            statusMessageEl.className = "text-center text-sm font-semibold text-emerald-600 mt-4 min-h-5";
+            statusMessageEl.textContent = `✅ Retrait confirmé ! Réf: ${reference}`;
+            payoutForm.reset();
+            document.getElementById('frais-box').classList.add('hidden');
+        }
+
+        function afficherEchec(message) {
+            redirectingMessage.classList.add('hidden');
+            formContainer.classList.remove('hidden');
+            statusMessageEl.className = "text-center text-sm font-semibold text-red-600 mt-4 min-h-5";
+            statusMessageEl.textContent = '❌ ' + message;
+        }
+
+        // Recharger le vrai solde depuis le serveur (après échec ou remboursement)
+        async function rafraichirSoldeDepuisServeur(user) {
+            try {
+                const res  = await fetch('https://mijopayv2.mijocomplexe.workers.dev/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'get_user_by_id', userId: user.userId })
+                });
+                const data = await res.json();
+                if (data.success && data.user) {
+                    localStorage.setItem('user', JSON.stringify({ ...data.user }));
+                }
+            } catch (e) {}
+        }
+    </script>
 </body>
 </html>
