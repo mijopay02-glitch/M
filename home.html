@@ -632,15 +632,33 @@
     initParticles();
     checkPromoPopup();
 
-    // ── NOUVEAU : dépôt confirmé par MonCash
     if (new URLSearchParams(window.location.search).get('depot') === 'succes') {
-        // Nettoyer l'URL sans recharger la page
         history.replaceState(null, '', 'home.html');
-        // Rafraîchir le solde depuis Supabase
-        refreshBalance(null);
+        pollSoldeApresDepot();
     }
 }
- 
+
+function pollSoldeApresDepot() {
+    const balanceEl = document.getElementById('balance');
+    balanceEl.style.opacity = '0.5';
+
+    let essais = 0;
+    const MAX = 12; // 12 × 5s = 60 secondes max, puis on arrête
+
+    const timer = setInterval(async () => {
+        essais++;
+        await refreshBalance(null);
+
+        // Comparer avec le solde en localStorage avant le dépôt
+        // Realtime va aussi mettre à jour — donc double sécurité
+        balanceEl.style.opacity = '1';
+
+        if (essais >= MAX) clearInterval(timer);
+    }, 5000);
+
+    // Premier appel immédiat après 3s (laisser le temps au webhook)
+    setTimeout(() => refreshBalance(null), 3000);
+}
     function checkUserSession() {
         const storedUser = localStorage.getItem('user');
         const storedToken = localStorage.getItem('token'); // On récupère le token sauvegardé à la connexion
