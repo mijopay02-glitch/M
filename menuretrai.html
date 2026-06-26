@@ -1,93 +1,206 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-      <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-K43FXR4W');</script>
-<!-- End Google Tag Manager -->
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-K43FXR4W');</script>
+    <!-- End Google Tag Manager -->
+    
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3573655486794825"
-      crossorigin="anonymous"></script>
+     crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retrait MIJO PAY</title>
+    <title>Retrait - MIJO PAY</title>
+    
     <style>
+        /* Réinitialisation de base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6; /* Gris très clair, moderne */
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 30px 20px;
+            color: #1a1a1a;
         }
-        h1 {
-            color: #333;
-        }
-        .deposit-method {
-            background-color: #fff;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 10px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            cursor: pointer;
+
+        /* En-tête */
+        .header {
             text-align: center;
-            transition: transform 0.2s;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 450px;
         }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Conteneur principal */
+        .methods-container {
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Style des boutons/cartes de retrait */
+        .deposit-method {
+            background-color: #ffffff;
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid #eaeaea;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            cursor: pointer;
+        }
+
         .deposit-method:hover {
-            transform: scale(1.05);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            border-color: #d1d5db;
         }
-        .code {
-            margin-top: 10px;
+
+        /* Espace pour le logo/icône */
+        .method-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 16px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .method-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* S'assure que le logo ne soit pas déformé */
+        }
+
+        /* Textes dans la carte */
+        .method-text {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .method-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111;
+        }
+
+        .method-subtitle {
+            font-size: 13px;
+            color: #777;
+            margin-top: 3px;
+        }
+
+        /* Flèche à droite (Chevron) */
+        .method-arrow {
+            color: #ccc;
+            font-size: 20px;
             font-weight: bold;
-            color: #007BFF;
         }
-        .deposit-method a {
-            text-decoration: none; /* Enlève la ligne sous le texte du lien */
-            color: #333; /* Définit la couleur du texte */
-            font-weight: bold; /* Donne un peu de gras au texte */
-            display: block; /* S'assure que le lien couvre toute la zone du div */
-        }
+
+        /* Couleurs spécifiques pour les icônes par défaut si pas d'image */
+        .icon-moncash { background-color: #ffeaea; color: #ed1c24; font-weight: bold;}
+        .icon-agent { background-color: #e6f2ff; color: #007BFF; font-weight: bold;}
+        .icon-whatsapp { background-color: #e8f5e9; color: #25D366; font-weight: bold;}
+
     </style>
 </head>
 <body>
-       <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K43FXR4W"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K43FXR4W"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
 
-    <h1>Retrait MIJO PAY</h1>
+    <div class="header">
+        <h1>Retrait MIJO PAY</h1>
+        <p>Choisissez votre méthode de retrait</p>
+    </div>
 
-    <span>Retrait</span>
-    <div id="agentDeposit" class="deposit-method">
-        <a href="retrait.html">
-            Retrait par Agent MIJO PAY
+    <div class="methods-container">
+        
+        <!-- 1. RETRAIT MONCASH -->
+        <a href="retrait-moncash.html" class="deposit-method">
+            <div class="method-icon icon-moncash">
+                <!-- INSERE LE LIEN DE TON IMAGE MONCASH CI-DESSOUS -->
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3dc94jm8eRN6UkZfqdADoYhL_jCLXGFCCvWRfqaNAEQ&s=10" alt="MonCash">
+            </div>
+            <div class="method-text">
+                <span class="method-title">Retrait MonCash</span>
+                <span class="method-subtitle">Transfert direct vers votre compte</span>
+            </div>
+            <div class="method-arrow">›</div>
         </a>
+
+        <!-- 2. RETRAIT AGENT -->
+        <a href="retrait.html" class="deposit-method">
+            <div class="method-icon icon-agent">
+                <!-- Si tu as un logo pour les agents, tu peux mettre une balise img ici aussi. Sinon, on laisse le texte "Ag" -->
+                Ag
+            </div>
+            <div class="method-text">
+                <span class="method-title">Agent MIJO PAY</span>
+                <span class="method-subtitle">Retrait en espèces via un agent</span>
+            </div>
+            <div class="method-arrow">›</div>
+        </a>
+
+        <!-- 3. RETRAIT WHATSAPP -->
+        <div id="whatsappDeposit" class="deposit-method">
+            <div class="method-icon icon-whatsapp">
+                <!-- Si tu as un logo WhatsApp, ajoute la balise img ici. Sinon, on laisse "Wa" -->
+                Wa
+            </div>
+            <div class="method-text">
+                <span class="method-title">Contact WhatsApp</span>
+                <span class="method-subtitle">Assistance directe 24/7</span>
+            </div>
+            <div class="method-arrow">›</div>
+        </div>
+
     </div>
 
-    <div id="whatsappDeposit" class="deposit-method">
-        Retrait par Contact Direct WhatsApp
-    </div>
-
-    
     <script>
-        
-        // Dépôt par WhatsApp
-      if (whatsappDeposit) {
-    whatsappDeposit.addEventListener('click', () => {
-        const message = encodeURIComponent('Bonjour, je souhaite effectuer un Retrait sur MIJO PAY.');
-        const phoneNumber = '50944990203'; // format international sans +
-        const url = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${message}`;
-        window.open(url, '_system'); // _system est plus sûr pour Cordova/WebView
-    });
-}
-
-
-        
-        
+        // Logique pour le bouton WhatsApp
+        const whatsappDeposit = document.getElementById('whatsappDeposit');
+        if (whatsappDeposit) {
+            whatsappDeposit.addEventListener('click', () => {
+                const message = encodeURIComponent('Bonjour, je souhaite effectuer un Retrait sur MIJO PAY.');
+                const phoneNumber = '50944990203'; // format international sans +
+                const url = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${message}`;
+                window.open(url, '_system'); // _system est plus sûr pour Cordova/WebView
+            });
+        }
     </script>
 
 </body>
