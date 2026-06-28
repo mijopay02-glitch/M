@@ -1,511 +1,292 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MIJO PAY — Premium</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg:        #080A0E;
-      --bg2:       #0D1018;
-      --bg3:       #131720;
-      --gold:      #F0C040;
-      --gold2:     #C9982A;
-      --gold3:     #FFE08A;
-      --border:    rgba(240,192,64,0.12);
-      --border2:   rgba(240,192,64,0.25);
-      --text:      #F5F0E8;
-      --text2:     #9A8E78;
-      --text3:     #5A5245;
-      --green:     #2ECC8A;
-      --red:       #E05555;
-      --radius:    20px;
+      --bg:      #080A0E;
+      --bg2:     #0D1018;
+      --bg3:     #131720;
+      --gold:    #F0C040;
+      --gold2:   #C9982A;
+      --gold3:   #FFE08A;
+      --border:  rgba(240,192,64,0.12);
+      --border2: rgba(240,192,64,0.28);
+      --text:    #F5F0E8;
+      --text2:   #9A8E78;
+      --text3:   #5A5245;
+      --green:   #2ECC8A;
+      --red:     #E05555;
+      --radius:  20px;
     }
- 
     * { box-sizing: border-box; margin: 0; padding: 0; }
- 
     html { scroll-behavior: smooth; }
- 
     body {
       background: var(--bg);
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', sans-serif;
       color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
     }
- 
-    /* ── Noise grain overlay ── */
     body::after {
       content: '';
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 999;
-      opacity: .4;
+      pointer-events: none; z-index: 999; opacity: .4;
     }
- 
-    /* ── Ambient glow ── */
     body::before {
       content: '';
-      position: fixed;
-      top: -200px;
-      left: 50%;
+      position: fixed; top: -200px; left: 50%;
       transform: translateX(-50%);
-      width: 600px;
-      height: 500px;
+      width: 600px; height: 500px;
       background: radial-gradient(ellipse, rgba(240,192,64,0.07) 0%, transparent 70%);
-      pointer-events: none;
-      z-index: 0;
+      pointer-events: none; z-index: 0;
     }
- 
+
     /* ── Header ── */
     .header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(8,10,14,0.9);
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8,10,14,0.92);
       backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--border);
       padding: 0 20px;
     }
     .header-inner {
-      max-width: 460px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      height: 58px;
-      gap: 14px;
+      max-width: 460px; margin: 0 auto;
+      display: flex; align-items: center;
+      height: 58px; gap: 14px;
     }
     .back-btn {
-      width: 34px; height: 34px;
-      border-radius: 10px;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      color: var(--text2);
-      font-size: 16px;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text2); font-size: 16px;
       display: flex; align-items: center; justify-content: center;
-      text-decoration: none;
-      transition: all .2s;
-      flex-shrink: 0;
+      text-decoration: none; transition: all .2s; flex-shrink: 0;
     }
     .back-btn:hover { border-color: var(--border2); color: var(--gold); }
- 
     .header-logo {
       font-family: 'Playfair Display', serif;
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text);
-      flex: 1;
+      font-size: 16px; font-weight: 700; color: var(--text); flex: 1;
     }
     .header-logo span { color: var(--gold); }
- 
-    .header-crown {
-      font-size: 18px;
-      animation: float 3s ease-in-out infinite;
-    }
-    @keyframes float {
-      0%,100% { transform: translateY(0); }
-      50%      { transform: translateY(-3px); }
-    }
- 
+    .header-crown { font-size: 18px; animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+
     /* ── Content ── */
     .content {
-      position: relative;
-      z-index: 1;
-      max-width: 460px;
-      margin: 0 auto;
+      position: relative; z-index: 1;
+      max-width: 460px; margin: 0 auto;
       padding: 28px 18px 100px;
     }
- 
-    /* ── Hero section ── */
+
+    /* ── Hero ── */
     .hero {
-      text-align: center;
-      padding: 12px 0 36px;
+      text-align: center; padding: 12px 0 32px;
       animation: fadeUp .6s ease forwards;
     }
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
     }
- 
-    .hero-crown {
-      font-size: 52px;
-      display: block;
-      margin-bottom: 16px;
-      filter: drop-shadow(0 0 20px rgba(240,192,64,0.4));
-    }
- 
+    .hero-crown { font-size: 52px; display: block; margin-bottom: 16px; filter: drop-shadow(0 0 20px rgba(240,192,64,0.4)); }
     .hero-title {
       font-family: 'Playfair Display', serif;
-      font-size: 34px;
-      font-weight: 900;
-      color: var(--gold);
-      line-height: 1.1;
-      margin-bottom: 10px;
+      font-size: 34px; font-weight: 900; color: var(--gold);
+      line-height: 1.1; margin-bottom: 10px;
       text-shadow: 0 0 40px rgba(240,192,64,0.3);
     }
- 
-    .hero-sub {
-      font-size: 15px;
-      color: var(--text2);
-      line-height: 1.6;
-      max-width: 300px;
-      margin: 0 auto;
-    }
- 
+    .hero-sub { font-size: 15px; color: var(--text2); line-height: 1.6; max-width: 300px; margin: 0 auto; }
+
     /* ── Status card ── */
     .status-card {
       background: linear-gradient(135deg, #141008 0%, #0D0C08 100%);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius);
-      padding: 22px 22px 20px;
-      margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
+      border: 1px solid var(--border2); border-radius: var(--radius);
+      padding: 22px 22px 20px; margin-bottom: 20px;
+      position: relative; overflow: hidden;
       animation: fadeUp .6s .1s ease both;
     }
     .status-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
       background: linear-gradient(90deg, transparent, var(--gold), transparent);
     }
- 
     .status-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 18px;
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 18px;
     }
- 
-    .status-name {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--text);
-    }
-    .status-name small {
-      display: block;
-      font-size: 12px;
-      color: var(--text3);
-      font-weight: 400;
-      margin-top: 2px;
-    }
- 
+    .status-name { font-size: 18px; font-weight: 600; color: var(--text); }
+    .status-name small { display: block; font-size: 12px; color: var(--text3); font-weight: 400; margin-top: 2px; }
     .status-badge {
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .5px;
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 12px; font-weight: 700; letter-spacing: .5px;
     }
-    .status-badge.active {
-      background: rgba(46,204,138,0.12);
-      border: 1px solid rgba(46,204,138,0.3);
-      color: var(--green);
-    }
-    .status-badge.inactive {
-      background: rgba(90,82,69,0.2);
-      border: 1px solid rgba(90,82,69,0.4);
-      color: var(--text3);
-    }
- 
+    .status-badge.active  { background: rgba(46,204,138,0.12); border: 1px solid rgba(46,204,138,0.3); color: var(--green); }
+    .status-badge.inactive{ background: rgba(90,82,69,0.2);    border: 1px solid rgba(90,82,69,0.4);   color: var(--text3); }
     .status-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 11px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
     }
     .status-row:last-child { border-bottom: none; }
- 
-    .status-row-label {
-      font-size: 13px;
-      color: var(--text2);
-    }
-    .status-row-value {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text);
-    }
-    .status-row-value.gold { color: var(--gold); }
+    .status-row-label { font-size: 13px; color: var(--text2); }
+    .status-row-value { font-size: 13px; font-weight: 600; color: var(--text); }
+    .status-row-value.gold  { color: var(--gold); }
     .status-row-value.green { color: var(--green); }
-    .status-row-value.red { color: var(--red); }
- 
-    /* ── Benefits grid ── */
-    .benefits-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--text3);
-      margin: 28px 0 14px;
-      animation: fadeUp .6s .2s ease both;
-    }
- 
-    .benefits-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 24px;
-      animation: fadeUp .6s .25s ease both;
-    }
- 
-    .benefit-item {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 16px 14px;
-      transition: all .2s;
-    }
-    .benefit-item:hover {
-      border-color: var(--border2);
-      transform: translateY(-2px);
-    }
-    .benefit-icon { font-size: 22px; margin-bottom: 8px; display: block; }
-    .benefit-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 3px;
-    }
-    .benefit-desc { font-size: 11px; color: var(--text3); line-height: 1.4; }
- 
-    /* ── Price card ── */
-    .price-card {
-      background: linear-gradient(135deg, #16110A 0%, #100D07 100%);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius);
-      padding: 24px 22px;
-      margin-bottom: 14px;
-      position: relative;
-      overflow: hidden;
-      animation: fadeUp .6s .3s ease both;
-    }
- 
-    .price-shimmer {
-      position: absolute;
-      top: 0; left: -100%;
-      width: 60%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(240,192,64,0.04), transparent);
-      animation: shimmer 3s infinite;
-    }
-    @keyframes shimmer {
-      to { left: 150%; }
-    }
- 
-    .price-top {
-      display: flex;
-      align-items: flex-end;
-      gap: 6px;
-      margin-bottom: 6px;
-    }
-    .price-amount {
-      font-family: 'Playfair Display', serif;
-      font-size: 44px;
-      font-weight: 900;
-      color: var(--gold);
-      line-height: 1;
-    }
-    .price-currency {
-      font-size: 16px;
-      color: var(--gold2);
-      margin-bottom: 6px;
-      font-weight: 500;
-    }
- 
-    .price-period {
-      font-size: 13px;
-      color: var(--text3);
-      margin-bottom: 18px;
-    }
- 
-    /* ── Activate button ── */
-    .btn-activate {
-      width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
-      color: #080A0E;
-      border: none;
-      border-radius: 14px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      letter-spacing: .3px;
-      position: relative;
-      overflow: hidden;
-      transition: all .25s;
-      box-shadow: 0 8px 24px rgba(240,192,64,0.2);
-    }
-    .btn-activate::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-      opacity: 0;
-      transition: opacity .2s;
-    }
-    .btn-activate:hover:not(:disabled)::after { opacity: 1; }
-    .btn-activate:hover:not(:disabled) {
-      transform: translateY(-1px);
-      box-shadow: 0 12px 32px rgba(240,192,64,0.3);
-    }
-    .btn-activate:active:not(:disabled) { transform: translateY(0); }
-    .btn-activate:disabled {
-      background: linear-gradient(135deg, #2A2510, #1E1A0A);
-      color: var(--text3);
-      cursor: not-allowed;
-      box-shadow: none;
-      border: 1px solid var(--border);
-    }
- 
-    .btn-note {
-      text-align: center;
-      font-size: 12px;
-      color: var(--text3);
-      margin-top: 10px;
-    }
- 
-    /* ── Auto-renew card ── */
-    .renew-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px 22px;
-      margin-bottom: 14px;
-      display: none;
-      animation: fadeUp .4s ease both;
-    }
-    .renew-card.visible { display: block; }
- 
-    .renew-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
-    .renew-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text);
-    }
- 
-    /* Toggle switch */
-    .toggle-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .toggle-label {
-      font-size: 12px;
-      color: var(--text2);
-    }
-    .toggle {
-      position: relative;
-      width: 44px;
-      height: 24px;
-      cursor: pointer;
-    }
-    .toggle input { display: none; }
-    .toggle-track {
-      position: absolute;
-      inset: 0;
-      background: var(--bg3);
-      border: 1px solid var(--border2);
-      border-radius: 12px;
-      transition: all .3s;
-    }
-    .toggle input:checked ~ .toggle-track {
-      background: rgba(240,192,64,0.2);
-      border-color: var(--gold2);
-    }
-    .toggle-thumb {
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 16px;
-      height: 16px;
-      background: var(--text3);
-      border-radius: 50%;
-      transition: all .3s cubic-bezier(.34,1.56,.64,1);
-    }
-    .toggle input:checked ~ .toggle-thumb {
-      left: 23px;
-      background: var(--gold);
-    }
- 
-    .renew-note {
-      font-size: 12px;
-      color: var(--text3);
-      line-height: 1.5;
-      padding: 10px 14px;
-      background: var(--bg3);
-      border-radius: 10px;
-    }
- 
-    /* ── Expiry badge ── */
-    .expiry-wrap {
-      display: none;
-      margin-bottom: 14px;
-      animation: fadeUp .4s ease both;
-    }
+
+    /* ── Expiry ── */
+    .expiry-wrap { display: none; margin-bottom: 14px; animation: fadeUp .4s ease both; }
     .expiry-wrap.visible { display: block; }
     .expiry-inner {
-      background: rgba(46,204,138,0.06);
-      border: 1px solid rgba(46,204,138,0.2);
-      border-radius: 12px;
-      padding: 14px 18px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      background: rgba(46,204,138,0.06); border: 1px solid rgba(46,204,138,0.2);
+      border-radius: 12px; padding: 14px 18px;
+      display: flex; align-items: center; gap: 12px;
     }
     .expiry-icon { font-size: 20px; }
     .expiry-text { font-size: 13px; color: var(--text2); line-height: 1.4; }
     .expiry-text strong { color: var(--green); }
- 
-    /* ── Loading spinner ── */
+
+    /* ── Benefits ── */
+    .section-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 2px; color: var(--text3); margin: 28px 0 14px;
+      animation: fadeUp .6s .2s ease both;
+    }
+    .benefits-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; margin-bottom: 24px;
+      animation: fadeUp .6s .25s ease both;
+    }
+    .benefit-item {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 14px; padding: 18px 14px; transition: all .2s;
+      position: relative; overflow: hidden;
+    }
+    .benefit-item:hover { border-color: var(--border2); transform: translateY(-2px); }
+    .benefit-item.highlight {
+      background: linear-gradient(135deg, #16110A, #100D07);
+      border-color: var(--border2);
+    }
+    .benefit-item.highlight::before {
+      content: 'EXCLUSIF';
+      position: absolute; top: 10px; right: 10px;
+      font-size: 8px; font-weight: 800; letter-spacing: 1px;
+      color: var(--gold2); background: rgba(240,192,64,0.1);
+      padding: 2px 7px; border-radius: 20px;
+      border: 1px solid rgba(240,192,64,0.2);
+    }
+    .benefit-icon { font-size: 26px; margin-bottom: 10px; display: block; }
+    .benefit-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .benefit-desc { font-size: 11px; color: var(--text3); line-height: 1.5; }
+
+    /* Bénéfice large (pleine largeur) */
+    .benefit-item.wide { grid-column: 1 / -1; display: flex; align-items: center; gap: 16px; }
+    .benefit-item.wide .benefit-icon { font-size: 32px; margin-bottom: 0; flex-shrink: 0; }
+    .benefit-item.wide .benefit-name { font-size: 14px; margin-bottom: 5px; }
+    .benefit-item.wide .benefit-desc { font-size: 12px; }
+
+    /* ── Price card ── */
+    .price-card {
+      background: linear-gradient(135deg, #16110A 0%, #100D07 100%);
+      border: 1px solid var(--border2); border-radius: var(--radius);
+      padding: 24px 22px; margin-bottom: 14px;
+      position: relative; overflow: hidden;
+      animation: fadeUp .6s .3s ease both;
+    }
+    .price-shimmer {
+      position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(240,192,64,0.04), transparent);
+      animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { to { left: 150%; } }
+    .price-top { display: flex; align-items: flex-end; gap: 6px; margin-bottom: 4px; }
+    .price-amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 44px; font-weight: 900; color: var(--gold); line-height: 1;
+    }
+    .price-currency { font-size: 16px; color: var(--gold2); margin-bottom: 6px; font-weight: 500; }
+    .price-period { font-size: 13px; color: var(--text3); margin-bottom: 18px; }
+
+    .btn-activate {
+      width: 100%; padding: 16px;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
+      color: #080A0E; border: none; border-radius: 14px;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      letter-spacing: .3px; position: relative; overflow: hidden;
+      transition: all .25s; box-shadow: 0 8px 24px rgba(240,192,64,0.2);
+    }
+    .btn-activate::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      opacity: 0; transition: opacity .2s;
+    }
+    .btn-activate:hover:not(:disabled)::after { opacity: 1; }
+    .btn-activate:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 12px 32px rgba(240,192,64,0.3); }
+    .btn-activate:active:not(:disabled) { transform: translateY(0); }
+    .btn-activate:disabled {
+      background: linear-gradient(135deg, #2A2510, #1E1A0A);
+      color: var(--text3); cursor: not-allowed; box-shadow: none;
+      border: 1px solid var(--border);
+    }
+    .btn-note { text-align: center; font-size: 12px; color: var(--text3); margin-top: 10px; }
+
+    /* ── Auto-renew card ── */
+    .renew-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px 22px;
+      margin-bottom: 14px; display: none;
+      animation: fadeUp .4s ease both;
+    }
+    .renew-card.visible { display: block; }
+    .renew-header {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 12px;
+    }
+    .renew-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .toggle-wrap { display: flex; align-items: center; gap: 10px; }
+    .toggle-label { font-size: 12px; color: var(--text2); }
+    .toggle { position: relative; width: 44px; height: 24px; cursor: pointer; }
+    .toggle input { display: none; }
+    .toggle-track {
+      position: absolute; inset: 0; background: var(--bg3);
+      border: 1px solid var(--border2); border-radius: 12px; transition: all .3s;
+    }
+    .toggle input:checked ~ .toggle-track { background: rgba(240,192,64,0.2); border-color: var(--gold2); }
+    .toggle-thumb {
+      position: absolute; top: 3px; left: 3px;
+      width: 16px; height: 16px; background: var(--text3);
+      border-radius: 50%; transition: all .3s cubic-bezier(.34,1.56,.64,1);
+    }
+    .toggle input:checked ~ .toggle-thumb { left: 23px; background: var(--gold); }
+    .renew-note {
+      font-size: 12px; color: var(--text3); line-height: 1.5;
+      padding: 10px 14px; background: var(--bg3); border-radius: 10px;
+    }
+
+    /* ── Spinner & Toast ── */
     .btn-spinner {
-      display: inline-block;
-      width: 16px; height: 16px;
-      border: 2px solid rgba(8,10,14,0.4);
-      border-top-color: #080A0E;
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-      vertical-align: middle;
-      margin-right: 8px;
+      display: inline-block; width: 16px; height: 16px;
+      border: 2px solid rgba(8,10,14,0.4); border-top-color: #080A0E;
+      border-radius: 50%; animation: spin .7s linear infinite;
+      vertical-align: middle; margin-right: 8px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
- 
-    /* ── Toast notification ── */
     .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
+      position: fixed; bottom: 30px; left: 50%;
       transform: translateX(-50%) translateY(80px);
-      background: var(--bg3);
-      border: 1px solid var(--border2);
-      border-radius: 14px;
-      padding: 13px 20px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text);
-      z-index: 500;
-      transition: transform .4s cubic-bezier(.34,1.56,.64,1);
-      white-space: nowrap;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: 14px; padding: 13px 20px;
+      font-size: 14px; font-weight: 500; color: var(--text);
+      z-index: 500; transition: transform .4s cubic-bezier(.34,1.56,.64,1);
+      white-space: nowrap; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     }
-    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.show    { transform: translateX(-50%) translateY(0); }
     .toast.success { border-color: rgba(46,204,138,0.4); color: var(--green); }
     .toast.error   { border-color: rgba(224,85,85,0.4);  color: var(--red); }
   </style>
 </head>
 <body>
- 
-<!-- ── Header ── -->
+
 <div class="header">
   <div class="header-inner">
     <a href="home.html" class="back-btn">&#8592;</a>
@@ -513,82 +294,83 @@
     <div class="header-crown">👑</div>
   </div>
 </div>
- 
-<!-- ── Content ── -->
+
 <div class="content">
- 
+
   <!-- Hero -->
   <div class="hero">
     <span class="hero-crown">✨</span>
     <h1 class="hero-title">MIJO Premium</h1>
-    <p class="hero-sub">Akè tout avantaj MIJO PAY san limit, chak mwa.</p>
+    <p class="hero-sub">Débloquez tous les avantages MIJO PAY pour seulement 150 G par mois.</p>
   </div>
- 
+
   <!-- Status card -->
   <div class="status-card">
     <div class="status-top">
       <div class="status-name">
         <span id="userName">—</span>
-        <small>Manm MIJO PAY</small>
+        <small>Membre MIJO PAY</small>
       </div>
-      <div class="status-badge inactive" id="statusBadge">Non aktif</div>
+      <div class="status-badge inactive" id="statusBadge">Inactif</div>
     </div>
- 
     <div class="status-row">
-      <span class="status-row-label">Solde disponib</span>
+      <span class="status-row-label">Solde disponible</span>
       <span class="status-row-value gold" id="userBalance">— G</span>
     </div>
     <div class="status-row">
       <span class="status-row-label">Statut Premium</span>
-      <span class="status-row-value" id="premiumStatus">Non aktif ❌</span>
+      <span class="status-row-value" id="premiumStatus">Inactif ❌</span>
     </div>
   </div>
- 
-  <!-- Expiry (shown if premium active) -->
+
+  <!-- Expiry -->
   <div class="expiry-wrap" id="expiryWrap">
     <div class="expiry-inner">
       <span class="expiry-icon">📅</span>
       <div class="expiry-text">
-        Abonman ou aktif jiska <strong id="expiryDate">—</strong>
+        Votre abonnement est actif jusqu'au <strong id="expiryDate">—</strong>
       </div>
     </div>
   </div>
- 
+
   <!-- Benefits -->
-  <div class="benefits-title">Avantaj Premium</div>
+  <div class="section-label">Ce que vous obtenez</div>
   <div class="benefits-grid">
-    <div class="benefit-item">
-      <span class="benefit-icon">🎬</span>
-      <div class="benefit-name">MIJO CINÉ</div>
-      <div class="benefit-desc">Aksè konplè ak fim ak seri</div>
+
+    <div class="benefit-item highlight">
+      <span class="benefit-icon">📚</span>
+      <div class="benefit-name">Livres Gratuits</div>
+      <div class="benefit-desc">Accès illimité à tous les livres numériques du Store MIJO.</div>
     </div>
-    <div class="benefit-item">
+
+    <div class="benefit-item highlight">
+      <span class="benefit-icon">💰</span>
+      <div class="benefit-name">Vendre vos Digitaux</div>
+      <div class="benefit-desc">Publiez et vendez vos PDF, livres et contenus numériques.</div>
+    </div>
+
+    <div class="benefit-item wide highlight">
       <span class="benefit-icon">💼</span>
-      <div class="benefit-name">Business Helper</div>
-      <div class="benefit-desc">Zouti pou biznis ou</div>
+      <div>
+        <div class="benefit-name">MIJO Business Helper</div>
+        <div class="benefit-desc">Accès à l'assistant IA intégré pour vous aider à gérer et développer votre activité commerciale.</div>
+      </div>
     </div>
+
     <div class="benefit-item">
       <span class="benefit-icon">⚡</span>
-      <div class="benefit-name">Priorite</div>
-      <div class="benefit-desc">Sèvis pi rapid pou ou</div>
+      <div class="benefit-name">Priorité</div>
+      <div class="benefit-desc">Service client prioritaire et traitement rapide.</div>
     </div>
+
     <div class="benefit-item">
       <span class="benefit-icon">🏆</span>
-      <div class="benefit-name">Bonus Eksklusif</div>
-      <div class="benefit-desc">Rèkonpans espesyal chak mwa</div>
+      <div class="benefit-name">Badge Premium</div>
+      <div class="benefit-desc">Profil distingué visible par la communauté.</div>
     </div>
-    <div class="benefit-item">
-      <span class="benefit-icon">📊</span>
-      <div class="benefit-name">Analiz</div>
-      <div class="benefit-desc">Rapò sou depans ou</div>
-    </div>
-    <div class="benefit-item">
-      <span class="benefit-icon">🔒</span>
-      <div class="benefit-name">Sekirite +</div>
-      <div class="benefit-desc">Pwoteksyon ranfòse</div>
-    </div>
+
   </div>
- 
+
   <!-- Price + Activate -->
   <div class="price-card">
     <div class="price-shimmer"></div>
@@ -596,20 +378,19 @@
       <span class="price-amount">150</span>
       <span class="price-currency">Gdes</span>
     </div>
-    <div class="price-period">Chak mwa · San angajman</div>
- 
+    <div class="price-period">Par mois · Sans engagement · Annulable à tout moment</div>
     <button class="btn-activate" id="activateBtn" onclick="activatePremium()">
-      👑 Aktive MIJO Premium
+      👑 Activer MIJO Premium
     </button>
-    <div class="btn-note">Premye mwa w ap peye kounye a.</div>
+    <div class="btn-note">Le premier mois est débité immédiatement.</div>
   </div>
- 
-  <!-- Auto-renew (shown if premium active) -->
+
+  <!-- Auto-renew (visible si premium actif) -->
   <div class="renew-card" id="renewCard">
     <div class="renew-header">
-      <div class="renew-title">Renouvèlman Otomatik</div>
+      <div class="renew-title">Renouvellement automatique</div>
       <div class="toggle-wrap">
-        <span class="toggle-label" id="renewLabel">Aktif</span>
+        <span class="toggle-label" id="renewLabel">Actif</span>
         <label class="toggle">
           <input type="checkbox" id="autoRenewToggle" onchange="toggleAutoRenew()">
           <div class="toggle-track"></div>
@@ -618,234 +399,179 @@
       </div>
     </div>
     <div class="renew-note" id="renewNote">
-      Abonman ou a pral renouvle otomatikman mwa pwochèn.
+      Votre abonnement sera renouvelé automatiquement le mois prochain.
     </div>
   </div>
- 
+
 </div>
- 
-<!-- ── Toast ── -->
+
 <div class="toast" id="toast"></div>
- 
+
 <script>
-// ══════════════════════════════════════════
-// CONFIG
-// ══════════════════════════════════════════
-const PREMIUM_PRICE          = 150;
-const STORE_SCRIPT_URL       = "https://mijopaypremium.mijocomplexe.workers.dev/";
-const AUTORENEW_TOGGLE_URL   = "https://votre-worker-autorenew.mijocomplexe.workers.dev/";
- 
-// ══════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════
-document.addEventListener("DOMContentLoaded", () => {
-  const user = getUser();
-  if (!user || !user.userId) {
-    window.location.href = "index.html";
-    return;
-  }
-  // Migration AutoRenew
-  if (user.EstPremium === true && user.AutoRenew === undefined) {
-    user.AutoRenew = true;
-    saveUser(user);
-  }
-  updateUI(user);
-});
- 
-// ══════════════════════════════════════════
-// HELPERS localStorage
-// ══════════════════════════════════════════
-function getUser() {
-  try { return JSON.parse(localStorage.getItem("user")); }
-  catch { return null; }
-}
-function saveUser(user) {
-  localStorage.setItem("user", JSON.stringify(user));
-}
- 
-// ══════════════════════════════════════════
-// UPDATE UI
-// ══════════════════════════════════════════
-function updateUI(user) {
-  if (!user || !user.userId) return;
- 
-  const isPremium      = user.EstPremium === true;
-  const autoRenewOn    = user.AutoRenew  !== false; // true par défaut
-  const solde          = typeof user.Solde === "number"
-                         ? user.Solde.toLocaleString("fr") + " G"
-                         : (user.Solde || "—") + " G";
-  const nomAffiche     = user.NomUtilisateur || user.nom || "Manm";
- 
-  // ── Status card ──
-  document.getElementById("userName").textContent    = nomAffiche;
-  document.getElementById("userBalance").textContent = solde;
- 
-  const badge = document.getElementById("statusBadge");
-  if (isPremium) {
-    badge.textContent  = "✦ Premium";
-    badge.className    = "status-badge active";
-    document.getElementById("premiumStatus").textContent  = "Aktif ✅";
-    document.getElementById("premiumStatus").style.color = "var(--green)";
-  } else {
-    badge.textContent  = "Non aktif";
-    badge.className    = "status-badge inactive";
-    document.getElementById("premiumStatus").textContent  = "Non aktif ❌";
-    document.getElementById("premiumStatus").style.color = "var(--text3)";
-  }
- 
-  // ── Expiry ──
-  const expiryWrap = document.getElementById("expiryWrap");
-  if (isPremium && user.DateExpirationPremium) {
-    const expDate = new Date(user.DateExpirationPremium);
-    document.getElementById("expiryDate").textContent = expDate.toLocaleDateString("fr-FR", {
-      day: "2-digit", month: "long", year: "numeric"
-    });
-    expiryWrap.classList.add("visible");
-  } else {
-    expiryWrap.classList.remove("visible");
-  }
- 
-  // ── Activate button ──
-  const btn = document.getElementById("activateBtn");
-  btn.disabled    = isPremium;
-  btn.textContent = isPremium ? "✦ Abonman ou aktif deja" : "👑 Aktive MIJO Premium";
- 
-  // ── Auto-renew card ──
-  const renewCard = document.getElementById("renewCard");
-  if (isPremium) {
-    renewCard.classList.add("visible");
- 
-    const toggle = document.getElementById("autoRenewToggle");
-    toggle.checked = autoRenewOn;
- 
-    document.getElementById("renewLabel").textContent = autoRenewOn ? "Aktif" : "Dezaktive";
-    document.getElementById("renewNote").textContent  = autoRenewOn
-      ? "Abonman ou a pral renouvle otomatikman mwa pwochèn."
-      : "Abonman ou p ap renouvle otomatikman. Ou pral pèdi aksè a lafendumwa.";
-  } else {
-    renewCard.classList.remove("visible");
-  }
-}
- 
-// ══════════════════════════════════════════
-// ACTIVATE PREMIUM
-// ══════════════════════════════════════════
-async function activatePremium() {
-  const user = getUser();
-  if (!user || !user.userId) {
-    showToast("Konekte anvan pou aktive Premium.", "error");
-    return;
-  }
-  if (user.EstPremium === true) {
-    showToast("Abonman ou deja aktif !", "error");
-    return;
-  }
- 
-  const confirmed = confirm(`Aktive MIJO Premium pou ${PREMIUM_PRICE} Gdes ?`);
-  if (!confirmed) return;
- 
-  const btn = document.getElementById("activateBtn");
-  btn.disabled   = true;
-  btn.innerHTML  = `<span class="btn-spinner"></span>Ap trete...`;
- 
-  try {
-    const res  = await fetch(STORE_SCRIPT_URL, {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ senderId: user.userId })
-    });
- 
-    const data = await res.json();
- 
-    if (data.success) {
-      // Mettre à jour localStorage
-      user.Solde                = data.user?.Solde                ?? user.Solde - PREMIUM_PRICE;
-      user.EstPremium           = true;
-      user.AutoRenew            = true;
-      user.DateExpirationPremium = data.user?.DateExpirationPremium ?? null;
+  const PREMIUM_PRICE        = 150;
+  const STORE_SCRIPT_URL     = "https://mijopaypremium.mijocomplexe.workers.dev/";
+  const AUTORENEW_TOGGLE_URL = "autorenew.mijocomplexe.workers.dev";
+
+  // ── Init ──
+  document.addEventListener("DOMContentLoaded", () => {
+    const user = getUser();
+    if (!user?.userId) { window.location.href = "index.html"; return; }
+    if (user.EstPremium === true && user.AutoRenew === undefined) {
+      user.AutoRenew = true;
       saveUser(user);
-      updateUI(user);
-      showToast("✦ Premium aktive ak siksè !", "success");
-    } else {
-      showToast(data.error || "Erè pandan aktivasyon an.", "error");
-      btn.disabled  = false;
-      btn.textContent = "👑 Aktive MIJO Premium";
     }
- 
-  } catch (err) {
-    console.error(err);
-    showToast("Erè koneksyon. Reesaye.", "error");
-    btn.disabled    = false;
-    btn.textContent = "👑 Aktive MIJO Premium";
-  }
-}
- 
-// ══════════════════════════════════════════
-// TOGGLE AUTO-RENEW
-// ══════════════════════════════════════════
-async function toggleAutoRenew() {
-  const user     = getUser();
-  if (!user || !user.userId) return;
- 
-  const toggle   = document.getElementById("autoRenewToggle");
-  const newState = toggle.checked;
- 
-  // Optimistic update
-  user.AutoRenew = newState;
-  saveUser(user);
-  document.getElementById("renewLabel").textContent = newState ? "Aktif" : "Dezaktive";
-  document.getElementById("renewNote").textContent  = newState
-    ? "Abonman ou a pral renouvle otomatikman mwa pwochèn."
-    : "Abonman ou p ap renouvle otomatikman. Ou pral pèdi aksè a lafendumwa.";
- 
-  try {
-    const res  = await fetch(AUTORENEW_TOGGLE_URL, {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({
-        action:   "toggle_autorenew",
-        userId:   user.userId,
-        newState: newState
-      })
-    });
- 
-    const data = await res.json();
- 
-    if (data.success) {
-      showToast(
-        newState ? "Renouvèlman otomatik aktive." : "Renouvèlman otomatik dezaktive.",
-        "success"
-      );
+    updateUI(user);
+  });
+
+  function getUser()       { try { return JSON.parse(localStorage.getItem("user")); } catch { return null; } }
+  function saveUser(user)  { localStorage.setItem("user", JSON.stringify(user)); }
+
+  // ── Update UI ──
+  function updateUI(user) {
+    if (!user?.userId) return;
+    const isPremium   = user.EstPremium === true;
+    const autoRenewOn = user.AutoRenew  !== false;
+    const solde       = parseFloat(user.Solde || 0).toLocaleString('fr') + " G";
+
+    document.getElementById("userName").textContent    = user.NomUtilisateur || "Membre";
+    document.getElementById("userBalance").textContent = solde;
+
+    const badge = document.getElementById("statusBadge");
+    if (isPremium) {
+      badge.textContent = "✦ Premium";
+      badge.className   = "status-badge active";
+      document.getElementById("premiumStatus").textContent  = "Actif ✅";
+      document.getElementById("premiumStatus").style.color = "var(--green)";
     } else {
-      // Rollback si erreur
+      badge.textContent = "Inactif";
+      badge.className   = "status-badge inactive";
+      document.getElementById("premiumStatus").textContent  = "Inactif ❌";
+      document.getElementById("premiumStatus").style.color = "var(--text3)";
+    }
+
+    // Expiry
+    const expiryWrap = document.getElementById("expiryWrap");
+    if (isPremium && user.DateExpirationPremium) {
+      const d = new Date(user.DateExpirationPremium);
+      document.getElementById("expiryDate").textContent = d.toLocaleDateString("fr-FR", {
+        day: "2-digit", month: "long", year: "numeric"
+      });
+      expiryWrap.classList.add("visible");
+    } else {
+      expiryWrap.classList.remove("visible");
+    }
+
+    // Bouton
+    const btn = document.getElementById("activateBtn");
+    btn.disabled    = isPremium;
+    btn.textContent = isPremium ? "✦ Abonnement déjà actif" : "👑 Activer MIJO Premium";
+
+    // Auto-renew
+    const renewCard = document.getElementById("renewCard");
+    if (isPremium) {
+      renewCard.classList.add("visible");
+      const toggle = document.getElementById("autoRenewToggle");
+      toggle.checked = autoRenewOn;
+      document.getElementById("renewLabel").textContent = autoRenewOn ? "Actif" : "Désactivé";
+      document.getElementById("renewNote").textContent  = autoRenewOn
+        ? "Votre abonnement sera renouvelé automatiquement le mois prochain."
+        : "Votre abonnement ne sera pas renouvelé. Vous perdrez l'accès Premium à l'expiration.";
+    } else {
+      renewCard.classList.remove("visible");
+    }
+  }
+
+  // ── Activer Premium ──
+  async function activatePremium() {
+    const user = getUser();
+    if (!user?.userId) { showToast("Connectez-vous d'abord.", "error"); return; }
+    if (user.EstPremium === true) { showToast("Votre abonnement est déjà actif.", "error"); return; }
+
+    if (!confirm(`Activer MIJO Premium pour ${PREMIUM_PRICE} G ?`)) return;
+
+    const btn = document.getElementById("activateBtn");
+    btn.disabled  = true;
+    btn.innerHTML = `<span class="btn-spinner"></span>Traitement...`;
+
+    try {
+      const res  = await fetch(STORE_SCRIPT_URL, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ senderId: user.userId })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        user.Solde                 = data.user?.Solde ?? user.Solde - PREMIUM_PRICE;
+        user.EstPremium            = true;
+        user.AutoRenew             = true;
+        user.DateExpirationPremium = data.user?.DateExpirationPremium ?? null;
+        saveUser(user);
+        updateUI(user);
+        showToast("✦ Premium activé avec succès !", "success");
+      } else {
+        showToast(data.error || "Erreur lors de l'activation.", "error");
+        btn.disabled    = false;
+        btn.textContent = "👑 Activer MIJO Premium";
+      }
+    } catch (err) {
+      showToast("Erreur de connexion. Réessayez.", "error");
+      btn.disabled    = false;
+      btn.textContent = "👑 Activer MIJO Premium";
+    }
+  }
+
+  // ── Toggle Auto-renew ──
+  async function toggleAutoRenew() {
+    const user     = getUser();
+    if (!user?.userId) return;
+    const toggle   = document.getElementById("autoRenewToggle");
+    const newState = toggle.checked;
+
+    // Optimiste
+    user.AutoRenew = newState;
+    saveUser(user);
+    document.getElementById("renewLabel").textContent = newState ? "Actif" : "Désactivé";
+    document.getElementById("renewNote").textContent  = newState
+      ? "Votre abonnement sera renouvelé automatiquement le mois prochain."
+      : "Votre abonnement ne sera pas renouvelé. Vous perdrez l'accès Premium à l'expiration.";
+
+    try {
+      const res  = await fetch(AUTORENEW_TOGGLE_URL, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ userId: user.userId, newState })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        showToast(newState ? "Renouvellement automatique activé." : "Renouvellement automatique désactivé.", "success");
+      } else {
+        // Rollback
+        user.AutoRenew = !newState;
+        saveUser(user);
+        toggle.checked = !newState;
+        updateUI(user);
+        showToast(data.error || "Erreur. Réessayez.", "error");
+      }
+    } catch {
       user.AutoRenew = !newState;
       saveUser(user);
       toggle.checked = !newState;
       updateUI(user);
-      showToast(data.error || "Erè. Reesaye.", "error");
+      showToast("Erreur de connexion.", "error");
     }
- 
-  } catch (err) {
-    // Rollback
-    user.AutoRenew = !newState;
-    saveUser(user);
-    toggle.checked = !newState;
-    updateUI(user);
-    showToast("Erè koneksyon.", "error");
   }
-}
- 
-// ══════════════════════════════════════════
-// TOAST
-// ══════════════════════════════════════════
-let toastTimer;
-function showToast(msg, type = "") {
-  const el = document.getElementById("toast");
-  el.textContent = msg;
-  el.className   = `toast ${type} show`;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove("show"), 3200);
-}
+
+  // ── Toast ──
+  let toastTimer;
+  function showToast(msg, type = "") {
+    const el = document.getElementById("toast");
+    el.textContent = msg;
+    el.className   = `toast ${type} show`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 3200);
+  }
 </script>
 </body>
 </html>
