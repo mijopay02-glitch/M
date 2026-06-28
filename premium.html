@@ -7,20 +7,23 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg:      #080A0E;
-      --bg2:     #0D1018;
-      --bg3:     #131720;
-      --gold:    #F0C040;
-      --gold2:   #C9982A;
-      --gold3:   #FFE08A;
-      --border:  rgba(240,192,64,0.12);
-      --border2: rgba(240,192,64,0.28);
-      --text:    #F5F0E8;
-      --text2:   #9A8E78;
-      --text3:   #5A5245;
-      --green:   #2ECC8A;
-      --red:     #E05555;
+      --bg:      #F3F6FB;
+      --bg2:     #FFFFFF;
+      --bg3:     #F9FAFB;
+      --gold:    #B8860B;
+      --gold2:   #996515;
+      --gold3:   #DAA520;
+      --border:  #E5E7EB;
+      --border2: rgba(184,134,11,0.35);
+      --text:    #111827;
+      --text2:   #6B7280;
+      --text3:   #9CA3AF;
+      --green:   #10B981;
+      --red:     #EF4444;
+      --blue:    #1A6FE8;
       --radius:  20px;
+      --shadow:  0 2px 12px rgba(0,0,0,0.07);
+      --shadow2: 0 6px 24px rgba(0,0,0,0.11);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
@@ -30,29 +33,17 @@
       color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
-    }
-    body::after {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none; z-index: 999; opacity: .4;
-    }
-    body::before {
-      content: '';
-      position: fixed; top: -200px; left: 50%;
-      transform: translateX(-50%);
-      width: 600px; height: 500px;
-      background: radial-gradient(ellipse, rgba(240,192,64,0.07) 0%, transparent 70%);
-      pointer-events: none; z-index: 0;
+      padding-bottom: 60px;
     }
 
     /* ── Header ── */
     .header {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(8,10,14,0.92);
-      backdrop-filter: blur(24px);
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
       padding: 0 20px;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.06);
     }
     .header-inner {
       max-width: 460px; margin: 0 auto;
@@ -60,7 +51,7 @@
       height: 58px; gap: 14px;
     }
     .back-btn {
-      width: 34px; height: 34px; border-radius: 10px;
+      width: 36px; height: 36px; border-radius: 10px;
       background: var(--bg3); border: 1px solid var(--border);
       color: var(--text2); font-size: 16px;
       display: flex; align-items: center; justify-content: center;
@@ -68,164 +59,180 @@
     }
     .back-btn:hover { border-color: var(--border2); color: var(--gold); }
     .header-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 16px; font-weight: 700; color: var(--text); flex: 1;
+      font-family: 'Inter', sans-serif;
+      font-size: 17px; font-weight: 800;
+      color: var(--text); flex: 1; letter-spacing: -.3px;
     }
-    .header-logo span { color: var(--gold); }
-    .header-crown { font-size: 18px; animation: float 3s ease-in-out infinite; }
+    .header-logo span { color: var(--blue); }
+    .header-crown { font-size: 20px; animation: float 3s ease-in-out infinite; }
     @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
 
     /* ── Content ── */
     .content {
-      position: relative; z-index: 1;
-      max-width: 460px; margin: 0 auto;
-      padding: 28px 18px 100px;
+      position: relative; max-width: 460px;
+      margin: 0 auto; padding: 24px 16px 80px;
     }
 
-    /* ── Hero ── */
-    .hero {
-      text-align: center; padding: 12px 0 32px;
-      animation: fadeUp .6s ease forwards;
+    /* ── Hero banner ── */
+    .hero-banner {
+      background: linear-gradient(135deg, #1A1200 0%, #2C1F00 50%, #1A1200 100%);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative; overflow: hidden;
+      box-shadow: 0 8px 32px rgba(184,134,11,0.25);
+      animation: fadeUp .5s ease both;
+    }
+    .hero-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(218,165,32,0.18) 0%, transparent 65%);
+    }
+    .hero-banner::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold3), transparent);
     }
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
+      from { opacity: 0; transform: translateY(18px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .hero-crown { font-size: 52px; display: block; margin-bottom: 16px; filter: drop-shadow(0 0 20px rgba(240,192,64,0.4)); }
+    .hero-crown-emoji { font-size: 40px; display: block; margin-bottom: 12px; position: relative; z-index: 1; filter: drop-shadow(0 0 16px rgba(218,165,32,0.5)); }
     .hero-title {
       font-family: 'Playfair Display', serif;
-      font-size: 34px; font-weight: 900; color: var(--gold);
-      line-height: 1.1; margin-bottom: 10px;
-      text-shadow: 0 0 40px rgba(240,192,64,0.3);
+      font-size: 28px; font-weight: 900;
+      color: var(--gold3); margin-bottom: 8px;
+      position: relative; z-index: 1;
+      text-shadow: 0 2px 12px rgba(218,165,32,0.3);
     }
-    .hero-sub { font-size: 15px; color: var(--text2); line-height: 1.6; max-width: 300px; margin: 0 auto; }
+    .hero-sub { font-size: 13px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; line-height: 1.5; }
 
     /* ── Status card ── */
     .status-card {
-      background: linear-gradient(135deg, #141008 0%, #0D0C08 100%);
-      border: 1px solid var(--border2); border-radius: var(--radius);
-      padding: 22px 22px 20px; margin-bottom: 20px;
-      position: relative; overflow: hidden;
-      animation: fadeUp .6s .1s ease both;
-    }
-    .status-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px;
+      margin-bottom: 16px; box-shadow: var(--shadow);
+      animation: fadeUp .5s .08s ease both;
     }
     .status-top {
       display: flex; align-items: center;
-      justify-content: space-between; margin-bottom: 18px;
+      justify-content: space-between; margin-bottom: 16px;
     }
-    .status-name { font-size: 18px; font-weight: 600; color: var(--text); }
+    .status-name { font-size: 16px; font-weight: 700; color: var(--text); }
     .status-name small { display: block; font-size: 12px; color: var(--text3); font-weight: 400; margin-top: 2px; }
     .status-badge {
-      padding: 6px 14px; border-radius: 20px;
-      font-size: 12px; font-weight: 700; letter-spacing: .5px;
+      padding: 5px 12px; border-radius: 20px;
+      font-size: 12px; font-weight: 700; letter-spacing: .3px;
     }
-    .status-badge.active  { background: rgba(46,204,138,0.12); border: 1px solid rgba(46,204,138,0.3); color: var(--green); }
-    .status-badge.inactive{ background: rgba(90,82,69,0.2);    border: 1px solid rgba(90,82,69,0.4);   color: var(--text3); }
+    .status-badge.active  { background: rgba(16,185,129,0.1);  border: 1px solid rgba(16,185,129,0.3);  color: var(--green); }
+    .status-badge.inactive{ background: rgba(156,163,175,0.12); border: 1px solid rgba(156,163,175,0.3); color: var(--text3); }
     .status-row {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+      padding: 10px 0; border-bottom: 1px solid var(--border);
     }
     .status-row:last-child { border-bottom: none; }
     .status-row-label { font-size: 13px; color: var(--text2); }
-    .status-row-value { font-size: 13px; font-weight: 600; color: var(--text); }
+    .status-row-value { font-size: 13px; font-weight: 700; color: var(--text); }
     .status-row-value.gold  { color: var(--gold); }
     .status-row-value.green { color: var(--green); }
 
     /* ── Expiry ── */
-    .expiry-wrap { display: none; margin-bottom: 14px; animation: fadeUp .4s ease both; }
+    .expiry-wrap { display: none; margin-bottom: 16px; }
     .expiry-wrap.visible { display: block; }
     .expiry-inner {
-      background: rgba(46,204,138,0.06); border: 1px solid rgba(46,204,138,0.2);
-      border-radius: 12px; padding: 14px 18px;
-      display: flex; align-items: center; gap: 12px;
+      background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.2);
+      border-radius: 12px; padding: 13px 16px;
+      display: flex; align-items: center; gap: 10px;
     }
-    .expiry-icon { font-size: 20px; }
+    .expiry-icon { font-size: 18px; }
     .expiry-text { font-size: 13px; color: var(--text2); line-height: 1.4; }
     .expiry-text strong { color: var(--green); }
 
-    /* ── Benefits ── */
+    /* ── Section label ── */
     .section-label {
       font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 2px; color: var(--text3); margin: 28px 0 14px;
-      animation: fadeUp .6s .2s ease both;
+      letter-spacing: 1.5px; color: var(--text3);
+      margin: 24px 0 12px;
     }
+
+    /* ── Benefits grid ── */
     .benefits-grid {
       display: grid; grid-template-columns: 1fr 1fr;
-      gap: 10px; margin-bottom: 24px;
-      animation: fadeUp .6s .25s ease both;
+      gap: 10px; margin-bottom: 20px;
+      animation: fadeUp .5s .16s ease both;
     }
     .benefit-item {
       background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 14px; padding: 18px 14px; transition: all .2s;
-      position: relative; overflow: hidden;
+      border-radius: 14px; padding: 16px 14px;
+      transition: all .2s; box-shadow: var(--shadow);
     }
-    .benefit-item:hover { border-color: var(--border2); transform: translateY(-2px); }
-    .benefit-item.highlight {
-      background: linear-gradient(135deg, #16110A, #100D07);
-      border-color: var(--border2);
-    }
-    .benefit-item.highlight::before {
-      content: 'EXCLUSIF';
-      position: absolute; top: 10px; right: 10px;
-      font-size: 8px; font-weight: 800; letter-spacing: 1px;
-      color: var(--gold2); background: rgba(240,192,64,0.1);
-      padding: 2px 7px; border-radius: 20px;
-      border: 1px solid rgba(240,192,64,0.2);
-    }
-    .benefit-icon { font-size: 26px; margin-bottom: 10px; display: block; }
-    .benefit-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
-    .benefit-desc { font-size: 11px; color: var(--text3); line-height: 1.5; }
+    .benefit-item:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: var(--shadow2); }
 
-    /* Bénéfice large (pleine largeur) */
-    .benefit-item.wide { grid-column: 1 / -1; display: flex; align-items: center; gap: 16px; }
-    .benefit-item.wide .benefit-icon { font-size: 32px; margin-bottom: 0; flex-shrink: 0; }
-    .benefit-item.wide .benefit-name { font-size: 14px; margin-bottom: 5px; }
-    .benefit-item.wide .benefit-desc { font-size: 12px; }
+    /* Card or avec bordure dorée */
+    .benefit-item.gold-card {
+      background: linear-gradient(135deg, #FFFBF0, #FFF8E1);
+      border-color: rgba(184,134,11,0.25);
+    }
+    .benefit-item.gold-card:hover { border-color: var(--gold2); }
+
+    /* Pleine largeur */
+    .benefit-item.wide {
+      grid-column: 1 / -1;
+      display: flex; align-items: flex-start; gap: 14px;
+      background: linear-gradient(135deg, #EFF6FF, #F0F7FF);
+      border-color: rgba(26,111,232,0.2);
+    }
+    .benefit-item.wide:hover { border-color: rgba(26,111,232,0.4); }
+    .benefit-item.wide .benefit-icon { font-size: 28px; margin-bottom: 0; flex-shrink: 0; margin-top: 2px; }
+
+    .benefit-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+    .benefit-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .benefit-desc { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+    /* Badge exclusif */
+    .excl-badge {
+      display: inline-block; font-size: 9px; font-weight: 800;
+      letter-spacing: .8px; color: var(--gold2);
+      background: rgba(184,134,11,0.1); border: 1px solid rgba(184,134,11,0.2);
+      padding: 1px 7px; border-radius: 20px; margin-bottom: 6px;
+      text-transform: uppercase;
+    }
 
     /* ── Price card ── */
     .price-card {
-      background: linear-gradient(135deg, #16110A 0%, #100D07 100%);
-      border: 1px solid var(--border2); border-radius: var(--radius);
-      padding: 24px 22px; margin-bottom: 14px;
+      background: var(--bg2); border: 1.5px solid var(--border2);
+      border-radius: var(--radius); padding: 24px 20px;
+      margin-bottom: 14px; box-shadow: var(--shadow2);
       position: relative; overflow: hidden;
-      animation: fadeUp .6s .3s ease both;
+      animation: fadeUp .5s .22s ease both;
     }
-    .price-shimmer {
-      position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(240,192,64,0.04), transparent);
-      animation: shimmer 3s infinite;
+    .price-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--gold2), var(--gold3), var(--gold2));
     }
-    @keyframes shimmer { to { left: 150%; } }
     .price-top { display: flex; align-items: flex-end; gap: 6px; margin-bottom: 4px; }
     .price-amount {
       font-family: 'Playfair Display', serif;
-      font-size: 44px; font-weight: 900; color: var(--gold); line-height: 1;
+      font-size: 48px; font-weight: 900; color: var(--gold); line-height: 1;
     }
-    .price-currency { font-size: 16px; color: var(--gold2); margin-bottom: 6px; font-weight: 500; }
-    .price-period { font-size: 13px; color: var(--text3); margin-bottom: 18px; }
+    .price-currency { font-size: 16px; color: var(--gold2); margin-bottom: 8px; font-weight: 600; }
+    .price-period { font-size: 12px; color: var(--text3); margin-bottom: 20px; }
 
     .btn-activate {
-      width: 100%; padding: 16px;
-      background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
-      color: #080A0E; border: none; border-radius: 14px;
-      font-size: 16px; font-weight: 700; cursor: pointer;
-      letter-spacing: .3px; position: relative; overflow: hidden;
-      transition: all .25s; box-shadow: 0 8px 24px rgba(240,192,64,0.2);
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--gold3), var(--gold2));
+      color: #1A1200; border: none; border-radius: 13px;
+      font-size: 15px; font-weight: 800; cursor: pointer;
+      letter-spacing: .2px; transition: all .25s;
+      box-shadow: 0 4px 16px rgba(184,134,11,0.3);
     }
-    .btn-activate::after {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-      opacity: 0; transition: opacity .2s;
-    }
-    .btn-activate:hover:not(:disabled)::after { opacity: 1; }
-    .btn-activate:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 12px 32px rgba(240,192,64,0.3); }
+    .btn-activate:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(184,134,11,0.4); }
     .btn-activate:active:not(:disabled) { transform: translateY(0); }
     .btn-activate:disabled {
-      background: linear-gradient(135deg, #2A2510, #1E1A0A);
-      color: var(--text3); cursor: not-allowed; box-shadow: none;
+      background: var(--bg3); color: var(--text3);
+      cursor: not-allowed; box-shadow: none;
       border: 1px solid var(--border);
     }
     .btn-note { text-align: center; font-size: 12px; color: var(--text3); margin-top: 10px; }
@@ -233,60 +240,67 @@
     /* ── Auto-renew card ── */
     .renew-card {
       background: var(--bg2); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 20px 22px;
-      margin-bottom: 14px; display: none;
-      animation: fadeUp .4s ease both;
+      border-radius: var(--radius); padding: 18px 20px;
+      margin-bottom: 14px; box-shadow: var(--shadow);
+      display: none;
     }
     .renew-card.visible { display: block; }
     .renew-header {
       display: flex; align-items: center;
       justify-content: space-between; margin-bottom: 12px;
     }
-    .renew-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .renew-title { font-size: 14px; font-weight: 700; color: var(--text); }
+
+    /* Toggle switch */
     .toggle-wrap { display: flex; align-items: center; gap: 10px; }
-    .toggle-label { font-size: 12px; color: var(--text2); }
-    .toggle { position: relative; width: 44px; height: 24px; cursor: pointer; }
+    .toggle-label { font-size: 12px; color: var(--text2); font-weight: 600; }
+    .toggle { position: relative; width: 46px; height: 26px; cursor: pointer; }
     .toggle input { display: none; }
     .toggle-track {
-      position: absolute; inset: 0; background: var(--bg3);
-      border: 1px solid var(--border2); border-radius: 12px; transition: all .3s;
+      position: absolute; inset: 0;
+      background: var(--border); border-radius: 13px; transition: all .3s;
     }
-    .toggle input:checked ~ .toggle-track { background: rgba(240,192,64,0.2); border-color: var(--gold2); }
+    .toggle input:checked ~ .toggle-track { background: var(--green); }
     .toggle-thumb {
       position: absolute; top: 3px; left: 3px;
-      width: 16px; height: 16px; background: var(--text3);
-      border-radius: 50%; transition: all .3s cubic-bezier(.34,1.56,.64,1);
+      width: 20px; height: 20px; background: white;
+      border-radius: 50%; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      transition: all .3s cubic-bezier(.34,1.56,.64,1);
     }
-    .toggle input:checked ~ .toggle-thumb { left: 23px; background: var(--gold); }
+    .toggle input:checked ~ .toggle-thumb { left: 23px; }
+
     .renew-note {
-      font-size: 12px; color: var(--text3); line-height: 1.5;
-      padding: 10px 14px; background: var(--bg3); border-radius: 10px;
+      font-size: 12px; color: var(--text2); line-height: 1.5;
+      padding: 10px 13px; background: var(--bg3);
+      border-radius: 10px; border: 1px solid var(--border);
     }
 
     /* ── Spinner & Toast ── */
     .btn-spinner {
       display: inline-block; width: 16px; height: 16px;
-      border: 2px solid rgba(8,10,14,0.4); border-top-color: #080A0E;
+      border: 2.5px solid rgba(26,18,0,0.3); border-top-color: #1A1200;
       border-radius: 50%; animation: spin .7s linear infinite;
       vertical-align: middle; margin-right: 8px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
     .toast {
-      position: fixed; bottom: 30px; left: 50%;
+      position: fixed; bottom: 28px; left: 50%;
       transform: translateX(-50%) translateY(80px);
-      background: var(--bg3); border: 1px solid var(--border2);
-      border-radius: 14px; padding: 13px 20px;
-      font-size: 14px; font-weight: 500; color: var(--text);
-      z-index: 500; transition: transform .4s cubic-bezier(.34,1.56,.64,1);
-      white-space: nowrap; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      background: var(--text); border-radius: 14px;
+      padding: 12px 20px; font-size: 13px; font-weight: 600;
+      color: white; z-index: 500;
+      transition: transform .4s cubic-bezier(.34,1.56,.64,1);
+      white-space: nowrap; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
     }
     .toast.show    { transform: translateX(-50%) translateY(0); }
-    .toast.success { border-color: rgba(46,204,138,0.4); color: var(--green); }
-    .toast.error   { border-color: rgba(224,85,85,0.4);  color: var(--red); }
+    .toast.success { background: var(--green); }
+    .toast.error   { background: var(--red); }
   </style>
 </head>
 <body>
 
+<!-- Header -->
 <div class="header">
   <div class="header-inner">
     <a href="home.html" class="back-btn">&#8592;</a>
@@ -297,9 +311,9 @@
 
 <div class="content">
 
-  <!-- Hero -->
-  <div class="hero">
-    <span class="hero-crown">✨</span>
+  <!-- Hero banner doré -->
+  <div class="hero-banner">
+    <span class="hero-crown-emoji">✨</span>
     <h1 class="hero-title">MIJO Premium</h1>
     <p class="hero-sub">Débloquez tous les avantages MIJO PAY pour seulement 150 G par mois.</p>
   </div>
@@ -337,30 +351,33 @@
   <div class="section-label">Ce que vous obtenez</div>
   <div class="benefits-grid">
 
-    <div class="benefit-item highlight">
+    <div class="benefit-item gold-card">
+      <span class="excl-badge">Exclusif</span>
       <span class="benefit-icon">📚</span>
       <div class="benefit-name">Livres Gratuits</div>
       <div class="benefit-desc">Accès illimité à tous les livres numériques du Store MIJO.</div>
     </div>
 
-    <div class="benefit-item highlight">
+    <div class="benefit-item gold-card">
+      <span class="excl-badge">Exclusif</span>
       <span class="benefit-icon">💰</span>
       <div class="benefit-name">Vendre vos Digitaux</div>
       <div class="benefit-desc">Publiez et vendez vos PDF, livres et contenus numériques.</div>
     </div>
 
-    <div class="benefit-item wide highlight">
+    <div class="benefit-item wide">
       <span class="benefit-icon">💼</span>
       <div>
+        <span class="excl-badge">Exclusif</span>
         <div class="benefit-name">MIJO Business Helper</div>
-        <div class="benefit-desc">Accès à l'assistant IA intégré pour vous aider à gérer et développer votre activité commerciale.</div>
+        <div class="benefit-desc">Accès à l'assistant IA intégré pour vous aider à gérer et développer votre activité commerciale directement depuis votre compte.</div>
       </div>
     </div>
 
     <div class="benefit-item">
       <span class="benefit-icon">⚡</span>
-      <div class="benefit-name">Priorité</div>
-      <div class="benefit-desc">Service client prioritaire et traitement rapide.</div>
+      <div class="benefit-name">Service Prioritaire</div>
+      <div class="benefit-desc">Traitement rapide et support dédié.</div>
     </div>
 
     <div class="benefit-item">
@@ -373,7 +390,6 @@
 
   <!-- Price + Activate -->
   <div class="price-card">
-    <div class="price-shimmer"></div>
     <div class="price-top">
       <span class="price-amount">150</span>
       <span class="price-currency">Gdes</span>
@@ -382,13 +398,13 @@
     <button class="btn-activate" id="activateBtn" onclick="activatePremium()">
       👑 Activer MIJO Premium
     </button>
-    <div class="btn-note">Le premier mois est débité immédiatement.</div>
+    <div class="btn-note">Le premier mois est débité immédiatement de votre solde.</div>
   </div>
 
-  <!-- Auto-renew (visible si premium actif) -->
+  <!-- Auto-renew -->
   <div class="renew-card" id="renewCard">
     <div class="renew-header">
-      <div class="renew-title">Renouvellement automatique</div>
+      <div class="renew-title">🔄 Renouvellement automatique</div>
       <div class="toggle-wrap">
         <span class="toggle-label" id="renewLabel">Actif</span>
         <label class="toggle">
@@ -410,9 +426,8 @@
 <script>
   const PREMIUM_PRICE        = 150;
   const STORE_SCRIPT_URL     = "https://mijopaypremium.mijocomplexe.workers.dev/";
-  const AUTORENEW_TOGGLE_URL = "autorenew.mijocomplexe.workers.dev";
+  const AUTORENEW_TOGGLE_URL = "https://autorenew.mijocomplexe.workers.dev/";
 
-  // ── Init ──
   document.addEventListener("DOMContentLoaded", () => {
     const user = getUser();
     if (!user?.userId) { window.location.href = "index.html"; return; }
@@ -423,18 +438,16 @@
     updateUI(user);
   });
 
-  function getUser()       { try { return JSON.parse(localStorage.getItem("user")); } catch { return null; } }
-  function saveUser(user)  { localStorage.setItem("user", JSON.stringify(user)); }
+  function getUser()      { try { return JSON.parse(localStorage.getItem("user")); } catch { return null; } }
+  function saveUser(user) { localStorage.setItem("user", JSON.stringify(user)); }
 
-  // ── Update UI ──
   function updateUI(user) {
     if (!user?.userId) return;
     const isPremium   = user.EstPremium === true;
     const autoRenewOn = user.AutoRenew  !== false;
-    const solde       = parseFloat(user.Solde || 0).toLocaleString('fr') + " G";
 
     document.getElementById("userName").textContent    = user.NomUtilisateur || "Membre";
-    document.getElementById("userBalance").textContent = solde;
+    document.getElementById("userBalance").textContent = parseFloat(user.Solde || 0).toLocaleString('fr') + " G";
 
     const badge = document.getElementById("statusBadge");
     if (isPremium) {
@@ -449,7 +462,6 @@
       document.getElementById("premiumStatus").style.color = "var(--text3)";
     }
 
-    // Expiry
     const expiryWrap = document.getElementById("expiryWrap");
     if (isPremium && user.DateExpirationPremium) {
       const d = new Date(user.DateExpirationPremium);
@@ -461,12 +473,10 @@
       expiryWrap.classList.remove("visible");
     }
 
-    // Bouton
     const btn = document.getElementById("activateBtn");
     btn.disabled    = isPremium;
     btn.textContent = isPremium ? "✦ Abonnement déjà actif" : "👑 Activer MIJO Premium";
 
-    // Auto-renew
     const renewCard = document.getElementById("renewCard");
     if (isPremium) {
       renewCard.classList.add("visible");
@@ -481,12 +491,10 @@
     }
   }
 
-  // ── Activer Premium ──
   async function activatePremium() {
     const user = getUser();
     if (!user?.userId) { showToast("Connectez-vous d'abord.", "error"); return; }
     if (user.EstPremium === true) { showToast("Votre abonnement est déjà actif.", "error"); return; }
-
     if (!confirm(`Activer MIJO Premium pour ${PREMIUM_PRICE} G ?`)) return;
 
     const btn = document.getElementById("activateBtn");
@@ -495,9 +503,8 @@
 
     try {
       const res  = await fetch(STORE_SCRIPT_URL, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ senderId: user.userId })
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ senderId: user.userId })
       });
       const data = await res.json();
 
@@ -514,14 +521,13 @@
         btn.disabled    = false;
         btn.textContent = "👑 Activer MIJO Premium";
       }
-    } catch (err) {
+    } catch {
       showToast("Erreur de connexion. Réessayez.", "error");
       btn.disabled    = false;
       btn.textContent = "👑 Activer MIJO Premium";
     }
   }
 
-  // ── Toggle Auto-renew ──
   async function toggleAutoRenew() {
     const user     = getUser();
     if (!user?.userId) return;
@@ -538,9 +544,8 @@
 
     try {
       const res  = await fetch(AUTORENEW_TOGGLE_URL, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ userId: user.userId, newState })
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.userId, newState })
       });
       const data = await res.json();
 
@@ -563,7 +568,6 @@
     }
   }
 
-  // ── Toast ──
   let toastTimer;
   function showToast(msg, type = "") {
     const el = document.getElementById("toast");
