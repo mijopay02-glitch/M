@@ -1018,45 +1018,56 @@ async function submitProduct() {
   const link  = document.getElementById('sell-link').value.trim();
   const desc  = document.getElementById('sell-desc').value.trim();
   const badgeLabel = document.getElementById('sell-badge-label').value;
+
   if (!name || !cat || !price || !link) { toast('❌ Remplis tous les champs obligatoires'); return; }
   const user = getUser();
   if (!user) { toast('❌ Connectez-vous'); return; }
 
-  // Si badge promo sélectionné → débiter 50G via CENTRAL_WORKER (à implémenter côté backend)
-  // Pour l'instant on simule la soumission
   toast('⏳ Publication en cours…');
-  // TODO: appel API pour créer le produit en DB
-  // await fetch('https://store-seller.mijocomplexe.workers.dev/', { method:'POST', ... })
-  const res = await fetch('https://store-seller.mijocomplexe.workers.dev/', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    userId:         user.userId,
-    name,
-    category:       cat,
-    price,
-    link,
-    description:    desc,
-    withPromoBadge: promoSelected,
-    badgeLabel: document.getElementById('sell-badge-label').value 
-  })
-}).then(r => r.json());
 
-if (res.success) {
-  toast('✅ ' + res.message);
-  if (res.newBalance !== undefined) {
-    user.Solde = res.newBalance;
-    localStorage.setItem('user', JSON.stringify(user));
+  try {
+    const res = await fetch('https://store-seller.mijocomplexe.workers.dev/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId:         user.userId,
+        name,
+        category:       cat,
+        price,
+        link,
+        description:    desc,
+        withPromoBadge: promoSelected,
+        badgeLabel:     badgeLabel
+      })
+    }).then(r => r.json());
+
+    if (res.success) {
+      toast('✅ ' + res.message);
+      if (res.newBalance !== undefined) {
+        user.Solde = res.newBalance;
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+      closeOverlay('sell-overlay');
+      // Reset form
+      ['sell-name','sell-cat','sell-price','sell-link','sell-desc'].forEach(id => document.getElementById(id).value = '');
+      promoSelected = false;
+      document.getElementById('promo-toggle').classList.remove('selected');
+      document.getElementById('promo-check').textContent = '';
+      document.getElementById('sell-badge-label').value = '';
+      document.querySelectorAll('.badge-choice').forEach(b => b.classList.remove('selected'));
+      document.getElementById('promo-preview-text').textContent = 'Choisir un badge ci-dessus';
+      document.getElementById('promo-preview-icon').textContent = '🏷️';
+    } else {
+      toast('❌ ' + res.error);
+    }
+  } catch(e) {
+    toast('❌ Erreur réseau');
   }
-  closeOverlay('sell-overlay');
-} else {
-  toast('❌ ' + res.error);
-}
+}  // ← accolade fermante manquante
 
 // ── INIT ──
 window.onload = function() {
   updateFreeButtons();
-  // Deep link: ?prod=CODE
   const prodCode = new URLSearchParams(window.location.search).get('prod');
   if (prodCode) {
     document.querySelectorAll('.card').forEach(c => {
