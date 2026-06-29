@@ -148,7 +148,26 @@ header{
 .btn-buy.locked-btn{background:var(--navy2);color:var(--text-muted);border:1px solid var(--card-border)}
 .btn-share{background:var(--navy2);border:1px solid var(--card-border);color:var(--text-muted);width:36px;border-radius:var(--radius-sm);cursor:pointer;font-size:0.85rem;transition:.2s;display:flex;align-items:center;justify-content:center}
 .btn-share:hover{border-color:var(--orange);color:var(--orange)}
-
+.badge-choice {
+  background: var(--navy3);
+  border: 2px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: .2s;
+}
+.badge-choice:hover { border-color: var(--orange); }
+.badge-choice.selected { border-color: var(--orange); background: rgba(255,92,0,0.08); }
+.badge-choice small { display: block; font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; }
+.badge-preview {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: .4px;
+}
 /* ══ BOTTOM NAV ══ */
 .bottom-nav{
   position:fixed;bottom:0;left:0;width:100%;
@@ -708,21 +727,53 @@ header{
         <textarea class="form-textarea" id="sell-desc" placeholder="Décris ton produit en quelques phrases…"></textarea>
       </div>
       <div class="form-group">
-        <label class="form-label">Badge promotionnel (optionnel)</label>
-        <div class="promo-toggle" id="promo-toggle" onclick="togglePromo()">
-          <div class="promo-toggle-left">
-            <div class="promo-toggle-icon">🔥</div>
-            <div class="promo-toggle-text">
-              <strong>Ajouter un badge PROMO</strong>
-              <small>Mis en avant dans la boutique</small>
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px">
-            <span class="promo-toggle-price">+50 G</span>
-            <div class="toggle-check" id="promo-check"></div>
-          </div>
-        </div>
+  <label class="form-label">Badge promotionnel (optionnel — 50 G)</label>
+  
+  <!-- Choix du badge -->
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px" id="badge-choices">
+    <div class="badge-choice" onclick="selectBadge(this,'Chaud 🔥')">
+      <span style="background:var(--gold);color:#1a0a00" class="badge-preview">Chaud 🔥</span>
+      <small>Tendance</small>
+    </div>
+    <div class="badge-choice" onclick="selectBadge(this,'POPULAIRE')">
+      <span style="background:var(--orange);color:#fff" class="badge-preview">POPULAIRE</span>
+      <small>Très demandé</small>
+    </div>
+    <div class="badge-choice" onclick="selectBadge(this,'TOP VENTE')">
+      <span style="background:#9b59b6;color:#fff" class="badge-preview">TOP VENTE</span>
+      <small>Meilleure vente</small>
+    </div>
+    <div class="badge-choice" onclick="selectBadge(this,'NOUVEAU')">
+      <span style="background:var(--green);color:#fff" class="badge-preview">NOUVEAU</span>
+      <small>Vient de sortir</small>
+    </div>
+    <div class="badge-choice" onclick="selectBadge(this,'PROMO -20%')">
+      <span style="background:#e74c3c;color:#fff" class="badge-preview">PROMO -20%</span>
+      <small>En promotion</small>
+    </div>
+    <div class="badge-choice" onclick="selectBadge(this,'EXCLUSIF')">
+      <span style="background:#2c3e50;color:var(--gold);border:1px solid var(--gold)" class="badge-preview">EXCLUSIF ⭐</span>
+      <small>Unique</small>
+    </div>
+  </div>
+  <input type="hidden" id="sell-badge-label" value="">
+
+  <!-- Toggle prix -->
+  <div class="promo-toggle" id="promo-toggle" onclick="togglePromo()">
+    <div class="promo-toggle-left">
+      <div class="promo-toggle-icon" id="promo-preview-icon">🏷️</div>
+      <div class="promo-toggle-text">
+        <strong id="promo-preview-text">Choisir un badge ci-dessus</strong>
+        <small>Mis en avant dans la boutique</small>
       </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="promo-toggle-price">+50 G</span>
+      <div class="toggle-check" id="promo-check"></div>
+    </div>
+  </div>
+</div>
+          
       <button class="btn-primary" onclick="submitProduct()">Publier mon produit</button>
       <button class="btn-secondary" onclick="closeOverlay('sell-overlay')">Annuler</button>
     </div>
@@ -841,7 +892,40 @@ function getFree(name, code, driveLink) {
     toast('📦 Lien bientôt disponible pour : ' + name);
   }
 }
+function selectBadge(el, label) {
+  // Désélectionner tous
+  document.querySelectorAll('.badge-choice').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('sell-badge-label').value = label;
 
+  // Activer automatiquement le toggle +50G
+  promoSelected = true;
+  document.getElementById('promo-toggle').classList.add('selected');
+  document.getElementById('promo-check').textContent = '✓';
+
+  // Mettre à jour le preview
+  const icons = {'Chaud 🔥':'🔥','POPULAIRE':'📈','TOP VENTE':'🏆','NOUVEAU':'✨','PROMO -20%':'💸','EXCLUSIF ⭐':'⭐'};
+  document.getElementById('promo-preview-icon').textContent = icons[label] || '🏷️';
+  document.getElementById('promo-preview-text').textContent = 'Badge "' + label + '" sélectionné';
+}
+
+function togglePromo() {
+  // Si aucun badge choisi, ne pas activer
+  const label = document.getElementById('sell-badge-label').value;
+  if (!promoSelected && !label) {
+    toast('Choisis un badge d\'abord ↑'); return;
+  }
+  promoSelected = !promoSelected;
+  document.getElementById('promo-toggle').classList.toggle('selected', promoSelected);
+  document.getElementById('promo-check').textContent = promoSelected ? '✓' : '';
+  if (!promoSelected) {
+    // Désélectionner le badge visuellement
+    document.getElementById('sell-badge-label').value = '';
+    document.querySelectorAll('.badge-choice').forEach(b => b.classList.remove('selected'));
+    document.getElementById('promo-preview-text').textContent = 'Choisir un badge ci-dessus';
+    document.getElementById('promo-preview-icon').textContent = '🏷️';
+  }
+}
 // ── CART ──
 function toggleCart() {
   document.getElementById('cart-drawer').classList.toggle('open');
@@ -926,19 +1010,14 @@ function openSellModal() {
   if (!isPremium()) { openOverlay('premium-overlay'); return; }
   openOverlay('sell-overlay');
 }
-function togglePromo() {
-  promoSelected = !promoSelected;
-  const el = document.getElementById('promo-toggle');
-  const chk = document.getElementById('promo-check');
-  el.classList.toggle('selected', promoSelected);
-  chk.textContent = promoSelected ? '✓' : '';
-}
+
 async function submitProduct() {
   const name = document.getElementById('sell-name').value.trim();
   const cat  = document.getElementById('sell-cat').value;
   const price = parseInt(document.getElementById('sell-price').value);
   const link  = document.getElementById('sell-link').value.trim();
   const desc  = document.getElementById('sell-desc').value.trim();
+  const badgeLabel = document.getElementById('sell-badge-label').value;
   if (!name || !cat || !price || !link) { toast('❌ Remplis tous les champs obligatoires'); return; }
   const user = getUser();
   if (!user) { toast('❌ Connectez-vous'); return; }
@@ -948,15 +1027,30 @@ async function submitProduct() {
   toast('⏳ Publication en cours…');
   // TODO: appel API pour créer le produit en DB
   // await fetch('https://store-seller.mijocomplexe.workers.dev/', { method:'POST', ... })
-  setTimeout(() => {
-    toast('✅ Produit soumis pour validation !');
-    closeOverlay('sell-overlay');
-    // Reset form
-    ['sell-name','sell-cat','sell-price','sell-link','sell-desc'].forEach(id => document.getElementById(id).value = '');
-    promoSelected = false;
-    document.getElementById('promo-toggle').classList.remove('selected');
-    document.getElementById('promo-check').textContent = '';
-  }, 1200);
+  const res = await fetch('https://store-seller.mijocomplexe.workers.dev/', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    userId:         user.userId,
+    name,
+    category:       cat,
+    price,
+    link,
+    description:    desc,
+    withPromoBadge: promoSelected,
+    badgeLabel: document.getElementById('sell-badge-label').value 
+  })
+}).then(r => r.json());
+
+if (res.success) {
+  toast('✅ ' + res.message);
+  if (res.newBalance !== undefined) {
+    user.Solde = res.newBalance;
+    localStorage.setItem('user', JSON.stringify(user));
+  }
+  closeOverlay('sell-overlay');
+} else {
+  toast('❌ ' + res.error);
 }
 
 // ── INIT ──
