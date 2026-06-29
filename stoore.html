@@ -1,757 +1,977 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-      <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-K43FXR4W');</script>
-<!-- End Google Tag Manager -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIJO PAY - Store</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #2196F3;
-            --text-color: #333;
-            --light-text-color: #999;
-            --bg-color: #f0f2f5;
-            --card-bg: #fff;
-            --secondary-color: #4CAF50;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            background-color: var(--bg-color);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            padding-bottom: 70px;
-        }
-
-        .container {
-            flex-grow: 1;
-            padding: 20px;
-        }
-        
-        h1 {
-            color: var(--primary-color);
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .product-section {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .product-list {
-            display: grid;
-            gap: 15px;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        }
-        
-        .product-item {
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            overflow: hidden;
-        }
-
-        .product-item img {
-            width: 100%;
-            height: 200px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            object-fit: cover;
-        }
-
-        .product-item h3 {
-            margin-top: 0;
-            color: var(--text-color);
-            font-size: 1.1em;
-        }
-
-        .product-item p {
-            color: var(--light-text-color);
-            margin: 5px 0;
-        }
-
-        .product-item button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s;
-        }
-        
-        .product-item button:hover {
-            background-color: #1976D2;
-        }
-        
-        .product-item.free {
-            background-color: #E8F5E9;
-            border: 1px solid #C8E6C9;
-        }
-        
-        .free-btn {
-            background-color: var(--secondary-color);
-        }
-
-        .footer-menu {
-            background-color: var(--card-bg);
-            border-top: 1px solid #ddd;
-            padding: 10px 0;
-            display: flex;
-            justify-content: space-around;
-            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-
-        .menu-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--light-text-color);
-            font-size: 0.7em;
-            text-decoration: none;
-            flex: 1;
-            padding: 5px 0;
-        }
-
-        .menu-btn.active {
-            color: var(--primary-color);
-        }
-
-        .menu-btn .icon {
-            font-size: 1.5em;
-            margin-bottom: 5px;
-        }
-
-        /* Panier flottant */
-        #cart-container {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            z-index: 1001;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-        
-        #cart-icon {
-            background-color: transparent;
-            width: 50px;
-            height: 50px;
-            display: block;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s;
-        }
-
-        #cart-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 50%;
-        }
-        
-        #cart-icon:hover {
-            transform: scale(1.1);
-        }
-
-        #cart-count {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: red;
-            color: white;
-            border-radius: 50%;
-            font-size: 0.7em;
-            font-weight: bold;
-            z-index: 100;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        }
-
-        #cart-content {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 15px;
-            margin-top: 10px;
-            width: 250px;
-            display: none;
-        }
-
-        #cart-content.visible {
-            display: block;
-        }
-
-        #cart-items {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 10px 0;
-        }
-
-        #cart-items li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 5px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        #cart-items li:last-child {
-            border-bottom: none;
-        }
-
-        #cart-total {
-            font-weight: bold;
-            margin-top: 10px;
-            text-align: right;
-        }
-
-        #checkout-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px;
-            width: 100%;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        /* Styles spécifiques pour la section Premium */
-.premium-section {
-    background-color: #e3f2fd; /* Une couleur de fond bleu clair, par exemple */
-    border: 2px solid #2196F3; /* Une bordure pour plus de distinction */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Une ombre plus prononcée */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MIJO STORE | Marketplace Digitale</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:hidden;width:100%;scroll-behavior:smooth}
+:root{
+  --orange:#FF5C00;
+  --orange-soft:#FF7A2F;
+  --orange-glow:rgba(255,92,0,0.18);
+  --navy:#0D1525;
+  --navy2:#151F35;
+  --navy3:#1C2840;
+  --card-bg:#192236;
+  --card-border:rgba(255,255,255,0.07);
+  --gold:#FFB800;
+  --green:#00C97F;
+  --white:#FFFFFF;
+  --text:#E8EBF2;
+  --text-muted:#7A86A0;
+  --radius:16px;
+  --radius-sm:10px;
+  --shadow:0 4px 24px rgba(0,0,0,0.35);
+  --shadow-card:0 8px 32px rgba(0,0,0,0.4);
 }
-        
-    </style>
+body{font-family:'Inter',sans-serif;background:var(--navy);color:var(--text);padding-bottom:90px}
+
+/* ══ HEADER ══ */
+header{
+  background:rgba(13,21,37,0.95);
+  backdrop-filter:blur(20px);
+  padding:14px 20px;
+  position:sticky;top:0;z-index:900;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.header-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.header-row1{display:flex;justify-content:space-between;align-items:center}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo img{height:32px;border-radius:8px}
+.logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--white);letter-spacing:-0.3px}
+.logo-text span{color:var(--orange)}
+.header-actions{display:flex;align-items:center;gap:10px}
+.btn-sell{
+  display:flex;align-items:center;gap:6px;
+  background:linear-gradient(135deg,var(--orange),var(--orange-soft));
+  color:#fff;border:none;
+  padding:9px 16px;border-radius:var(--radius-sm);
+  font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;
+  cursor:pointer;transition:all .2s;white-space:nowrap;
+  box-shadow:0 4px 16px rgba(255,92,0,0.35);
+}
+.btn-sell:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,92,0,0.45)}
+.icon-btn{background:var(--navy3);border:1px solid var(--card-border);color:var(--text);width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;text-decoration:none;position:relative;transition:.2s}
+.icon-btn:hover{border-color:var(--orange);color:var(--orange)}
+.cart-badge{position:absolute;top:-5px;right:-5px;background:var(--orange);color:#fff;font-size:0.6rem;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--navy)}
+.search-wrap{position:relative}
+.search-wrap input{
+  width:100%;background:var(--navy3);border:1px solid var(--card-border);
+  color:var(--text);padding:11px 16px 11px 42px;
+  border-radius:var(--radius-sm);font-size:0.88rem;outline:none;
+  transition:.2s;font-family:'Inter',sans-serif;
+}
+.search-wrap input:focus{border-color:var(--orange);background:var(--navy2)}
+.search-wrap input::placeholder{color:var(--text-muted)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:0.9rem;color:var(--text-muted)}
+
+/* ══ CATEGORY BAR ══ */
+.cat-bar{display:flex;gap:8px;overflow-x:auto;padding:16px 20px 0;scrollbar-width:none;max-width:1240px;margin:0 auto}
+.cat-bar::-webkit-scrollbar{display:none}
+.cat-pill{flex:0 0 auto;background:var(--navy3);border:1px solid var(--card-border);color:var(--text-muted);font-size:0.75rem;font-weight:600;padding:8px 16px;border-radius:20px;cursor:pointer;white-space:nowrap;transition:.2s;font-family:'Inter',sans-serif}
+.cat-pill:hover{border-color:var(--orange);color:var(--orange)}
+.cat-pill.active{background:var(--orange);color:#fff;border-color:var(--orange);box-shadow:0 4px 14px rgba(255,92,0,0.3)}
+
+/* ══ HERO ══ */
+.hero{max-width:1200px;margin:20px auto 0;padding:0 20px}
+.hero-inner{
+  background:linear-gradient(135deg,#1a0a00 0%,#2d1100 40%,#1a1f35 100%);
+  border:1px solid rgba(255,92,0,0.2);
+  border-radius:20px;padding:28px 28px;
+  position:relative;overflow:hidden;
+}
+.hero-inner::before{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:220px;height:220px;
+  background:radial-gradient(circle,rgba(255,92,0,0.25),transparent 70%);
+  border-radius:50%;
+}
+.hero-inner::after{
+  content:'🔥';position:absolute;right:28px;top:50%;transform:translateY(-50%);
+  font-size:4rem;opacity:0.15;
+}
+.hero-tag{display:inline-block;background:rgba(255,92,0,0.2);color:var(--orange);font-size:0.68rem;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;border:1px solid rgba(255,92,0,0.3)}
+.hero-inner h1{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:#fff;line-height:1.2;margin-bottom:8px}
+.hero-inner h1 span{color:var(--orange)}
+.hero-inner p{font-size:0.82rem;color:var(--text-muted);max-width:400px;line-height:1.5}
+.hero-stats{display:flex;gap:24px;margin-top:18px}
+.hero-stat span{display:block;font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--orange)}
+.hero-stat small{font-size:0.7rem;color:var(--text-muted)}
+
+/* ══ CONTAINER ══ */
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin:32px 0 16px}
+.section-header h2{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--white)}
+.section-header h2 span{color:var(--orange)}
+.see-all{font-size:0.75rem;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:4px;transition:.2s}
+.see-all:hover{color:var(--orange)}
+.section-header.free h2 span{color:var(--green)}
+
+/* ══ PRODUCT GRID ══ */
+.product-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(min-width:600px){.product-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px}}
+
+/* ══ CARD ══ */
+.card{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:var(--radius);
+  overflow:hidden;display:flex;flex-direction:column;
+  transition:transform .25s,border-color .25s,box-shadow .25s;
+  cursor:default;
+}
+.card:hover{transform:translateY(-5px);border-color:rgba(255,92,0,0.35);box-shadow:0 16px 40px rgba(0,0,0,0.5)}
+.card-img{position:relative;height:170px;background:var(--navy2);overflow:hidden}
+.card-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.card:hover .card-img img{transform:scale(1.05)}
+.badge{position:absolute;top:10px;left:10px;padding:4px 10px;border-radius:6px;font-size:0.62rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;z-index:2}
+.badge-promo{background:var(--gold);color:#1a0a00}
+.badge-free{background:var(--green);color:#fff}
+.badge-new{background:var(--orange);color:#fff}
+.badge-lock{position:absolute;top:10px;right:10px;background:rgba(13,21,37,0.85);color:var(--gold);padding:4px 9px;border-radius:6px;font-size:0.62rem;font-weight:700;border:1px solid rgba(255,184,0,0.25);z-index:2}
+.card-body{padding:14px;display:flex;flex-direction:column;flex:1}
+.card-cat{font-size:0.65rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);font-weight:600;margin-bottom:5px}
+.card-title{font-family:'Syne',sans-serif;font-size:0.88rem;font-weight:700;color:var(--white);line-height:1.3;height:36px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:8px}
+.card-price{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;color:var(--white);margin-bottom:4px}
+.card-price.free-price{color:var(--green)}
+.card-price small{font-size:0.62rem;color:var(--text-muted);font-weight:400;font-family:'Inter',sans-serif}
+.card-seller{font-size:0.68rem;color:var(--text-muted);margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);margin-bottom:10px}
+.card-seller b{color:var(--text)}
+.card-actions{display:flex;gap:8px}
+.btn-buy{flex:1;background:var(--orange);color:#fff;border:none;padding:10px;border-radius:var(--radius-sm);font-weight:700;font-size:0.8rem;cursor:pointer;transition:.2s;font-family:'Syne',sans-serif}
+.btn-buy:hover{background:var(--orange-soft)}
+.btn-buy.free-btn{background:var(--green)}
+.btn-buy.free-btn:hover{background:#00b371}
+.btn-buy.locked-btn{background:var(--navy2);color:var(--text-muted);border:1px solid var(--card-border)}
+.btn-share{background:var(--navy2);border:1px solid var(--card-border);color:var(--text-muted);width:36px;border-radius:var(--radius-sm);cursor:pointer;font-size:0.85rem;transition:.2s;display:flex;align-items:center;justify-content:center}
+.btn-share:hover{border-color:var(--orange);color:var(--orange)}
+
+/* ══ BOTTOM NAV ══ */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;width:100%;
+  background:rgba(13,21,37,0.97);
+  backdrop-filter:blur(20px);
+  border-top:1px solid rgba(255,255,255,0.06);
+  display:flex;justify-content:space-around;align-items:center;
+  padding:10px 0 max(10px,env(safe-area-inset-bottom));
+  z-index:800;
+}
+.nav-item{text-decoration:none;color:var(--text-muted);text-align:center;font-size:0.62rem;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.2s;padding:0 12px}
+.nav-item .nav-icon{font-size:1.3rem;line-height:1}
+.nav-item.active{color:var(--orange)}
+.nav-item:hover{color:var(--orange)}
+
+/* ══ CART DRAWER ══ */
+.cart-drawer{
+  position:fixed;top:0;right:-100%;width:100%;max-width:400px;height:100%;
+  background:var(--navy2);border-left:1px solid var(--card-border);
+  z-index:1100;transition:right .35s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;
+}
+.cart-drawer.open{right:0}
+.drawer-header{padding:20px;border-bottom:1px solid var(--card-border);display:flex;justify-content:space-between;align-items:center}
+.drawer-header h3{font-family:'Syne',sans-serif;font-weight:700;color:var(--white)}
+.close-btn{background:var(--navy3);border:1px solid var(--card-border);color:var(--text-muted);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:.2s}
+.close-btn:hover{color:var(--white);border-color:var(--orange)}
+.drawer-body{flex:1;overflow-y:auto;padding:16px}
+.cart-item{background:var(--navy3);border:1px solid var(--card-border);border-radius:var(--radius-sm);padding:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cart-item-name{font-size:0.85rem;font-weight:600;color:var(--white)}
+.cart-item-price{font-size:0.8rem;color:var(--orange);font-weight:700;margin-top:3px}
+.cart-item-remove{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;padding:4px;border-radius:6px;transition:.2s}
+.cart-item-remove:hover{color:#ff4757}
+.drawer-footer{padding:20px;border-top:1px solid var(--card-border)}
+.cart-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.cart-total-row span{color:var(--text-muted);font-size:0.85rem}
+.cart-total-row strong{font-family:'Syne',sans-serif;font-size:1.2rem;color:var(--white)}
+.btn-checkout{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange-soft));color:#fff;border:none;padding:14px;border-radius:var(--radius-sm);font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;transition:.2s;box-shadow:0 4px 16px rgba(255,92,0,0.35)}
+.btn-checkout:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,92,0,0.45)}
+.empty-cart{text-align:center;padding:40px 20px;color:var(--text-muted)}
+.empty-cart .empty-icon{font-size:3rem;margin-bottom:12px}
+.empty-cart p{font-size:0.85rem}
+
+/* ══ MODALS ══ */
+.overlay{position:fixed;inset:0;background:rgba(5,10,20,0.75);z-index:1200;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.overlay.open{display:flex}
+.modal{background:var(--navy2);border:1px solid var(--card-border);border-radius:20px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.6)}
+.modal-header{padding:24px 24px 0;display:flex;justify-content:space-between;align-items:flex-start}
+.modal-header h3{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--white)}
+.modal-body{padding:20px 24px 24px}
+.modal-icon{font-size:2.8rem;text-align:center;margin-bottom:12px}
+.modal-body p{font-size:0.85rem;color:var(--text-muted);line-height:1.55;text-align:center;margin-bottom:20px}
+
+/* Form */
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:0.75rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.form-input,.form-select,.form-textarea{
+  width:100%;background:var(--navy3);border:1px solid var(--card-border);
+  color:var(--text);padding:11px 14px;border-radius:var(--radius-sm);
+  font-size:0.88rem;outline:none;transition:.2s;font-family:'Inter',sans-serif;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--orange)}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text-muted)}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A86A0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;cursor:pointer}
+.form-select option{background:var(--navy2)}
+.form-textarea{resize:vertical;min-height:80px}
+.promo-toggle{background:var(--navy3);border:1px solid var(--card-border);border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:.2s}
+.promo-toggle:hover{border-color:var(--gold)}
+.promo-toggle.selected{border-color:var(--gold);background:rgba(255,184,0,0.08)}
+.promo-toggle-left{display:flex;align-items:center;gap:10px}
+.promo-toggle-icon{font-size:1.3rem}
+.promo-toggle-text strong{display:block;font-size:0.85rem;color:var(--white);font-weight:600}
+.promo-toggle-text small{font-size:0.72rem;color:var(--text-muted)}
+.promo-toggle-price{font-family:'Syne',sans-serif;font-weight:800;color:var(--gold);font-size:0.9rem}
+.toggle-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--card-border);display:flex;align-items:center;justify-content:center;transition:.2s;font-size:0.7rem}
+.promo-toggle.selected .toggle-check{background:var(--gold);border-color:var(--gold);color:#1a0a00}
+.btn-primary{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange-soft));color:#fff;border:none;padding:14px;border-radius:var(--radius-sm);font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;transition:.2s;margin-top:8px;box-shadow:0 4px 16px rgba(255,92,0,0.3)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,92,0,0.4)}
+.btn-secondary{width:100%;background:none;border:1px solid var(--card-border);color:var(--text-muted);padding:12px;border-radius:var(--radius-sm);font-size:0.85rem;cursor:pointer;margin-top:8px;transition:.2s;font-family:'Inter',sans-serif}
+.btn-secondary:hover{border-color:var(--text-muted);color:var(--text)}
+
+/* Premium modal */
+.premium-modal .modal-body{text-align:center}
+.premium-perks{text-align:left;background:var(--navy3);border:1px solid var(--card-border);border-radius:var(--radius-sm);padding:16px;margin:16px 0}
+.perk{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:0.82rem;color:var(--text)}
+.perk-icon{color:var(--green);font-size:0.9rem}
+
+/* Toast */
+.toast{
+  position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);
+  background:var(--navy2);border:1px solid var(--card-border);
+  color:var(--text);padding:12px 20px;border-radius:30px;
+  z-index:2000;opacity:0;transition:all .3s;
+  font-size:0.85rem;font-weight:500;white-space:nowrap;
+  box-shadow:var(--shadow);pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Overlay backdrop for cart */
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1050;display:none}
+.cart-overlay.open{display:block}
+
+/* Divider */
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--card-border),transparent);margin:8px 0}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--navy3);border-radius:4px}
+</style>
 </head>
 <body>
- <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K43FXR4W"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-    <div class="container">
-        <h1><img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png" alt="Logo MIJO" style="height: 30px; margin-right: 10px; vertical-align: middle;"> MIJO STORE</h1>
 
-        <div class="product-section" id="product-list">
+<!-- ══ TOAST ══ -->
+<div class="toast" id="toast"></div>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="header-inner">
+    <div class="header-row1">
+      <a href="#" class="logo">
+        <img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png" alt="Mijo">
+        <span class="logo-text">MIJO <span>STORE</span></span>
+      </a>
+      <div class="header-actions">
+        <button class="btn-sell" onclick="openSellModal()">
+          <span>+</span> Vendre
+        </button>
+        <a href="premium.html" class="icon-btn" title="Premium">⭐</a>
+        <div class="icon-btn" onclick="toggleCart()" title="Panier">
+          🛒
+          <span class="cart-badge" id="cart-badge">0</span>
+        </div>
+      </div>
     </div>
-            <h2>Applications</h2>
-            <div class="product-list">
-                <div class="product-item">
-                    <img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png" alt="Image Mijo apk">
-                    <h3>Mijo apk pro </h3>
-                    <p>Prix : 500 G</p>
-                    <p>Premium apk</p>
-                    <button onclick="addToCart('Mijo apk pro', 500, 'Mij-1', 'https://drive.google.com/file/d/1G37Z-3kv4wuK6k5Qi7jJKovuwMa0khSS/view?usp=sharing')">Ajouter au panier</button>
-                </div>
-                <div class="product-item">
-                    <img src="https://i.postimg.cc/mrcMcsX3/a-modern-logo-design-featuring-the-text-i-Ves-Kt-CZQnux-BX0-IRGSxj-A-4fwh-Yy-Yv-R-OCPy-Nt-Oo-Cm-Q.jpg" alt="Image Hai IA">
-                    <h3>Hai IA</h3>
-                    <p>Prix : 200 G</p>
-                    <p>MIJO IA</p>
-                    <button onclick="addToCart('Hai IA', 200, 'Hai-2', 'https://drive.google.com/file/d/1Mw3Kgaodui9nz_hweqOlV1sy85AUTQXb/view?usp=sharing')">Ajouter au panier</button>
-                </div>
-                 <div class="product-item free">
-                    <img src="https://i.postimg.cc/Fssx924p/a-digital-illustration-of-a-stylized-sma-e-Nct-Kg2v-RGmg-UPTRI4-Zs-UA-3q5o-P2yu-Q4yup5-Nnqd9-D-g.jpg" alt="Image Mijo Pay Apk">
-                    <h3>Mijo Pay Apk</h3>
-                    <p>Prix : Gratuit</p>
-                    <button class="free-btn" onclick="downloadFree('Mijo Pay Apk', 'https://drive.google.com/file/d/1tacJhq3Stm7RTHnrQ-lMrx0EldaLad7N/view?usp=drive_link')">Télécharger</button>
-                </div>
-                <div class="product-item free">
-                    <img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png" alt="Image Mijo Chat Ai">
-                    <h3>Mijo app</h3>
-                    <p>Prix : Gratuit</p>
-                    <button class="free-btn" onclick="downloadFree('Mijo app', 'https://drive.google.com/file/d/14U2tRDtVwHBxWqdCUuQNPn3_ZBnmnO97/view?usp=sharing')">Télécharger</button>
-                </div>
-                <div class="product-item free">
-                    <img src="https://i.postimg.cc/bJGXd85j/a-dynamic-logo-design-featuring-the-text-q-Z2-MOv46-Tu-YTI-JYw836-A-Yujb5-Ew8-Tje-Hy-EP7-MS4t-A.jpg" alt="Image Mijo Chat Ai">
-                    <h3>Mijo Game arena</h3>
-                    <p>Prix : Gratuit</p>
-                    <button class="free-btn" onclick="downloadFree('Mijo Game arena', 'https://drive.google.com/file/d/1sX6XLwpsaaSo9dQpygiv_omWMDEvGQAJ/view?usp=sharing')">Télécharger</button>
-                </div>
-            </div>
-        </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Rechercher une app, un ebook, un outil IA…">
+    </div>
+  </div>
+</header>
 
-        <div class="product-section">
-            <h2>Ebooks</h2>
-            <div class="product-list">
-                <div class="product-item">
-                    <img src="https://i.postimg.cc/qMtVXW87/a-clean-modern-book-cover-design-blendin-k-Efi-VZax-Rr2-Z6-q2n-HBHf-Q-TU-he66-MQ4-GNnncvt-Br-W8g.jpg" alt="Image Chimie industrielle">
-                    <h3>Chimie industrielle</h3>
-                    <p>Prix : 250 G</p>
-                    <p>+50 recettes</p>
-                    <button onclick="addToCart('Chimie industrielle', 250, 'Chi-3', 'https://drive.google.com/file/d/1rn-MXIIkAfXYSgSMkHjjfkOI2HhJmAyE/view?usp=sharing')">Ajouter au panier</button>
-                </div>
-                <div class="product-item">
-                    <img src="https://i.postimg.cc/vHfmQ1cM/a-clean-modern-book-cover-illustration-f-o79-YAln7-Tnao8fxz6p9-Pd-Q-g0-P-NGZVTcu08-SDb-QHh-Yy-Q.jpg" alt="Image Gestion de Stock">
-                    <h3>Gestion de Stock</h3>
-                    <p>Prix : 200 G</p>
-                    <p>contrôler vos produits</p>
-                    <button onclick="addToCart('Gestion de Stock', 200, 'Ges-4', 'https://drive.google.com/file/d/1WB3Wkk0ASRtLzZKJN-_uUCf4PcObWILm/view?usp=sharing')">Ajouter au panier</button>
-                </div>
-                <div class="product-item">
-                    <img src="https://i.postimg.cc/T3yXc1WF/calculator-385506-640.jpg" alt="Image Comptabilité 1">
-                    <h3>Comptabilité 1</h3>
-                    <p>Prix : 150 G</p>
-                    <p>Introduction</p>
-                    <button onclick="addToCart('Comptabilité 1', 150, 'Com-5', 'https://drive.google.com/file/d/1eB_7pn7B7rN6eIN9eoNpr-4OeRmi_-2B/view?usp=sharing')">Ajouter au panier</button>
-                </div>
-                <div class="product-item">
-                    <img src="https://i.postimg.cc/9X7c7VkJ/later-on-5012455-1280.jpg" alt="Image Vers soi et au-delà">
-                    <h3>Vers soi et au-delà</h3>
-                    <p>Prix : 150 G</p>
-                    <p>Développement Personnel</p>
-                    <button onclick="addToCart('Vers soi et au-delà', 150, 'Ver-6', 'https://drive.google.com/file/d/1SRH0vZG72hnoo_O0Or-ZZB5xV0-2NXA-/view?usp=sharing')">Ajouter au panier</button>
-                </div>
-                <div class="product-item">
-                    <img src="https://i.postimg.cc/NMCNMn3W/coins-4421639-640.jpg" alt="Image 30 Idées de Business à Petit Budget">
-                    <h3>30 Idées de Business à Petit Budget</h3>
-                    <p>Prix : 200 G</p>
-                    <p>Idées simples et rentables</p>
-                    <button onclick="addToCart('30 Idées de Business à Petit Budget', 200, '301-7', 'https://drive.google.com/file/d/1OSdjQgjPRDMV_yNUHje69qG_v2EqToFY/view?usp=sharing')">Ajouter au panier</button>
-                </div>
-                <div class="product-item">
-                    <img src="https://i.postimg.cc/DZHbZVgJ/ai-generated-8540913-1280.jpg" alt="Image Guide des Outils d'Intelligence Artificielle Gratuits pour les Entrepreneurs">
-                    <h3>Guide des Outils d'IA pour les Entrepreneurs</h3>
-                    <p>Prix : 200 G</p>
-                    <p>IA pour entrepreneur</p>
-                    <button onclick="addToCart('Guide des Outils d\'Intelligence Artificielle Gratuits pour les Entrepreneurs', 200, 'Gui-8', 'https://drive.google.com/file/d/1TvtqtwcOgHe0aMWzZDZ8Or0umpc5AS0y/view?usp=sharing')">Ajouter au panier</button>
-                </div>
-                <div class="product-item">
-                    <img src="https://i.postimg.cc/PfzjTgMP/model-1335984-1920.jpg" alt="Image Le Charisme Intérieur">
-                    <h3>Le Charisme Intérieur</h3>
-                    <p>Prix : 150 G</p>
-                    <p>Nouvelle version de toi même</p>
-                    <button onclick="addToCart('Le Charisme Intérieur', 150, 'LeC-9', 'https://drive.google.com/file/d/1L6FfRlLD67TcOM86H4Tr6Aoqdw01-Tum/view?usp=sharing')">Ajouter au panier</button>
-                </div>
-                <div class="product-item">
-                    <img src="https://i.postimg.cc/MGMhfNJ2/digital-marketing-5816304-640.jpg" alt="Image Marketing digital">
-                    <h3>Marketing digital</h3>
-                    <p>Prix : 250 G</p>
-                    <p>Les pilliers du marketing</p>
-                    <button onclick="addToCart('Marketing digital', 250, 'Mar-10', 'https://drive.google.com/file/d/1fw4GK0yefQJSJl72Y8wgZScGU2lAjJ8t/view?usp=sharing')">Ajouter au panier</button>
-                </div>
-                <div class="product-item free">
-                    <img src="https://i.postimg.cc/1znF6nJR/a-studio-portrait-photograph-of-a-joyful-uw-Ox-Z7-Kg-Rj2-Kmi-ham-Xjo-Q-S-O7-T600-Rg-Wow620td8-P6-Q.jpg" alt="Image Mon ebook gratuit">
-                    <h3>Creer son entreprise en 7 jours</h3>
-                    <p>Prix : Gratuit</p>
-                    <button class="free-btn" onclick="downloadFree('Creer son entreprise en 7 jours', 'https://drive.google.com/file/d/1xst5o5JE-97_U9RqRkoblhJeTod8yp_K/view?usp=sharing')">Télécharger</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="product-section">
-            <h2>Formations</h2>
-            <div class="product-list">
-                <div class="product-item">
-                    <img src="https://i.postimg.cc/SKLvwt3c/empowerment-9633195-1280.jpg" alt="Image Formation Entrepreneuriat">
-                    <h3>Formation Entrepreneuriat</h3>
-                    <p>Prix : 250 G</p>
-                    <p>5 vidéos</p>
-                    <p>Code : FEn-11</p>
-                    <button onclick="addToCart('Formation Entrepreneuriat', 250, 'FEn-11', 'https://drive.google.com/file/d/1UplE-Lja7SSmD2TXx8Ef-Sogv2ypqbii/view?usp=sharing')">Ajouter au panier</button>
-                </div>
-                <div class="product-item">
-                    <img src="https://i.postimg.cc/T3yXc1WF/calculator-385506-640.jpg" alt="Image Formation Comptabilité 1">
-                    <h3>Formation Comptabilité 1</h3>
-                    <p>Prix : 250 G</p>
-                    <p>5 vidéos</p>
-                    <button onclick="addToCart('Formation Comptabilité 1', 250, 'FCo-12', 'https://drive.google.com/drive/folders/1YIU3nX-Q391BuUIHigvgddfcbVGSSiNh?usp=sharing')">Ajouter au panier</button>
-                </div>
-                <div class="product-item">
-                    <img src="https://i.postimg.cc/9X7c7VkJ/later-on-5012455-1280.jpg" alt="Image Formation Développement personel">
-                    <h3>Formation Développement personnel</h3>
-                    <p>Prix : 250 G</p>
-                    <p>4 vidéos</p>
-                    <button onclick="addToCart('Formation Développement personnel', 250, 'FDé-13', 'https://drive.google.com/drive/folders/1msqApnauEMn7Akwu5KaALG7BuA2RtzGm?usp=sharing')">Ajouter au panier</button>
-                </div>
-                <div class="product-item">
-                    <img src="https://i.postimg.cc/MGMhfNJ2/digital-marketing-5816304-640.jpg" alt="Image Formation Marketing">
-                    <h3>Formation Marketing</h3>
-                    <p>Prix : 300 G</p>
-                    <p>5 vidéos</p>
-                    <p>Code : FMa-14</p>
-                    <button onclick="addToCart('Formation Marketing', 300, 'FMa-14', 'https://drive.google.com/drive/folders/1XQiJ51tO1YX6hCJ0zl8yFrxjcOPMQSZA?usp=sharing')">Ajouter au panier</button>
-                </div>
-                <div class="product-item">
-    <img src="https://i.postimg.cc/vHfmQ1cM/a-clean-modern-book-cover-illustration-f-o79-YAln7-Tnao8fxz6p9-Pd-Q-g0-P-NGZVTcu08-SDb-QHh-Yy-Q.jpg" alt="Image Formation Gestion de Stock">
-    <h3>Formation Gestion de Stock</h3>
-    <p>Prix : 250 G</p>
-    <p>3 vidéos</p>
-    <button onclick="addToCart('Formation Gestion de Stock', 250, 'FGe-15', 'https://drive.google.com/drive/folders/1HB2CIp4q088GXxhCIa5DdYgG3LBjEHhu?usp=sharing')">Ajouter au panier</button>
+<!-- ══ CATEGORY PILLS ══ -->
+<div class="cat-bar">
+  <button class="cat-pill active" onclick="filterCat('all',this)">🗂 Tout</button>
+  <button class="cat-pill" onclick="filterCat('application',this)">📱 Applications</button>
+  <button class="cat-pill" onclick="filterCat('e-book',this)">📚 E-Books</button>
+  <button class="cat-pill" onclick="filterCat('business',this)">💼 Business</button>
+  <button class="cat-pill" onclick="filterCat('intelligence artificielle',this)">🤖 IA</button>
+  <button class="cat-pill" onclick="filterCat('soft skills',this)">🧠 Soft Skills</button>
+  <button class="cat-pill" onclick="filterCat('gratuit',this)">🎁 Premium Gratuit</button>
 </div>
-                <div class="product-item">
-                    <img src="https://i.postimg.cc/DZHbZVgJ/ai-generated-8540913-1280.jpg" alt="Image Formation Intelligence artificielle">
-                    <h3>Formation Intelligence artificielle</h3>
-                    <p>Prix : 250 G</p>
-                    <p>4 vidéos</p>
-                    <button onclick="addToCart('Formation Intelligence artificielle', 250, 'FIn-16', 'https://drive.google.com/drive/folders/1V62SzvV8l1cIKJGLFyoqXuZ6QUnUuffR?usp=sharing')">Ajouter au panier</button>
-                </div>
-                <div class="product-item free">
-                    <img src="https://i.postimg.cc/qv1w6VMx/piano-1655558-1280.jpg" alt="Image Ma Formation gratuite">
-                    <h3>Musique</h3>
-                    <p>Prix : Gratuit</p>
-                    <button class="free-btn" onclick="downloadFree('Musique', 'https://drive.google.com/drive/folders/1viOi4UD9e9CwnyASD0y2wzOc86Veu4cT?usp=sharing')">Télécharger</button>
-                </div>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">🔥 Offres du moment</div>
+    <h1>La boutique digitale<br><span>qui paie en HTG</span></h1>
+    <p>Apps, ebooks &amp; outils IA. Paiement sécurisé MIJO Pay — livraison instantanée.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><span>11+</span><small>Produits</small></div>
+      <div class="hero-stat"><span>100%</span><small>Sécurisé</small></div>
+      <div class="hero-stat"><span>⚡</span><small>Instantané</small></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN CONTENT ══ -->
+<div class="container">
+
+  <!-- Section Boutique -->
+  <div class="section-header">
+    <h2>Boutique <span>MIJO</span></h2>
+    <a href="#" class="see-all">Voir tout →</a>
+  </div>
+
+  <div class="product-grid" id="main-grid">
+
+    <!-- CARD 1 -->
+    <div class="card" data-cat="application">
+      <div class="card-img">
+        <img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png" alt="Mijo Apk">
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Application Pro</div>
+        <div class="card-title">Mijo Apk Premium Pro</div>
+        <div class="card-price">500 G</div>
+        <div class="card-seller">Par <b>MIJO Official</b></div>
+        <div class="card-actions">
+          <button class="btn-buy" onclick="addToCart('Mijo Apk Premium Pro',500,'Mij-1','Lien_ici','recfcTPvpeweReklm')">Acheter</button>
+          <button class="btn-share" onclick="shareProduct('Mijo Apk Premium Pro','Mij-1')" title="Partager">🔗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 2 -->
+    <div class="card" data-cat="e-book">
+      <div class="card-img">
+        <span class="badge badge-promo">Chaud 🔥</span>
+        <img src="data:image/png;base64,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" alt="L'art de baiser">
+      </div>
+      <div class="card-body">
+        <div class="card-cat">E-Book</div>
+        <div class="card-title">L'art de baiser</div>
+        <div class="card-price">400 G</div>
+        <div class="card-seller">Par <b>Vincent Body</b></div>
+        <div class="card-actions">
+          <button class="btn-buy" onclick="addToCart('L\'art de baiser',400,'LB-18','LINK_IN_AIRTABLE','recfcTPvpeweReklm')">Acheter</button>
+          <button class="btn-share" onclick="shareProduct('L\'art de baiser','LB-18')">🔗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 3 -->
+    <div class="card" data-cat="e-book">
+      <div class="card-img">
+        <span class="badge badge-promo">POPULAIRE</span>
+        <img src="https://i.postimg.cc/qMtVXW87/a-clean-modern-book-cover-design-blendin-k-Efi-VZax-Rr2-Z6-q2n-HBHf-Q-TU-he66-MQ4-GNnncvt-Br-W8g.jpg" alt="Chimie">
+      </div>
+      <div class="card-body">
+        <div class="card-cat">E-Book</div>
+        <div class="card-title">Chimie industrielle (+50 recettes)</div>
+        <div class="card-price">250 G</div>
+        <div class="card-seller">Par <b>Académie MIJO</b></div>
+        <div class="card-actions">
+          <button class="btn-buy" onclick="addToCart('Chimie industrielle',250,'Chi-3','LINK_IN_AIRTABLE','recfcTPvpeweReklm')">Acheter</button>
+          <button class="btn-share" onclick="shareProduct('Chimie industrielle','Chi-3')">🔗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 4 -->
+    <div class="card" data-cat="e-book">
+      <div class="card-img">
+        <img src="https://i.postimg.cc/vHfmQ1cM/a-clean-modern-book-cover-illustration-f-o79-YAln7-Tnao8fxz6p9-Pd-Q-g0-P-NGZVTcu08-SDb-QHh-Yy-Q.jpg" alt="Gestion de Stock">
+      </div>
+      <div class="card-body">
+        <div class="card-cat">E-Book</div>
+        <div class="card-title">Gestion de Stock Moderne</div>
+        <div class="card-price">200 G</div>
+        <div class="card-seller">Par <b>Académie MIJO</b></div>
+        <div class="card-actions">
+          <button class="btn-buy" onclick="addToCart('Gestion de Stock Moderne',200,'Ges-4','LINK_IN_AIRTABLE','recfcTPvpeweReklm')">Acheter</button>
+          <button class="btn-share" onclick="shareProduct('Gestion de Stock Moderne','Ges-4')">🔗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 5 -->
+    <div class="card" data-cat="e-book">
+      <div class="card-img">
+        <img src="https://i.postimg.cc/T3yXc1WF/calculator-385506-640.jpg" alt="Comptabilité">
+      </div>
+      <div class="card-body">
+        <div class="card-cat">E-Book</div>
+        <div class="card-title">Comptabilité 1 : Introduction</div>
+        <div class="card-price">150 G</div>
+        <div class="card-seller">Par <b>Académie MIJO</b></div>
+        <div class="card-actions">
+          <button class="btn-buy" onclick="addToCart('Comptabilité 1',150,'Com-5','LINK_IN_AIRTABLE','recfcTPvpeweReklm')">Acheter</button>
+          <button class="btn-share" onclick="shareProduct('Comptabilité 1','Com-5')">🔗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 6 -->
+    <div class="card" data-cat="e-book">
+      <div class="card-img">
+        <img src="https://i.postimg.cc/9X7c7VkJ/later-on-5012455-1280.jpg" alt="Vers soi">
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Développement Personnel</div>
+        <div class="card-title">Vers soi et au-delà</div>
+        <div class="card-price">150 G</div>
+        <div class="card-seller">Par <b>Académie MIJO</b></div>
+        <div class="card-actions">
+          <button class="btn-buy" onclick="addToCart('Vers soi et au-delà',150,'Ver-6','LINK_IN_AIRTABLE','recfcTPvpeweReklm')">Acheter</button>
+          <button class="btn-share" onclick="shareProduct('Vers soi et au-delà','Ver-6')">🔗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 7 -->
+    <div class="card" data-cat="business">
+      <div class="card-img">
+        <span class="badge badge-new">TOP VENTE</span>
+        <img src="https://i.postimg.cc/NMCNMn3W/coins-4421639-640.jpg" alt="Business">
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Business</div>
+        <div class="card-title">30 Idées de Business à Petit Budget</div>
+        <div class="card-price">200 G</div>
+        <div class="card-seller">Par <b>Académie MIJO</b></div>
+        <div class="card-actions">
+          <button class="btn-buy" onclick="addToCart('30 Idées de Business',200,'30I-7','LINK_IN_AIRTABLE','recfcTPvpeweReklm')">Acheter</button>
+          <button class="btn-share" onclick="shareProduct('30 Idées de Business','30I-7')">🔗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 8 -->
+    <div class="card" data-cat="intelligence artificielle">
+      <div class="card-img">
+        <img src="https://i.postimg.cc/DZHbZVgJ/ai-generated-8540913-1280.jpg" alt="Guide IA">
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Intelligence Artificielle</div>
+        <div class="card-title">Guide des Outils IA Gratuits</div>
+        <div class="card-price">200 G</div>
+        <div class="card-seller">Par <b>Académie MIJO</b></div>
+        <div class="card-actions">
+          <button class="btn-buy" onclick="addToCart('Guide des Outils IA',200,'Gui-8','LINK_IN_AIRTABLE','recfcTPvpeweReklm')">Acheter</button>
+          <button class="btn-share" onclick="shareProduct('Guide des Outils IA','Gui-8')">🔗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 9 -->
+    <div class="card" data-cat="soft skills">
+      <div class="card-img">
+        <img src="https://i.postimg.cc/PfzjTgMP/model-1335984-1920.jpg" alt="Charisme">
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Soft Skills</div>
+        <div class="card-title">Le Charisme Intérieur</div>
+        <div class="card-price">150 G</div>
+        <div class="card-seller">Par <b>Académie MIJO</b></div>
+        <div class="card-actions">
+          <button class="btn-buy" onclick="addToCart('Le Charisme Intérieur',150,'LeC-9','LINK_IN_AIRTABLE','recfcTPvpeweReklm')">Acheter</button>
+          <button class="btn-share" onclick="shareProduct('Le Charisme Intérieur','LeC-9')">🔗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 10 -->
+    <div class="card" data-cat="business">
+      <div class="card-img">
+        <img src="https://i.postimg.cc/MGMhfNJ2/digital-marketing-5816304-640.jpg" alt="Marketing">
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Marketing</div>
+        <div class="card-title">Les Piliers du Marketing Digital</div>
+        <div class="card-price">250 G</div>
+        <div class="card-seller">Par <b>Académie MIJO</b></div>
+        <div class="card-actions">
+          <button class="btn-buy" onclick="addToCart('Marketing Digital',250,'Mar-10','LINK_IN_AIRTABLE','recfcTPvpeweReklm')">Acheter</button>
+          <button class="btn-share" onclick="shareProduct('Marketing Digital','Mar-10')">🔗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 11 -->
+    <div class="card" data-cat="e-book">
+      <div class="card-img">
+        <img src="https://i.postimg.cc/d1597ZZR/image-(2).png" alt="Érudits">
+      </div>
+      <div class="card-body">
+        <div class="card-cat">E-Book</div>
+        <div class="card-title">Étapes dans la vie des érudits</div>
+        <div class="card-price">1 250 G</div>
+        <div class="card-seller">Par <b>Emmanuel Tessier</b></div>
+        <div class="card-actions">
+          <button class="btn-buy" onclick="addToCart('Étapes dans la vie des érudits',1250,'EV-18','Lien_ici','recU6pHDrmLQJhenM')">Acheter</button>
+          <button class="btn-share" onclick="shareProduct('Étapes dans la vie des érudits','EV-18')">🔗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 12 -->
+    <div class="card" data-cat="e-book">
+      <div class="card-img">
+        <img src="https://i.postimg.cc/rmk5q7cr/Screenshot-2026-04-03-18-10-45.png" alt="Souffrance invisible">
+      </div>
+      <div class="card-body">
+        <div class="card-cat">E-Book</div>
+        <div class="card-title">Souffrance invisible</div>
+        <div class="card-price">1 000 G</div>
+        <div class="card-seller">Par <b>Emmanuel Tessier</b></div>
+        <div class="card-actions">
+          <button class="btn-buy" onclick="addToCart('Souffrance invisible',1000,'SF-20','Lien_ici','recU6pHDrmLQJhenM')">Acheter</button>
+          <button class="btn-share" onclick="shareProduct('Souffrance invisible','SF-20')">🔗</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end main-grid -->
+
+  <!-- Section Premium Gratuit -->
+  <div class="section-header free" id="free-section-header">
+    <h2>🎁 Produits <span>Premium Gratuits</span></h2>
+    <a href="premium.html" class="see-all" style="color:var(--green)">Activer Premium →</a>
+  </div>
+
+  <div class="product-grid" id="free-grid">
+
+    <!-- FREE 1 -->
+    <div class="card" data-cat="gratuit">
+      <div class="card-img">
+        <span class="badge badge-free">GRATUIT</span>
+        <span class="badge-lock">⭐ Premium</span>
+        <img src="https://i.postimg.cc/DZHbZVgJ/ai-generated-8540913-1280.jpg" alt="Pack Prompts IA">
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Intelligence Artificielle</div>
+        <div class="card-title">Pack 100 Prompts IA Exclusifs</div>
+        <div class="card-price free-price">Gratuit <small>membres Premium</small></div>
+        <div class="card-seller">Par <b>Académie MIJO</b></div>
+        <div class="card-actions">
+          <button class="btn-buy free-btn" id="free-btn-1" onclick="getFree('Pack 100 Prompts IA','FREE-1','https://drive.google.com/LIEN_DRIVE_ICI_1')">🔓 Télécharger</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FREE 2 -->
+    <div class="card" data-cat="gratuit">
+      <div class="card-img">
+        <span class="badge badge-free">GRATUIT</span>
+        <span class="badge-lock">⭐ Premium</span>
+        <img src="https://i.postimg.cc/MGMhfNJ2/digital-marketing-5816304-640.jpg" alt="Guide Facebook">
+      </div>
+      <div class="card-body">
+        <div class="card-cat">Marketing</div>
+        <div class="card-title">Mini Guide : Lancer sa Pub Facebook</div>
+        <div class="card-price free-price">Gratuit <small>membres Premium</small></div>
+        <div class="card-seller">Par <b>Académie MIJO</b></div>
+        <div class="card-actions">
+          <button class="btn-buy free-btn" id="free-btn-2" onclick="getFree('Guide Pub Facebook','FREE-2','https://drive.google.com/LIEN_DRIVE_ICI_2')">🔓 Télécharger</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FREE 3 -->
+    <div class="card" data-cat="gratuit">
+      <div class="card-img">
+        <span class="badge badge-free">GRATUIT</span>
+        <span class="badge-lock">⭐ Premium</span>
+        <img src="https://i.postimg.cc/PfzjTgMP/model-1335984-1920.jpg" alt="Influence">
+      </div>
+      <div class="card-body">
+        <div class="card-cat">E-Book</div>
+        <div class="card-title">Influence et Manipulation</div>
+        <div class="card-price free-price">Gratuit <small>membres Premium</small></div>
+        <div class="card-seller">Par <b>Académie MIJO</b></div>
+        <div class="card-actions">
+          <button class="btn-buy free-btn" id="free-btn-3" onclick="getFree('Influence et Manipulation','FREE-3','https://drive.google.com/LIEN_DRIVE_ICI_3')">🔓 Télécharger</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FREE 4 -->
+    <div class="card" data-cat="gratuit">
+      <div class="card-img">
+        <span class="badge badge-free">GRATUIT</span>
+        <span class="badge-lock">⭐ Premium</span>
+        <img src="https://i.postimg.cc/NMCNMn3W/coins-4421639-640.jpg" alt="Couture">
+      </div>
+      <div class="card-body">
+        <div class="card-cat">E-Book</div>
+        <div class="card-title">La couture pour les nuls</div>
+        <div class="card-price free-price">Gratuit <small>membres Premium</small></div>
+        <div class="card-seller">Par <b>Académie MIJO</b></div>
+        <div class="card-actions">
+          <button class="btn-buy free-btn" id="free-btn-4" onclick="getFree('La couture pour les nuls','FREE-4','https://drive.google.com/LIEN_DRIVE_ICI_4')">🔓 Télécharger</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end free-grid -->
+
+</div><!-- end container -->
+
+<!-- ══ CART OVERLAY ══ -->
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+
+<!-- ══ CART DRAWER ══ -->
+<div class="cart-drawer" id="cart-drawer">
+  <div class="drawer-header">
+    <h3>🛒 Mon Panier</h3>
+    <button class="close-btn" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="drawer-body" id="cart-body">
+    <div class="empty-cart">
+      <div class="empty-icon">🛍️</div>
+      <p>Votre panier est vide.<br>Ajoutez des produits pour commencer.</p>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <div class="cart-total-row">
+      <span>Total</span>
+      <strong id="cart-total">0 G</strong>
+    </div>
+    <button class="btn-checkout" onclick="checkout()">Confirmer l'achat →</button>
+  </div>
+</div>
+
+<!-- ══ MODAL : PREMIUM ══ -->
+<div class="overlay" id="premium-overlay">
+  <div class="modal premium-modal" style="max-width:360px">
+    <div class="modal-header">
+      <div></div>
+      <button class="close-btn" onclick="closeOverlay('premium-overlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-icon">⭐</div>
+      <h3 style="text-align:center;font-family:'Syne',sans-serif;color:var(--white);margin-bottom:8px">Accès Premium requis</h3>
+      <p>Ce produit est réservé aux membres Premium. Active ton abonnement pour débloquer tous les contenus gratuits.</p>
+      <div class="premium-perks">
+        <div class="perk"><span class="perk-icon">✓</span> Produits gratuits illimités</div>
+        <div class="perk"><span class="perk-icon">✓</span> Droit de vendre tes produits</div>
+        <div class="perk"><span class="perk-icon">✓</span> Badge vendeur vérifié</div>
+        <div class="perk"><span class="perk-icon">✓</span> Support prioritaire</div>
+      </div>
+      <button class="btn-primary" onclick="window.location.href='premium.html'">⭐ Activer Premium — 150 G/mois</button>
+      <button class="btn-secondary" onclick="closeOverlay('premium-overlay')">Plus tard</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL : VENDRE ══ -->
+<div class="overlay" id="sell-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3>Vendre un produit</h3>
+        <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">Réservé aux membres Premium ⭐</p>
+      </div>
+      <button class="close-btn" onclick="closeOverlay('sell-overlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Nom du produit</label>
+        <input type="text" class="form-input" id="sell-name" placeholder="Ex: Guide complet Excel 2025">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Catégorie</label>
+        <select class="form-select" id="sell-cat">
+          <option value="">Choisir une catégorie</option>
+          <option>Application</option>
+          <option>E-Book</option>
+          <option>Business</option>
+          <option>Intelligence Artificielle</option>
+          <option>Soft Skills</option>
+          <option>Marketing</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Prix (en HTG)</label>
+        <input type="number" class="form-input" id="sell-price" placeholder="Ex: 350">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Lien du produit (Google Drive, etc.)</label>
+        <input type="url" class="form-input" id="sell-link" placeholder="https://drive.google.com/...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description courte</label>
+        <textarea class="form-textarea" id="sell-desc" placeholder="Décris ton produit en quelques phrases…"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Badge promotionnel (optionnel)</label>
+        <div class="promo-toggle" id="promo-toggle" onclick="togglePromo()">
+          <div class="promo-toggle-left">
+            <div class="promo-toggle-icon">🔥</div>
+            <div class="promo-toggle-text">
+              <strong>Ajouter un badge PROMO</strong>
+              <small>Mis en avant dans la boutique</small>
             </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="promo-toggle-price">+50 G</span>
+            <div class="toggle-check" id="promo-check"></div>
+          </div>
         </div>
-        
-        <div class="product-section premium-section" id="premium-free-section">
-            <h4>Produits Premium Gratuits</h4>
-            <div class="product-list">
-                </div>
-        </div>
-        
+      </div>
+      <button class="btn-primary" onclick="submitProduct()">Publier mon produit</button>
+      <button class="btn-secondary" onclick="closeOverlay('sell-overlay')">Annuler</button>
     </div>
+  </div>
+</div>
 
-    <div id="cart-container">
-        <div id="cart-icon">
-            <img src="https://i.postimg.cc/25Knxt2f/shopping-cart-1105049-1280.png" alt="Panier" style="width: 100%; height: 100%;">
-            <span id="cart-count">0</span>
-        </div>
-        <div id="cart-content">
-            <h3>Mon Panier</h3>
-            <ul id="cart-items"></ul>
-            <p id="cart-total">Total: 0 G</p>
-            <button id="checkout-btn" style="display:none;">Procéder à l'achat</button>
-        </div>
-    </div>
+<!-- ══ BOTTOM NAV ══ -->
+<nav class="bottom-nav">
+  <a href="home.html" class="nav-item">
+    <span class="nav-icon">🏠</span>
+    Accueil
+  </a>
+  <a href="store.html" class="nav-item active">
+    <span class="nav-icon">🛍️</span>
+    Store
+  </a>
+  <a href="#" class="nav-item" onclick="openSellModal();return false">
+    <span class="nav-icon" style="background:var(--orange);border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;margin:0 auto -4px;font-size:1.4rem;box-shadow:0 4px 14px rgba(255,92,0,0.4)">＋</span>
+    Vendre
+  </a>
+  <a href="mes-produits.html" class="nav-item">
+    <span class="nav-icon">📦</span>
+    Mes Biens
+  </a>
+  <a href="premium.html" class="nav-item">
+    <span class="nav-icon">⭐</span>
+    Premium
+  </a>
+</nav>
 
-    <nav class="footer-menu">
-        <a href="home.html" class="menu-btn">
-            <span class="icon">🏠</span>
-            <span>Accueil</span>
-        </a>
-        <a href="historique.html" class="menu-btn">
-            <span class="icon">📜</span>
-            <span>Historique</span>
-        </a>
-        <a href="store.html" class="menu-btn active">
-            <span class="icon">🛒</span>
-            <span>Store</span>
-        </a>
-        <a href="mes-produits.html" class="menu-btn">
-            <span class="icon">📦</span>
-            <span>Mes Produits</span>
-        </a>
-    </nav>
-    <script>
-  
-// ===============================================
-// 1. DÉCLARATIONS GLOBALES (Une seule fois !)
-// ===============================================
+<script>
+const STORE_URL = "https://store.mijocomplexe.workers.dev/";
+let cart = [];
+let promoSelected = false;
 
-// --- DÉFINITIONS CLÉS (Workers et Agents) ---
-const WORKER_URL = "https://transaction.mijocomplexe.workers.dev/"; 
-const AGENT_NAME = "MIJO STORE"; 
-const storeScriptUrl = "https://store.mijocomplexe.workers.dev/";
+// ── UTILS ──
+function isPremium() {
+  if (localStorage.getItem('EstPremium') === 'true') return true;
+  try {
+    const u = JSON.parse(localStorage.getItem('user'));
+    return u && (u.EstPremium === true || u.EstPremium === 'true');
+  } catch(e) { return false; }
+}
+function getUser() {
+  try { return JSON.parse(localStorage.getItem('user')); } catch(e) { return null; }
+}
+function getUserName() {
+  const u = getUser();
+  return u ? (u.NomUtilisateur || u.Nom || 'Vendeur') : 'Vendeur';
+}
+function toast(msg, color='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = color || '';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+function openOverlay(id) { document.getElementById(id).classList.add('open'); }
+function closeOverlay(id) { document.getElementById(id).classList.remove('open'); }
 
-// --- Éléments du DOM ---
-const checkoutBtn = document.getElementById('checkout-btn');
-const cartContent = document.getElementById('cart-content');
-const cartIcon = document.getElementById('cart-icon');
-const cartCount = document.getElementById('cart-count');
-const cartItemsList = document.getElementById('cart-items');
-const cartTotalDisplay = document.getElementById('cart-total');
+// ── SEARCH ──
+document.getElementById('searchInput').addEventListener('input', function() {
+  const q = this.value.toLowerCase();
+  document.querySelectorAll('.card').forEach(c => {
+    const txt = c.innerText.toLowerCase();
+    c.style.display = txt.includes(q) ? '' : 'none';
+  });
+});
 
-// --- État de l'application ---
-let cart = []; // Le panier d'achat
+// ── FILTER ──
+function filterCat(cat, btn) {
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const mainCards = document.querySelectorAll('#main-grid .card');
+  const freeCards = document.querySelectorAll('#free-grid .card');
+  const freeHeader = document.getElementById('free-section-header');
+  if (cat === 'all') {
+    mainCards.forEach(c => c.style.display = '');
+    freeCards.forEach(c => c.style.display = '');
+    freeHeader.style.display = '';
+    return;
+  }
+  if (cat === 'gratuit') {
+    mainCards.forEach(c => c.style.display = 'none');
+    freeCards.forEach(c => c.style.display = '');
+    freeHeader.style.display = '';
+    return;
+  }
+  freeHeader.style.display = 'none';
+  freeCards.forEach(c => c.style.display = 'none');
+  mainCards.forEach(c => {
+    const cardCat = (c.dataset.cat || '').toLowerCase();
+    c.style.display = cardCat.includes(cat) ? '' : 'none';
+  });
+}
 
-// ===============================================
-// 2. DÉFINITIONS DES FONCTIONS (Doivent être globales)
-// ===============================================
-
-// Fonction pour mettre à jour l'affichage du panier
-function renderCart() {
-    cartItemsList.innerHTML = '';
-    let total = 0;
-    if (cart.length === 0) {
-        cartItemsList.innerHTML = '<li>Panier vide</li>';
-        checkoutBtn.style.display = 'none';
+// ── FREE PRODUCTS ──
+function updateFreeButtons() {
+  const p = isPremium();
+  document.querySelectorAll('.free-btn').forEach(btn => {
+    if (p) {
+      btn.classList.remove('locked-btn');
+      btn.innerHTML = '🔓 Télécharger';
     } else {
-        cart.forEach(item => {
-            const li = document.createElement('li');
-            // Remarque: Utiliser innerHTML avec des données utilisateur est risqué (XSS).
-            // Pour l'amélioration, il faudrait utiliser li.appendChild(span/button).
-            li.innerHTML = `
-                <span>${item.name}</span>
-                <span>${item.price} G</span>
-                <button onclick="removeFromCart('${item.code}')">Retirer</button>
-            `;
-            cartItemsList.appendChild(li);
-            total += item.price;
-        });
-        checkoutBtn.style.display = 'block';
+      btn.classList.add('locked-btn');
+      btn.innerHTML = '🔒 Réservé Premium';
     }
-    cartCount.innerText = cart.length;
-    cartTotalDisplay.innerText = `Total: ${total} G`;
+  });
 }
-
-function addToCart(name, price, code, link) {
-    const existingItem = cart.find(item => item.code === code);
-    if (existingItem) {
-        alert("Ce produit est déjà dans votre panier.");
-        return;
-    }
-    cart.push({ name, price, code, link });
-    renderCart();
-    alert(`${name} a été ajouté au panier !`);
-}
-
-function removeFromCart(code) {
-    cart = cart.filter(item => item.code !== code);
-    renderCart();
-    alert("Produit retiré du panier.");
-}
-
-// Fonction pour l'historique local (localStorage)
-function saveToHistory(productName, price, status, userId) {
-    const historyKey = `transactions_${userId}`;
-    let history = JSON.parse(localStorage.getItem(historyKey)) || [];
-    const newTransaction = {
-        id: Date.now(),
-        type: status,
-        description: productName,
-        amount: price,
-        date: new Date().toLocaleDateString()
-    };
-    history.push(newTransaction);
-    localStorage.setItem(historyKey, JSON.stringify(history));
-}
-
-// Fonction pour enregistrer les produits de l'utilisateur (localStorage)
-function saveToMyProducts(itemName, itemLink, userId) {
-    const productsKey = `myProducts_${userId}`;
-    let myProducts = JSON.parse(localStorage.getItem(productsKey)) || [];
-    const newProduct = {
-        name: itemName,
-        link: itemLink,
-        date: new Date().toLocaleDateString()
-    };
-    myProducts.push(newProduct);
-    localStorage.setItem(productsKey, JSON.stringify(myProducts));
-}
-
-// Fonction pour l'enregistrement dans le KV Global via le Worker
-async function saveToGlobalKV(productName, price, status, userId) {
-    // Note: 'agentId' est rebaptisé 'userId' car vous envoyez l'ID de l'acheteur
-    const userString = localStorage.getItem('user');
-    let user;
-    try { user = JSON.parse(userString); } catch (e) { return; }
-    
-    const transactionData = {
-        action: "log_history", 
-        amount: price,
-        senderId: userId, // L'ID de l'acheteur (pour le débit)
-        senderName: user ? user.nom : 'Inconnu',
-        recipientCardNumber: productName, // L'identifiant du produit/service
-        recipientName: AGENT_NAME, // Le destinataire réel de l'argent
-        type: status 
-    };
-    
-    try {
-        const response = await fetch(WORKER_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(transactionData)
-        });
-
-        if (response.ok) {
-            console.log("Transaction globale enregistrée dans le KV avec succès.");
-        } else {
-            console.error("Échec de l'enregistrement KV global:", await response.text());
-        }
-    } catch (error) {
-        console.error("Erreur de connexion lors de l'enregistrement KV global:", error);
-    }
-}
-
-// Fonction pour charger et afficher les produits premium gratuits
-function loadPremiumFreeProducts(container) {
-    const premiumProducts = [
-        { name: "Pack d'icônes", description: "Un pack de 50 icônes vectorielles.", price: "Gratuit", link: "https://drive.google.com/drive/folders/19ZqkP-Msvt-_CoG-1EyVZHsVabRS4FBR?usp=sharing", image: "https://i.postimg.cc/C5X4tHkg/icons-logos-social-media-2023.jpg" },
-        { name: "Jeux PSP", description: "Fichier PSP", price: "Gratuit", link: "https://drive.google.com/drive/folders/16SSeHcUqyTfLkITFL2xPrfP0OKhYAnKr?usp=drive_link", image: "https://i.postimg.cc/1zhj4PgQ/appshunter-io-z-BB30u-D8-unsplash.jpg" },
-        { name: "Pack fond vert", description: "+50 files", price: "Gratuit", link: "https://drive.google.com/drive/folders/1oqiMrYPzJO3ro_7pNbYl39dHHkPTbiKs?usp=drive_link", image: "https://i.postimg.cc/rsmZSVXY/3181989.jpg" },
-    ];
-
-    container.innerHTML = '';
-    premiumProducts.forEach(product => {
-        const escapedName = product.name.replace(/'/g, "\\'");
-        const itemHtml = `
-            <div class="product-item free">
-                <img src="${product.image}" alt="Image ${product.name}">
-                <h3>${product.name}</h3>
-                <p>Prix : ${product.price}</p>
-                <p>${product.description}</p>
-                <button class="free-btn" onclick="downloadFree('${escapedName}', '${product.link}')">Télécharger</button>
-            </div>
-        `;
-        container.innerHTML += itemHtml;
-    });
-}
-
-function downloadFree(productName, driveLink) {
-    const userString = localStorage.getItem('user');
-    if (!userString) {
-        alert("Veuillez vous connecter pour télécharger des produits.");
-        return;
-    }
-    const user = JSON.parse(userString);
-    
-    if (!user.EstPremium) {
-        alert("Ce produit est réservé aux utilisateurs premium. Contactez-nous pour devenir premium et bénéficier de ces avantages !");
-        return;
-    }
-    
-    alert(`Téléchargement de ${productName} démarré.`);
-    saveToHistory(productName, 0, "Produit premium gratuit", user.userId);
-    saveToMyProducts(productName, driveLink, user.userId);
-    saveToGlobalKV(productName, 0, "Produit premium gratuit", user.userId);
+function getFree(name, code, driveLink) {
+  if (!isPremium()) { openOverlay('premium-overlay'); return; }
+  if (driveLink && !driveLink.includes('LIEN_DRIVE_ICI')) {
     window.open(driveLink, '_blank');
+    toast('🔓 ' + name + ' — téléchargement ouvert !');
+  } else {
+    toast('📦 Lien bientôt disponible pour : ' + name);
+  }
 }
 
-
-// ===============================================
-// 3. ÉCOUTEURS D'ÉVÉNEMENTS (Initialisation du script)
-// ===============================================
-
-// Assure que le script s'exécute une fois que le DOM est prêt.
-document.addEventListener('DOMContentLoaded', () => {
-    const premiumFreeSection = document.getElementById('premium-free-section');
-    if (premiumFreeSection) {
-        const container = premiumFreeSection.querySelector('.product-list');
-        if (container) {
-            loadPremiumFreeProducts(container);
-        }
-    }
-    // Initialise l'affichage du panier (au cas où il y avait des données persistantes)
-    renderCart(); 
-});
-
-
-cartIcon.addEventListener('click', () => {
-    cartContent.classList.toggle('visible');
-});
-
-checkoutBtn.addEventListener('click', async () => {
-    // ... (Votre logique de paiement reste inchangée, elle est correcte) ...
-
-    if (cart.length === 0) {
-        alert("Votre panier est vide.");
-        return;
-    }
-
-    // ... (Lecture utilisateur et vérification) ...
-    
-    const userString = localStorage.getItem('user');
-    let user;
-    try {
-        user = JSON.parse(userString);
-    } catch (e) {
-        console.error("Erreur lors de l'analyse des données utilisateur:", e);
-        alert("Erreur de données utilisateur. Veuillez vous reconnecter.");
-        window.location.href = "index.html";
-        return;
-    }
-    
-    if (!user || !user.userId) {
-        alert("Vous devez être connecté et vos données doivent être valides pour effectuer un achat.");
-        window.location.href = "index.html";
-        return;
-    }
-    
-    alert("Achat en cours, veuillez patienter...");
-    
-    let purchasePromises = cart.map(item => {
-        const requestData = {
-            userId: user.userId,
-            productId: item.code
-        };
-        console.log("Données envoyées pour l'achat:", requestData);
-        return fetch(storeScriptUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                return { success: true, newBalance: data.nouveauSolde, item: item };
-            } else {
-                return { success: false, error: data.error };
-            }
-        })
-        .catch(error => {
-            console.error("Erreur de connexion:", error);
-            alert("Erreur de connexion. Veuillez vérifier votre connexion ou le lien du serveur.");
-            return { success: false, error: "Erreur de connexion." };
-        });
-    });
-
-    const results = await Promise.all(purchasePromises);
-    
-    let successCount = 0;
-    let lastSuccessfulBalance = undefined;
-
-    results.forEach(result => {
-        if (result.success) {
-            successCount++;
-            lastSuccessfulBalance = result.newBalance;
-            
-            // Sauvegardez la transaction et le produit ici, car on sait que l'achat est réussi
-            saveToHistory(result.item.name, result.item.price, "Achat", user.userId);
-            saveToMyProducts(result.item.name, result.item.link, user.userId);
-            saveToGlobalKV(result.item.name, result.item.price, "Achat", user.userId);
-        }
-    });
-
-    if (successCount > 0) {
-        if (lastSuccessfulBalance !== undefined) {
-            user.Solde = lastSuccessfulBalance;
-            localStorage.setItem('user', JSON.stringify(user));
-        }
-
-        alert(`Achat de ${successCount} produit(s) réussi !`);
-        cart = [];
-        renderCart();
-        cartContent.classList.remove('visible');
-        window.location.href = "home.html?refresh=" + new Date().getTime();
+// ── CART ──
+function toggleCart() {
+  document.getElementById('cart-drawer').classList.toggle('open');
+  document.getElementById('cart-overlay').classList.toggle('open');
+}
+function addToCart(name, price, code, link, sellerId) {
+  if (cart.find(i => i.code === code)) { toast('Déjà dans le panier !'); return; }
+  cart.push({name, price, code, link, sellerId});
+  renderCart();
+  toast('✅ Ajouté : ' + name);
+}
+function removeFromCart(code) {
+  cart = cart.filter(i => i.code !== code);
+  renderCart();
+}
+function renderCart() {
+  const body = document.getElementById('cart-body');
+  const badge = document.getElementById('cart-badge');
+  const total = document.getElementById('cart-total');
+  badge.textContent = cart.length;
+  if (!cart.length) {
+    body.innerHTML = '<div class="empty-cart"><div class="empty-icon">🛍️</div><p>Votre panier est vide.<br>Ajoutez des produits pour commencer.</p></div>';
+    total.textContent = '0 G';
+    return;
+  }
+  let sum = 0;
+  body.innerHTML = cart.map((item,i) => {
+    sum += item.price;
+    return `<div class="cart-item">
+      <div>
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-price">${item.price.toLocaleString()} G</div>
+      </div>
+      <button class="cart-item-remove" onclick="removeFromCart('${item.code}')">🗑</button>
+    </div>`;
+  }).join('');
+  total.textContent = sum.toLocaleString() + ' G';
+}
+async function checkout() {
+  const user = getUser();
+  if (!user) { toast('❌ Connectez-vous d\'abord'); return; }
+  if (!cart.length) { toast('Panier vide'); return; }
+  toast('⏳ Validation en cours…');
+  try {
+    const results = await Promise.all(cart.map(item =>
+      fetch(STORE_URL, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({userId:user.userId, productId:item.code, sellerId:item.sellerId, amount:item.price, productName:item.name})
+      }).then(r => r.json())
+    ));
+    if (results.every(r => r.success)) {
+      const last = results[results.length-1];
+      if (last.newBalance !== undefined) {
+        user.Solde = last.newBalance;
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+      toast('✅ Achat réussi !');
+      cart = [];
+      renderCart();
+      toggleCart();
+      setTimeout(() => window.location.href = 'home.html', 1000);
     } else {
-        alert("Échec de l'achat. Veuillez vérifier votre solde ou réessayer.");
+      const err = results.find(r => !r.success)?.message || 'Erreur serveur';
+      toast('❌ ' + err);
     }
+  } catch(e) { toast('❌ Erreur réseau'); }
+}
 
-});
+// ── SHARE ──
+function shareProduct(name, code) {
+  const url = window.location.origin + window.location.pathname + '?prod=' + code;
+  if (navigator.share) {
+    navigator.share({title:name, text:'Découvre '+name+' sur MIJO STORE !', url});
+  } else {
+    navigator.clipboard.writeText(url);
+    toast('🔗 Lien copié !');
+  }
+}
 
+// ── SELL MODAL ──
+function openSellModal() {
+  if (!isPremium()) { openOverlay('premium-overlay'); return; }
+  openOverlay('sell-overlay');
+}
+function togglePromo() {
+  promoSelected = !promoSelected;
+  const el = document.getElementById('promo-toggle');
+  const chk = document.getElementById('promo-check');
+  el.classList.toggle('selected', promoSelected);
+  chk.textContent = promoSelected ? '✓' : '';
+}
+async function submitProduct() {
+  const name = document.getElementById('sell-name').value.trim();
+  const cat  = document.getElementById('sell-cat').value;
+  const price = parseInt(document.getElementById('sell-price').value);
+  const link  = document.getElementById('sell-link').value.trim();
+  const desc  = document.getElementById('sell-desc').value.trim();
+  if (!name || !cat || !price || !link) { toast('❌ Remplis tous les champs obligatoires'); return; }
+  const user = getUser();
+  if (!user) { toast('❌ Connectez-vous'); return; }
 
+  // Si badge promo sélectionné → débiter 50G via CENTRAL_WORKER (à implémenter côté backend)
+  // Pour l'instant on simule la soumission
+  toast('⏳ Publication en cours…');
+  // TODO: appel API pour créer le produit en DB
+  // await fetch('https://store-seller.mijocomplexe.workers.dev/', { method:'POST', ... })
+  setTimeout(() => {
+    toast('✅ Produit soumis pour validation !');
+    closeOverlay('sell-overlay');
+    // Reset form
+    ['sell-name','sell-cat','sell-price','sell-link','sell-desc'].forEach(id => document.getElementById(id).value = '');
+    promoSelected = false;
+    document.getElementById('promo-toggle').classList.remove('selected');
+    document.getElementById('promo-check').textContent = '';
+  }, 1200);
+}
+
+// ── INIT ──
+window.onload = function() {
+  updateFreeButtons();
+  // Deep link: ?prod=CODE
+  const prodCode = new URLSearchParams(window.location.search).get('prod');
+  if (prodCode) {
+    document.querySelectorAll('.card').forEach(c => {
+      const btns = c.querySelectorAll('[onclick]');
+      const match = Array.from(btns).some(b => b.getAttribute('onclick').includes("'"+prodCode+"'"));
+      c.style.display = match ? '' : 'none';
+    });
+  }
+};
 </script>
-    </body>
+</body>
 </html>
