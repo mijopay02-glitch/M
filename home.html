@@ -716,8 +716,7 @@ header{
 // ══════════════════════════════════════════════
 // CONFIG SUPABASE
 // ══════════════════════════════════════════════
-const SUPABASE_URL  = "https://ytkjartqykdslhgdkjbl.supabase.co";
-const SUPABASE_ANON = "sb_publishable_pJFApCtYmyFVlQUHJ_eDMw_OANkJ6lT";
+
 const STORE_URL     = "https://store.mijocomplexe.workers.dev/";
 
 let cart = [];
@@ -730,14 +729,11 @@ let allVendeursCards = []; // stocke les cards vendeurs pour le filtre
 async function loadVendeursProducts() {
   try {
     // On récupère uniquement les produits avec Statut = "Publié"
-    const url = `${SUPABASE_URL}/rest/v1/Produits?Statut=eq.Publié&order=DateSoumission.desc&select=*`;
-    const res = await fetch(url, {
-      headers: {
-        "apikey":        SUPABASE_ANON,
-        "Authorization": `Bearer ${SUPABASE_ANON}`,
-        "Content-Type":  "application/json"
-      }
-    });
+    const res = await fetch('https://store-seller.mijocomplexe.workers.dev/', {
+  method: 'GET'
+});
+const data = await res.json();
+const products = data.produits;
 
     const grid = document.getElementById('vendeurs-grid');
 
