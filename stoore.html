@@ -716,54 +716,66 @@ header{
 // ══════════════════════════════════════════════
 // CONFIG SUPABASE
 // ══════════════════════════════════════════════
-
+const SUPABASE_URL  = "https://ytkjartqykdslhgdkjbl.supabase.co";
+const SUPABASE_ANON = "sb_publishable_pJFApCtYmyFVlQUHJ_eDMw_OANkJ6lT";
 const STORE_URL     = "https://store.mijocomplexe.workers.dev/";
 
 let cart = [];
 let promoSelected = false;
 let allVendeursCards = []; // stocke les cards vendeurs pour le filtre
 
-
-
+// ══════════════════════════════════════════════
+// SUPABASE — CHARGER LES PRODUITS VENDEURS
+// ══════════════════════════════════════════════
 async function loadVendeursProducts() {
-  const grid = document.getElementById('vendeurs-grid');
   try {
-    const res = await fetch('https://store-seller.mijocomplexe.workers.dev/', {
-      method: 'GET'
+    // On récupère uniquement les produits avec Statut = "Publié"
+    const url = `${SUPABASE_URL}/rest/v1/Produits?Statut=eq.Publié&order=DateSoumission.desc&select=*`;
+    const res = await fetch(url, {
+      headers: {
+        "apikey":        SUPABASE_ANON,
+        "Authorization": `Bearer ${SUPABASE_ANON}`,
+        "Content-Type":  "application/json"
+      }
     });
 
-    const data = await res.json();
+    const grid = document.getElementById('vendeurs-grid');
 
-    // Supprimer les skeletons
-    grid.innerHTML = '';
-
-    if (!res.ok || !data.success) {
+    if (!res.ok) {
+      // Erreur réseau ou accès refusé
       grid.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>Impossible de charger les produits vendeurs.</p></div>`;
       return;
     }
 
-    const products = data.produits;
+    const products = await res.json();
+
+    // Supprimer les skeletons
+    grid.innerHTML = '';
 
     if (!products || products.length === 0) {
+      // Aucun produit vendeur pour l'instant → on cache toute la section
       document.getElementById('vendeurs-header').style.display = 'none';
-      grid.innerHTML = '';
       return;
     }
 
+    // Afficher le header et le compteur
     document.getElementById('vendeurs-header').style.display = '';
     document.getElementById('vendeurs-count').textContent = products.length + ' produit' + (products.length > 1 ? 's' : '');
 
+    // Mettre à jour le compteur hero
     const totalCards = document.querySelectorAll('#main-grid .card').length + products.length;
     document.getElementById('stat-count').textContent = totalCards + '+';
 
+    // Générer les cards
     products.forEach(p => {
       const card = buildVendeurCard(p);
       grid.appendChild(card);
+      allVendeursCards.push(card);
     });
 
   } catch (err) {
     console.error('Erreur chargement produits:', err);
-    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>Erreur de connexion.</p></div>`;
+    document.getElementById('vendeurs-grid').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>Erreur de connexion.</p></div>`;
   }
 }
 
@@ -800,8 +812,8 @@ function buildVendeurCard(p) {
   // Prix formaté
   const prixFormat = Number(p.Prix).toLocaleString('fr-FR');
 
-  // ID unique pour ce produit (on utilise l'id Supabase)
-  const prodId = 'SB-' + (p.id || p.vendeurId || Math.random().toString(36).substr(2,6));
+  // ID unique pour ce produit (on utilise le vrai Id Supabase, casse correcte)
+  const prodId = 'SB-' + (p.Id ?? p.id ?? Math.random().toString(36).substr(2,6));
 
   // Sécuriser les valeurs pour l'onclick
   const safeName    = (p.NomProduit  || '').replace(/'/g, "\\'");
@@ -1016,12 +1028,12 @@ function renderCart() {
   }).join('');
   total.textContent = sum.toLocaleString() + ' G';
 }
-sync function checkout() {
+async function checkout() {
   const user = getUser();
   if (!user)      { toast('❌ Connectez-vous d\'abord'); return; }
   if (!cart.length){ toast('Panier vide'); return; }
   toast('⏳ Validation en cours…');
- 
+
   const results = [];
   try {
     // IMPORTANT : on traite les achats UN PAR UN (séquentiel), pas en parallèle.
@@ -1038,13 +1050,13 @@ sync function checkout() {
           productName: item.name
         })
       }).then(r => r.json());
- 
+
       results.push(r);
- 
+
       // Si un achat échoue (ex: solde insuffisant en cours de route), on arrête tout de suite
       if (!r.success) break;
     }
- 
+
     if (results.length > 0 && results.every(r => r.success)) {
       const last = results[results.length-1];
       if (last.newBalance !== undefined) {
@@ -1060,11 +1072,12 @@ sync function checkout() {
       const failed = results.find(r => !r.success);
       const err = failed?.message || 'Erreur serveur';
       toast('❌ ' + err);
-      
+      // Note : les achats déjà réussis AVANT l'échec restent valides.
+      // On pourrait améliorer ça en retirant du panier seulement les produits achetés avec succès.
     }
   } catch(e) { toast('❌ Erreur réseau'); }
 }
- 
+
 // ══════════════════════════════════════════════
 // PARTAGE
 // ══════════════════════════════════════════════
