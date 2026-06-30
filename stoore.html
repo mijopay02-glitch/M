@@ -1016,14 +1016,18 @@ function renderCart() {
   }).join('');
   total.textContent = sum.toLocaleString() + ' G';
 }
-async function checkout() {
+sync function checkout() {
   const user = getUser();
   if (!user)      { toast('❌ Connectez-vous d\'abord'); return; }
   if (!cart.length){ toast('Panier vide'); return; }
   toast('⏳ Validation en cours…');
+ 
+  const results = [];
   try {
-    const results = await Promise.all(cart.map(item =>
-      fetch(STORE_URL, {
+    // IMPORTANT : on traite les achats UN PAR UN (séquentiel), pas en parallèle.
+    // Ça évite que plusieurs achats lisent le même solde "avant débit" en même temps.
+    for (const item of cart) {
+      const r = await fetch(STORE_URL, {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({
@@ -1033,9 +1037,15 @@ async function checkout() {
           amount:      item.price,
           productName: item.name
         })
-      }).then(r => r.json())
-    ));
-    if (results.every(r => r.success)) {
+      }).then(r => r.json());
+ 
+      results.push(r);
+ 
+      // Si un achat échoue (ex: solde insuffisant en cours de route), on arrête tout de suite
+      if (!r.success) break;
+    }
+ 
+    if (results.length > 0 && results.every(r => r.success)) {
       const last = results[results.length-1];
       if (last.newBalance !== undefined) {
         user.Solde = last.newBalance;
@@ -1047,12 +1057,14 @@ async function checkout() {
       toggleCart();
       setTimeout(() => window.location.href = 'home.html', 1000);
     } else {
-      const err = results.find(r => !r.success)?.message || 'Erreur serveur';
+      const failed = results.find(r => !r.success);
+      const err = failed?.message || 'Erreur serveur';
       toast('❌ ' + err);
+      
     }
   } catch(e) { toast('❌ Erreur réseau'); }
 }
-
+ 
 // ══════════════════════════════════════════════
 // PARTAGE
 // ══════════════════════════════════════════════
