@@ -131,6 +131,9 @@ header{
 .badge-promo{background:var(--gold);color:#1a0a00}
 .badge-free{background:var(--green);color:#fff}
 .badge-new{background:var(--orange);color:#fff}
+.badge-purple{background:#9b59b6;color:#fff}
+.badge-red{background:#e74c3c;color:#fff}
+.badge-dark{background:#2c3e50;color:var(--gold);border:1px solid var(--gold)}
 .badge-lock{position:absolute;top:10px;right:10px;background:rgba(13,21,37,0.85);color:var(--gold);padding:4px 9px;border-radius:6px;font-size:0.62rem;font-weight:700;border:1px solid rgba(255,184,0,0.25);z-index:2}
 .card-body{padding:14px;display:flex;flex-direction:column;flex:1}
 .card-cat{font-size:0.65rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);font-weight:600;margin-bottom:5px}
@@ -148,26 +151,32 @@ header{
 .btn-buy.locked-btn{background:var(--navy2);color:var(--text-muted);border:1px solid var(--card-border)}
 .btn-share{background:var(--navy2);border:1px solid var(--card-border);color:var(--text-muted);width:36px;border-radius:var(--radius-sm);cursor:pointer;font-size:0.85rem;transition:.2s;display:flex;align-items:center;justify-content:center}
 .btn-share:hover{border-color:var(--orange);color:var(--orange)}
-.badge-choice {
-  background: var(--navy3);
-  border: 2px solid var(--card-border);
-  border-radius: var(--radius-sm);
-  padding: 10px;
-  text-align: center;
-  cursor: pointer;
-  transition: .2s;
-}
-.badge-choice:hover { border-color: var(--orange); }
-.badge-choice.selected { border-color: var(--orange); background: rgba(255,92,0,0.08); }
-.badge-choice small { display: block; font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; }
-.badge-preview {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 6px;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: .4px;
-}
+
+/* ══ SKELETON LOADER ══ */
+.skeleton{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);overflow:hidden}
+.skel-img{height:170px;background:linear-gradient(90deg,var(--navy3) 25%,var(--navy2) 50%,var(--navy3) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+.skel-body{padding:14px}
+.skel-line{height:12px;border-radius:6px;background:linear-gradient(90deg,var(--navy3) 25%,var(--navy2) 50%,var(--navy3) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;margin-bottom:10px}
+.skel-line.short{width:60%}
+.skel-line.medium{width:80%}
+.skel-btn{height:38px;border-radius:var(--radius-sm);background:linear-gradient(90deg,var(--navy3) 25%,var(--navy2) 50%,var(--navy3) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;margin-top:10px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ══ VENDEUR TAG ══ */
+.badge-vendeur{position:absolute;bottom:8px;left:8px;background:rgba(13,21,37,0.9);color:var(--orange);font-size:0.58rem;font-weight:700;padding:3px 8px;border-radius:5px;border:1px solid rgba(255,92,0,0.3);z-index:2}
+
+/* ══ EMPTY STATE ══ */
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-muted);grid-column:1/-1}
+.empty-state .empty-icon{font-size:3rem;margin-bottom:12px}
+.empty-state p{font-size:0.85rem}
+
+/* ══ BADGE CHOICE ══ */
+.badge-choice{background:var(--navy3);border:2px solid var(--card-border);border-radius:var(--radius-sm);padding:10px;text-align:center;cursor:pointer;transition:.2s}
+.badge-choice:hover{border-color:var(--orange)}
+.badge-choice.selected{border-color:var(--orange);background:rgba(255,92,0,0.08)}
+.badge-choice small{display:block;font-size:0.65rem;color:var(--text-muted);margin-top:4px}
+.badge-preview{display:inline-block;padding:3px 10px;border-radius:6px;font-size:0.68rem;font-weight:700;letter-spacing:.4px}
+
 /* ══ BOTTOM NAV ══ */
 .bottom-nav{
   position:fixed;bottom:0;left:0;width:100%;
@@ -184,12 +193,7 @@ header{
 .nav-item:hover{color:var(--orange)}
 
 /* ══ CART DRAWER ══ */
-.cart-drawer{
-  position:fixed;top:0;right:-100%;width:100%;max-width:400px;height:100%;
-  background:var(--navy2);border-left:1px solid var(--card-border);
-  z-index:1100;transition:right .35s cubic-bezier(.4,0,.2,1);
-  display:flex;flex-direction:column;
-}
+.cart-drawer{position:fixed;top:0;right:-100%;width:100%;max-width:400px;height:100%;background:var(--navy2);border-left:1px solid var(--card-border);z-index:1100;transition:right .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
 .cart-drawer.open{right:0}
 .drawer-header{padding:20px;border-bottom:1px solid var(--card-border);display:flex;justify-content:space-between;align-items:center}
 .drawer-header h3{font-family:'Syne',sans-serif;font-weight:700;color:var(--white)}
@@ -220,15 +224,9 @@ header{
 .modal-body{padding:20px 24px 24px}
 .modal-icon{font-size:2.8rem;text-align:center;margin-bottom:12px}
 .modal-body p{font-size:0.85rem;color:var(--text-muted);line-height:1.55;text-align:center;margin-bottom:20px}
-
-/* Form */
 .form-group{margin-bottom:16px}
 .form-label{display:block;font-size:0.75rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
-.form-input,.form-select,.form-textarea{
-  width:100%;background:var(--navy3);border:1px solid var(--card-border);
-  color:var(--text);padding:11px 14px;border-radius:var(--radius-sm);
-  font-size:0.88rem;outline:none;transition:.2s;font-family:'Inter',sans-serif;
-}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--navy3);border:1px solid var(--card-border);color:var(--text);padding:11px 14px;border-radius:var(--radius-sm);font-size:0.88rem;outline:none;transition:.2s;font-family:'Inter',sans-serif}
 .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--orange)}
 .form-input::placeholder,.form-textarea::placeholder{color:var(--text-muted)}
 .form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A86A0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;cursor:pointer}
@@ -248,32 +246,16 @@ header{
 .btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,92,0,0.4)}
 .btn-secondary{width:100%;background:none;border:1px solid var(--card-border);color:var(--text-muted);padding:12px;border-radius:var(--radius-sm);font-size:0.85rem;cursor:pointer;margin-top:8px;transition:.2s;font-family:'Inter',sans-serif}
 .btn-secondary:hover{border-color:var(--text-muted);color:var(--text)}
-
-/* Premium modal */
 .premium-modal .modal-body{text-align:center}
 .premium-perks{text-align:left;background:var(--navy3);border:1px solid var(--card-border);border-radius:var(--radius-sm);padding:16px;margin:16px 0}
 .perk{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:0.82rem;color:var(--text)}
 .perk-icon{color:var(--green);font-size:0.9rem}
 
-/* Toast */
-.toast{
-  position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);
-  background:var(--navy2);border:1px solid var(--card-border);
-  color:var(--text);padding:12px 20px;border-radius:30px;
-  z-index:2000;opacity:0;transition:all .3s;
-  font-size:0.85rem;font-weight:500;white-space:nowrap;
-  box-shadow:var(--shadow);pointer-events:none;
-}
+/* ══ TOAST ══ */
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--navy2);border:1px solid var(--card-border);color:var(--text);padding:12px 20px;border-radius:30px;z-index:2000;opacity:0;transition:all .3s;font-size:0.85rem;font-weight:500;white-space:nowrap;box-shadow:var(--shadow);pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* Overlay backdrop for cart */
 .cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1050;display:none}
 .cart-overlay.open{display:block}
-
-/* Divider */
-.divider{height:1px;background:linear-gradient(90deg,transparent,var(--card-border),transparent);margin:8px 0}
-
-/* Scrollbar */
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--navy3);border-radius:4px}
@@ -281,10 +263,9 @@ header{
 </head>
 <body>
 
-<!-- ══ TOAST ══ -->
 <div class="toast" id="toast"></div>
 
-<!-- ══ HEADER ══ -->
+<!-- HEADER -->
 <header>
   <div class="header-inner">
     <div class="header-row1">
@@ -293,9 +274,7 @@ header{
         <span class="logo-text">MIJO <span>STORE</span></span>
       </a>
       <div class="header-actions">
-        <button class="btn-sell" onclick="openSellModal()">
-          <span>+</span> Vendre
-        </button>
+        <button class="btn-sell" onclick="openSellModal()"><span>+</span> Vendre</button>
         <a href="premium.html" class="icon-btn" title="Premium">⭐</a>
         <div class="icon-btn" onclick="toggleCart()" title="Panier">
           🛒
@@ -310,7 +289,7 @@ header{
   </div>
 </header>
 
-<!-- ══ CATEGORY PILLS ══ -->
+<!-- CATEGORY PILLS -->
 <div class="cat-bar">
   <button class="cat-pill active" onclick="filterCat('all',this)">🗂 Tout</button>
   <button class="cat-pill" onclick="filterCat('application',this)">📱 Applications</button>
@@ -321,32 +300,30 @@ header{
   <button class="cat-pill" onclick="filterCat('gratuit',this)">🎁 Premium Gratuit</button>
 </div>
 
-<!-- ══ HERO ══ -->
+<!-- HERO -->
 <div class="hero">
   <div class="hero-inner">
     <div class="hero-tag">🔥 Offres du moment</div>
     <h1>La boutique digitale<br><span>qui paie en HTG</span></h1>
     <p>Apps, ebooks &amp; outils IA. Paiement sécurisé MIJO Pay — livraison instantanée.</p>
     <div class="hero-stats">
-      <div class="hero-stat"><span>11+</span><small>Produits</small></div>
+      <div class="hero-stat"><span id="stat-count">11+</span><small>Produits</small></div>
       <div class="hero-stat"><span>100%</span><small>Sécurisé</small></div>
       <div class="hero-stat"><span>⚡</span><small>Instantané</small></div>
     </div>
   </div>
 </div>
 
-<!-- ══ MAIN CONTENT ══ -->
+<!-- MAIN CONTENT -->
 <div class="container">
 
-  <!-- Section Boutique -->
+  <!-- Section Boutique MIJO (produits hardcodés) -->
   <div class="section-header">
     <h2>Boutique <span>MIJO</span></h2>
     <a href="#" class="see-all">Voir tout →</a>
   </div>
 
   <div class="product-grid" id="main-grid">
-
-    <!-- CARD 1 -->
     <div class="card" data-cat="application">
       <div class="card-img">
         <img src="https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png" alt="Mijo Apk">
@@ -363,28 +340,9 @@ header{
       </div>
     </div>
 
-    <!-- CARD 2 -->
     <div class="card" data-cat="e-book">
       <div class="card-img">
         <span class="badge badge-promo">Chaud 🔥</span>
-        <img src="data:image/png;base64,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" alt="L'art de baiser">
-      </div>
-      <div class="card-body">
-        <div class="card-cat">E-Book</div>
-        <div class="card-title">L'art de baiser</div>
-        <div class="card-price">400 G</div>
-        <div class="card-seller">Par <b>Vincent Body</b></div>
-        <div class="card-actions">
-          <button class="btn-buy" onclick="addToCart('L\'art de baiser',400,'LB-18','LINK_IN_AIRTABLE','recfcTPvpeweReklm')">Acheter</button>
-          <button class="btn-share" onclick="shareProduct('L\'art de baiser','LB-18')">🔗</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- CARD 3 -->
-    <div class="card" data-cat="e-book">
-      <div class="card-img">
-        <span class="badge badge-promo">POPULAIRE</span>
         <img src="https://i.postimg.cc/qMtVXW87/a-clean-modern-book-cover-design-blendin-k-Efi-VZax-Rr2-Z6-q2n-HBHf-Q-TU-he66-MQ4-GNnncvt-Br-W8g.jpg" alt="Chimie">
       </div>
       <div class="card-body">
@@ -399,7 +357,6 @@ header{
       </div>
     </div>
 
-    <!-- CARD 4 -->
     <div class="card" data-cat="e-book">
       <div class="card-img">
         <img src="https://i.postimg.cc/vHfmQ1cM/a-clean-modern-book-cover-illustration-f-o79-YAln7-Tnao8fxz6p9-Pd-Q-g0-P-NGZVTcu08-SDb-QHh-Yy-Q.jpg" alt="Gestion de Stock">
@@ -416,7 +373,6 @@ header{
       </div>
     </div>
 
-    <!-- CARD 5 -->
     <div class="card" data-cat="e-book">
       <div class="card-img">
         <img src="https://i.postimg.cc/T3yXc1WF/calculator-385506-640.jpg" alt="Comptabilité">
@@ -433,7 +389,6 @@ header{
       </div>
     </div>
 
-    <!-- CARD 6 -->
     <div class="card" data-cat="e-book">
       <div class="card-img">
         <img src="https://i.postimg.cc/9X7c7VkJ/later-on-5012455-1280.jpg" alt="Vers soi">
@@ -450,7 +405,6 @@ header{
       </div>
     </div>
 
-    <!-- CARD 7 -->
     <div class="card" data-cat="business">
       <div class="card-img">
         <span class="badge badge-new">TOP VENTE</span>
@@ -468,7 +422,6 @@ header{
       </div>
     </div>
 
-    <!-- CARD 8 -->
     <div class="card" data-cat="intelligence artificielle">
       <div class="card-img">
         <img src="https://i.postimg.cc/DZHbZVgJ/ai-generated-8540913-1280.jpg" alt="Guide IA">
@@ -485,7 +438,6 @@ header{
       </div>
     </div>
 
-    <!-- CARD 9 -->
     <div class="card" data-cat="soft skills">
       <div class="card-img">
         <img src="https://i.postimg.cc/PfzjTgMP/model-1335984-1920.jpg" alt="Charisme">
@@ -502,7 +454,6 @@ header{
       </div>
     </div>
 
-    <!-- CARD 10 -->
     <div class="card" data-cat="business">
       <div class="card-img">
         <img src="https://i.postimg.cc/MGMhfNJ2/digital-marketing-5816304-640.jpg" alt="Marketing">
@@ -519,7 +470,6 @@ header{
       </div>
     </div>
 
-    <!-- CARD 11 -->
     <div class="card" data-cat="e-book">
       <div class="card-img">
         <img src="https://i.postimg.cc/d1597ZZR/image-(2).png" alt="Érudits">
@@ -536,7 +486,6 @@ header{
       </div>
     </div>
 
-    <!-- CARD 12 -->
     <div class="card" data-cat="e-book">
       <div class="card-img">
         <img src="https://i.postimg.cc/rmk5q7cr/Screenshot-2026-04-03-18-10-45.png" alt="Souffrance invisible">
@@ -552,8 +501,19 @@ header{
         </div>
       </div>
     </div>
-
   </div><!-- end main-grid -->
+
+  <!-- ══ SECTION VENDEURS (chargée depuis Supabase) ══ -->
+  <div class="section-header" id="vendeurs-header" style="display:none">
+    <h2>Produits <span>Vendeurs</span></h2>
+    <span id="vendeurs-count" style="font-size:0.75rem;color:var(--text-muted)"></span>
+  </div>
+
+  <div class="product-grid" id="vendeurs-grid">
+    <!-- Skeletons affichés pendant le chargement -->
+    <div class="skeleton" id="skel1"><div class="skel-img"></div><div class="skel-body"><div class="skel-line short"></div><div class="skel-line medium"></div><div class="skel-line short"></div><div class="skel-btn"></div></div></div>
+    <div class="skeleton" id="skel2"><div class="skel-img"></div><div class="skel-body"><div class="skel-line short"></div><div class="skel-line medium"></div><div class="skel-line short"></div><div class="skel-btn"></div></div></div>
+  </div>
 
   <!-- Section Premium Gratuit -->
   <div class="section-header free" id="free-section-header">
@@ -562,8 +522,6 @@ header{
   </div>
 
   <div class="product-grid" id="free-grid">
-
-    <!-- FREE 1 -->
     <div class="card" data-cat="gratuit">
       <div class="card-img">
         <span class="badge badge-free">GRATUIT</span>
@@ -581,7 +539,6 @@ header{
       </div>
     </div>
 
-    <!-- FREE 2 -->
     <div class="card" data-cat="gratuit">
       <div class="card-img">
         <span class="badge badge-free">GRATUIT</span>
@@ -599,7 +556,6 @@ header{
       </div>
     </div>
 
-    <!-- FREE 3 -->
     <div class="card" data-cat="gratuit">
       <div class="card-img">
         <span class="badge badge-free">GRATUIT</span>
@@ -617,7 +573,6 @@ header{
       </div>
     </div>
 
-    <!-- FREE 4 -->
     <div class="card" data-cat="gratuit">
       <div class="card-img">
         <span class="badge badge-free">GRATUIT</span>
@@ -634,42 +589,30 @@ header{
         </div>
       </div>
     </div>
-
   </div><!-- end free-grid -->
 
 </div><!-- end container -->
 
-<!-- ══ CART OVERLAY ══ -->
+<!-- CART OVERLAY + DRAWER -->
 <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
-
-<!-- ══ CART DRAWER ══ -->
 <div class="cart-drawer" id="cart-drawer">
   <div class="drawer-header">
     <h3>🛒 Mon Panier</h3>
     <button class="close-btn" onclick="toggleCart()">✕</button>
   </div>
   <div class="drawer-body" id="cart-body">
-    <div class="empty-cart">
-      <div class="empty-icon">🛍️</div>
-      <p>Votre panier est vide.<br>Ajoutez des produits pour commencer.</p>
-    </div>
+    <div class="empty-cart"><div class="empty-icon">🛍️</div><p>Votre panier est vide.<br>Ajoutez des produits pour commencer.</p></div>
   </div>
   <div class="drawer-footer">
-    <div class="cart-total-row">
-      <span>Total</span>
-      <strong id="cart-total">0 G</strong>
-    </div>
+    <div class="cart-total-row"><span>Total</span><strong id="cart-total">0 G</strong></div>
     <button class="btn-checkout" onclick="checkout()">Confirmer l'achat →</button>
   </div>
 </div>
 
-<!-- ══ MODAL : PREMIUM ══ -->
+<!-- MODAL PREMIUM -->
 <div class="overlay" id="premium-overlay">
   <div class="modal premium-modal" style="max-width:360px">
-    <div class="modal-header">
-      <div></div>
-      <button class="close-btn" onclick="closeOverlay('premium-overlay')">✕</button>
-    </div>
+    <div class="modal-header"><div></div><button class="close-btn" onclick="closeOverlay('premium-overlay')">✕</button></div>
     <div class="modal-body">
       <div class="modal-icon">⭐</div>
       <h3 style="text-align:center;font-family:'Syne',sans-serif;color:var(--white);margin-bottom:8px">Accès Premium requis</h3>
@@ -686,7 +629,7 @@ header{
   </div>
 </div>
 
-<!-- ══ MODAL : VENDRE ══ -->
+<!-- MODAL VENDRE -->
 <div class="overlay" id="sell-overlay">
   <div class="modal">
     <div class="modal-header">
@@ -727,89 +670,181 @@ header{
         <textarea class="form-textarea" id="sell-desc" placeholder="Décris ton produit en quelques phrases…"></textarea>
       </div>
       <div class="form-group">
-  <label class="form-label">Badge promotionnel (optionnel — 50 G)</label>
-  
-  <!-- Choix du badge -->
-  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px" id="badge-choices">
-    <div class="badge-choice" onclick="selectBadge(this,'Chaud 🔥')">
-      <span style="background:var(--gold);color:#1a0a00" class="badge-preview">Chaud 🔥</span>
-      <small>Tendance</small>
-    </div>
-    <div class="badge-choice" onclick="selectBadge(this,'POPULAIRE')">
-      <span style="background:var(--orange);color:#fff" class="badge-preview">POPULAIRE</span>
-      <small>Très demandé</small>
-    </div>
-    <div class="badge-choice" onclick="selectBadge(this,'TOP VENTE')">
-      <span style="background:#9b59b6;color:#fff" class="badge-preview">TOP VENTE</span>
-      <small>Meilleure vente</small>
-    </div>
-    <div class="badge-choice" onclick="selectBadge(this,'NOUVEAU')">
-      <span style="background:var(--green);color:#fff" class="badge-preview">NOUVEAU</span>
-      <small>Vient de sortir</small>
-    </div>
-    <div class="badge-choice" onclick="selectBadge(this,'PROMO -20%')">
-      <span style="background:#e74c3c;color:#fff" class="badge-preview">PROMO -20%</span>
-      <small>En promotion</small>
-    </div>
-    <div class="badge-choice" onclick="selectBadge(this,'EXCLUSIF')">
-      <span style="background:#2c3e50;color:var(--gold);border:1px solid var(--gold)" class="badge-preview">EXCLUSIF ⭐</span>
-      <small>Unique</small>
-    </div>
-  </div>
-  <input type="hidden" id="sell-badge-label" value="">
-
-  <!-- Toggle prix -->
-  <div class="promo-toggle" id="promo-toggle" onclick="togglePromo()">
-    <div class="promo-toggle-left">
-      <div class="promo-toggle-icon" id="promo-preview-icon">🏷️</div>
-      <div class="promo-toggle-text">
-        <strong id="promo-preview-text">Choisir un badge ci-dessus</strong>
-        <small>Mis en avant dans la boutique</small>
+        <label class="form-label">Badge promotionnel (optionnel — 50 G)</label>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px" id="badge-choices">
+          <div class="badge-choice" onclick="selectBadge(this,'Chaud 🔥')"><span style="background:var(--gold);color:#1a0a00" class="badge-preview">Chaud 🔥</span><small>Tendance</small></div>
+          <div class="badge-choice" onclick="selectBadge(this,'POPULAIRE')"><span style="background:var(--orange);color:#fff" class="badge-preview">POPULAIRE</span><small>Très demandé</small></div>
+          <div class="badge-choice" onclick="selectBadge(this,'TOP VENTE')"><span style="background:#9b59b6;color:#fff" class="badge-preview">TOP VENTE</span><small>Meilleure vente</small></div>
+          <div class="badge-choice" onclick="selectBadge(this,'NOUVEAU')"><span style="background:var(--green);color:#fff" class="badge-preview">NOUVEAU</span><small>Vient de sortir</small></div>
+          <div class="badge-choice" onclick="selectBadge(this,'PROMO -20%')"><span style="background:#e74c3c;color:#fff" class="badge-preview">PROMO -20%</span><small>En promotion</small></div>
+          <div class="badge-choice" onclick="selectBadge(this,'EXCLUSIF')"><span style="background:#2c3e50;color:var(--gold);border:1px solid var(--gold)" class="badge-preview">EXCLUSIF ⭐</span><small>Unique</small></div>
+        </div>
+        <input type="hidden" id="sell-badge-label" value="">
+        <div class="promo-toggle" id="promo-toggle" onclick="togglePromo()">
+          <div class="promo-toggle-left">
+            <div class="promo-toggle-icon" id="promo-preview-icon">🏷️</div>
+            <div class="promo-toggle-text">
+              <strong id="promo-preview-text">Choisir un badge ci-dessus</strong>
+              <small>Mis en avant dans la boutique</small>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="promo-toggle-price">+50 G</span>
+            <div class="toggle-check" id="promo-check"></div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px">
-      <span class="promo-toggle-price">+50 G</span>
-      <div class="toggle-check" id="promo-check"></div>
-    </div>
-  </div>
-</div>
-          
       <button class="btn-primary" onclick="submitProduct()">Publier mon produit</button>
       <button class="btn-secondary" onclick="closeOverlay('sell-overlay')">Annuler</button>
     </div>
   </div>
 </div>
 
-<!-- ══ BOTTOM NAV ══ -->
+<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
-  <a href="home.html" class="nav-item">
-    <span class="nav-icon">🏠</span>
-    Accueil
-  </a>
-  <a href="store.html" class="nav-item active">
-    <span class="nav-icon">🛍️</span>
-    Store
-  </a>
+  <a href="home.html" class="nav-item"><span class="nav-icon">🏠</span>Accueil</a>
+  <a href="store.html" class="nav-item active"><span class="nav-icon">🛍️</span>Store</a>
   <a href="#" class="nav-item" onclick="openSellModal();return false">
     <span class="nav-icon" style="background:var(--orange);border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;margin:0 auto -4px;font-size:1.4rem;box-shadow:0 4px 14px rgba(255,92,0,0.4)">＋</span>
     Vendre
   </a>
-  <a href="mes-produits.html" class="nav-item">
-    <span class="nav-icon">📦</span>
-    Mes Biens
-  </a>
-  <a href="premium.html" class="nav-item">
-    <span class="nav-icon">⭐</span>
-    Premium
-  </a>
+  <a href="mes-produits.html" class="nav-item"><span class="nav-icon">📦</span>Mes Biens</a>
+  <a href="premium.html" class="nav-item"><span class="nav-icon">⭐</span>Premium</a>
 </nav>
 
 <script>
-const STORE_URL = "https://store.mijocomplexe.workers.dev/";
+// ══════════════════════════════════════════════
+// CONFIG SUPABASE
+// ══════════════════════════════════════════════
+
+const STORE_URL     = "https://store.mijocomplexe.workers.dev/";
+
 let cart = [];
 let promoSelected = false;
+let allVendeursCards = []; // stocke les cards vendeurs pour le filtre
 
-// ── UTILS ──
+
+
+async function loadVendeursProducts() {
+  const grid = document.getElementById('vendeurs-grid');
+  try {
+    const res = await fetch('https://store-seller.mijocomplexe.workers.dev/', {
+      method: 'GET'
+    });
+
+    const data = await res.json();
+
+    // Supprimer les skeletons
+    grid.innerHTML = '';
+
+    if (!res.ok || !data.success) {
+      grid.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>Impossible de charger les produits vendeurs.</p></div>`;
+      return;
+    }
+
+    const products = data.produits;
+
+    if (!products || products.length === 0) {
+      document.getElementById('vendeurs-header').style.display = 'none';
+      grid.innerHTML = '';
+      return;
+    }
+
+    document.getElementById('vendeurs-header').style.display = '';
+    document.getElementById('vendeurs-count').textContent = products.length + ' produit' + (products.length > 1 ? 's' : '');
+
+    const totalCards = document.querySelectorAll('#main-grid .card').length + products.length;
+    document.getElementById('stat-count').textContent = totalCards + '+';
+
+    products.forEach(p => {
+      const card = buildVendeurCard(p);
+      grid.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error('Erreur chargement produits:', err);
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>Erreur de connexion.</p></div>`;
+  }
+}
+
+// ══════════════════════════════════════════════
+// CONSTRUIRE UNE CARD VENDEUR DYNAMIQUEMENT
+// ══════════════════════════════════════════════
+function buildVendeurCard(p) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.cat = (p.Categorie || '').toLowerCase();
+  card.dataset.source = 'vendeur'; // marqueur pour le filtre
+
+  // Choisir une image placeholder selon la catégorie si pas d'image
+  const imgMap = {
+    'application':             'https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png',
+    'e-book':                  'https://i.postimg.cc/qMtVXW87/a-clean-modern-book-cover-design-blendin-k-Efi-VZax-Rr2-Z6-q2n-HBHf-Q-TU-he66-MQ4-GNnncvt-Br-W8g.jpg',
+    'business':                'https://i.postimg.cc/NMCNMn3W/coins-4421639-640.jpg',
+    'intelligence artificielle':'https://i.postimg.cc/DZHbZVgJ/ai-generated-8540913-1280.jpg',
+    'soft skills':             'https://i.postimg.cc/PfzjTgMP/model-1335984-1920.jpg',
+    'marketing':               'https://i.postimg.cc/MGMhfNJ2/digital-marketing-5816304-640.jpg',
+  };
+  const imgSrc = imgMap[(p.Categorie || '').toLowerCase()] || 'https://i.postimg.cc/vHfmQ1cM/a-clean-modern-book-cover-illustration-f-o79-YAln7-Tnao8fxz6p9-Pd-Q-g0-P-NGZVTcu08-SDb-QHh-Yy-Q.jpg';
+
+  // Badge HTML
+  let badgeHTML = '';
+  if (p.BadgePromo && p.BadgeLabel) {
+    const badgeStyle = getBadgeStyle(p.BadgeLabel);
+    badgeHTML = `<span class="badge ${badgeStyle}">${p.BadgeLabel}</span>`;
+  }
+
+  // Tag "Vendeur" sur l'image
+  const vendeurTag = `<span class="badge-vendeur">🏪 Vendeur</span>`;
+
+  // Prix formaté
+  const prixFormat = Number(p.Prix).toLocaleString('fr-FR');
+
+  // ID unique pour ce produit (on utilise l'id Supabase)
+  const prodId = 'SB-' + (p.id || p.vendeurId || Math.random().toString(36).substr(2,6));
+
+  // Sécuriser les valeurs pour l'onclick
+  const safeName    = (p.NomProduit  || '').replace(/'/g, "\\'");
+  const safeVendeur = (p.vendeurId   || '');
+  const safeLink    = (p.LienProduit || '');
+
+  card.innerHTML = `
+    <div class="card-img">
+      ${badgeHTML}
+      ${vendeurTag}
+      <img src="${imgSrc}" alt="${p.NomProduit || 'Produit'}" loading="lazy">
+    </div>
+    <div class="card-body">
+      <div class="card-cat">${p.Categorie || 'Produit'}</div>
+      <div class="card-title">${p.NomProduit || 'Sans titre'}</div>
+      <div class="card-price">${prixFormat} G</div>
+      <div class="card-seller">Par <b>${p.NomVendeur || 'Vendeur MIJO'}</b></div>
+      <div class="card-actions">
+        <button class="btn-buy" onclick="addToCart('${safeName}',${p.Prix},'${prodId}','${safeLink}','${safeVendeur}')">Acheter</button>
+        <button class="btn-share" onclick="shareProduct('${safeName}','${prodId}')" title="Partager">🔗</button>
+      </div>
+    </div>
+  `;
+
+  return card;
+}
+
+// Retourner la classe CSS du badge selon le label
+function getBadgeStyle(label) {
+  if (!label) return 'badge-new';
+  const l = label.toLowerCase();
+  if (l.includes('chaud'))     return 'badge-promo';
+  if (l.includes('populaire')) return 'badge-new';
+  if (l.includes('top'))       return 'badge-purple';
+  if (l.includes('nouveau'))   return 'badge-free';
+  if (l.includes('promo'))     return 'badge-red';
+  if (l.includes('exclusif'))  return 'badge-dark';
+  return 'badge-new';
+}
+
+// ══════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════
 function isPremium() {
   if (localStorage.getItem('EstPremium') === 'true') return true;
   try {
@@ -820,67 +855,87 @@ function isPremium() {
 function getUser() {
   try { return JSON.parse(localStorage.getItem('user')); } catch(e) { return null; }
 }
-function getUserName() {
-  const u = getUser();
-  return u ? (u.NomUtilisateur || u.Nom || 'Vendeur') : 'Vendeur';
-}
-function toast(msg, color='') {
+function toast(msg, color) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.style.background = color || '';
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2800);
 }
-function openOverlay(id) { document.getElementById(id).classList.add('open'); }
+function openOverlay(id)  { document.getElementById(id).classList.add('open'); }
 function closeOverlay(id) { document.getElementById(id).classList.remove('open'); }
 
-// ── SEARCH ──
+// ══════════════════════════════════════════════
+// SEARCH
+// ══════════════════════════════════════════════
 document.getElementById('searchInput').addEventListener('input', function() {
   const q = this.value.toLowerCase();
   document.querySelectorAll('.card').forEach(c => {
-    const txt = c.innerText.toLowerCase();
-    c.style.display = txt.includes(q) ? '' : 'none';
+    c.style.display = c.innerText.toLowerCase().includes(q) ? '' : 'none';
   });
+  // Si recherche active, afficher le header vendeurs si il y a des résultats
+  if (q) {
+    const header = document.getElementById('vendeurs-header');
+    const hasVisible = Array.from(document.querySelectorAll('#vendeurs-grid .card')).some(c => c.style.display !== 'none');
+    header.style.display = hasVisible ? '' : 'none';
+  }
 });
 
-// ── FILTER ──
+// ══════════════════════════════════════════════
+// FILTER PAR CATÉGORIE
+// ══════════════════════════════════════════════
 function filterCat(cat, btn) {
   document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
-  const mainCards = document.querySelectorAll('#main-grid .card');
-  const freeCards = document.querySelectorAll('#free-grid .card');
-  const freeHeader = document.getElementById('free-section-header');
+
+  const mainCards    = document.querySelectorAll('#main-grid .card');
+  const freeCards    = document.querySelectorAll('#free-grid .card');
+  const vendeurCards = document.querySelectorAll('#vendeurs-grid .card');
+  const freeHeader   = document.getElementById('free-section-header');
+  const vendHeader   = document.getElementById('vendeurs-header');
+
   if (cat === 'all') {
-    mainCards.forEach(c => c.style.display = '');
-    freeCards.forEach(c => c.style.display = '');
-    freeHeader.style.display = '';
+    mainCards.forEach(c    => c.style.display = '');
+    freeCards.forEach(c    => c.style.display = '');
+    vendeurCards.forEach(c => c.style.display = '');
+    freeHeader.style.display  = '';
+    vendHeader.style.display  = vendeurCards.length > 0 ? '' : 'none';
     return;
   }
+
   if (cat === 'gratuit') {
-    mainCards.forEach(c => c.style.display = 'none');
-    freeCards.forEach(c => c.style.display = '');
+    mainCards.forEach(c    => c.style.display = 'none');
+    vendeurCards.forEach(c => c.style.display = 'none');
+    freeCards.forEach(c    => c.style.display = '');
     freeHeader.style.display = '';
+    vendHeader.style.display = 'none';
     return;
   }
+
   freeHeader.style.display = 'none';
   freeCards.forEach(c => c.style.display = 'none');
+
   mainCards.forEach(c => {
-    const cardCat = (c.dataset.cat || '').toLowerCase();
-    c.style.display = cardCat.includes(cat) ? '' : 'none';
+    c.style.display = (c.dataset.cat || '').toLowerCase().includes(cat) ? '' : 'none';
   });
+
+  let vendeurVisible = 0;
+  vendeurCards.forEach(c => {
+    const show = (c.dataset.cat || '').toLowerCase().includes(cat);
+    c.style.display = show ? '' : 'none';
+    if (show) vendeurVisible++;
+  });
+  vendHeader.style.display = vendeurVisible > 0 ? '' : 'none';
 }
 
-// ── FREE PRODUCTS ──
+// ══════════════════════════════════════════════
+// PRODUITS GRATUITS
+// ══════════════════════════════════════════════
 function updateFreeButtons() {
   const p = isPremium();
   document.querySelectorAll('.free-btn').forEach(btn => {
-    if (p) {
-      btn.classList.remove('locked-btn');
-      btn.innerHTML = '🔓 Télécharger';
-    } else {
-      btn.classList.add('locked-btn');
-      btn.innerHTML = '🔒 Réservé Premium';
-    }
+    btn.classList.toggle('locked-btn', !p);
+    btn.innerHTML = p ? '🔓 Télécharger' : '🔒 Réservé Premium';
   });
 }
 function getFree(name, code, driveLink) {
@@ -892,41 +947,38 @@ function getFree(name, code, driveLink) {
     toast('📦 Lien bientôt disponible pour : ' + name);
   }
 }
+
+// ══════════════════════════════════════════════
+// BADGE SELECTOR
+// ══════════════════════════════════════════════
 function selectBadge(el, label) {
-  // Désélectionner tous
   document.querySelectorAll('.badge-choice').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
   document.getElementById('sell-badge-label').value = label;
-
-  // Activer automatiquement le toggle +50G
   promoSelected = true;
   document.getElementById('promo-toggle').classList.add('selected');
   document.getElementById('promo-check').textContent = '✓';
-
-  // Mettre à jour le preview
   const icons = {'Chaud 🔥':'🔥','POPULAIRE':'📈','TOP VENTE':'🏆','NOUVEAU':'✨','PROMO -20%':'💸','EXCLUSIF ⭐':'⭐'};
   document.getElementById('promo-preview-icon').textContent = icons[label] || '🏷️';
   document.getElementById('promo-preview-text').textContent = 'Badge "' + label + '" sélectionné';
 }
-
 function togglePromo() {
-  // Si aucun badge choisi, ne pas activer
   const label = document.getElementById('sell-badge-label').value;
-  if (!promoSelected && !label) {
-    toast('Choisis un badge d\'abord ↑'); return;
-  }
+  if (!promoSelected && !label) { toast('Choisis un badge d\'abord ↑'); return; }
   promoSelected = !promoSelected;
   document.getElementById('promo-toggle').classList.toggle('selected', promoSelected);
   document.getElementById('promo-check').textContent = promoSelected ? '✓' : '';
   if (!promoSelected) {
-    // Désélectionner le badge visuellement
     document.getElementById('sell-badge-label').value = '';
     document.querySelectorAll('.badge-choice').forEach(b => b.classList.remove('selected'));
     document.getElementById('promo-preview-text').textContent = 'Choisir un badge ci-dessus';
     document.getElementById('promo-preview-icon').textContent = '🏷️';
   }
 }
-// ── CART ──
+
+// ══════════════════════════════════════════════
+// PANIER
+// ══════════════════════════════════════════════
 function toggleCart() {
   document.getElementById('cart-drawer').classList.toggle('open');
   document.getElementById('cart-overlay').classList.toggle('open');
@@ -942,7 +994,7 @@ function removeFromCart(code) {
   renderCart();
 }
 function renderCart() {
-  const body = document.getElementById('cart-body');
+  const body  = document.getElementById('cart-body');
   const badge = document.getElementById('cart-badge');
   const total = document.getElementById('cart-total');
   badge.textContent = cart.length;
@@ -952,7 +1004,7 @@ function renderCart() {
     return;
   }
   let sum = 0;
-  body.innerHTML = cart.map((item,i) => {
+  body.innerHTML = cart.map(item => {
     sum += item.price;
     return `<div class="cart-item">
       <div>
@@ -966,14 +1018,21 @@ function renderCart() {
 }
 async function checkout() {
   const user = getUser();
-  if (!user) { toast('❌ Connectez-vous d\'abord'); return; }
-  if (!cart.length) { toast('Panier vide'); return; }
+  if (!user)      { toast('❌ Connectez-vous d\'abord'); return; }
+  if (!cart.length){ toast('Panier vide'); return; }
   toast('⏳ Validation en cours…');
   try {
     const results = await Promise.all(cart.map(item =>
       fetch(STORE_URL, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({userId:user.userId, productId:item.code, sellerId:item.sellerId, amount:item.price, productName:item.name})
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          userId:      user.userId,
+          productId:   item.code,
+          sellerId:    item.sellerId,
+          amount:      item.price,
+          productName: item.name
+        })
       }).then(r => r.json())
     ));
     if (results.every(r => r.success)) {
@@ -994,7 +1053,9 @@ async function checkout() {
   } catch(e) { toast('❌ Erreur réseau'); }
 }
 
-// ── SHARE ──
+// ══════════════════════════════════════════════
+// PARTAGE
+// ══════════════════════════════════════════════
 function shareProduct(name, code) {
   const url = window.location.origin + window.location.pathname + '?prod=' + code;
   if (navigator.share) {
@@ -1005,15 +1066,16 @@ function shareProduct(name, code) {
   }
 }
 
-// ── SELL MODAL ──
+// ══════════════════════════════════════════════
+// MODAL VENDRE
+// ══════════════════════════════════════════════
 function openSellModal() {
   if (!isPremium()) { openOverlay('premium-overlay'); return; }
   openOverlay('sell-overlay');
 }
-
 async function submitProduct() {
-  const name = document.getElementById('sell-name').value.trim();
-  const cat  = document.getElementById('sell-cat').value;
+  const name  = document.getElementById('sell-name').value.trim();
+  const cat   = document.getElementById('sell-cat').value;
   const price = parseInt(document.getElementById('sell-price').value);
   const link  = document.getElementById('sell-link').value.trim();
   const desc  = document.getElementById('sell-desc').value.trim();
@@ -1024,20 +1086,13 @@ async function submitProduct() {
   if (!user) { toast('❌ Connectez-vous'); return; }
 
   toast('⏳ Publication en cours…');
-
   try {
     const res = await fetch('https://store-seller.mijocomplexe.workers.dev/', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
-        userId:         user.userId,
-        name,
-        category:       cat,
-        price,
-        link,
-        description:    desc,
-        withPromoBadge: promoSelected,
-        badgeLabel:     badgeLabel
+        userId: user.userId, name, category: cat, price, link,
+        description: desc, withPromoBadge: promoSelected, badgeLabel
       })
     }).then(r => r.json());
 
@@ -1057,21 +1112,26 @@ async function submitProduct() {
       document.querySelectorAll('.badge-choice').forEach(b => b.classList.remove('selected'));
       document.getElementById('promo-preview-text').textContent = 'Choisir un badge ci-dessus';
       document.getElementById('promo-preview-icon').textContent = '🏷️';
+      // Recharger les produits vendeurs
+      setTimeout(() => loadVendeursProducts(), 1500);
     } else {
-      toast('❌ ' + res.error);
+      toast('❌ ' + (res.error || 'Erreur inconnue'));
     }
-  } catch(e) {
-    toast('❌ Erreur réseau');
-  }
-}  // ← accolade fermante manquante
+  } catch(e) { toast('❌ Erreur réseau'); }
+}
 
-// ── INIT ──
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
 window.onload = function() {
   updateFreeButtons();
+  loadVendeursProducts();
+
+  // Deep link vers un produit spécifique
   const prodCode = new URLSearchParams(window.location.search).get('prod');
   if (prodCode) {
     document.querySelectorAll('.card').forEach(c => {
-      const btns = c.querySelectorAll('[onclick]');
+      const btns  = c.querySelectorAll('[onclick]');
       const match = Array.from(btns).some(b => b.getAttribute('onclick').includes("'"+prodCode+"'"));
       c.style.display = match ? '' : 'none';
     });
