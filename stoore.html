@@ -752,6 +752,13 @@ header{
             <div class="toggle-check" id="promo-check"></div>
           </div>
         </div>
+        <div class="form-group">
+  <label class="form-label">Image du produit (optionnel, max 5 Mo)</label>
+  <input type="file" id="sell-image" accept="image/*"
+    style="width:100%;background:var(--navy3);border:1px solid var(--card-border);
+    color:var(--text);padding:11px 14px;border-radius:var(--radius-sm);font-size:0.88rem;">
+</div>
+        </div>
       </div>
       <button class="btn-primary" id="submit-product-btn" onclick="submitProduct()">Publier mon produit</button>
       <button class="btn-secondary" onclick="closeOverlay('sell-overlay')">Annuler</button>
@@ -793,8 +800,8 @@ header{
 // ══════════════════════════════════════════════
 // CONFIG SUPABASE
 // ══════════════════════════════════════════════
-const SUPABASE_URL  = "https://ytkjartqykdslhgdkjbl.supabase.co";
-const SUPABASE_ANON = "sb_publishable_pJFApCtYmyFVlQUHJ_eDMw_OANkJ6lT";
+const SUPABASE_URL  = "https://ytkjartqykgdkjbl.supabase.co";
+const SUPABASE_ANON = "sb_publishable_pJFApCtYmyFVlQUHJ_eDMw_OANkJ";
 const STORE_URL     = "https://store.mijocomplexe.workers.dev/";
 const SELLER_URL    = "https://store-seller.mijocomplexe.workers.dev/";
 const MAX_IMAGE_BYTES = 1 * 1024 * 1024; // 1 Mo
@@ -804,61 +811,40 @@ let promoSelected = false;
 let allVendeursCards = []; // stocke les cards vendeurs pour le filtre
 let selectedImageFile = null;
 
-// ══════════════════════════════════════════════
-// SUPABASE — CHARGER LES PRODUITS VENDEURS
-// ══════════════════════════════════════════════
+const STORE_SELLER_URL = "https://store-seller.mijocomplexe.workers.dev/";
+
 async function loadVendeursProducts() {
   try {
-    // On récupère uniquement les produits avec Statut = "Publié"
-    const url = `${SUPABASE_URL}/rest/v1/Produits?Statut=eq.Publié&order=DateSoumission.desc&select=*`;
-    const res = await fetch(url, {
-      headers: {
-        "apikey":        SUPABASE_ANON,
-        "Authorization": `Bearer ${SUPABASE_ANON}`,
-        "Content-Type":  "application/json"
-      }
-    });
-
+    const res = await fetch(STORE_SELLER_URL, { method: "GET" });
+    const data = await res.json();
     const grid = document.getElementById('vendeurs-grid');
 
-    if (!res.ok) {
-      // Erreur réseau ou accès refusé
-      grid.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>Impossible de charger les produits vendeurs.</p></div>`;
-      return;
-    }
-
-    const products = await res.json();
-
-    // Supprimer les skeletons
-    grid.innerHTML = '';
-
-    if (!products || products.length === 0) {
-      // Aucun produit vendeur pour l'instant → on cache toute la section
+    if (!data.success || !data.produits?.length) {
       document.getElementById('vendeurs-header').style.display = 'none';
+      grid.innerHTML = '';
       return;
     }
 
-    // Afficher le header et le compteur
+    grid.innerHTML = '';
     document.getElementById('vendeurs-header').style.display = '';
-    document.getElementById('vendeurs-count').textContent = products.length + ' produit' + (products.length > 1 ? 's' : '');
+    document.getElementById('vendeurs-count').textContent =
+      data.produits.length + ' produit' + (data.produits.length > 1 ? 's' : '');
 
-    // Mettre à jour le compteur hero
-    const totalCards = document.querySelectorAll('#main-grid .card').length + products.length;
-    document.getElementById('stat-count').textContent = totalCards + '+';
-
-    // Générer les cards
-    products.forEach(p => {
+    data.produits.forEach(p => {
       const card = buildVendeurCard(p);
       grid.appendChild(card);
       allVendeursCards.push(card);
     });
 
+    const totalCards = document.querySelectorAll('#main-grid .card').length + data.produits.length;
+    document.getElementById('stat-count').textContent = totalCards + '+';
+
   } catch (err) {
     console.error('Erreur chargement produits:', err);
-    document.getElementById('vendeurs-grid').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>Erreur de connexion.</p></div>`;
+    document.getElementById('vendeurs-grid').innerHTML =
+      `<div class="empty-state"><div class="empty-icon">⚠️</div><p>Erreur de connexion.</p></div>`;
   }
 }
-
 // ══════════════════════════════════════════════
 // CONSTRUIRE UNE CARD VENDEUR DYNAMIQUEMENT
 // ══════════════════════════════════════════════
@@ -878,9 +864,7 @@ function buildVendeurCard(p) {
     'marketing':               'https://i.postimg.cc/MGMhfNJ2/digital-marketing-5816304-640.jpg',
   };
   // Priorité : image uploadée par le vendeur (ImageURL) → sinon placeholder catégorie → sinon placeholder générique
-  const imgSrc = (p.ImageURL && p.ImageURL.trim())
-    ? p.ImageURL
-    : (imgMap[(p.Categorie || '').toLowerCase()] || 'https://i.postimg.cc/vHfmQ1cM/a-clean-modern-book-cover-illustration-f-o79-YAln7-Tnao8fxz6p9-Pd-Q-g0-P-NGZVTcu08-SDb-QHh-Yy-Q.jpg');
+  const imgSrc = p.ImageURL || imgMap[(p.Categorie || '').toLowerCase()] || imgMap['e-book'];
 
   // Badge HTML
   let badgeHTML = '';
@@ -1248,59 +1232,53 @@ function openSellModal() {
   openOverlay('sell-overlay');
 }
 async function submitProduct() {
-  const name  = document.getElementById('sell-name').value.trim();
-  const cat   = document.getElementById('sell-cat').value;
-  const price = parseInt(document.getElementById('sell-price').value);
-  const link  = document.getElementById('sell-link').value.trim();
-  const desc  = document.getElementById('sell-desc').value.trim();
+  const name     = document.getElementById('sell-name').value.trim();
+  const cat      = document.getElementById('sell-cat').value;
+  const price    = parseInt(document.getElementById('sell-price').value);
+  const link     = document.getElementById('sell-link').value.trim();
+  const desc     = document.getElementById('sell-desc').value.trim();
   const badgeLabel = document.getElementById('sell-badge-label').value;
+  const imageFile  = document.getElementById('sell-image').files[0]; // ← nouveau
 
   if (!name || !cat || !price || !link) { toast('❌ Remplis tous les champs obligatoires'); return; }
-  if (selectedImageFile && selectedImageFile.size > MAX_IMAGE_BYTES) { toast('❌ Image trop lourde (max 1 Mo)'); return; }
-
   const user = getUser();
   if (!user) { toast('❌ Connectez-vous'); return; }
 
-  const submitBtn = document.getElementById('submit-product-btn');
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = '<span class="spinner"></span> Publication en cours…';
+  toast('⏳ Publication en cours…');
 
   try {
-    // Envoi en FormData pour pouvoir inclure l'image (multipart), sinon JSON simple si pas d'image
-    let res;
-    if (selectedImageFile) {
-      const fd = new FormData();
-      fd.append('userId', user.userId);
-      fd.append('name', name);
-      fd.append('category', cat);
-      fd.append('price', price);
-      fd.append('link', link);
-      fd.append('description', desc);
-      fd.append('withPromoBadge', promoSelected);
-      fd.append('badgeLabel', badgeLabel);
-      fd.append('image', selectedImageFile);
-
-      res = await fetch(SELLER_URL, { method: 'POST', body: fd }).then(r => r.json());
-    } else {
-      res = await fetch(SELLER_URL, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({
-          userId: user.userId, name, category: cat, price, link,
-          description: desc, withPromoBadge: promoSelected, badgeLabel
-        })
-      }).then(r => r.json());
+    // ── Envoyer FormData au lieu de JSON ──
+    const formData = new FormData();
+    formData.append('userId',         user.userId);
+    formData.append('name',           name);
+    formData.append('category',       cat);
+    formData.append('price',          price);
+    formData.append('link',           link);
+    formData.append('description',    desc);
+    formData.append('withPromoBadge', promoSelected ? 'true' : 'false');
+    formData.append('badgeLabel',     badgeLabel);
+    if (imageFile) {
+      formData.append('image', imageFile); // ← image ajoutée
     }
 
+    const res = await fetch('https://store-seller.mijocomplexe.workers.dev/', {
+      method: 'POST',
+      // ⚠️ NE PAS mettre Content-Type manuellement avec FormData
+      // Le navigateur le met automatiquement avec le bon boundary
+      body: formData
+    }).then(r => r.json());
+
     if (res.success) {
+      toast('✅ ' + res.message);
       if (res.newBalance !== undefined) {
         user.Solde = res.newBalance;
         localStorage.setItem('user', JSON.stringify(user));
       }
       closeOverlay('sell-overlay');
       // Reset form
-      ['sell-name','sell-cat','sell-price','sell-link','sell-desc'].forEach(id => document.getElementById(id).value = '');
-      resetImageState();
+      ['sell-name','sell-cat','sell-price','sell-link','sell-desc'].forEach(id =>
+        document.getElementById(id).value = '');
+      document.getElementById('sell-image').value = '';
       promoSelected = false;
       document.getElementById('promo-toggle').classList.remove('selected');
       document.getElementById('promo-check').textContent = '';
@@ -1308,21 +1286,11 @@ async function submitProduct() {
       document.querySelectorAll('.badge-choice').forEach(b => b.classList.remove('selected'));
       document.getElementById('promo-preview-text').textContent = 'Choisir un badge ci-dessus';
       document.getElementById('promo-preview-icon').textContent = '🏷️';
-
-      // Popup de confirmation — l'utilisateur clique OK pour fermer
-      openOverlay('submit-confirm-overlay');
-
-      // Recharger les produits vendeurs (au cas où un ancien produit vient d'être validé entretemps)
       setTimeout(() => loadVendeursProducts(), 1500);
     } else {
       toast('❌ ' + (res.error || 'Erreur inconnue'));
     }
-  } catch(e) {
-    toast('❌ Erreur réseau');
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Publier mon produit';
-  }
+  } catch(e) { toast('❌ Erreur réseau'); }
 }
 
 // ══════════════════════════════════════════════
