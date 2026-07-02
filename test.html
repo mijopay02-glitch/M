@@ -8,7 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* ── Palette : le cercle des membres, chacun sa teinte ── */
       --paper:       #F5F3EE;
       --surface:     #FFFFFF;
       --ink:         #14181F;
@@ -43,6 +42,7 @@
       display: flex;
       flex-direction: column;
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
     /* ── HEADER ── */
@@ -73,7 +73,14 @@
       position: absolute;
       left: 0; right: 0; bottom: -4px;
       height: 2px;
-      background: linear-gradient(90deg, var(--acc-gold), transparent);
+      background: linear-gradient(90deg, var(--acc-gold), var(--acc-blue), transparent);
+      background-size: 200% 100%;
+      animation: header-shimmer 5s ease-in-out infinite;
+    }
+
+    @keyframes header-shimmer {
+      0%, 100% { background-position: 0% 0; }
+      50% { background-position: 100% 0; }
     }
 
     .header-subtitle {
@@ -97,9 +104,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.15s;
+      transition: background 0.15s, transform 0.15s;
     }
-    .back-btn:hover { background: var(--line); }
+    .back-btn:hover { background: var(--line); transform: translateX(-2px); }
 
     /* ── RANG DES MEMBRES ACTIFS ── */
     .members-rail {
@@ -122,6 +129,12 @@
       gap: 6px;
       flex-shrink: 0;
       width: 56px;
+      animation: chip-in 0.4s ease both;
+    }
+
+    @keyframes chip-in {
+      from { opacity: 0; transform: scale(0.7); }
+      to   { opacity: 1; transform: scale(1); }
     }
 
     .member-ring {
@@ -133,7 +146,10 @@
       font-size: 15px;
       background: var(--surface);
       position: relative;
+      transition: transform 0.2s ease;
+      cursor: default;
     }
+    .member-chip:hover .member-ring { transform: scale(1.1) rotate(-4deg); }
     .member-ring::before {
       content: "";
       position: absolute;
@@ -175,6 +191,7 @@
       color: var(--ink-soft);
       font-size: 13.5px;
       line-height: 1.6;
+      animation: rise 0.4s ease both;
     }
     .state-msg .state-title {
       font-family: 'Fraunces', serif;
@@ -195,7 +212,10 @@
       font-weight: 600;
       font-size: 12.5px;
       cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
     }
+    .retry-btn:hover { background: var(--acc-blue); }
+    .retry-btn:active { transform: scale(0.96); }
 
     /* ── POST CARD ── */
     .post-card {
@@ -204,11 +224,32 @@
       border-radius: var(--radius-md);
       padding: 18px 18px 16px;
       box-shadow: 0 1px 2px rgba(20,24,31,0.03), 0 8px 24px rgba(20,24,31,0.03);
-      animation: rise 0.35s ease both;
+      animation: rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     }
 
+    .post-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--card-accent, var(--acc-blue));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s ease;
+    }
+
+    .post-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(20,24,31,0.05), 0 16px 32px rgba(20,24,31,0.07);
+      border-color: var(--line-strong);
+    }
+    .post-card:hover::before { transform: scaleX(1); }
+
     @keyframes rise {
-      from { opacity: 0; transform: translateY(8px); }
+      from { opacity: 0; transform: translateY(14px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
@@ -280,14 +321,37 @@
       cursor: pointer;
       padding: 6px 10px;
       border-radius: 8px;
-      transition: background 0.15s, color 0.15s;
+      transition: background 0.15s, color 0.15s, transform 0.1s;
+      position: relative;
     }
     .action-btn:hover { background: var(--paper); color: var(--ink); }
+    .action-btn:active { transform: scale(0.94); }
     .action-btn.liked { color: var(--acc-blue); background: var(--acc-blue-bg); }
     .action-btn.liked:hover { background: var(--acc-blue-bg); }
 
-    .action-icon { font-size: 14px; line-height: 1; transition: transform 0.2s ease; }
-    .action-btn.liked .action-icon { transform: translateY(-1px); }
+    .action-icon { font-size: 14px; line-height: 1; display: inline-block; }
+
+    @keyframes like-pop {
+      0%   { transform: scale(1) rotate(0); }
+      30%  { transform: scale(1.5) rotate(-12deg); }
+      55%  { transform: scale(0.85) rotate(6deg); }
+      100% { transform: scale(1) rotate(0); }
+    }
+    .action-icon.pop { animation: like-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+    /* Particules du like — un petit éclat au clic */
+    .like-particle {
+      position: fixed;
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 999;
+      animation: particle-fly 0.6s ease-out forwards;
+    }
+    @keyframes particle-fly {
+      0%   { transform: translate(0, 0) scale(1);   opacity: 1; }
+      100% { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
+    }
 
     /* ── RÉPONSES : le fil du cercle ── */
     .replies-container {
@@ -307,7 +371,7 @@
       border-radius: 2px;
     }
 
-    .reply-item { position: relative; }
+    .reply-item { position: relative; animation: rise 0.4s ease both; }
     .reply-item::before {
       content: "";
       position: absolute;
@@ -350,13 +414,15 @@
       background: var(--acc-blue-bg);
       padding: 7px 12px;
       border-radius: 10px;
+      animation: rise 0.25s ease both;
     }
     .reply-banner.active { display: flex; }
     .cancel-reply {
       cursor: pointer; color: var(--acc-blue); font-size: 17px; line-height: 1;
       opacity: 0.7;
+      transition: opacity 0.15s, transform 0.15s;
     }
-    .cancel-reply:hover { opacity: 1; }
+    .cancel-reply:hover { opacity: 1; transform: rotate(90deg); }
 
     .composer-row {
       display: flex; gap: 10px; align-items: flex-end; width: 100%;
@@ -395,15 +461,29 @@
       font-size: 14px;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      transition: background 0.2s, transform 0.1s;
+      transition: background 0.25s, transform 0.1s;
       flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .publish-btn::before {
+      content: "";
+      position: absolute;
+      top: 0; left: -60%;
+      width: 40%; height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.5s ease;
     }
     .publish-btn:hover { background: var(--acc-blue); }
+    .publish-btn:hover::before { left: 130%; }
     .publish-btn:active { transform: scale(0.96); }
     .publish-btn:disabled { background: var(--ink-soft); cursor: not-allowed; opacity: 0.5; }
+    .publish-btn:disabled::before { display: none; }
 
     @media (prefers-reduced-motion: reduce) {
-      .post-card { animation: none; }
+      .post-card, .reply-item, .member-chip, .state-msg, .reply-banner { animation: none; }
+      .header-title::after { animation: none; }
       * { transition: none !important; }
     }
   </style>
@@ -431,11 +511,11 @@
     <div class="composer-inner">
       <div class="reply-banner" id="replyBanner">
         <span id="replyingToText">En réponse à...</span>
-        <span class="cancel-reply" onclick="cancelReply()">×</span>
+        <span class="cancel-reply" id="cancelReplyBtn">×</span>
       </div>
       <div class="composer-row">
-        <textarea id="composerInput" class="composer-input" placeholder="Partagez une stratégie ou posez une question..." rows="1" oninput="autoGrow(this)"></textarea>
-        <button id="publishBtn" class="publish-btn" onclick="publishMessage()">Publier</button>
+        <textarea id="composerInput" class="composer-input" placeholder="Partagez une stratégie ou posez une question..." rows="1"></textarea>
+        <button id="publishBtn" class="publish-btn">Publier</button>
       </div>
     </div>
   </div>
@@ -443,6 +523,13 @@
   <script>
     // ── CONFIGURATION CLOUDFLARE ──
     const API_BASE_URL = "https://reseau.mijocomplexe.workers.dev/api";
+
+    // ── SÉCURITÉ : tout texte affiché passe par ici avant d'aller dans le HTML ──
+    function escapeHtml(str) {
+      return String(str ?? '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
 
     // ── COULEURS DU CERCLE ──
     // Chaque membre garde toujours la même teinte, d'une session à l'autre.
@@ -505,7 +592,8 @@
         }
       } catch (error) {
         console.error("Erreur lors du chargement:", error);
-        container.innerHTML = `<div class="state-msg"><span class="state-title">Connexion au Cercle impossible</span>Vérifiez votre réseau, puis réessayez.<br><button class="retry-btn" onclick="chargerFeed()">Réessayer</button></div>`;
+        container.innerHTML = `<div class="state-msg"><span class="state-title">Connexion au Cercle impossible</span>Vérifiez votre réseau, puis réessayez.<br><button class="retry-btn" id="retryBtn">Réessayer</button></div>`;
+        document.getElementById('retryBtn').addEventListener('click', chargerFeed);
       }
     }
 
@@ -521,14 +609,18 @@
       rail.classList.remove('empty');
 
       let html = '';
+      let i = 0;
       seen.forEach((author, name) => {
         const c = colorFor(name);
+        const safeInitials = escapeHtml(author.initials);
+        const safeFirstName = escapeHtml(name.split(' ')[0]);
         html += `
-          <div class="member-chip">
-            <div class="member-ring" style="--ring-color:${c.hex}; color:${c.hex};">${author.initials}</div>
-            <span class="member-name">${name.split(' ')[0]}</span>
+          <div class="member-chip" style="animation-delay:${i * 0.04}s">
+            <div class="member-ring" style="--ring-color:${c.hex}; color:${c.hex};">${safeInitials}</div>
+            <span class="member-name">${safeFirstName}</span>
           </div>
         `;
+        i++;
       });
       rail.innerHTML = html;
     }
@@ -538,27 +630,33 @@
       const container = document.getElementById('feedContainer');
       container.innerHTML = '';
 
-      postsData.forEach(post => {
+      postsData.forEach((post, index) => {
         const isLikedByMe = post.likedBy && post.likedBy.includes(currentUser.id);
         const c = colorFor(post.author.name);
 
+        const safeName = escapeHtml(post.author.name);
+        const safeInitials = escapeHtml(post.author.initials);
+        const safeContent = escapeHtml(post.content);
+        const safeTime = escapeHtml(post.timestamp);
+        const safeId = escapeHtml(post.id);
+
         const postHTML = `
-          <article class="post-card" id="${post.id}">
+          <article class="post-card" id="${safeId}" style="--card-accent:${c.hex}; animation-delay:${Math.min(index, 8) * 0.06}s">
             <div class="post-header">
-              <div class="author-avatar" style="--avatar-color:${c.hex}; --avatar-bg:${c.bg};">${post.author.initials}</div>
+              <div class="author-avatar" style="--avatar-color:${c.hex}; --avatar-bg:${c.bg};">${safeInitials}</div>
               <div class="author-meta">
-                <span class="author-name">${post.author.name}</span>
-                <span class="post-time">${post.timestamp}</span>
+                <span class="author-name">${safeName}</span>
+                <span class="post-time">${safeTime}</span>
               </div>
             </div>
 
-            <div class="post-content">${post.content}</div>
+            <div class="post-content">${safeContent}</div>
 
             <div class="post-actions">
-              <button class="action-btn ${isLikedByMe ? 'liked' : ''}" onclick="toggleLike('${post.id}')">
-                <span class="action-icon">↑</span> <span id="like-count-${post.id}">${post.likes}</span> Utile
+              <button class="action-btn like-btn ${isLikedByMe ? 'liked' : ''}" data-post-id="${safeId}">
+                <span class="action-icon">↑</span> <span class="like-count">${post.likes}</span> Utile
               </button>
-              <button class="action-btn" onclick="prepareReply('${post.id}', '${post.author.name}')">
+              <button class="action-btn reply-btn" data-post-id="${safeId}" data-author-name="${safeName}">
                 <span class="action-icon">↩</span> Répondre
               </button>
             </div>
@@ -575,16 +673,21 @@
       let repliesHTML = '<div class="replies-container">';
       replies.forEach(reply => {
         const c = colorFor(reply.author.name);
+        const safeName = escapeHtml(reply.author.name);
+        const safeInitials = escapeHtml(reply.author.initials);
+        const safeContent = escapeHtml(reply.content);
+        const safeTime = escapeHtml(reply.timestamp);
+        const safeId = escapeHtml(reply.id);
         repliesHTML += `
-          <div class="reply-item" id="${reply.id}">
+          <div class="reply-item" id="${safeId}">
             <div class="post-header">
-              <div class="author-avatar" style="--avatar-color:${c.hex}; --avatar-bg:${c.bg};">${reply.author.initials}</div>
+              <div class="author-avatar" style="--avatar-color:${c.hex}; --avatar-bg:${c.bg};">${safeInitials}</div>
               <div class="author-meta">
-                <span class="author-name">${reply.author.name}</span>
-                <span class="post-time">${reply.timestamp}</span>
+                <span class="author-name">${safeName}</span>
+                <span class="post-time">${safeTime}</span>
               </div>
             </div>
-            <div class="post-content">${reply.content}</div>
+            <div class="post-content">${safeContent}</div>
           </div>
         `;
       });
@@ -635,21 +738,31 @@
     }
 
     // 7. POST : LIKER UN MESSAGE (Vers Cloudflare)
-    async function toggleLike(postId) {
+    async function toggleLike(event, postId) {
       const post = postsData.find(p => p.id === postId);
       if (!post) return;
 
-      const isLikedByMe = post.likedBy && post.likedBy.includes(currentUser.id);
+      const button = event.currentTarget;
+      const wasLiked = post.likedBy && post.likedBy.includes(currentUser.id);
 
-      if (isLikedByMe) {
+      if (wasLiked) {
         post.likes -= 1;
         post.likedBy = post.likedBy.filter(id => id !== currentUser.id);
       } else {
         post.likes += 1;
         if (!post.likedBy) post.likedBy = [];
         post.likedBy.push(currentUser.id);
+        burstParticles(button);
       }
       renderFeed();
+
+      // Rejoue la petite animation sur l'icône du bouton qui vient d'être recréé
+      const freshBtn = document.querySelector(`.like-btn[data-post-id="${CSS.escape(postId)}"]`);
+      if (freshBtn) {
+        const icon = freshBtn.querySelector('.action-icon');
+        icon.classList.add('pop');
+        icon.addEventListener('animationend', () => icon.classList.remove('pop'), { once: true });
+      }
 
       try {
         await fetch(`${API_BASE_URL}/likes`, {
@@ -662,6 +775,28 @@
         });
       } catch (error) {
         console.error("Erreur lors de l'enregistrement du like", error);
+      }
+    }
+
+    // Petit éclat de particules colorées au moment du like
+    function burstParticles(button) {
+      const rect = button.getBoundingClientRect();
+      const colors = [CERCLE_COLORS[0].hex, CERCLE_COLORS[1].hex, CERCLE_COLORS[2].hex, CERCLE_COLORS[3].hex];
+      const originX = rect.left + rect.height * 0.6;
+      const originY = rect.top + rect.height * 0.5;
+
+      for (let i = 0; i < 8; i++) {
+        const p = document.createElement('span');
+        p.className = 'like-particle';
+        const angle = (Math.PI * 2 * i) / 8 - Math.PI / 2 + (Math.random() * 0.5 - 0.25);
+        const dist = 20 + Math.random() * 18;
+        p.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
+        p.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
+        p.style.background = colors[i % colors.length];
+        p.style.left = `${originX}px`;
+        p.style.top = `${originY}px`;
+        document.body.appendChild(p);
+        p.addEventListener('animationend', () => p.remove());
       }
     }
 
@@ -682,6 +817,19 @@
       element.style.height = "5px";
       element.style.height = (element.scrollHeight) + "px";
     }
+
+    // ── ÉCOUTEURS D'ÉVÉNEMENTS (délégation — aucune donnée utilisateur dans un attribut onclick) ──
+    document.getElementById('composerInput').addEventListener('input', function () { autoGrow(this); });
+    document.getElementById('publishBtn').addEventListener('click', publishMessage);
+    document.getElementById('cancelReplyBtn').addEventListener('click', cancelReply);
+
+    document.getElementById('feedContainer').addEventListener('click', (e) => {
+      const likeBtn = e.target.closest('.like-btn');
+      if (likeBtn) { toggleLike(e, likeBtn.dataset.postId); return; }
+
+      const replyBtn = e.target.closest('.reply-btn');
+      if (replyBtn) { prepareReply(replyBtn.dataset.postId, replyBtn.dataset.authorName); return; }
+    });
 
     document.addEventListener('DOMContentLoaded', () => {
       initUser();
