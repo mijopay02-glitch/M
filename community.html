@@ -296,206 +296,218 @@
   </div>
 
   <script>
-    // 1. IDENTIFICATION UTILISATEUR (Depuis LocalStorage)
-    let currentUser = { id: "anonymous", name: "Anonyme", initials: "AN" };
-    
-    function initUser() {
-      try {
-        const storedUser = JSON.parse(localStorage.getItem("user"));
-        if (storedUser) {
-          // Gère les deux formats possibles selon ton architecture passée
-          const fullName = storedUser.name || storedUser.NomUtilisateur || "Utilisateur MIJO";
-          const initials = fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-          
-          currentUser = {
-            id: storedUser.userId || storedUser.telephone || Date.now().toString(),
-            name: fullName,
-            initials: initials
-          };
-        }
-      } catch (e) {
-        console.error("Erreur lecture utilisateur:", e);
-      }
-    }
+    // ── CONFIGURATION CLOUDFLARE ──
+// Remplace cette URL par l'URL de ton Cloudflare Worker
+const API_BASE_URL = "https://ton-worker.mijo.workers.dev/api";
 
-    // 2. ÉTAT DU CERCLE
-    let replyingToId = null;
+// 1. IDENTIFICATION UTILISATEUR (Depuis LocalStorage)
+let currentUser = { id: "anonymous", name: "Anonyme", initials: "AN" };
 
-    // Faux posts pour le design initial (En attendant Cloudflare Workers)
-    let postsData = [
-      {
-        id: "post_1",
-        author: { name: "Jonathan P.", initials: "JP" },
-        content: "Petite astuce pour ceux qui font de l'e-commerce : relancez toujours un client qui a laissé 'Vu' après 24h avec une offre de -5%. Mon taux de conversion a doublé cette semaine.",
-        timestamp: "Il y a 2 heures",
-        likes: 14,
-        isLiked: false,
-        replies: [
-          {
-            id: "reply_1",
-            author: { name: "Mikyson A.", initials: "MA" },
-            content: "Excellent. Est-ce que tu automatises ce message ou tu le fais manuellement sur WhatsApp Business ?",
-            timestamp: "Il y a 1 heure",
-            likes: 3,
-            isLiked: true
-          }
-        ]
-      },
-      {
-        id: "post_2",
-        author: { name: "Sarah L.", initials: "SL" },
-        content: "Je cherche des recommandations pour un fournisseur d'emballages biodégradables à Port-au-Prince. Des contacts ?",
-        timestamp: "Il y a 5 heures",
-        likes: 2,
-        isLiked: false,
-        replies: []
-      }
-    ];
-
-    // 3. LOGIQUE D'AFFICHAGE
-    function renderFeed() {
-      const container = document.getElementById('feedContainer');
-      container.innerHTML = '';
-
-      postsData.forEach(post => {
-        const postHTML = `
-          <article class="post-card" id="${post.id}">
-            <div class="post-header">
-              <div class="author-avatar">${post.author.initials}</div>
-              <div class="author-meta">
-                <span class="author-name">${post.author.name}</span>
-                <span class="post-time">${post.timestamp}</span>
-              </div>
-            </div>
-            
-            <div class="post-content">${post.content}</div>
-            
-            <div class="post-actions">
-              <button class="action-btn ${post.isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')">
-                <span class="action-icon">↑</span> <span id="like-count-${post.id}">${post.likes}</span> Utile
-              </button>
-              <button class="action-btn" onclick="prepareReply('${post.id}', '${post.author.name}')">
-                <span class="action-icon">💬</span> Répondre
-              </button>
-            </div>
-
-            ${renderReplies(post.replies)}
-          </article>
-        `;
-        container.insertAdjacentHTML('beforeend', postHTML);
-      });
-    }
-
-    function renderReplies(replies) {
-      if (!replies || replies.length === 0) return '';
+function initUser() {
+  try {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) {
+      const fullName = storedUser.name || storedUser.NomUtilisateur || "Utilisateur MIJO";
+      const initials = fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
       
-      let repliesHTML = '<div class="replies-container">';
-      replies.forEach(reply => {
-        repliesHTML += `
-          <div class="reply-item" id="${reply.id}">
-            <div class="post-header">
-              <div class="author-avatar">${reply.author.initials}</div>
-              <div class="author-meta">
-                <span class="author-name">${reply.author.name}</span>
-                <span class="post-time">${reply.timestamp}</span>
-              </div>
-            </div>
-            <div class="post-content">${reply.content}</div>
-          </div>
-        `;
-      });
-      repliesHTML += '</div>';
-      return repliesHTML;
-    }
-
-    // 4. ACTIONS (Cloudflare Workers Ready)
-    function toggleLike(postId) {
-      const post = postsData.find(p => p.id === postId);
-      if (post) {
-        post.isLiked = !post.isLiked;
-        post.likes += post.isLiked ? 1 : -1;
-        renderFeed();
-
-        /*
-        // FUTUR APPEL CLOUDFLARE WORKER :
-        fetch('https://ton-worker.mijo.workers.dev/api/like', {
-          method: 'POST',
-          body: JSON.stringify({ userId: currentUser.id, postId: postId })
-        });
-        */
-      }
-    }
-
-    function prepareReply(postId, authorName) {
-      replyingToId = postId;
-      document.getElementById('replyingToText').textContent = `En réponse à ${authorName}...`;
-      document.getElementById('replyBanner').classList.add('active');
-      document.getElementById('composerInput').focus();
-    }
-
-    function cancelReply() {
-      replyingToId = null;
-      document.getElementById('replyBanner').classList.remove('active');
-    }
-
-    function publishMessage() {
-      const input = document.getElementById('composerInput');
-      const content = input.value.trim();
-      if (!content) return;
-
-      const newMessage = {
-        id: "msg_" + Date.now(),
-        author: { name: currentUser.name, initials: currentUser.initials },
-        content: content,
-        timestamp: "À l'instant",
-        likes: 0,
-        isLiked: false,
-        replies: []
+      currentUser = {
+        id: storedUser.userId || storedUser.telephone || Date.now().toString(),
+        name: fullName,
+        initials: initials
       };
-
-      if (replyingToId) {
-        // Ajouter comme réponse
-        const parentPost = postsData.find(p => p.id === replyingToId);
-        if (parentPost) {
-          parentPost.replies.push(newMessage);
-        }
-        cancelReply();
-      } else {
-        // Ajouter comme nouveau post
-        postsData.unshift(newMessage); // Ajoute en haut
-      }
-
-      /*
-      // FUTUR APPEL CLOUDFLARE WORKER :
-      fetch('https://ton-worker.mijo.workers.dev/api/post', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: currentUser.id,
-          content: content,
-          parentId: replyingToId // null si nouveau post
-        })
-      });
-      */
-
-      input.value = '';
-      input.style.height = '50px'; // Reset hauteur
-      renderFeed();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  } catch (e) {
+    console.error("Erreur lecture utilisateur:", e);
+  }
+}
 
-    // Auto-resize du textarea
-    function autoGrow(element) {
-      element.style.height = "5px";
-      element.style.height = (element.scrollHeight) + "px";
-    }
+// 2. ÉTAT DU CERCLE
+let replyingToId = null;
+let postsData = [];
 
-    // Initialisation
-    document.addEventListener('DOMContentLoaded', () => {
-      initUser();
+// 3. FETCH : RÉCUPÉRER LES DONNÉES DEPUIS CLOUDFLARE
+async function chargerFeed() {
+  const container = document.getElementById('feedContainer');
+  container.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted);">Chargement du réseau...</div>';
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/posts`);
+    if (!response.ok) throw new Error("Erreur serveur");
+    
+    // Cloudflare doit te renvoyer un tableau de posts avec leurs réponses
+    postsData = await response.json(); 
+    
+    if (postsData.length === 0) {
+      container.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted);">Soyez le premier à partager une idée !</div>';
+    } else {
       renderFeed();
+    }
+  } catch (error) {
+    console.error("Erreur lors du chargement:", error);
+    container.innerHTML = '<div style="text-align:center; padding: 20px; color: red;">Erreur de connexion au serveur MIJO.</div>';
+  }
+}
+
+// 4. LOGIQUE D'AFFICHAGE (Identique au design précédent)
+function renderFeed() {
+  const container = document.getElementById('feedContainer');
+  container.innerHTML = '';
+
+  postsData.forEach(post => {
+    // Vérifie si l'utilisateur actuel a déjà liké ce post (Si ton API renvoie une liste de 'likedBy')
+    const isLikedByMe = post.likedBy && post.likedBy.includes(currentUser.id);
+
+    const postHTML = `
+      <article class="post-card" id="${post.id}">
+        <div class="post-header">
+          <div class="author-avatar">${post.author.initials}</div>
+          <div class="author-meta">
+            <span class="author-name">${post.author.name}</span>
+            <span class="post-time">${post.timestamp}</span>
+          </div>
+        </div>
+        
+        <div class="post-content">${post.content}</div>
+        
+        <div class="post-actions">
+          <button class="action-btn ${isLikedByMe ? 'liked' : ''}" onclick="toggleLike('${post.id}')">
+            <span class="action-icon">↑</span> <span id="like-count-${post.id}">${post.likes}</span> Utile
+          </button>
+          <button class="action-btn" onclick="prepareReply('${post.id}', '${post.author.name}')">
+            <span class="action-icon">💬</span> Répondre
+          </button>
+        </div>
+
+        ${renderReplies(post.replies)}
+      </article>
+    `;
+    container.insertAdjacentHTML('beforeend', postHTML);
+  });
+}
+
+function renderReplies(replies) {
+  if (!replies || replies.length === 0) return '';
+  let repliesHTML = '<div class="replies-container">';
+  replies.forEach(reply => {
+    repliesHTML += `
+      <div class="reply-item" id="${reply.id}">
+        <div class="post-header">
+          <div class="author-avatar">${reply.author.initials}</div>
+          <div class="author-meta">
+            <span class="author-name">${reply.author.name}</span>
+            <span class="post-time">${reply.timestamp}</span>
+          </div>
+        </div>
+        <div class="post-content">${reply.content}</div>
+      </div>
+    `;
+  });
+  repliesHTML += '</div>';
+  return repliesHTML;
+}
+
+// 5. POST : PUBLIER UN MESSAGE (Vers Cloudflare)
+async function publishMessage() {
+  const input = document.getElementById('composerInput');
+  const btn = document.getElementById('publishBtn');
+  const content = input.value.trim();
+  
+  if (!content) return;
+
+  // Bloquer le bouton pendant l'envoi pour éviter les doubles clics
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  const payload = {
+    userId: currentUser.id,
+    authorName: currentUser.name,
+    authorInitials: currentUser.initials,
+    content: content,
+    parentId: replyingToId // Sera null si c'est un nouveau post
+  };
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/posts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
     });
 
+    if (!response.ok) throw new Error("Erreur publication");
+
+    // Succès : on vide le champ et on recharge le feed
+    input.value = '';
+    input.style.height = '50px';
+    cancelReply();
+    await chargerFeed(); // On recharge les données depuis le serveur
+
+  } catch (error) {
+    alert("Impossible de publier pour le moment.");
+    console.error(error);
+  } finally {
+    // Débloquer le bouton
+    btn.disabled = false;
+    btn.textContent = 'Publier';
+  }
+}
+
+// 6. POST : LIKER UN MESSAGE (Vers Cloudflare)
+async function toggleLike(postId) {
+  // Optimistic UI update (On met à jour l'écran immédiatement pour la fluidité)
+  const post = postsData.find(p => p.id === postId);
+  if (!post) return;
+
+  const isLikedByMe = post.likedBy && post.likedBy.includes(currentUser.id);
+  
+  if (isLikedByMe) {
+    post.likes -= 1;
+    post.likedBy = post.likedBy.filter(id => id !== currentUser.id);
+  } else {
+    post.likes += 1;
+    if (!post.likedBy) post.likedBy = [];
+    post.likedBy.push(currentUser.id);
+  }
+  renderFeed(); // Rafraîchir l'affichage
+
+  // Envoi silencieux au serveur en arrière-plan
+  try {
+    await fetch(`${API_BASE_URL}/likes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: currentUser.id,
+        postId: postId
+      })
+    });
+  } catch (error) {
+    console.error("Erreur lors de l'enregistrement du like", error);
+    // Si ça échoue, on pourrait annuler le like à l'écran, mais pour l'instant on laisse tel quel.
+  }
+}
+
+// Gérer la boîte de réponse
+function prepareReply(postId, authorName) {
+  replyingToId = postId;
+  document.getElementById('replyingToText').textContent = `En réponse à ${authorName}...`;
+  document.getElementById('replyBanner').classList.add('active');
+  document.getElementById('composerInput').focus();
+}
+
+function cancelReply() {
+  replyingToId = null;
+  document.getElementById('replyBanner').classList.remove('active');
+}
+
+function autoGrow(element) {
+  element.style.height = "5px";
+  element.style.height = (element.scrollHeight) + "px";
+}
+
+// Initialisation au chargement de la page
+document.addEventListener('DOMContentLoaded', () => {
+  initUser();
+  chargerFeed();
+});
   </script>
 </body>
 </html>
