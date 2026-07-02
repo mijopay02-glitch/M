@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Le Cercle — MIJO PAY</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-page:       #F4F4F5; /* Gris extrêmement clair, ambiance papier */
+      --bg-surface:    #FFFFFF;
+      --border-light:  rgba(15, 23, 42, 0.08);
+      --border-focus:  rgba(46, 124, 246, 0.3);
+      --text-main:     #0F172A;
+      --text-muted:    #64748B;
+      --accent-blue:   #2E7CF6;
+      --accent-glow:   rgba(46, 124, 246, 0.1);
+      
+      --radius-sm:     8px;
+      --radius-md:     16px;
+      --radius-lg:     24px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg-page);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADER ── */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-light);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .header-subtitle {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .back-btn {
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 20px;
+      width: 32px;
+      display: flex;
+    }
+
+    /* ── FEED (CERCLE) ── */
+    .feed-container {
+      flex: 1;
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 16px 16px 120px; /* Espace en bas pour le composeur */
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ── POST ITEM ── */
+    .post-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+      transition: transform 0.2s ease;
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .author-avatar {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: var(--bg-page);
+      border: 1px solid var(--border-light);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      color: var(--accent-blue);
+    }
+
+    .author-meta { display: flex; flex-direction: column; }
+    
+    .author-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-main);
+    }
+
+    .post-time {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .post-content {
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: var(--text-main);
+      margin-bottom: 16px;
+      white-space: pre-wrap; /* Respecte les sauts de ligne */
+    }
+
+    /* ── ACTIONS (LIKE / REPLY) ── */
+    .post-actions {
+      display: flex;
+      gap: 16px;
+      border-top: 1px solid var(--border-light);
+      padding-top: 12px;
+    }
+
+    .action-btn {
+      background: transparent;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .action-btn:hover { color: var(--text-main); }
+    
+    .action-btn.liked {
+      color: var(--accent-blue);
+    }
+
+    .action-icon {
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    /* ── REPLIES STRUCTURE ── */
+    .replies-container {
+      margin-top: 16px;
+      padding-left: 24px;
+      border-left: 2px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .reply-item {
+      position: relative;
+    }
+
+    .reply-item .author-avatar { width: 28px; height: 28px; font-size: 11px; }
+    .reply-item .post-content { font-size: 13.5px; margin-bottom: 8px; }
+
+    /* ── COMPOSER (STICKY BOTTOM) ── */
+    .composer-wrapper {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border-light);
+      padding: 12px 20px 24px;
+    }
+
+    .composer-inner {
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .composer-input {
+      flex: 1;
+      background: var(--bg-page);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14.5px;
+      color: var(--text-main);
+      resize: none;
+      min-height: 50px;
+      max-height: 120px;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .composer-input:focus {
+      background: var(--bg-surface);
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .composer-input::placeholder { color: #94A3B8; }
+
+    .publish-btn {
+      background: var(--accent-blue);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      height: 50px;
+      padding: 0 20px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .publish-btn:active { transform: scale(0.96); }
+    .publish-btn:disabled { background: var(--text-muted); cursor: not-allowed; opacity: 0.5; }
+
+    /* ── CONTEXTUAL REPLY BANNER ── */
+    .reply-banner {
+      display: none;
+      font-size: 12px;
+      color: var(--accent-blue);
+      font-weight: 600;
+      margin-bottom: 8px;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .reply-banner.active { display: flex; }
+    .cancel-reply { cursor: pointer; color: var(--text-muted); font-size: 16px; line-height: 1; }
+
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <a href="home.html" class="back-btn">←</a>
+    <div style="text-align: center;">
+      <h1 class="header-title">Le Cercle</h1>
+      <span class="header-subtitle">Réseau d'Entrepreneurs</span>
+    </div>
+    <div style="width: 32px;"></div> <!-- Spacer -->
+  </header>
+
+  <!-- Feed -->
+  <main class="feed-container" id="feedContainer">
+    <!-- Les posts seront injectés ici par le JS -->
+  </main>
+
+  <!-- Composer -->
+  <div class="composer-wrapper">
+    <div class="composer-inner" style="flex-direction: column; align-items: stretch;">
+      
+      <div class="reply-banner" id="replyBanner">
+        <span id="replyingToText">En réponse à...</span>
+        <span class="cancel-reply" onclick="cancelReply()">×</span>
+      </div>
+
+      <div style="display: flex; gap: 10px; align-items: flex-end; width: 100%;">
+        <textarea id="composerInput" class="composer-input" placeholder="Partagez une stratégie ou posez une question..." rows="1" oninput="autoGrow(this)"></textarea>
+        <button id="publishBtn" class="publish-btn" onclick="publishMessage()">Publier</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 1. IDENTIFICATION UTILISATEUR (Depuis LocalStorage)
+    let currentUser = { id: "anonymous", name: "Anonyme", initials: "AN" };
+    
+    function initUser() {
+      try {
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        if (storedUser) {
+          // Gère les deux formats possibles selon ton architecture passée
+          const fullName = storedUser.name || storedUser.NomUtilisateur || "Utilisateur MIJO";
+          const initials = fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+          
+          currentUser = {
+            id: storedUser.userId || storedUser.telephone || Date.now().toString(),
+            name: fullName,
+            initials: initials
+          };
+        }
+      } catch (e) {
+        console.error("Erreur lecture utilisateur:", e);
+      }
+    }
+
+    // 2. ÉTAT DU CERCLE
+    let replyingToId = null;
+
+    // Faux posts pour le design initial (En attendant Cloudflare Workers)
+    let postsData = [
+      {
+        id: "post_1",
+        author: { name: "Jonathan P.", initials: "JP" },
+        content: "Petite astuce pour ceux qui font de l'e-commerce : relancez toujours un client qui a laissé 'Vu' après 24h avec une offre de -5%. Mon taux de conversion a doublé cette semaine.",
+        timestamp: "Il y a 2 heures",
+        likes: 14,
+        isLiked: false,
+        replies: [
+          {
+            id: "reply_1",
+            author: { name: "Mikyson A.", initials: "MA" },
+            content: "Excellent. Est-ce que tu automatises ce message ou tu le fais manuellement sur WhatsApp Business ?",
+            timestamp: "Il y a 1 heure",
+            likes: 3,
+            isLiked: true
+          }
+        ]
+      },
+      {
+        id: "post_2",
+        author: { name: "Sarah L.", initials: "SL" },
+        content: "Je cherche des recommandations pour un fournisseur d'emballages biodégradables à Port-au-Prince. Des contacts ?",
+        timestamp: "Il y a 5 heures",
+        likes: 2,
+        isLiked: false,
+        replies: []
+      }
+    ];
+
+    // 3. LOGIQUE D'AFFICHAGE
+    function renderFeed() {
+      const container = document.getElementById('feedContainer');
+      container.innerHTML = '';
+
+      postsData.forEach(post => {
+        const postHTML = `
+          <article class="post-card" id="${post.id}">
+            <div class="post-header">
+              <div class="author-avatar">${post.author.initials}</div>
+              <div class="author-meta">
+                <span class="author-name">${post.author.name}</span>
+                <span class="post-time">${post.timestamp}</span>
+              </div>
+            </div>
+            
+            <div class="post-content">${post.content}</div>
+            
+            <div class="post-actions">
+              <button class="action-btn ${post.isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')">
+                <span class="action-icon">↑</span> <span id="like-count-${post.id}">${post.likes}</span> Utile
+              </button>
+              <button class="action-btn" onclick="prepareReply('${post.id}', '${post.author.name}')">
+                <span class="action-icon">💬</span> Répondre
+              </button>
+            </div>
+
+            ${renderReplies(post.replies)}
+          </article>
+        `;
+        container.insertAdjacentHTML('beforeend', postHTML);
+      });
+    }
+
+    function renderReplies(replies) {
+      if (!replies || replies.length === 0) return '';
+      
+      let repliesHTML = '<div class="replies-container">';
+      replies.forEach(reply => {
+        repliesHTML += `
+          <div class="reply-item" id="${reply.id}">
+            <div class="post-header">
+              <div class="author-avatar">${reply.author.initials}</div>
+              <div class="author-meta">
+                <span class="author-name">${reply.author.name}</span>
+                <span class="post-time">${reply.timestamp}</span>
+              </div>
+            </div>
+            <div class="post-content">${reply.content}</div>
+          </div>
+        `;
+      });
+      repliesHTML += '</div>';
+      return repliesHTML;
+    }
+
+    // 4. ACTIONS (Cloudflare Workers Ready)
+    function toggleLike(postId) {
+      const post = postsData.find(p => p.id === postId);
+      if (post) {
+        post.isLiked = !post.isLiked;
+        post.likes += post.isLiked ? 1 : -1;
+        renderFeed();
+
+        /*
+        // FUTUR APPEL CLOUDFLARE WORKER :
+        fetch('https://ton-worker.mijo.workers.dev/api/like', {
+          method: 'POST',
+          body: JSON.stringify({ userId: currentUser.id, postId: postId })
+        });
+        */
+      }
+    }
+
+    function prepareReply(postId, authorName) {
+      replyingToId = postId;
+      document.getElementById('replyingToText').textContent = `En réponse à ${authorName}...`;
+      document.getElementById('replyBanner').classList.add('active');
+      document.getElementById('composerInput').focus();
+    }
+
+    function cancelReply() {
+      replyingToId = null;
+      document.getElementById('replyBanner').classList.remove('active');
+    }
+
+    function publishMessage() {
+      const input = document.getElementById('composerInput');
+      const content = input.value.trim();
+      if (!content) return;
+
+      const newMessage = {
+        id: "msg_" + Date.now(),
+        author: { name: currentUser.name, initials: currentUser.initials },
+        content: content,
+        timestamp: "À l'instant",
+        likes: 0,
+        isLiked: false,
+        replies: []
+      };
+
+      if (replyingToId) {
+        // Ajouter comme réponse
+        const parentPost = postsData.find(p => p.id === replyingToId);
+        if (parentPost) {
+          parentPost.replies.push(newMessage);
+        }
+        cancelReply();
+      } else {
+        // Ajouter comme nouveau post
+        postsData.unshift(newMessage); // Ajoute en haut
+      }
+
+      /*
+      // FUTUR APPEL CLOUDFLARE WORKER :
+      fetch('https://ton-worker.mijo.workers.dev/api/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: currentUser.id,
+          content: content,
+          parentId: replyingToId // null si nouveau post
+        })
+      });
+      */
+
+      input.value = '';
+      input.style.height = '50px'; // Reset hauteur
+      renderFeed();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Auto-resize du textarea
+    function autoGrow(element) {
+      element.style.height = "5px";
+      element.style.height = (element.scrollHeight) + "px";
+    }
+
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', () => {
+      initUser();
+      renderFeed();
+    });
+
+  </script>
+</body>
+</html>
