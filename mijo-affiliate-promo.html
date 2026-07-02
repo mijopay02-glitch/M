@@ -624,7 +624,7 @@
         });
 
         async function fetchLeaderboard() {
-            const leaderboardUrl = "https://classment.mijocomplexe.workers.dev/";
+            const leaderboardUrl = "https://classment.mijocomplexe.workers.dev/?action=get_leaderboard";
 
             try {
                 const response = await fetch(leaderboardUrl, {
@@ -632,11 +632,13 @@
                     headers: { 'Content-Type': 'application/json' },
                 });
 
-                if (!response.ok) {
-                    throw new Error('Échec du chargement du classement.');
+                const payload = await response.json();
+
+                if (!response.ok || !payload.success) {
+                    throw new Error(payload.error || 'Échec du chargement du classement.');
                 }
 
-                const leaderboardData = await response.json();
+                const leaderboardData = payload.leaderboard || [];
                 leaderboardData.sort((a, b) => b.nbreaffilie - a.nbreaffilie);
                 displayLeaderboard(leaderboardData);
 
