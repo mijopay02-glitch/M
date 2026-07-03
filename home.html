@@ -254,11 +254,20 @@
             box-shadow: var(--shadow-sm); display: block;
             text-decoration: none; background: var(--white);
             transition: transform .2s, box-shadow .2s; border: 1px solid var(--border);
+            position: relative;
         }
         .flyer-card:active { transform: scale(.97); box-shadow: none; }
         .flyer-card img { width: 100%; height: 160px; object-fit: cover; display: block; }
         .flyer-card.wide { grid-column: 1 / -1; }
         .flyer-card.wide img { height: 200px; object-fit: cover; }
+        .flyer-lock-badge {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(17,24,39,.65); color: #FCD34D;
+            font-size: .68em; font-weight: 700;
+            padding: 4px 9px; border-radius: 20px;
+            display: flex; align-items: center; gap: 4px;
+            backdrop-filter: blur(2px);
+        }
  
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,.45);
@@ -291,6 +300,12 @@
         }
         .confirm-btn:active { opacity: .85; }
         .modal-message { font-size: .82em; text-align: center; margin-top: 12px; min-height: 20px; font-weight: 500; }
+
+        /* Premium required modal */
+        .premium-btn {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            box-shadow: 0 8px 24px rgba(217,119,6,.3);
+        }
  
         /* ── FLOATING NAV BUTTONS ── */
         .float-nav {
@@ -511,13 +526,12 @@
         <div>
             <div class="section-label">À la une</div>
             <div class="flyers-grid">
-               <a href="#" onclick="checkBusinessAccess(event)" class="flyer-card wide">
-    <img src="https://i.postimg.cc/NGW4rdZG/l-image-est-une-composition-divisee-vert-b-Fn-Pt-TWi-WA2YEh-Q1Dux5-Q-S8W4qjpi-S6yu-TIj-OOBy-MPA.jpg" alt="MIJO busness helper">
-</a>
+                <a href="#" onclick="checkBusinessAccess(event)" class="flyer-card wide">
+                    <span class="flyer-lock-badge">🔒 Premium</span>
+                    <img src="https://i.postimg.cc/NGW4rdZG/l-image-est-une-composition-divisee-vert-b-Fn-Pt-TWi-WA2YEh-Q1Dux5-Q-S8W4qjpi-S6yu-TIj-OOBy-MPA.jpg" alt="MIJO busness helper">
+                </a>
                 <a href="premium.html" class="flyer-card">
                     <img src="https://i.postimg.cc/d1zd7P3j/a-dynamic-promotional-poster-for-mijo-pa-O35h-A-9v-Sn-Srwi5-Blvd-PPA-l-NGj-Bdlx-TM6i-XCh8xxmma-A.jpg" alt="MIJO PAY Premium">
-                </a>
-                
                 </a>
                 <a href="profil.html" class="flyer-card">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIeottYUxPxnwj44hoOmHKtI7Ie3O6oTDm6s7h0-zE0Q&s=10" alt="mes infos">
@@ -539,21 +553,22 @@
             <button class="confirm-btn" onclick="handleTransfer()">Confirmer le transfert</button>
             <div id="transferMessage" class="modal-message"></div>
         </div>
-        <!-- PREMIUM REQUIRED MODAL -->
-<div id="premiumRequiredModal" class="modal-overlay">
-    <div class="modal-sheet">
-        <div class="modal-handle"></div>
-        <button class="modal-close" onclick="hidePremiumModal()">✕</button>
-        <div class="modal-title">🔒 Fonctionnalité Premium</div>
-        <p style="font-size:.85em;color:var(--text-2);margin-bottom:18px;line-height:1.5;">
-            MIJO Business est réservé aux membres Premium. Activez votre abonnement pour seulement
-            <strong style="color:var(--text);">150 Gdes/mois</strong> et débloquez cet outil.
-        </p>
-        <button class="confirm-btn" onclick="window.location.href='premium.html'">
-            ⭐ Activer Premium — 150 Gdes/mois
-        </button>
     </div>
 
+    <!-- PREMIUM REQUIRED MODAL -->
+    <div id="premiumRequiredModal" class="modal-overlay">
+        <div class="modal-sheet">
+            <div class="modal-handle"></div>
+            <button class="modal-close" onclick="hidePremiumModal()">✕</button>
+            <div class="modal-title">🔒 Fonctionnalité Premium</div>
+            <p style="font-size:.85em;color:var(--text-2);margin-bottom:18px;line-height:1.5;">
+                MIJO Business est réservé aux membres Premium. Activez votre abonnement pour seulement
+                <strong style="color:var(--text);">150 Gdes/mois</strong> et débloquez cet outil.
+            </p>
+            <button class="confirm-btn premium-btn" onclick="window.location.href='premium.html'">
+                ⭐ Activer Premium — 150 Gdes/mois
+            </button>
+        </div>
     </div>
  
     <!-- FLOATING NAV BUTTONS -->
@@ -652,27 +667,7 @@
         pollSoldeApresDepot();
     }
 }
-// ══════════════════════════════════════════════════
-// MIJO BUSINESS — accès Premium requis
-// ══════════════════════════════════════════════════
-function checkBusinessAccess(event) {
-    event.preventDefault();
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user) return logout();
 
-    const estPremium = user.EstPremium === true || user.EstPremium === "true";
-    if (estPremium) {
-        window.location.href = 'MBH.html';
-    } else {
-        document.getElementById('premiumRequiredModal').classList.add('open');
-    }
-}
-document.getElementById('premiumRequiredModal').addEventListener('click', function(e) {
-    if (e.target === this) hidePremiumModal();
-});
-function hidePremiumModal() {
-    document.getElementById('premiumRequiredModal').classList.remove('open');
-}
 function pollSoldeApresDepot() {
     const balanceEl = document.getElementById('balance');
     balanceEl.style.opacity = '0.5';
@@ -905,6 +900,26 @@ function pollSoldeApresDepot() {
         const estAfilie = user.Estafilia === true || user.Estafilia === "true";
         window.location.href = estAfilie ? 'mijo-affiliate-promo.html' : 'mijo-affiliate-inscription.html';
     }
+
+    // ══════════════════════════════════════════════════
+    // MIJO BUSINESS — accès Premium requis
+    // ══════════════════════════════════════════════════
+    function checkBusinessAccess(event) {
+        event.preventDefault();
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) return logout();
+
+        const estPremium = user.EstPremium === true || user.EstPremium === "true";
+        if (estPremium) {
+            window.location.href = 'MBH.html';
+        } else {
+            document.getElementById('premiumRequiredModal').classList.add('open');
+        }
+    }
+
+    function hidePremiumModal() {
+        document.getElementById('premiumRequiredModal').classList.remove('open');
+    }
  
     // ══════════════════════════════════════════════════
     // HISTORY LOCAL
@@ -1026,6 +1041,10 @@ function pollSoldeApresDepot() {
     document.getElementById('transferModal').addEventListener('click', function(e) {
         if (e.target === this) hideTransferModal();
     });
+
+    document.getElementById('premiumRequiredModal').addEventListener('click', function(e) {
+        if (e.target === this) hidePremiumModal();
+    });
  
     // ══════════════════════════════════════════════════
     // AUTO EXPAND / COLLAPSE DES BOUTONS FLOTTANTS
@@ -1113,4 +1132,3 @@ function pollSoldeApresDepot() {
     </script>
 </body>
 </html>
- 
