@@ -511,9 +511,9 @@
         <div>
             <div class="section-label">À la une</div>
             <div class="flyers-grid">
-                <a href="MBH.html" class="flyer-card wide">
-                    <img src="https://i.postimg.cc/NGW4rdZG/l-image-est-une-composition-divisee-vert-b-Fn-Pt-TWi-WA2YEh-Q1Dux5-Q-S8W4qjpi-S6yu-TIj-OOBy-MPA.jpg" alt="MIJO busness helper">
-                </a>
+               <a href="#" onclick="checkBusinessAccess(event)" class="flyer-card wide">
+    <img src="https://i.postimg.cc/NGW4rdZG/l-image-est-une-composition-divisee-vert-b-Fn-Pt-TWi-WA2YEh-Q1Dux5-Q-S8W4qjpi-S6yu-TIj-OOBy-MPA.jpg" alt="MIJO busness helper">
+</a>
                 <a href="premium.html" class="flyer-card">
                     <img src="https://i.postimg.cc/d1zd7P3j/a-dynamic-promotional-poster-for-mijo-pa-O35h-A-9v-Sn-Srwi5-Blvd-PPA-l-NGj-Bdlx-TM6i-XCh8xxmma-A.jpg" alt="MIJO PAY Premium">
                 </a>
@@ -539,6 +539,21 @@
             <button class="confirm-btn" onclick="handleTransfer()">Confirmer le transfert</button>
             <div id="transferMessage" class="modal-message"></div>
         </div>
+        <!-- PREMIUM REQUIRED MODAL -->
+<div id="premiumRequiredModal" class="modal-overlay">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <button class="modal-close" onclick="hidePremiumModal()">✕</button>
+        <div class="modal-title">🔒 Fonctionnalité Premium</div>
+        <p style="font-size:.85em;color:var(--text-2);margin-bottom:18px;line-height:1.5;">
+            MIJO Business est réservé aux membres Premium. Activez votre abonnement pour seulement
+            <strong style="color:var(--text);">150 Gdes/mois</strong> et débloquez cet outil.
+        </p>
+        <button class="confirm-btn" onclick="window.location.href='premium.html'">
+            ⭐ Activer Premium — 150 Gdes/mois
+        </button>
+    </div>
+
     </div>
  
     <!-- FLOATING NAV BUTTONS -->
@@ -637,7 +652,27 @@
         pollSoldeApresDepot();
     }
 }
+// ══════════════════════════════════════════════════
+// MIJO BUSINESS — accès Premium requis
+// ══════════════════════════════════════════════════
+function checkBusinessAccess(event) {
+    event.preventDefault();
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) return logout();
 
+    const estPremium = user.EstPremium === true || user.EstPremium === "true";
+    if (estPremium) {
+        window.location.href = 'MBH.html';
+    } else {
+        document.getElementById('premiumRequiredModal').classList.add('open');
+    }
+}
+document.getElementById('premiumRequiredModal').addEventListener('click', function(e) {
+    if (e.target === this) hidePremiumModal();
+});
+function hidePremiumModal() {
+    document.getElementById('premiumRequiredModal').classList.remove('open');
+}
 function pollSoldeApresDepot() {
     const balanceEl = document.getElementById('balance');
     balanceEl.style.opacity = '0.5';
