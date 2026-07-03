@@ -370,54 +370,35 @@
         .confirm-btn:active { opacity: .85; }
         .modal-message { font-family: var(--font-ui); font-size: .82em; text-align: center; margin-top: 12px; min-height: 20px; font-weight: 500; }
 
-        /* ══════════════════════ FLOATING NAV ══════════════════════ */
-        .float-nav {
-            position: fixed;
-            bottom: 120px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
+        /* ══════════════════════ ACCÈS RAPIDE (non flottant) ══════════════════════ */
+        .quick-access {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
-            z-index: 50;
         }
-        .float-btn {
-            display: flex; align-items: center; gap: 0;
-            background: var(--white);
-            border-radius: 50px;
-            box-shadow: 0 6px 24px rgba(0,0,0,.15);
-            border: 1px solid var(--border);
-            cursor: pointer; text-decoration: none; overflow: hidden; position: relative;
-            width: 52px; height: 52px;
-            transition: width .45s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease, transform .2s ease;
-            white-space: nowrap;
+        .quick-card {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--white); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 14px 14px;
+            text-decoration: none; box-shadow: var(--shadow-sm);
+            transition: transform .15s, box-shadow .15s, border-color .15s;
         }
-        .float-btn.expanded { width: 168px; box-shadow: 0 10px 32px rgba(26,111,232,.28); }
-        .float-btn.tx.expanded { box-shadow: 0 10px 32px rgba(245,158,11,.28); }
-        .float-btn:active { transform: scale(.95); }
-        .float-btn-icon {
-            width: 52px; height: 52px; min-width: 52px;
+        .quick-card:active { transform: scale(.97); box-shadow: none; }
+        .quick-card-icon {
+            width: 42px; height: 42px; min-width: 42px; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            border-radius: 50%; font-size: 1.3em; flex-shrink: 0;
+            font-size: 1.15em;
         }
-        .float-btn.store .float-btn-icon { background: linear-gradient(135deg, var(--blue), var(--blue-dark)); }
-        .float-btn.tx .float-btn-icon { background: linear-gradient(135deg, #F59E0B, #D97706); }
-        .float-btn-label {
-            font-family: var(--font-ui); font-size: .8em; font-weight: 700; color: var(--text);
-            padding-right: 18px; opacity: 0; transform: translateX(-8px);
-            transition: opacity .2s ease, transform .2s ease; pointer-events: none;
+        .quick-card.store .quick-card-icon { background: linear-gradient(135deg, var(--blue), var(--blue-dark)); }
+        .quick-card.tx .quick-card-icon { background: linear-gradient(135deg, #F59E0B, #D97706); }
+        .quick-card-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+        .quick-card-label {
+            font-family: var(--font-ui); font-size: .78em; font-weight: 700; color: var(--text);
         }
-        .float-btn.expanded .float-btn-label { opacity: 1; transform: translateX(0); }
-        .float-btn.store::before {
-            content: ''; position: absolute; right: 4px; bottom: 4px;
-            width: 44px; height: 44px; border-radius: 50%;
-            border: 1.5px solid rgba(26,111,232,.4);
-            animation: ringPulse 2.5s ease-out infinite; pointer-events: none;
+        .quick-card-sub {
+            font-family: var(--font-ui); font-size: .65em; color: var(--text-2);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
-        @keyframes ringPulse { 0% { transform: scale(1); opacity: .8; } 100% { transform: scale(1.7); opacity: 0; } }
-        .float-btn.store { animation: floatIn .5s cubic-bezier(.34,1.56,.64,1) .8s both; }
-        .float-btn.tx    { animation: floatIn .5s cubic-bezier(.34,1.56,.64,1) .95s both; }
-        @keyframes floatIn { from { opacity: 0; transform: translateX(60px) scale(.7); } to { opacity: 1; transform: translateX(0) scale(1); } }
 
         .header-card.premium {
             background:
@@ -535,6 +516,25 @@
                 </a>
             </div>
         </div>
+        <div>
+            <div class="section-label">Accès rapide</div>
+            <div class="quick-access">
+                <a href="store.html" class="quick-card store">
+                    <div class="quick-card-icon">🛒</div>
+                    <div class="quick-card-text">
+                        <span class="quick-card-label">Store</span>
+                        <span class="quick-card-sub">Recharge, cartes, services</span>
+                    </div>
+                </a>
+                <a href="transaction.html" class="quick-card tx">
+                    <div class="quick-card-icon">📋</div>
+                    <div class="quick-card-text">
+                        <span class="quick-card-label">Transactions</span>
+                        <span class="quick-card-sub">Historique complet</span>
+                    </div>
+                </a>
+            </div>
+        </div>
     </div>
 
     <!-- TRANSFER MODAL -->
@@ -550,18 +550,6 @@
             <button class="confirm-btn" onclick="handleTransfer()">Confirmer le transfert</button>
             <div id="transferMessage" class="modal-message"></div>
         </div>
-    </div>
-
-    <!-- FLOATING NAV BUTTONS -->
-    <div class="float-nav">
-        <a href="store.html" class="float-btn store">
-            <div class="float-btn-icon">🛒</div>
-            <span class="float-btn-label">Store</span>
-        </a>
-        <a href="transaction.html" class="float-btn tx">
-            <div class="float-btn-icon">📋</div>
-            <span class="float-btn-label">Transactions</span>
-        </a>
     </div>
 
     <script>
@@ -937,74 +925,6 @@
     document.getElementById('transferModal').addEventListener('click', function(e) {
         if (e.target === this) hideTransferModal();
     });
-
-    // ══════════════════════════════════════════════════
-    // AUTO EXPAND / COLLAPSE DES BOUTONS FLOTTANTS
-    // ══════════════════════════════════════════════════
-    (function() {
-        const btns = document.querySelectorAll('.float-btn');
-
-        const EXPAND_DURATION   = 2000;
-        const COLLAPSE_DURATION = 3000;
-        const STAGGER           = 400;
-
-        let autoTimer = null;
-        let isUserInteracting = false;
-
-        function expandBtn(btn, delay) {
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    btn.classList.add('expanded');
-                    resolve();
-                }, delay);
-            });
-        }
-
-        function collapseBtn(btn, delay) {
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    btn.classList.remove('expanded');
-                    resolve();
-                }, delay);
-            });
-        }
-
-        async function runCycle() {
-            if (isUserInteracting) return;
-
-            await expandBtn(btns[0], 0);
-            await expandBtn(btns[1], STAGGER);
-            await new Promise(r => setTimeout(r, EXPAND_DURATION));
-
-            if (isUserInteracting) return;
-
-            await collapseBtn(btns[0], 0);
-            await collapseBtn(btns[1], STAGGER);
-
-            autoTimer = setTimeout(runCycle, COLLAPSE_DURATION);
-        }
-
-        setTimeout(runCycle, 1200);
-
-        btns.forEach(btn => {
-            btn.addEventListener('mouseenter', () => {
-                isUserInteracting = true;
-                clearTimeout(autoTimer);
-                btn.classList.add('expanded');
-            });
-
-            btn.addEventListener('mouseleave', () => {
-                btn.classList.remove('expanded');
-                clearTimeout(autoTimer);
-                autoTimer = setTimeout(() => {
-                    isUserInteracting = false;
-                    runCycle();
-                }, 3000);
-            });
-
-            btn.addEventListener('touchstart', (e) => {}, { passive: true });
-        });
-    })();
     </script>
 </body>
 </html>
