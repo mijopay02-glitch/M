@@ -44,6 +44,7 @@
 
   a{color:inherit;text-decoration:none;}
   img{max-width:100%;display:block;}
+  button{font-family:inherit;cursor:pointer;}
 
   @media (prefers-reduced-motion: reduce){
     *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
@@ -132,6 +133,7 @@
     display:inline-flex;align-items:center;gap:10px;
     padding:15px 26px;
     border-radius:12px;
+    border:none;
     background:linear-gradient(135deg, var(--gold-300), var(--gold-500));
     color:var(--navy-950);
     font-weight:700; font-size:15px;
@@ -147,12 +149,27 @@
     padding:15px 24px;
     border-radius:12px;
     border:1px solid rgba(244,240,228,0.22);
+    background:transparent;
     color:var(--ivory);
     font-weight:600; font-size:15px;
     transition:border-color 0.2s ease, background 0.2s ease;
   }
   .btn-ghost:hover{border-color:rgba(244,240,228,0.5); background:rgba(244,240,228,0.05);}
   .btn-ghost:focus-visible{outline:2px solid var(--gold-300); outline-offset:3px;}
+
+  .btn-challenge{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:15px 24px;
+    border-radius:12px;
+    border:1px dashed rgba(125,95,194,0.55);
+    background:rgba(125,95,194,0.1);
+    color:var(--ivory);
+    font-weight:600; font-size:15px;
+    transition:border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  }
+  .btn-challenge:hover{border-color:var(--pin-violet); background:rgba(125,95,194,0.18); transform:translateY(-1px);}
+  .btn-challenge:focus-visible{outline:2px solid var(--pin-violet); outline-offset:3px;}
+  .btn-challenge svg{width:18px;height:18px;color:var(--pin-violet);}
 
   /* Hero visual: mini corkboard teaser */
   .hero-visual{
@@ -227,7 +244,7 @@
   .board{
     position:relative;
     border-radius:20px;
-    padding:clamp(20px,3.4vw,36px);
+    padding:clamp(16px,3.4vw,36px);
     background:
       repeating-linear-gradient(0deg, rgba(0,0,0,0.10) 0px, rgba(0,0,0,0.10) 1px, transparent 1px, transparent 30px),
       repeating-linear-gradient(90deg, rgba(0,0,0,0.10) 0px, rgba(0,0,0,0.10) 1px, transparent 1px, transparent 30px),
@@ -239,15 +256,17 @@
   .flyer-grid{
     display:grid;
     grid-template-columns:repeat(auto-fill, minmax(210px, 1fr));
-    gap:clamp(22px,3vw,34px);
+    gap:clamp(18px,3vw,34px);
   }
 
   .flyer{
     position:relative;
     display:block;
+    width:100%;
+    text-align:left;
     background:var(--navy-900);
     border-radius:10px;
-    padding:16px 16px 18px;
+    padding:14px 14px 16px;
     border:1px solid rgba(255,255,255,0.07);
     box-shadow:0 14px 28px rgba(0,0,0,0.45);
     transform:rotate(var(--rot, -2deg));
@@ -321,6 +340,37 @@
   }
   .flyer .status .dot{width:6px;height:6px;border-radius:50%;background:var(--gold-300);}
 
+  /* ---------- Mobile grid optimization ---------- */
+  @media (max-width:600px){
+    .board{ padding:14px; border-radius:16px; }
+    .flyer-grid{
+      grid-template-columns:repeat(2, 1fr);
+      gap:12px;
+    }
+    .flyer{
+      padding:9px 9px 11px;
+      border-radius:9px;
+      transform:none;
+    }
+    .flyer:hover, .flyer:focus-visible{
+      transform:translateY(-3px);
+    }
+    .flyer .pin{ width:12px; height:12px; top:-6px; }
+    .flyer-art{ margin-bottom:8px; border-radius:5px; }
+    .flyer-badge{
+      font-size:7.5px; padding:3px 6px; top:6px; right:6px;
+      letter-spacing:0.03em;
+    }
+    .flyer h3{ font-size:12.5px; margin-bottom:2px; line-height:1.2; }
+    .flyer .prof{ font-size:10px; margin-bottom:6px; }
+    .flyer .status{ font-size:9.5px; gap:4px; }
+    .flyer .status .dot{ width:5px; height:5px; }
+  }
+
+  @media (max-width:360px){
+    .flyer-grid{ gap:9px; }
+  }
+
   /* ---------- MyBusiness banner ---------- */
   .banner{
     position:relative;
@@ -347,6 +397,62 @@
     font-size:12.5px;
     color:rgba(244,240,228,0.4);
   }
+
+  /* ---------- "Bientôt disponible" modal ---------- */
+  .cs-overlay{
+    position:fixed; inset:0;
+    background:rgba(6,11,31,0.72);
+    backdrop-filter:blur(3px);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px;
+    z-index:999;
+    opacity:0; pointer-events:none;
+    transition:opacity 0.2s ease;
+  }
+  .cs-overlay.open{ opacity:1; pointer-events:auto; }
+
+  .cs-modal{
+    width:100%; max-width:360px;
+    background:linear-gradient(160deg, var(--navy-800), var(--navy-900));
+    border:1px solid rgba(212,175,55,0.35);
+    border-radius:18px;
+    padding:28px 24px 24px;
+    text-align:center;
+    box-shadow:0 24px 60px rgba(0,0,0,0.5);
+    transform:translateY(12px) scale(0.98);
+    transition:transform 0.25s ease;
+  }
+  .cs-overlay.open .cs-modal{ transform:translateY(0) scale(1); }
+
+  .cs-icon{
+    width:54px; height:54px; margin:0 auto 16px;
+    border-radius:50%;
+    background:rgba(212,175,55,0.12);
+    border:1px solid rgba(212,175,55,0.4);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .cs-icon svg{width:26px;height:26px;color:var(--gold-300);}
+
+  .cs-modal h4{
+    font-family:var(--font-display); font-weight:700;
+    font-size:18px; margin:0 0 8px;
+  }
+  .cs-modal p{
+    font-size:13.5px; line-height:1.55;
+    color:rgba(244,240,228,0.68);
+    margin:0 0 22px;
+  }
+  .cs-close{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:100%;
+    padding:13px 20px;
+    border-radius:11px;
+    border:none;
+    background:linear-gradient(135deg, var(--gold-300), var(--gold-500));
+    color:var(--navy-950);
+    font-weight:700; font-size:14px;
+  }
+  .cs-close:focus-visible{outline:2px solid var(--gold-100); outline-offset:3px;}
 </style>
 </head>
 <body>
@@ -377,6 +483,10 @@
         <a class="btn-ghost" href="#formations">
           Gade fòmasyon yo
         </a>
+        <button type="button" class="btn-challenge" onclick="comingSoon('MIJO Business Challenge', 'N ap prepare yon konpetisyon espesyal pou antreprenè MIJO yo. Detay yo ap anonse byento — rete branche!')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M7 5H4a1 1 0 0 0-1 1v1a4 4 0 0 0 4 4M17 5h3a1 1 0 0 1 1 1v1a4 4 0 0 1-4 4"/></svg>
+          MIJO Business Challenge
+        </button>
       </div>
     </div>
 
@@ -399,17 +509,19 @@
     <div class="board">
       <div class="flyer-grid">
 
-       <a class="flyer" href="prof-droit.html">
-  <div class="pin"></div>
-  <span class="flyer-badge">Bientôt disponible</span>
-  <div class="flyer-art">
-    <img src="https://i.postimg.cc/5yHCtMfz/IMG-20260703-WA0000.jpg" alt="Flyer du cours de Dwa Biznis" style="width:100%;height:100%;object-fit:cover;">
-  </div>
-  <h3>Dwa Biznis</h3>
-  <p class="prof">Daniel Samedy</p>
-  <span class="status"><span class="dot"></span>Bientôt disponible</span>
-</a>
-        <!-- Facebook Ads -->
+        <!-- Dwa Biznis — active link -->
+        <a class="flyer" href="prof-droit.html">
+          <div class="pin"></div>
+          <span class="flyer-badge">Bientôt disponible</span>
+          <div class="flyer-art">
+            <img src="https://i.postimg.cc/5yHCtMfz/IMG-20260703-WA0000.jpg" alt="Flyer du cours de Dwa Biznis" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+          <h3>Dwa Biznis</h3>
+          <p class="prof">Daniel Samedy</p>
+          <span class="status"><span class="dot"></span>Bientôt disponible</span>
+        </a>
+
+        <!-- Facebook Ads — active link -->
         <a class="flyer" href="prof-facebook-ads.html">
           <div class="pin"></div>
           <span class="flyer-badge">Bientôt disponible</span>
@@ -423,8 +535,8 @@
           <span class="status"><span class="dot"></span>Bientôt disponible</span>
         </a>
 
-        <!-- Comptabilité -->
-        <a class="flyer" href="prof-comptabilite.html">
+        <!-- Comptabilité — coming soon message, no page yet -->
+        <button type="button" class="flyer" onclick="comingSoon('Kontabilite', 'Kou sa a ap disponib byento. Pwofesè a ap konfime, epi n ap avize w depi kontni an pare.')">
           <div class="pin"></div>
           <span class="flyer-badge">Bientôt disponible</span>
           <div class="flyer-art">
@@ -435,10 +547,10 @@
           <h3>Kontabilite</h3>
           <p class="prof">Pwofesè: ap konfime</p>
           <span class="status"><span class="dot"></span>Bientôt disponible</span>
-        </a>
+        </button>
 
-        <!-- Finance -->
-        <a class="flyer" href="prof-finance.html">
+        <!-- Finance — coming soon message, no page yet -->
+        <button type="button" class="flyer" onclick="comingSoon('Finans', 'Kou sa a ap disponib byento. Pwofesè a ap konfime, epi n ap avize w depi kontni an pare.')">
           <div class="pin"></div>
           <span class="flyer-badge">Bientôt disponible</span>
           <div class="flyer-art">
@@ -449,10 +561,10 @@
           <h3>Finans</h3>
           <p class="prof">Pwofesè: ap konfime</p>
           <span class="status"><span class="dot"></span>Bientôt disponible</span>
-        </a>
+        </button>
 
-        <!-- Montage vidéo -->
-        <a class="flyer" href="prof-montage-video.html">
+        <!-- Montage vidéo — coming soon message, no page yet -->
+        <button type="button" class="flyer" onclick="comingSoon('Montaj Videyo', 'Kou sa a ap disponib byento. Pwofesè a ap konfime, epi n ap avize w depi kontni an pare.')">
           <div class="pin"></div>
           <span class="flyer-badge">Bientôt disponible</span>
           <div class="flyer-art">
@@ -463,7 +575,7 @@
           <h3>Montaj Videyo</h3>
           <p class="prof">Pwofesè: ap konfime</p>
           <span class="status"><span class="dot"></span>Bientôt disponible</span>
-        </a>
+        </button>
 
       </div>
     </div>
@@ -485,6 +597,32 @@
   <footer>
     MIJO Business Helper — yon pwodwi MIJO Pay
   </footer>
+
+  <!-- ---------- Coming-soon modal ---------- -->
+  <div class="cs-overlay" id="cs-overlay" onclick="if(event.target===this)closeComingSoon()">
+    <div class="cs-modal" role="dialog" aria-modal="true" aria-labelledby="cs-title">
+      <div class="cs-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      </div>
+      <h4 id="cs-title">Bientôt disponible</h4>
+      <p id="cs-text">Kontni sa a poko disponib.</p>
+      <button type="button" class="cs-close" onclick="closeComingSoon()">Dakò, mwen tande</button>
+    </div>
+  </div>
+
+  <script>
+    function comingSoon(title, message){
+      document.getElementById('cs-title').textContent = title + ' — Bientôt disponible';
+      document.getElementById('cs-text').textContent = message || (title + ' poko disponib, men l ap vini byento.');
+      document.getElementById('cs-overlay').classList.add('open');
+    }
+    function closeComingSoon(){
+      document.getElementById('cs-overlay').classList.remove('open');
+    }
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape') closeComingSoon();
+    });
+  </script>
 
 </body>
 </html>
