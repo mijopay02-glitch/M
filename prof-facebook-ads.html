@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Piblisite Facebook — MBH · MIJO Business Helper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#060b1f;
+    --navy-900:#0b1330;
+    --navy-800:#121c42;
+    --navy-700:#1a2554;
+    --navy-600:#233066;
+    --gold-500:#d4af37;
+    --gold-300:#f0d77b;
+    --gold-100:#faf0cf;
+    --ivory:#f4f0e4;
+    --pin-teal:#2f8f8a;
+    --pin-violet:#7d5fc2;
+    --pin-red:#c2452f;
+    --font-display:'Sora', sans-serif;
+    --font-body:'Inter', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100dvh;
+    background:
+      radial-gradient(1000px 550px at 10% -10%, rgba(212,175,55,0.09), transparent 55%),
+      radial-gradient(800px 460px at 100% 0%, rgba(47,143,138,0.10), transparent 55%),
+      var(--navy-950);
+    color:var(--ivory);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    padding-top:env(safe-area-inset-top);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  button{font-family:inherit;cursor:pointer;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  /* ---------- Top nav ---------- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:clamp(14px,3vw,20px) clamp(16px,5vw,48px);
+    max-width:1100px; margin:0 auto;
+  }
+  .brand{display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:800;}
+  .brand-mark{
+    width:32px;height:32px;border-radius:9px;
+    background:linear-gradient(135deg, var(--gold-300), var(--gold-500));
+    display:flex;align-items:center;justify-content:center;
+    color:var(--navy-950); font-weight:800; font-size:14px;
+    box-shadow:0 6px 16px rgba(212,175,55,0.25);
+  }
+  .brand-name{font-size:14.5px;}
+  .brand-name span{color:var(--gold-300);}
+
+  .back-link{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:9px 16px;
+    border-radius:999px;
+    border:1px solid rgba(244,240,228,0.18);
+    font-weight:600; font-size:13px;
+    transition:border-color 0.2s ease, background 0.2s ease;
+  }
+  .back-link:hover{border-color:rgba(244,240,228,0.4); background:rgba(244,240,228,0.05);}
+  .back-link svg{width:16px;height:16px;}
+
+  /* ---------- Course header ---------- */
+  .course-head{
+    max-width:1100px; margin:0 auto;
+    padding:clamp(10px,2vw,18px) clamp(16px,5vw,48px) 0;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:12px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--gold-300); margin-bottom:10px;
+  }
+  .eyebrow::before{content:'';width:16px;height:1px;background:var(--gold-300);}
+  h1{
+    font-family:var(--font-display); font-weight:800;
+    font-size:clamp(24px,4.2vw,36px); line-height:1.1;
+    margin:0 0 10px; letter-spacing:-0.01em;
+  }
+  .course-sub{
+    font-size:clamp(13.5px,1.6vw,15px); line-height:1.55;
+    color:rgba(244,240,228,0.68); max-width:60ch; margin:0 0 18px;
+  }
+  .meta-row{display:flex; flex-wrap:wrap; gap:10px 18px; margin-bottom:4px;}
+  .meta-item{
+    display:flex; align-items:center; gap:8px;
+    font-size:12.5px; color:rgba(244,240,228,0.62);
+  }
+  .meta-item svg{width:15px;height:15px;color:var(--gold-300);}
+  .prof-chip{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:12.5px; font-weight:600;
+  }
+  .prof-avatar{
+    width:22px;height:22px;border-radius:50%;
+    background:linear-gradient(135deg, var(--pin-violet), #5a4290);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-display); font-size:10.5px; font-weight:800; color:var(--ivory);
+  }
+
+  /* ---------- Layout ---------- */
+  .course-body{
+    max-width:1100px; margin:0 auto;
+    padding:clamp(18px,3vw,28px) clamp(16px,5vw,48px) clamp(40px,6vw,64px);
+    display:grid;
+    grid-template-columns:1fr;
+    gap:clamp(20px,3vw,28px);
+  }
+
+  /* ---------- Player ---------- */
+  .player-shell{
+    border-radius:16px;
+    overflow:hidden;
+    background:var(--navy-900);
+    border:1px solid rgba(212,175,55,0.22);
+    box-shadow:0 20px 46px rgba(0,0,0,0.4);
+  }
+  .player-frame{
+    position:relative;
+    width:100%;
+    aspect-ratio:16/9;
+    background:#000;
+  }
+  .player-frame iframe{
+    position:absolute; inset:0; width:100%; height:100%; border:0;
+  }
+  .player-empty{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:12px; text-align:center; padding:24px;
+    background:linear-gradient(160deg, var(--navy-800), var(--navy-950));
+  }
+  .player-empty .lock-circle{
+    width:52px;height:52px;border-radius:50%;
+    background:rgba(212,175,55,0.1);
+    border:1px solid rgba(212,175,55,0.35);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .player-empty .lock-circle svg{width:24px;height:24px;color:var(--gold-300);}
+  .player-empty p{margin:0; font-size:13px; color:rgba(244,240,228,0.6); max-width:34ch;}
+
+  .now-playing{
+    padding:16px clamp(16px,3vw,22px);
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    border-top:1px solid rgba(255,255,255,0.06);
+  }
+  .now-playing h3{
+    font-family:var(--font-display); font-size:15px; margin:0; font-weight:700;
+  }
+  .now-playing .np-tag{
+    font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--gold-300);
+    border:1px solid rgba(212,175,55,0.35);
+    padding:4px 10px; border-radius:999px; white-space:nowrap;
+  }
+
+  /* ---------- Curriculum ---------- */
+  .curriculum{
+    border-radius:16px;
+    background:var(--navy-900);
+    border:1px solid rgba(255,255,255,0.07);
+    overflow:hidden;
+  }
+  .curriculum-head{
+    padding:18px clamp(16px,3vw,22px) 14px;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  }
+  .curriculum-head h2{
+    font-family:var(--font-display); font-size:17px; margin:0; font-weight:700;
+  }
+  .progress-pill{
+    font-size:11.5px; font-weight:600; color:rgba(244,240,228,0.6);
+    background:rgba(255,255,255,0.05);
+    padding:5px 12px; border-radius:999px;
+  }
+  .progress-pill strong{color:var(--gold-300);}
+
+  .lesson-list{list-style:none; margin:0; padding:8px;}
+  .lesson{
+    width:100%;
+    display:flex; align-items:center; gap:14px;
+    padding:14px 12px;
+    border-radius:12px;
+    border:1px solid transparent;
+    background:transparent;
+    color:var(--ivory);
+    text-align:left;
+    transition:background 0.18s ease, border-color 0.18s ease;
+  }
+  .lesson:hover{background:rgba(255,255,255,0.04);}
+  .lesson:focus-visible{outline:2px solid var(--gold-300); outline-offset:2px;}
+  .lesson.active{
+    background:rgba(212,175,55,0.08);
+    border-color:rgba(212,175,55,0.3);
+  }
+  .lesson.locked{opacity:0.62;}
+
+  .lesson-num{
+    flex:0 0 auto;
+    width:34px;height:34px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-display); font-weight:700; font-size:13px;
+    background:var(--navy-700);
+    color:rgba(244,240,228,0.75);
+  }
+  .lesson.active .lesson-num{
+    background:linear-gradient(135deg, var(--gold-300), var(--gold-500));
+    color:var(--navy-950);
+  }
+  .lesson.locked .lesson-num{
+    background:var(--navy-700);
+  }
+  .lesson-num svg{width:15px;height:15px;}
+
+  .lesson-info{flex:1 1 auto; min-width:0;}
+  .lesson-title{
+    font-size:14px; font-weight:600; margin:0 0 3px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .lesson-meta{
+    font-size:11.5px; color:rgba(244,240,228,0.5);
+    display:flex; align-items:center; gap:8px;
+  }
+  .lesson-meta .dot-sep{width:3px;height:3px;border-radius:50%;background:rgba(244,240,228,0.35);}
+
+  .lesson-status{
+    flex:0 0 auto;
+    font-size:10.5px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+    padding:5px 10px; border-radius:999px;
+    white-space:nowrap;
+  }
+  .lesson-status.ready{
+    color:var(--navy-950);
+    background:linear-gradient(135deg, var(--gold-300), var(--gold-500));
+  }
+  .lesson-status.soon{
+    color:rgba(244,240,228,0.55);
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.1);
+  }
+
+  @media (max-width:520px){
+    .lesson-title{white-space:normal; font-size:13.5px;}
+    .lesson-status{font-size:9.5px; padding:4px 8px;}
+    .lesson{gap:10px; padding:12px 8px;}
+    .lesson-num{width:30px;height:30px;font-size:12px;}
+  }
+
+  footer{
+    text-align:center;
+    padding:0 20px calc(env(safe-area-inset-bottom) + 32px);
+    font-size:12.5px;
+    color:rgba(244,240,228,0.4);
+  }
+
+  /* ---------- Coming-soon modal ---------- */
+  .cs-overlay{
+    position:fixed; inset:0;
+    background:rgba(6,11,31,0.72);
+    backdrop-filter:blur(3px);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px; z-index:999;
+    opacity:0; pointer-events:none;
+    transition:opacity 0.2s ease;
+  }
+  .cs-overlay.open{ opacity:1; pointer-events:auto; }
+  .cs-modal{
+    width:100%; max-width:360px;
+    background:linear-gradient(160deg, var(--navy-800), var(--navy-900));
+    border:1px solid rgba(212,175,55,0.35);
+    border-radius:18px;
+    padding:28px 24px 24px; text-align:center;
+    box-shadow:0 24px 60px rgba(0,0,0,0.5);
+    transform:translateY(12px) scale(0.98);
+    transition:transform 0.25s ease;
+  }
+  .cs-overlay.open .cs-modal{ transform:translateY(0) scale(1); }
+  .cs-icon{
+    width:54px; height:54px; margin:0 auto 16px; border-radius:50%;
+    background:rgba(212,175,55,0.12); border:1px solid rgba(212,175,55,0.4);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .cs-icon svg{width:26px;height:26px;color:var(--gold-300);}
+  .cs-modal h4{font-family:var(--font-display); font-weight:700; font-size:18px; margin:0 0 8px;}
+  .cs-modal p{font-size:13.5px; line-height:1.55; color:rgba(244,240,228,0.68); margin:0 0 22px;}
+  .cs-close{
+    display:inline-flex; align-items:center; justify-content:center; width:100%;
+    padding:13px 20px; border-radius:11px; border:none;
+    background:linear-gradient(135deg, var(--gold-300), var(--gold-500));
+    color:var(--navy-950); font-weight:700; font-size:14px;
+  }
+  .cs-close:focus-visible{outline:2px solid var(--gold-100); outline-offset:3px;}
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-name">MBH <span>· MIJO Business Helper</span></div>
+    </div>
+    <a class="back-link" href="MBH.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      Fòmasyon yo
+    </a>
+  </div>
+
+  <div class="course-head">
+    <div class="eyebrow">Fòmasyon MBH · Maketing</div>
+    <h1>Piblisite Facebook</h1>
+    <p class="course-sub">
+      Aprann teste pwodwi, jere bidjè, epi eskale kanpay Facebook Ads ou yo etap pa etap —
+      soti nan premye tès la rive nan 5000€ pa jou.
+    </p>
+    <div class="meta-row">
+      <span class="prof-chip">
+        <span class="prof-avatar">P</span>
+        Patrick
+      </span>
+      <span class="meta-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="14" height="12" rx="1.5"/><path d="M16.5 10.5 21.5 7v10l-5-3.5z"/></svg>
+        5 modil
+      </span>
+      <span class="meta-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        2 disponib kounye a
+      </span>
+    </div>
+  </div>
+
+  <div class="course-body">
+
+    <div class="player-shell">
+      <div class="player-frame" id="player-frame">
+        <div class="player-empty" id="player-empty">
+          <div class="lock-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          </div>
+          <p>Chwazi yon modil ki disponib anba a pou kòmanse gade videyo a.</p>
+        </div>
+      </div>
+      <div class="now-playing">
+        <h3 id="np-title">Okenn videyo pa lanse</h3>
+        <span class="np-tag" id="np-tag">Chwazi yon modil</span>
+      </div>
+    </div>
+
+    <div class="curriculum">
+      <div class="curriculum-head">
+        <h2>Kontni kou a</h2>
+        <span class="progress-pill"><strong>2</strong> / 5 modil disponib</span>
+      </div>
+
+      <ul class="lesson-list">
+
+        <li>
+          <button type="button" class="lesson" id="lesson-1"
+            onclick="playLesson(this, 'https://drive.google.com/file/d/1PCtbqkw5mzuzu9glKUp9BdtwhRmHli_Z/preview', 'Vidéo de présentation — Module Facebook Avancé')">
+            <span class="lesson-num">1</span>
+            <span class="lesson-info">
+              <p class="lesson-title">Vidéo de présentation — Module Facebook Avancé</p>
+              <span class="lesson-meta">Patrick <span class="dot-sep"></span> 44.16 MB</span>
+            </span>
+            <span class="lesson-status ready">Gade</span>
+          </button>
+        </li>
+
+        <li>
+          <button type="button" class="lesson" id="lesson-2"
+            onclick="playLesson(this, 'https://drive.google.com/file/d/1_iQ5VXCa8s0VVaXGozmXA4auFxHsQBny/preview', 'Comment tester des produits et commencer avec la pub Facebook')">
+            <span class="lesson-num">2</span>
+            <span class="lesson-info">
+              <p class="lesson-title">Comment tester des produits et commencer avec la pub Facebook</p>
+              <span class="lesson-meta">Patrick <span class="dot-sep"></span> 54.80 MB</span>
+            </span>
+            <span class="lesson-status ready">Gade</span>
+          </button>
+        </li>
+
+        <li>
+          <button type="button" class="lesson locked" id="lesson-3"
+            onclick="comingSoon('Scaler avec du Cold Traffic', 'Modil sa a ap disponib byento. N ap avize w depi videyo a pare.')">
+            <span class="lesson-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+            <span class="lesson-info">
+              <p class="lesson-title">Scaler avec du Cold Traffic pour passer de 100€ à 1000€ par jour</p>
+              <span class="lesson-meta">Patrick <span class="dot-sep"></span> 19.56 MB</span>
+            </span>
+            <span class="lesson-status soon">Bientôt</span>
+          </button>
+        </li>
+
+        <li>
+          <button type="button" class="lesson locked" id="lesson-4"
+            onclick="comingSoon('Comment Optimiser vos Pubs', 'Modil sa a ap disponib byento. N ap avize w depi videyo a pare.')">
+            <span class="lesson-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+            <span class="lesson-info">
+              <p class="lesson-title">Comment optimiser vos pubs</p>
+              <span class="lesson-meta">Patrick <span class="dot-sep"></span> 16.89 MB</span>
+            </span>
+            <span class="lesson-status soon">Bientôt</span>
+          </button>
+        </li>
+
+        <li>
+          <button type="button" class="lesson locked" id="lesson-5"
+            onclick="comingSoon('Scaler les LookaLike', 'Modil sa a ap disponib byento. N ap avize w depi videyo a pare.')">
+            <span class="lesson-num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+            <span class="lesson-info">
+              <p class="lesson-title">Scaler les LookaLike pour passer de 1000€ à 5000€ par jour</p>
+              <span class="lesson-meta">Patrick <span class="dot-sep"></span> 43.40 MB</span>
+            </span>
+            <span class="lesson-status soon">Bientôt</span>
+          </button>
+        </li>
+
+      </ul>
+    </div>
+
+  </div>
+
+  <footer>
+    MIJO Business Helper — yon pwodwi MIJO Pay
+  </footer>
+
+  <!-- ---------- Coming-soon modal ---------- -->
+  <div class="cs-overlay" id="cs-overlay" onclick="if(event.target===this)closeComingSoon()">
+    <div class="cs-modal" role="dialog" aria-modal="true" aria-labelledby="cs-title">
+      <div class="cs-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      </div>
+      <h4 id="cs-title">Bientôt disponible</h4>
+      <p id="cs-text">Kontni sa a poko disponib.</p>
+      <button type="button" class="cs-close" onclick="closeComingSoon()">Dakò, mwen tande</button>
+    </div>
+  </div>
+
+  <script>
+    function playLesson(btn, src, title){
+      document.querySelectorAll('.lesson').forEach(function(l){ l.classList.remove('active'); });
+      btn.classList.add('active');
+
+      document.getElementById('player-empty').remove ? null : null;
+      var frame = document.getElementById('player-frame');
+      var empty = document.getElementById('player-empty');
+      if(empty) empty.remove();
+
+      var existingIframe = frame.querySelector('iframe');
+      if(existingIframe) existingIframe.remove();
+
+      var iframe = document.createElement('iframe');
+      iframe.src = src;
+      iframe.allow = 'autoplay';
+      iframe.allowFullscreen = true;
+      frame.appendChild(iframe);
+
+      document.getElementById('np-title').textContent = title;
+      document.getElementById('np-tag').textContent = 'Ap jwe kounye a';
+
+      frame.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+
+    function comingSoon(title, message){
+      document.getElementById('cs-title').textContent = title + ' — Bientôt disponible';
+      document.getElementById('cs-text').textContent = message || (title + ' poko disponib, men l ap vini byento.');
+      document.getElementById('cs-overlay').classList.add('open');
+    }
+    function closeComingSoon(){
+      document.getElementById('cs-overlay').classList.remove('open');
+    }
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape') closeComingSoon();
+    });
+  </script>
+
+</body>
+</html>
