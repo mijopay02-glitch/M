@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>MyBusiness </title>
+<title>MyBusiness — MIJO</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -320,7 +320,7 @@
       </div>
       <div class="progress-text">
         <h2 id="progress-title">Ou poko kòmanse</h2>
-        <p id="progress-sub"><strong>0</strong> sou <strong>5</strong> etap fin fèt</p>
+        <p id="progress-sub"><strong>0</strong> sou <strong>4</strong> etap fin fèt</p>
       </div>
     </div>
   </div>
@@ -389,7 +389,7 @@
         </div>
       </li>
 
-      <!-- Step 3: Activate MIJO Pay wallet for the business -->
+      <!-- Step 3: Generate AI business plan -->
       <li class="step" data-step="3">
         <div class="step-top">
           <div class="step-marker">
@@ -397,23 +397,23 @@
             <span class="icon-num">3</span>
           </div>
           <div class="step-body">
-            <h3>Separe lajan biznis ou ak lajan pèsonèl ou</h3>
-            <p>Itilize kont MIJO Pay ou a pou resevwa lajan biznis ou apa — sa fè w wè klè konbyen biznis ou ap fè reyèlman.</p>
+            <h3>Kreye plan biznis ou ak IA</h3>
+            <p>Reponn kèk kesyon sou pwojè w epi IA nou an jenere yon plan d'aksyon konplè pou ou — ou ka telechaje l an PDF apre.</p>
             <div class="step-actions">
-              <a class="btn-action" href="profil.html" onclick="markDone(3)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-                Konfigire kont mwen
+              <a class="btn-action" href="plan.html" onclick="markDone(3)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3m0 12v3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1M3 12h3m12 0h3M5.6 18.4l2.1-2.1m8.6-8.6 2.1-2.1"/></svg>
+                Jenere plan mwen ak IA
               </a>
               <button type="button" class="btn-done-toggle" onclick="toggleDone(3)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                Fini
+                Mwen fin jenere l
               </button>
             </div>
           </div>
         </div>
       </li>
 
-      <!-- Step 4: Add first product to MIJO Store -->
+      <!-- Step 4: Logo -->
       <li class="step" data-step="4">
         <div class="step-top">
           <div class="step-marker">
@@ -421,37 +421,21 @@
             <span class="icon-num">4</span>
           </div>
           <div class="step-body">
-            <h3>Ajoute premye pwodwi oswa sèvis ou</h3>
-            <p>Mete premye pwodwi ou a sou MIJO Store pou moun ka kòmanse wè epi achte l.</p>
+            <h3>Kreye oswa konfime logo biznis ou</h3>
+            <p>Yon logo ede moun rekonèt biznis ou. Si w gen youn deja, di nou sa. Si w poko genyen, kreye youn an kèk segond ak yon zouti IA.</p>
             <div class="step-actions">
-              <a class="btn-action" href="mes-produits.html" onclick="markDone(4)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 7.3 12 12l-8.5-4.7M12 12v9M3.5 7.3v9.4L12 21l8.5-4.3V7.3L12 3z"/></svg>
-                Ajoute pwodwi mwen
+              <a class="btn-action" href="https://ideogram.ai" target="_blank" rel="noopener" onclick="markDone(4)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                Kreye logo ak IA
               </a>
               <button type="button" class="btn-done-toggle" onclick="toggleDone(4)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                Fini
+                Mwen gen yon logo deja
               </button>
             </div>
-          </div>
-        </div>
-      </li>
-
-      <!-- Step 5: First sale -->
-      <li class="step" data-step="5">
-        <div class="step-top">
-          <div class="step-marker">
-            <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M20 6 9 17l-5-5"/></svg>
-            <span class="icon-num">5</span>
-          </div>
-          <div class="step-body">
-            <h3>Fè premye vant ou</h3>
-            <p>Pataje lyen pwodwi w sou rezo sosyal ou, WhatsApp, oswa avèk kliyan k ap tann ou deja. Lè w fè premye vant lan, mache etap sa a tankou fini.</p>
-            <div class="step-actions">
-              <button type="button" class="btn-done-toggle" onclick="toggleDone(5)" style="margin-left:0;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                Mwen fè premye vant mwen
-              </button>
+            <div class="step-note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+              Ideogram AI se yon zouti tyès pati — kèk fonksyon ka mande yon kont oswa gen limit gratis.
             </div>
           </div>
         </div>
@@ -461,7 +445,7 @@
 
     <div class="celebrate" id="celebrate">
       <h3>🎉 Ou fin bati fondasyon biznis ou!</h3>
-      <p>Biznis ou anrejistre, ou gen yon kont pou lajan l, epi ou fè premye vant ou. Kontinye ak fòmasyon MBH yo pou aprann eskale l pi lwen.</p>
+      <p>Non biznis ou verifye, li anrejistre, ou gen yon plan d'aksyon ak yon logo. Kontinye ak fòmasyon MBH yo pou aprann eskale l pi lwen.</p>
     </div>
   </section>
 
@@ -472,7 +456,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const TOTAL_STEPS = 5;
+    const TOTAL_STEPS = 4;
     const STORAGE_KEY = 'mijo_mybusiness_progress';
 
     function loadProgress(){
