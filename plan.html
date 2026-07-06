@@ -1,219 +1,424 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyBusiness - Propulse ton idée</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Bibliothèque pour générer le PDF -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Plan d'Action IA — MyBusiness · MIJO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <style>
-        /* Couleurs personnalisées pour coller exactement à ta bannière */
-        :root {
-            --bg-dark: #0b1329;
-            --accent-yellow: #f59e0b;
-            --accent-yellow-hover: #d97706;
-        }
-        body {
-            background-color: var(--bg-dark);
-        }
-        /* Style pour le rendu du texte de l'IA */
-        .prose h1, .prose h2, .prose h3 {
-            color: #f3f4f6;
-            font-weight: 700;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .prose h2 { font-size: 1.4rem; border-bottom: 1px solid #334155; padding-bottom: 0.25rem; }
-        .prose h3 { font-size: 1.1rem; color: var(--accent-yellow); }
-        .prose p { color: #cbd5e1; margin-bottom: 1rem; line-height: 1.6; }
-        .prose ul { list-style-type: disc; margin-left: 1.25rem; margin-bottom: 1rem; color: #cbd5e1; }
-        .prose li { margin-bottom: 0.25rem; }
-    </style>
+<style>
+  :root{
+    --navy-950:#060b1f;
+    --navy-900:#0b1330;
+    --navy-800:#121c42;
+    --navy-700:#1a2554;
+    --gold-500:#d4af37;
+    --gold-300:#f0d77b;
+    --gold-100:#faf0cf;
+    --ivory:#f4f0e4;
+    --font-display:'Sora', sans-serif;
+    --font-body:'Inter', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100dvh;
+    background:
+      radial-gradient(1000px 550px at 10% -10%, rgba(212,175,55,0.09), transparent 55%),
+      radial-gradient(800px 460px at 100% 0%, rgba(125,95,194,0.10), transparent 55%),
+      var(--navy-950);
+    color:var(--ivory);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    padding-top:env(safe-area-inset-top);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+
+  a{color:inherit;text-decoration:none;}
+  button, input, select, textarea{font-family:inherit;}
+  button{cursor:pointer;}
+
+  /* ---------- Top nav ---------- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:clamp(14px,3vw,20px) clamp(16px,5vw,48px);
+    max-width:760px; margin:0 auto;
+  }
+  .brand{display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:800;}
+  .brand-mark{
+    width:32px;height:32px;border-radius:9px;
+    background:linear-gradient(135deg, var(--gold-300), var(--gold-500));
+    display:flex;align-items:center;justify-content:center;
+    color:var(--navy-950); font-weight:800; font-size:14px;
+    box-shadow:0 6px 16px rgba(212,175,55,0.25);
+  }
+  .brand-name{font-size:14.5px;}
+  .brand-name span{color:var(--gold-300);}
+  .back-link{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:9px 16px;
+    border-radius:999px;
+    border:1px solid rgba(244,240,228,0.18);
+    font-weight:600; font-size:13px;
+    transition:border-color 0.2s ease, background 0.2s ease;
+  }
+  .back-link:hover{border-color:rgba(244,240,228,0.4); background:rgba(244,240,228,0.05);}
+  .back-link svg{width:16px;height:16px;}
+
+  main{max-width:760px; width:100%; margin:0 auto; padding:clamp(8px,2vw,16px) clamp(16px,5vw,48px) clamp(40px,6vw,64px);}
+
+  .head{text-align:center; margin-bottom:clamp(24px,4vw,34px);}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:12px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--gold-300); margin-bottom:10px;
+  }
+  .eyebrow::before, .eyebrow::after{content:'';width:16px;height:1px;background:var(--gold-300);}
+  h1{
+    font-family:var(--font-display); font-weight:800;
+    font-size:clamp(26px,4.6vw,36px); line-height:1.1;
+    margin:0 0 10px; letter-spacing:-0.01em;
+  }
+  h1 span{color:var(--gold-300);}
+  .head p{
+    font-size:clamp(13.5px,1.6vw,15px); line-height:1.55;
+    color:rgba(244,240,228,0.65); max-width:52ch; margin:0 auto;
+  }
+
+  /* ---------- Form card ---------- */
+  .card{
+    background:var(--navy-900);
+    border:1px solid rgba(212,175,55,0.22);
+    border-radius:18px;
+    padding:clamp(20px,3.4vw,30px);
+    box-shadow:0 20px 46px rgba(0,0,0,0.35);
+    margin-bottom:24px;
+  }
+
+  .field{margin-bottom:20px;}
+  .field:last-of-type{margin-bottom:0;}
+  label{
+    display:block; font-size:13px; font-weight:600;
+    color:rgba(244,240,228,0.75); margin-bottom:8px;
+  }
+  input, select, textarea{
+    width:100%;
+    padding:13px 14px;
+    border-radius:11px;
+    border:1px solid rgba(244,240,228,0.16);
+    background:rgba(255,255,255,0.03);
+    color:var(--ivory);
+    font-size:14px;
+    transition:border-color 0.2s ease;
+  }
+  input::placeholder, textarea::placeholder{color:rgba(244,240,228,0.32);}
+  input:focus-visible, select:focus-visible, textarea:focus-visible{
+    outline:none; border-color:var(--gold-300);
+  }
+  textarea{resize:none;}
+  select{
+    appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f0d77b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 14px center;
+    background-size:16px;
+    padding-right:40px;
+  }
+  select option{background:var(--navy-900); color:var(--ivory);}
+
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:520px){ .grid-2{grid-template-columns:1fr;} }
+
+  .btn-submit{
+    width:100%;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    padding:15px 20px;
+    border-radius:12px;
+    border:none;
+    background:linear-gradient(135deg, var(--gold-300), var(--gold-500));
+    color:var(--navy-950);
+    font-weight:700; font-size:14.5px;
+    box-shadow:0 12px 26px rgba(212,175,55,0.25);
+    margin-top:22px;
+    transition:transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  }
+  .btn-submit:hover{transform:translateY(-1px); box-shadow:0 16px 32px rgba(212,175,55,0.34);}
+  .btn-submit:disabled{opacity:0.7; cursor:default; transform:none;}
+  .spinner{
+    width:18px;height:18px;border-radius:50%;
+    border:2.5px solid rgba(6,11,31,0.25);
+    border-top-color:var(--navy-950);
+    animation:spin 0.7s linear infinite;
+    display:none;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  /* ---------- Result ---------- */
+  .result{
+    display:none;
+    background:var(--navy-900);
+    border:1px solid rgba(212,175,55,0.22);
+    border-radius:18px;
+    padding:clamp(20px,3.4vw,30px);
+    box-shadow:0 20px 46px rgba(0,0,0,0.35);
+  }
+  .result.show{display:block;}
+  .result-head{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+    padding-bottom:16px; margin-bottom:18px;
+  }
+  .result-head h2{
+    font-family:var(--font-display); font-size:18px; margin:0;
+    color:var(--gold-300); display:flex; align-items:center; gap:8px;
+  }
+  .btn-pdf{
+    display:inline-flex; align-items:center; gap:7px;
+    font-size:12.5px; font-weight:700;
+    background:linear-gradient(135deg, var(--gold-300), var(--gold-500));
+    color:var(--navy-950);
+    padding:9px 16px; border-radius:10px; border:none;
+  }
+  .btn-pdf svg{width:14px;height:14px;}
+
+  .ai-output h1, .ai-output h2, .ai-output h3{
+    font-family:var(--font-display); color:var(--ivory); font-weight:700;
+    margin-top:22px; margin-bottom:8px;
+  }
+  .ai-output h2{font-size:18px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:6px;}
+  .ai-output h3{font-size:15px; color:var(--gold-300);}
+  .ai-output p{color:rgba(244,240,228,0.75); margin:0 0 14px; line-height:1.65; font-size:14px;}
+  .ai-output ul{margin:0 0 14px; padding-left:20px; color:rgba(244,240,228,0.75);}
+  .ai-output li{margin-bottom:5px; font-size:14px; line-height:1.55;}
+
+  footer{
+    text-align:center;
+    padding:0 20px calc(env(safe-area-inset-bottom) + 32px);
+    font-size:12.5px;
+    color:rgba(244,240,228,0.4);
+  }
+
+  .toast{
+    position:fixed; left:50%; bottom:24px; transform:translate(-50%, 20px);
+    background:var(--navy-800);
+    border:1px solid rgba(212,175,55,0.35);
+    color:var(--ivory);
+    padding:12px 20px; border-radius:12px;
+    font-size:13px; font-weight:600;
+    box-shadow:0 14px 30px rgba(0,0,0,0.4);
+    opacity:0; pointer-events:none;
+    transition:opacity 0.25s ease, transform 0.25s ease;
+    z-index:999; max-width:calc(100vw - 40px); text-align:center;
+  }
+  .toast.show{opacity:1; transform:translate(-50%, 0);}
+</style>
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col justify-between font-sans">
+<body>
 
-    <main class="max-w-3xl w-full mx-auto px-4 py-12 flex-grow">
-        
-        <div class="text-center mb-10">
-            <h1 class="text-4xl font-extrabold tracking-tight mb-3">
-                My<span class="text-amber-500">Business</span> 
-            </h1>
-            <p class="text-slate-400 text-lg">
-                Soti nan ide a rive nan premye vant lan.
-            </p>
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-name">MyBusiness <span>· MIJO</span></div>
+    </div>
+    <a class="back-link" href="mybusiness.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      Tounen
+    </a>
+  </div>
+
+  <main>
+    <div class="head">
+      <div class="eyebrow">Plan d'aksyon ak IA</div>
+      <h1>Jenere plan <span>biznis ou</span></h1>
+      <p>Reponn kèk kesyon senp, epi IA nou an ap prepare yon plan d'aksyon konplè, adapte ak sitiyasyon w — ou ka telechaje l an PDF pou gade l pita.</p>
+    </div>
+
+    <div class="card">
+      <form id="businessForm">
+        <div class="field">
+          <label for="nom_projet">Non pwojè oswa biznis ou</label>
+          <input type="text" id="nom_projet" required placeholder="Ex: Pot'iwa Pizza, Mijo Pay...">
         </div>
 
-        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl backdrop-blur-sm mb-8">
-            <form id="businessForm" class="space-y-6">
-                
-                <div>
-                    <label for="nom_projet" class="block text-sm font-semibold text-slate-300 mb-2">Nom de ton projet ou entreprise</label>
-                    <input type="text" id="nom_projet" required placeholder="Ex: Pot'iwa Pizza, Mijo Pay..." 
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition">
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="secteur" class="block text-sm font-semibold text-slate-300 mb-2">Secteur d'activité</label>
-                        <select id="secteur" required 
-                            class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition">
-                            <option value="" disabled selected>Choisis un secteur</option>
-                            <option value="Alimentation & Restauration">Alimentation & Restauration</option>
-                            <option value="Technologie & Fintech">Technologie & Fintech</option>
-                            <option value="Commerce & E-commerce">Commerce & E-commerce</option>
-                            <option value="Services & Consultation">Services & Consultation</option>
-                            <option value="Production & Industrie">Production & Industrie (Eau, etc.)</option>
-                            <option value="Autre">Autre secteur</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="budget" class="block text-sm font-semibold text-slate-300 mb-2">Budget approximatif disponible</label>
-                        <input type="text" id="budget" required placeholder="Ex: 100$, Moins de 50 000 HTG..." 
-                            class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition">
-                    </div>
-                </div>
-
-                <div>
-                    <label for="description" class="block text-sm font-semibold text-slate-300 mb-2">Explique ton idée en quelques phrases</label>
-                    <textarea id="description" required rows="4" placeholder="Que vas-tu vendre ? À qui ? Comment penses-tu faire de l'argent ?" 
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition resize-none"></textarea>
-                </div>
-
-                <button type="submit" id="submitBtn" 
-                    class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3.5 px-6 rounded-xl transition duration-200 transform active:scale-[0.99] flex justify-center items-center gap-2 cursor-pointer shadow-lg shadow-amber-500/10">
-                    <span id="btnText">Générer mon plan d'action</span>
-                    <svg id="spinner" class="animate-spin h-5 w-5 text-slate-950 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                </button>
-            </form>
+        <div class="grid-2">
+          <div class="field">
+            <label for="secteur">Sektè aktivite</label>
+            <select id="secteur" required>
+              <option value="" disabled selected>Chwazi yon sektè</option>
+              <option value="Alimentation & Restauration">Alimantasyon & Restoran</option>
+              <option value="Technologie & Fintech">Teknoloji & Fintech</option>
+              <option value="Commerce & E-commerce">Kòmès & E-commerce</option>
+              <option value="Services & Consultation">Sèvis & Konsiltasyon</option>
+              <option value="Production & Industrie">Pwodiksyon & Endistri (Dlo, elatriye)</option>
+              <option value="Autre">Lòt sektè</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="budget">Bidjè apwoksimatif</label>
+            <input type="text" id="budget" required placeholder="Ex: 100$, Mwens ke 50 000 HTG...">
+          </div>
         </div>
 
-        <div id="resultContainer" class="hidden bg-slate-900/40 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl animate-fade-in">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
-                <h2 class="text-xl font-bold text-amber-500 flex items-center gap-2">
-                    ✨ Ton Plan d'Avenir MyBusiness
-                </h2>
-                <button id="downloadPdfBtn" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg transition cursor-pointer shadow-md">
-    Télécharger le PDF 📄
-</button>
-                
-            </div>
-            <div id="aiOutput" class="prose max-w-none"></div>
+        <div class="field">
+          <label for="description">Eksplike ide w la an kèk fraz</label>
+          <textarea id="description" required rows="4" placeholder="Kisa w pral vann? Ak kiyès? Kijan w konte fè lajan?"></textarea>
         </div>
 
-    </main>
+        <button type="submit" id="submitBtn" class="btn-submit">
+          <span id="btnText">Jenere plan d'aksyon mwen</span>
+          <span class="spinner" id="spinner"></span>
+        </button>
+      </form>
+    </div>
 
-    <footer class="text-center py-6 border-t border-slate-900 text-xs text-slate-600">
-        &copy; 2026 MyBusiness &middot; Propulsé par l'écosystème Mijo.
-    </footer>
+    <div class="result" id="resultContainer">
+      <div class="result-head">
+        <h2>✨ Plan Aksyon MyBusiness Ou</h2>
+<div class="flex gap-2">
+    <button id="copyBtn" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-500 font-bold px-4 py-2 rounded-lg transition cursor-pointer border border-slate-700 shadow-md flex items-center gap-1.5">
+        Kopye 📋
+    </button>
+    
+    <button id="shareBtn" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg transition cursor-pointer shadow-md flex items-center gap-1.5">
+        Pataje 🔗
+    </button>
+</div>
+      <div id="aiOutput" class="ai-output"></div>
+    </div>
+  </main>
 
-    <script>
-        const form = document.getElementById('businessForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const btnText = document.getElementById('btnText');
-        const spinner = document.getElementById('spinner');
-        const resultContainer = document.getElementById('resultContainer');
-        const aiOutput = document.getElementById('aiOutput');
+  <footer>
+    MIJO — MyBusiness · yon pwodwi MIJO Pay
+  </footer>
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+  <div class="toast" id="toast"></div>
 
-            // 1. Activation de l'état de chargement graphique
-            submitBtn.disabled = true;
-            btnText.innerText = "L'IA analyse ton projet...";
-            spinner.classList.remove('hidden');
-            resultContainer.classList.add('hidden'); // On cache l'ancien résultat si présent
+  <script>
+    const form = document.getElementById('businessForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const spinner = document.getElementById('spinner');
+    const resultContainer = document.getElementById('resultContainer');
+    const aiOutput = document.getElementById('aiOutput');
 
-            // 2. Collecte des données du formulaire
-            const payload = {
-                nom_projet: document.getElementById('nom_projet').value,
-                secteur: document.getElementById('secteur').value,
-                budget: document.getElementById('budget').value,
-                description: document.getElementById('description').value
-            };
+    // Mark step 3 ("Kreye plan biznis ou ak IA") as done in the shared MyBusiness progress tracker.
+    function markMyBusinessStepDone(step){
+      try{
+        const raw = localStorage.getItem('mijo_mybusiness_progress');
+        const progress = raw ? JSON.parse(raw) : {};
+        progress[step] = true;
+        localStorage.setItem('mijo_mybusiness_progress', JSON.stringify(progress));
+      }catch(e){}
+    }
 
-            try {
-                // 3. Appel de ton Worker Cloudflare sur ton sous-domaine dédié
-                const response = await fetch('https://business.mijocomplexe.workers.dev/generate-plan', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
+    let toastTimer;
+    function showToast(msg){
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2800);
+    }
 
-                if (!response.ok) {
-                    throw new Error("Impossible de joindre le serveur Cloudflare.");
-                }
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-                const data = await response.json();
+      submitBtn.disabled = true;
+      btnText.textContent = "IA a ap analize pwojè w...";
+      spinner.style.display = 'inline-block';
+      resultContainer.classList.remove('show');
 
-                // 4. Utilisation de Marked.js pour transformer le Markdown de l'IA en HTML ultra propre
-                if (data.plan) {
-                    aiOutput.innerHTML = marked.parse(data.plan);
-                    resultContainer.classList.remove('hidden'); // On affiche le magnifique résultat
-                    
-                    // Petit scroll automatique pour amener l'utilisateur directement au résultat
-                    resultContainer.scrollIntoView({ behavior: 'smooth' });
-                } else {
-                    alert("Une erreur est survenue dans la génération du plan.");
-                }
+      const payload = {
+        nom_projet: document.getElementById('nom_projet').value,
+        secteur: document.getElementById('secteur').value,
+        budget: document.getElementById('budget').value,
+        description: document.getElementById('description').value
+      };
 
-            } catch (error) {
-                console.error(error);
-                alert("Erreur de connexion : " + error.message);
-            } finally {
-                // 5. Remise à zéro du bouton après traitement
-                submitBtn.disabled = false;
-                btnText.innerText = "Générer mon plan d'action";
-                spinner.classList.add('hidden');
-            }
+      try {
+        const response = await fetch('https://business.mijocomplexe.workers.dev/generate-plan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
-        document.getElementById('downloadPdfBtn').addEventListener('click', () => {
-    // On récupère le contenu généré par l'IA et le nom du projet
-    const aiContent = document.getElementById('aiOutput').innerHTML;
-    const nomProjet = document.getElementById('nom_projet').value || 'MonProjet';
 
-    // 1. On crée le design du PDF sous forme de simple texte (chaîne de caractères)
-    const htmlString = `
-        <div style="padding: 40px; color: #1e293b; background-color: #ffffff; font-family: Arial, sans-serif;">
-            <div style="border-bottom: 2px solid #f59e0b; padding-bottom: 20px; margin-bottom: 30px; text-align: center;">
-                <h1 style="font-size: 28px; margin: 0; color: #0b1329;">MyBusiness AI</h1>
-                <p style="font-size: 14px; margin: 5px 0 0 0; color: #64748b;">Plan d'action et stratégie commerciale officielle</p>
-            </div>
-            
-            <div style="margin-bottom: 30px; background-color: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b;">
-                <p style="margin: 0; font-size: 14px;"><strong>Projet :</strong> ${nomProjet}</p>
-                <p style="margin: 5px 0 0 0; font-size: 14px;"><strong>Généré le :</strong> ${new Date().toLocaleDateString('fr-FR')}</p>
-            </div>
-            
-            <div style="font-size: 14px; line-height: 1.6;">
-                ${aiContent}
-            </div>
-            
-            <div style="margin-top: 50px; border-top: 1px solid #e2e8f0; padding-top: 15px; text-align: center; font-size: 11px; color: #94a3b8;">
-                Document généré par la plateforme MyBusiness &middot; Écosystème MIJO
-            </div>
-        </div>
-    `;
+        if (!response.ok) {
+          throw new Error("Pa t kapab jwenn sèvè a.");
+        }
 
-    // 2. Configuration de la mise en page
-    const options = {
-        margin:       0.5, // Une marge simple
-        filename:     `Plan_Action_${nomProjet.replace(/\s+/g, '_')}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, logging: false }, // logging: false évite de polluer ta console
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-    };
+        const data = await response.json();
 
-    // 3. Lancement de la conversion directement depuis le texte HTML
-    html2pdf().set(options).from(htmlString).save();
+        if (data.plan) {
+          aiOutput.innerHTML = marked.parse(data.plan);
+          resultContainer.classList.add('show');
+          resultContainer.scrollIntoView({ behavior: 'smooth' });
+          markMyBusinessStepDone(3);
+        } else {
+          showToast("Yon erè fèt pandan jenerasyon plan an.");
+        }
+
+      } catch (error) {
+        console.error(error);
+        showToast("Erè koneksyon: " + error.message);
+      } finally {
+        submitBtn.disabled = false;
+        btnText.textContent = "Jenere plan d'aksyon mwen";
+        spinner.style.display = 'none';
+      }
+    });
+
+    // --- FONCTIONNALITÉ COPIER ---
+document.getElementById('copyBtn').addEventListener('click', async () => {
+    const copyBtn = document.getElementById('copyBtn');
+    const textToCopy = document.getElementById('aiOutput').innerText;
+
+    try {
+        await navigator.clipboard.writeText(textToCopy);
+        
+        // Petit effet visuel sympa pour confirmer la copie
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = "Copié ! ✅";
+        copyBtn.classList.replace('text-amber-500', 'text-green-400');
+        
+        setTimeout(() => {
+            copyBtn.innerHTML = originalText;
+            copyBtn.classList.replace('text-green-400', 'text-amber-500');
+        }, 2000);
+    } catch (err) {
+        alert("Impossible de copier le texte automatiquement. Tu peux le sélectionner manuellement.");
+    }
 });
-    </script>
+
+// --- FONCTIONNALITÉ PARTAGER ---
+document.getElementById('shareBtn').addEventListener('click', async () => {
+    const textToShare = document.getElementById('aiOutput').innerText;
+    const nomProjet = document.getElementById('nom_projet').value || 'Mon Projet';
+
+    // Si le navigateur de l'utilisateur supporte le partage natif (surtout sur smartphone)
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: `MyBusiness - Plan pour ${nomProjet}`,
+                text: `Voici le plan d'action généré par l'IA pour le projet ${nomProjet} :\n\n${textToShare}`,
+            });
+        } catch (err) {
+            console.log("Partage annulé ou refusé.");
+        }
+    } else {
+        // Système de secours (Fallback) pour les vieux navigateurs ou PC fixes sans option de partage
+        try {
+            await navigator.clipboard.writeText(textToShare);
+            alert("Le partage direct n'est pas disponible sur ce navigateur, mais tout le plan a été copié dans ton presse-papiers ! Tu peux aller le coller sur WhatsApp.");
+        } catch (err) {
+            alert("Une erreur est survenue lors de la tentative de copie.");
+        }
+    }
+});
+  </script>
+
 </body>
 </html>
