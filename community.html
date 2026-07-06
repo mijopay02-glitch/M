@@ -594,6 +594,14 @@
     // Un post est reconnu comme "officiel" si le userId OU le nom d'affichage
     // correspond à l'un des comptes de cette liste. On peut en ajouter d'autres
     // plus tard (ex: un futur associé) en complétant simplement ce tableau.
+    //
+    // IMPORTANT : si le badge n'apparaît toujours pas après ce correctif,
+    // ouvre la Console du navigateur (F12) — un message
+    // "[MIJO] Post non reconnu comme officiel — id: ... | nom: ..."
+    // t'indiquera exactement le userId et le nom que le Worker renvoie,
+    // pour que tu puisses corriger l'id ci-dessous si besoin (probable
+    // depuis la migration vers Supabase, où les anciens id Airtable "rec..."
+    // ne correspondent peut-être plus au userId réellement stocké).
     const MIJO_OFFICIAL_ACCOUNTS = [
       {
         id: "rec6v8Z0K0G4bwbdE",
@@ -612,14 +620,38 @@
     ];
     const OFFICIAL_COLOR = { name: 'official', hex: '#A8791F', bg: 'rgba(168, 121, 31, 0.12)' };
 
+    // Normalise une chaîne pour une comparaison fiable : enlève les accents,
+    // les espaces multiples, les espaces de début/fin, et met en minuscules.
+    // Ça évite qu'un simple accent ("Mikyson Antoïne" vs "mikyson antoine")
+    // ou un double espace empêche la reconnaissance d'un compte officiel.
+    function normalize(str) {
+      return String(str ?? '')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, ' ');
+    }
+
     // Retourne la fiche du compte officiel correspondant (ou null si le post
     // vient d'un membre normal du Cercle).
     function getOfficialAccount(item) {
       if (!item) return null;
       const id = item.userId || item.user_id || item.authorId
               || (item.author && (item.author.id || item.author.userId)) || '';
-      const name = ((item.author && item.author.name) || item.authorName || '').trim().toLowerCase();
-      return MIJO_OFFICIAL_ACCOUNTS.find(acc => acc.id === id || acc.name === name) || null;
+      const rawName = (item.author && item.author.name) || item.authorName || '';
+      const normId = normalize(id);
+      const normName = normalize(rawName);
+
+      const match = MIJO_OFFICIAL_ACCOUNTS.find(acc =>
+        (normId && normalize(acc.id) === normId) || normalize(acc.name) === normName
+      );
+
+      if (!match) {
+        // Aide au débogage — regarde la console (F12) si un badge manque.
+        console.debug('[MIJO] Post non reconnu comme officiel — id:', id || '(vide)', '| nom:', rawName || '(vide)');
+      }
+
+      return match || null;
     }
 
     function isOfficialPost(item) {
@@ -676,10 +708,13 @@
       // composer en mode "officiel" — juste un repère visuel discret pour toi,
       // pas affiché aux autres.
       const myOfficialAccount = MIJO_OFFICIAL_ACCOUNTS.find(acc =>
-        acc.id === currentUser.id || acc.name === currentUser.name.trim().toLowerCase()
+        normalize(acc.id) === normalize(currentUser.id) || normalize(acc.name) === normalize(currentUser.name)
       );
       if (myOfficialAccount) {
         document.getElementById('composerWrapper').classList.add('is-official-mode');
+      } else {
+        // Debug : aide à voir pourquoi le compte connecté n'est pas reconnu comme officiel
+        console.debug('[MIJO] Utilisateur connecté non reconnu comme officiel — id:', currentUser.id, '| nom:', currentUser.name);
       }
     }
 
@@ -697,6 +732,16 @@
         if (!response.ok) throw new Error("Erreur serveur");
 
         postsData = await response.json();
+
+        // Le fil doit se lire comme WhatsApp : le plus ancien en haut, le
+        // plus récent en bas. Si le Worker renvoie déjà les messages du plus
+        // ancien au plus récent, cette étape ne change rien. S'il renvoie
+        // le plus récent en premier (ex: "ORDER BY created_at DESC" côté
+        // Supabase), on inverse ici pour garantir le bon ordre visuel.
+        //
+        // Si après ce correctif l'ordre est encore inversé, retire simplement
+        // la ligne ci-dessous (le Worker envoie déjà le bon ordre) :
+        postsData.reverse();
 
         if (postsData.length === 0) {
           container.innerHTML = `<div class="state-msg"><span class="state-title">Le Cercle est encore silencieux</span>Soyez le premier à partager une stratégie ou une question.</div>`;
