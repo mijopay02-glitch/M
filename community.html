@@ -590,19 +590,40 @@
     // ── CONFIGURATION CLOUDFLARE ──
     const API_BASE_URL = "https://reseau.mijocomplexe.workers.dev/api";
 
-    // ── COMPTE OFFICIEL MIJO (PDG / entreprise) ──
-    // Un post est reconnu comme "officiel" si le userId correspond à ce compte,
-    // OU si le nom d'affichage correspond (au cas où le compte serait recréé un jour).
-    const MIJO_OFFICIAL_ID   = "rec6v8Z0K0G4bwbdE";
-    const MIJO_OFFICIAL_NAME = "mijo complexe";
+    // ── COMPTES OFFICIELS MIJO (entreprise + PDG) ──
+    // Un post est reconnu comme "officiel" si le userId OU le nom d'affichage
+    // correspond à l'un des comptes de cette liste. On peut en ajouter d'autres
+    // plus tard (ex: un futur associé) en complétant simplement ce tableau.
+    const MIJO_OFFICIAL_ACCOUNTS = [
+      {
+        id: "rec6v8Z0K0G4bwbdE",
+        name: "mijo complexe",
+        railLabel: "MIJO",
+        badgeFull: "✓ MIJO Officiel",
+        badgeShort: "✓ MIJO"
+      },
+      {
+        id: "recfcTPvpeweReklm",
+        name: "mikyson antoine",
+        railLabel: "Mikyson",
+        badgeFull: "✓ PDG MIJO",
+        badgeShort: "✓ PDG"
+      }
+    ];
     const OFFICIAL_COLOR = { name: 'official', hex: '#A8791F', bg: 'rgba(168, 121, 31, 0.12)' };
 
-    function isOfficialPost(item) {
-      if (!item) return false;
+    // Retourne la fiche du compte officiel correspondant (ou null si le post
+    // vient d'un membre normal du Cercle).
+    function getOfficialAccount(item) {
+      if (!item) return null;
       const id = item.userId || item.user_id || item.authorId
               || (item.author && (item.author.id || item.author.userId)) || '';
-      const name = (item.author && item.author.name) || item.authorName || '';
-      return id === MIJO_OFFICIAL_ID || name.trim().toLowerCase() === MIJO_OFFICIAL_NAME;
+      const name = ((item.author && item.author.name) || item.authorName || '').trim().toLowerCase();
+      return MIJO_OFFICIAL_ACCOUNTS.find(acc => acc.id === id || acc.name === name) || null;
+    }
+
+    function isOfficialPost(item) {
+      return !!getOfficialAccount(item);
     }
 
     // ── SÉCURITÉ : tout texte affiché passe par ici avant d'aller dans le HTML ──
@@ -614,6 +635,9 @@
 
     // ── COULEURS DU CERCLE ──
     // Chaque membre garde toujours la même teinte, d'une session à l'autre.
+    // Les comptes officiels (voir MIJO_OFFICIAL_ACCOUNTS) utilisent toujours
+    // OFFICIAL_COLOR (or) à la place — jamais blanc, jamais confondu avec
+    // un membre normal.
     const CERCLE_COLORS = [
       { name: 'blue', hex: '#2451D6', bg: 'rgba(36, 81, 214, 0.09)' },
       { name: 'gold', hex: '#A8791F', bg: 'rgba(168, 121, 31, 0.12)' },
@@ -648,9 +672,13 @@
         console.error("Erreur lecture utilisateur:", e);
       }
 
-      // Si c'est le compte entreprise qui est connecté, on marque le composer en mode "officiel"
-      // (juste un repère visuel discret pour toi, pas affiché aux autres)
-      if (currentUser.id === MIJO_OFFICIAL_ID || currentUser.name.trim().toLowerCase() === MIJO_OFFICIAL_NAME) {
+      // Si un compte officiel (entreprise ou PDG) est connecté, on marque le
+      // composer en mode "officiel" — juste un repère visuel discret pour toi,
+      // pas affiché aux autres.
+      const myOfficialAccount = MIJO_OFFICIAL_ACCOUNTS.find(acc =>
+        acc.id === currentUser.id || acc.name === currentUser.name.trim().toLowerCase()
+      );
+      if (myOfficialAccount) {
         document.getElementById('composerWrapper').classList.add('is-official-mode');
       }
     }
@@ -676,8 +704,9 @@
         } else {
           renderMembersRail();
           renderFeed();
-          // Style WhatsApp : on ouvre directement sur les derniers messages.
-          // Pour voir l'historique, on remonte (scroll vers le haut) comme dans WhatsApp.
+          // Style WhatsApp : les messages les plus anciens sont en haut, les plus
+          // récents en bas. On ouvre directement sur les derniers messages, et on
+          // remonte (glisser vers le haut) pour retrouver l'historique.
           scrollToLatest(smoothScroll);
         }
       } catch (error) {
@@ -704,7 +733,7 @@
       const seen = new Map();
       postsData.forEach(post => {
         if (!seen.has(post.author.name)) {
-          seen.set(post.author.name, { author: post.author, official: isOfficialPost(post) });
+          seen.set(post.author.name, { author: post.author, officialAccount: getOfficialAccount(post) });
         }
       });
 
@@ -715,10 +744,11 @@
       let i = 0;
       seen.forEach((entry, name) => {
         const author = entry.author;
-        const official = entry.official;
+        const officialAccount = entry.officialAccount;
+        const official = !!officialAccount;
         const c = official ? OFFICIAL_COLOR : colorFor(name);
         const safeInitials = escapeHtml(author.initials);
-        const safeFirstName = escapeHtml(official ? 'MIJO' : name.split(' ')[0]);
+        const safeFirstName = escapeHtml(official ? officialAccount.railLabel : name.split(' ')[0]);
         html += `
           <div class="member-chip" style="animation-delay:${i * 0.04}s">
             <div class="member-ring ${official ? 'is-official' : ''}" style="--ring-color:${c.hex}; color:${c.hex};">${safeInitials}</div>
@@ -737,7 +767,8 @@
 
       postsData.forEach((post, index) => {
         const isLikedByMe = post.likedBy && post.likedBy.includes(currentUser.id);
-        const official = isOfficialPost(post);
+        const officialAccount = getOfficialAccount(post);
+        const official = !!officialAccount;
         const c = official ? OFFICIAL_COLOR : colorFor(post.author.name);
 
         const safeName = escapeHtml(post.author.name);
@@ -745,13 +776,14 @@
         const safeContent = escapeHtml(post.content);
         const safeTime = escapeHtml(post.timestamp);
         const safeId = escapeHtml(post.id);
+        const badgeHtml = official ? `<span class="official-badge">${escapeHtml(officialAccount.badgeFull)}</span>` : '';
 
         const postHTML = `
           <article class="post-card ${official ? 'is-official' : ''}" id="${safeId}" style="--card-accent:${c.hex}; animation-delay:${Math.min(index, 8) * 0.06}s">
             <div class="post-header">
               <div class="author-avatar ${official ? 'is-official' : ''}" style="--avatar-color:${c.hex}; --avatar-bg:${c.bg};">${safeInitials}</div>
               <div class="author-meta">
-                <span class="author-name ${official ? 'is-official' : ''}">${safeName}${official ? '<span class="official-badge">✓ MIJO Officiel</span>' : ''}</span>
+                <span class="author-name ${official ? 'is-official' : ''}">${safeName}${badgeHtml}</span>
                 <span class="post-time">${safeTime}</span>
               </div>
             </div>
@@ -778,19 +810,21 @@
       if (!replies || replies.length === 0) return '';
       let repliesHTML = '<div class="replies-container">';
       replies.forEach(reply => {
-        const official = isOfficialPost(reply);
+        const officialAccount = getOfficialAccount(reply);
+        const official = !!officialAccount;
         const c = official ? OFFICIAL_COLOR : colorFor(reply.author.name);
         const safeName = escapeHtml(reply.author.name);
         const safeInitials = escapeHtml(reply.author.initials);
         const safeContent = escapeHtml(reply.content);
         const safeTime = escapeHtml(reply.timestamp);
         const safeId = escapeHtml(reply.id);
+        const badgeHtml = official ? `<span class="official-badge">${escapeHtml(officialAccount.badgeShort)}</span>` : '';
         repliesHTML += `
           <div class="reply-item ${official ? 'is-official-reply' : ''}" id="${safeId}">
             <div class="post-header">
               <div class="author-avatar ${official ? 'is-official' : ''}" style="--avatar-color:${c.hex}; --avatar-bg:${c.bg};">${safeInitials}</div>
               <div class="author-meta">
-                <span class="author-name ${official ? 'is-official' : ''}">${safeName}${official ? '<span class="official-badge">✓ MIJO</span>' : ''}</span>
+                <span class="author-name ${official ? 'is-official' : ''}">${safeName}${badgeHtml}</span>
                 <span class="post-time">${safeTime}</span>
               </div>
             </div>
