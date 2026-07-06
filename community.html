@@ -163,6 +163,20 @@
       opacity: 0.85;
     }
 
+    .member-ring.is-official::after {
+      content: "✓";
+      position: absolute;
+      bottom: -2px; right: -2px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--acc-gold);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid var(--paper);
+    }
+
     .member-name {
       font-size: 10px;
       font-family: 'JetBrains Mono', monospace;
@@ -172,6 +186,7 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+    .member-name.is-official { color: var(--acc-gold); font-weight: 700; }
 
     /* ── FEED ── */
     .feed-container {
@@ -248,6 +263,32 @@
     }
     .post-card:hover::before { transform: scaleX(1); }
 
+    /* Message officiel MIJO — cadre distinct, immédiatement reconnaissable */
+    .post-card.is-official {
+      border-color: rgba(168,121,31,0.4);
+      background: linear-gradient(180deg, rgba(168,121,31,0.06), var(--surface) 45%);
+      box-shadow: 0 1px 2px rgba(168,121,31,0.06), 0 8px 24px rgba(168,121,31,0.08);
+    }
+    .post-card.is-official::before { transform: scaleX(1); background: var(--acc-gold); height: 4px; }
+    .post-card.is-official:hover { box-shadow: 0 4px 10px rgba(168,121,31,0.08), 0 16px 32px rgba(168,121,31,0.12); }
+
+    .official-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: var(--acc-gold-bg);
+      color: var(--acc-gold);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+      margin-left: 7px;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
     @keyframes rise {
       from { opacity: 0; transform: translateY(14px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -271,6 +312,11 @@
       border: 1.5px solid var(--avatar-color, var(--acc-blue));
       background: var(--avatar-bg, var(--acc-blue-bg));
       color: var(--avatar-color, var(--acc-blue));
+      position: relative;
+    }
+    .author-avatar.is-official {
+      border-width: 2px;
+      box-shadow: 0 0 0 3px var(--acc-gold-bg);
     }
 
     .author-meta { display: flex; flex-direction: column; min-width: 0; }
@@ -282,6 +328,7 @@
       color: var(--ink);
       letter-spacing: -0.1px;
     }
+    .author-name.is-official { color: var(--acc-gold); }
 
     .post-time {
       font-family: 'JetBrains Mono', monospace;
@@ -381,9 +428,17 @@
     }
 
     .reply-item .author-avatar { width: 28px; height: 28px; font-size: 11px; border-width: 1px; }
+    .reply-item .author-avatar.is-official { border-width: 1.5px; box-shadow: 0 0 0 2px var(--acc-gold-bg); }
     .reply-item .author-name { font-size: 13px; }
     .reply-item .post-content { font-size: 13.5px; margin-bottom: 0; }
     .reply-item .post-header { margin-bottom: 6px; }
+    .reply-item.is-official-reply {
+      background: rgba(168,121,31,0.05);
+      border-radius: 12px;
+      padding: 8px 10px;
+      margin-left: -10px;
+    }
+    .reply-item .official-badge { font-size: 8.5px; padding: 1px 6px; }
 
     /* ── COMPOSER ── */
     .composer-wrapper {
@@ -481,6 +536,17 @@
     .publish-btn:disabled { background: var(--ink-soft); cursor: not-allowed; opacity: 0.5; }
     .publish-btn:disabled::before { display: none; }
 
+    /* Composer en mode "officiel" — visuel discret pour rappeler qui écrit */
+    .composer-wrapper.is-official-mode .composer-input {
+      border-color: rgba(168,121,31,0.35);
+    }
+    .composer-wrapper.is-official-mode .composer-input:focus {
+      border-color: var(--acc-gold);
+      box-shadow: 0 0 0 3px var(--acc-gold-bg);
+    }
+    .composer-wrapper.is-official-mode .publish-btn { background: var(--acc-gold); }
+    .composer-wrapper.is-official-mode .publish-btn:hover { background: #8f6a1b; }
+
     @media (prefers-reduced-motion: reduce) {
       .post-card, .reply-item, .member-chip, .state-msg, .reply-banner { animation: none; }
       .header-title::after { animation: none; }
@@ -507,7 +573,7 @@
   <main class="feed-container" id="feedContainer"></main>
 
   <!-- Composer -->
-  <div class="composer-wrapper">
+  <div class="composer-wrapper" id="composerWrapper">
     <div class="composer-inner">
       <div class="reply-banner" id="replyBanner">
         <span id="replyingToText">En réponse à...</span>
@@ -523,6 +589,21 @@
   <script>
     // ── CONFIGURATION CLOUDFLARE ──
     const API_BASE_URL = "https://reseau.mijocomplexe.workers.dev/api";
+
+    // ── COMPTE OFFICIEL MIJO (PDG / entreprise) ──
+    // Un post est reconnu comme "officiel" si le userId correspond à ce compte,
+    // OU si le nom d'affichage correspond (au cas où le compte serait recréé un jour).
+    const MIJO_OFFICIAL_ID   = "rec6v8Z0K0G4bwbdE";
+    const MIJO_OFFICIAL_NAME = "mijo complexe";
+    const OFFICIAL_COLOR = { name: 'official', hex: '#A8791F', bg: 'rgba(168, 121, 31, 0.12)' };
+
+    function isOfficialPost(item) {
+      if (!item) return false;
+      const id = item.userId || item.user_id || item.authorId
+              || (item.author && (item.author.id || item.author.userId)) || '';
+      const name = (item.author && item.author.name) || item.authorName || '';
+      return id === MIJO_OFFICIAL_ID || name.trim().toLowerCase() === MIJO_OFFICIAL_NAME;
+    }
 
     // ── SÉCURITÉ : tout texte affiché passe par ici avant d'aller dans le HTML ──
     function escapeHtml(str) {
@@ -566,6 +647,12 @@
       } catch (e) {
         console.error("Erreur lecture utilisateur:", e);
       }
+
+      // Si c'est le compte entreprise qui est connecté, on marque le composer en mode "officiel"
+      // (juste un repère visuel discret pour toi, pas affiché aux autres)
+      if (currentUser.id === MIJO_OFFICIAL_ID || currentUser.name.trim().toLowerCase() === MIJO_OFFICIAL_NAME) {
+        document.getElementById('composerWrapper').classList.add('is-official-mode');
+      }
     }
 
     // 2. ÉTAT DU CERCLE
@@ -573,7 +660,7 @@
     let postsData = [];
 
     // 3. FETCH : RÉCUPÉRER LES DONNÉES DEPUIS CLOUDFLARE
-    async function chargerFeed() {
+    async function chargerFeed(smoothScroll) {
       const container = document.getElementById('feedContainer');
       container.innerHTML = `<div class="state-msg"><span class="state-title">Chargement du Cercle…</span>On rassemble les dernières idées.</div>`;
 
@@ -589,12 +676,26 @@
         } else {
           renderMembersRail();
           renderFeed();
+          // Style WhatsApp : on ouvre directement sur les derniers messages.
+          // Pour voir l'historique, on remonte (scroll vers le haut) comme dans WhatsApp.
+          scrollToLatest(smoothScroll);
         }
       } catch (error) {
         console.error("Erreur lors du chargement:", error);
         container.innerHTML = `<div class="state-msg"><span class="state-title">Connexion au Cercle impossible</span>Vérifiez votre réseau, puis réessayez.<br><button class="retry-btn" id="retryBtn">Réessayer</button></div>`;
-        document.getElementById('retryBtn').addEventListener('click', chargerFeed);
+        document.getElementById('retryBtn').addEventListener('click', () => chargerFeed(false));
       }
+    }
+
+    // Faire défiler jusqu'au dernier message (comportement WhatsApp : la vue s'ouvre en bas,
+    // on remonte manuellement pour voir les messages plus anciens)
+    function scrollToLatest(smooth) {
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: smooth ? 'smooth' : 'auto'
+        });
+      });
     }
 
     // 4. RANG DES MEMBRES ACTIFS
@@ -602,7 +703,9 @@
       const rail = document.getElementById('membersRail');
       const seen = new Map();
       postsData.forEach(post => {
-        if (!seen.has(post.author.name)) seen.set(post.author.name, post.author);
+        if (!seen.has(post.author.name)) {
+          seen.set(post.author.name, { author: post.author, official: isOfficialPost(post) });
+        }
       });
 
       if (seen.size === 0) { rail.innerHTML = ''; rail.classList.add('empty'); return; }
@@ -610,14 +713,16 @@
 
       let html = '';
       let i = 0;
-      seen.forEach((author, name) => {
-        const c = colorFor(name);
+      seen.forEach((entry, name) => {
+        const author = entry.author;
+        const official = entry.official;
+        const c = official ? OFFICIAL_COLOR : colorFor(name);
         const safeInitials = escapeHtml(author.initials);
-        const safeFirstName = escapeHtml(name.split(' ')[0]);
+        const safeFirstName = escapeHtml(official ? 'MIJO' : name.split(' ')[0]);
         html += `
           <div class="member-chip" style="animation-delay:${i * 0.04}s">
-            <div class="member-ring" style="--ring-color:${c.hex}; color:${c.hex};">${safeInitials}</div>
-            <span class="member-name">${safeFirstName}</span>
+            <div class="member-ring ${official ? 'is-official' : ''}" style="--ring-color:${c.hex}; color:${c.hex};">${safeInitials}</div>
+            <span class="member-name ${official ? 'is-official' : ''}">${safeFirstName}</span>
           </div>
         `;
         i++;
@@ -632,7 +737,8 @@
 
       postsData.forEach((post, index) => {
         const isLikedByMe = post.likedBy && post.likedBy.includes(currentUser.id);
-        const c = colorFor(post.author.name);
+        const official = isOfficialPost(post);
+        const c = official ? OFFICIAL_COLOR : colorFor(post.author.name);
 
         const safeName = escapeHtml(post.author.name);
         const safeInitials = escapeHtml(post.author.initials);
@@ -641,11 +747,11 @@
         const safeId = escapeHtml(post.id);
 
         const postHTML = `
-          <article class="post-card" id="${safeId}" style="--card-accent:${c.hex}; animation-delay:${Math.min(index, 8) * 0.06}s">
+          <article class="post-card ${official ? 'is-official' : ''}" id="${safeId}" style="--card-accent:${c.hex}; animation-delay:${Math.min(index, 8) * 0.06}s">
             <div class="post-header">
-              <div class="author-avatar" style="--avatar-color:${c.hex}; --avatar-bg:${c.bg};">${safeInitials}</div>
+              <div class="author-avatar ${official ? 'is-official' : ''}" style="--avatar-color:${c.hex}; --avatar-bg:${c.bg};">${safeInitials}</div>
               <div class="author-meta">
-                <span class="author-name">${safeName}</span>
+                <span class="author-name ${official ? 'is-official' : ''}">${safeName}${official ? '<span class="official-badge">✓ MIJO Officiel</span>' : ''}</span>
                 <span class="post-time">${safeTime}</span>
               </div>
             </div>
@@ -672,18 +778,19 @@
       if (!replies || replies.length === 0) return '';
       let repliesHTML = '<div class="replies-container">';
       replies.forEach(reply => {
-        const c = colorFor(reply.author.name);
+        const official = isOfficialPost(reply);
+        const c = official ? OFFICIAL_COLOR : colorFor(reply.author.name);
         const safeName = escapeHtml(reply.author.name);
         const safeInitials = escapeHtml(reply.author.initials);
         const safeContent = escapeHtml(reply.content);
         const safeTime = escapeHtml(reply.timestamp);
         const safeId = escapeHtml(reply.id);
         repliesHTML += `
-          <div class="reply-item" id="${safeId}">
+          <div class="reply-item ${official ? 'is-official-reply' : ''}" id="${safeId}">
             <div class="post-header">
-              <div class="author-avatar" style="--avatar-color:${c.hex}; --avatar-bg:${c.bg};">${safeInitials}</div>
+              <div class="author-avatar ${official ? 'is-official' : ''}" style="--avatar-color:${c.hex}; --avatar-bg:${c.bg};">${safeInitials}</div>
               <div class="author-meta">
-                <span class="author-name">${safeName}</span>
+                <span class="author-name ${official ? 'is-official' : ''}">${safeName}${official ? '<span class="official-badge">✓ MIJO</span>' : ''}</span>
                 <span class="post-time">${safeTime}</span>
               </div>
             </div>
@@ -726,7 +833,7 @@
         input.value = '';
         input.style.height = '50px';
         cancelReply();
-        await chargerFeed();
+        await chargerFeed(true); // scroll fluide vers le nouveau message après envoi
 
       } catch (error) {
         alert("Impossible de publier pour le moment. Réessayez dans un instant.");
@@ -833,7 +940,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       initUser();
-      chargerFeed();
+      chargerFeed(false); // premier chargement : on arrive directement en bas, comme WhatsApp
     });
   </script>
 </body>
