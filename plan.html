@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyBusiness - Propulse ton idée</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        /* Couleurs personnalisées pour coller exactement à ta bannière */
+        :root {
+            --bg-dark: #0b1329;
+            --accent-yellow: #f59e0b;
+            --accent-yellow-hover: #d97706;
+        }
+        body {
+            background-color: var(--bg-dark);
+        }
+        /* Style pour le rendu du texte de l'IA */
+        .prose h1, .prose h2, .prose h3 {
+            color: #f3f4f6;
+            font-weight: 700;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .prose h2 { font-size: 1.4rem; border-bottom: 1px solid #334155; padding-bottom: 0.25rem; }
+        .prose h3 { font-size: 1.1rem; color: var(--accent-yellow); }
+        .prose p { color: #cbd5e1; margin-bottom: 1rem; line-height: 1.6; }
+        .prose ul { list-style-type: disc; margin-left: 1.25rem; margin-bottom: 1rem; color: #cbd5e1; }
+        .prose li { margin-bottom: 0.25rem; }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between font-sans">
+
+    <main class="max-w-3xl w-full mx-auto px-4 py-12 flex-grow">
+        
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold tracking-tight mb-3">
+                My<span class="text-amber-500">Business</span> 
+            </h1>
+            <p class="text-slate-400 text-lg">
+                Soti nan ide a rive nan premye vant lan.
+            </p>
+        </div>
+
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl backdrop-blur-sm mb-8">
+            <form id="businessForm" class="space-y-6">
+                
+                <div>
+                    <label for="nom_projet" class="block text-sm font-semibold text-slate-300 mb-2">Nom de ton projet ou entreprise</label>
+                    <input type="text" id="nom_projet" required placeholder="Ex: Pot'iwa Pizza, Mijo Pay..." 
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="secteur" class="block text-sm font-semibold text-slate-300 mb-2">Secteur d'activité</label>
+                        <select id="secteur" required 
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition">
+                            <option value="" disabled selected>Choisis un secteur</option>
+                            <option value="Alimentation & Restauration">Alimentation & Restauration</option>
+                            <option value="Technologie & Fintech">Technologie & Fintech</option>
+                            <option value="Commerce & E-commerce">Commerce & E-commerce</option>
+                            <option value="Services & Consultation">Services & Consultation</option>
+                            <option value="Production & Industrie">Production & Industrie (Eau, etc.)</option>
+                            <option value="Autre">Autre secteur</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="budget" class="block text-sm font-semibold text-slate-300 mb-2">Budget approximatif disponible</label>
+                        <input type="text" id="budget" required placeholder="Ex: 100$, Moins de 50 000 HTG..." 
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="description" class="block text-sm font-semibold text-slate-300 mb-2">Explique ton idée en quelques phrases</label>
+                    <textarea id="description" required rows="4" placeholder="Que vas-tu vendre ? À qui ? Comment penses-tu faire de l'argent ?" 
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition resize-none"></textarea>
+                </div>
+
+                <button type="submit" id="submitBtn" 
+                    class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3.5 px-6 rounded-xl transition duration-200 transform active:scale-[0.99] flex justify-center items-center gap-2 cursor-pointer shadow-lg shadow-amber-500/10">
+                    <span id="btnText">Générer mon plan d'action</span>
+                    <svg id="spinner" class="animate-spin h-5 w-5 text-slate-950 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0/0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+            </form>
+        </div>
+
+        <div id="resultContainer" class="hidden bg-slate-900/40 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl animate-fade-in">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+                <h2 class="text-xl font-bold text-amber-500 flex items-center gap-2">
+                    ✨ Ton Plan d'Avenir MyBusiness
+                </h2>
+                <button onclick="window.print()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg transition cursor-pointer">
+                    Imprimer / Sauvegarder
+                </button>
+            </div>
+            <div id="aiOutput" class="prose max-w-none"></div>
+        </div>
+
+    </main>
+
+    <footer class="text-center py-6 border-t border-slate-900 text-xs text-slate-600">
+        &copy; 2026 MyBusiness &middot; Propulsé par l'écosystème Mijo.
+    </footer>
+
+    <script>
+        const form = document.getElementById('businessForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const spinner = document.getElementById('spinner');
+        const resultContainer = document.getElementById('resultContainer');
+        const aiOutput = document.getElementById('aiOutput');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // 1. Activation de l'état de chargement graphique
+            submitBtn.disabled = true;
+            btnText.innerText = "L'IA analyse ton projet...";
+            spinner.classList.remove('hidden');
+            resultContainer.classList.add('hidden'); // On cache l'ancien résultat si présent
+
+            // 2. Collecte des données du formulaire
+            const payload = {
+                nom_projet: document.getElementById('nom_projet').value,
+                secteur: document.getElementById('secteur').value,
+                budget: document.getElementById('budget').value,
+                description: document.getElementById('description').value
+            };
+
+            try {
+                // 3. Appel de ton Worker Cloudflare sur ton sous-domaine dédié
+                const response = await fetch('https://business.mijocomplexe.workers.dev/generate-plan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Impossible de joindre le serveur Cloudflare.");
+                }
+
+                const data = await response.json();
+
+                // 4. Utilisation de Marked.js pour transformer le Markdown de l'IA en HTML ultra propre
+                if (data.plan) {
+                    aiOutput.innerHTML = marked.parse(data.plan);
+                    resultContainer.classList.remove('hidden'); // On affiche le magnifique résultat
+                    
+                    // Petit scroll automatique pour amener l'utilisateur directement au résultat
+                    resultContainer.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert("Une erreur est survenue dans la génération du plan.");
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert("Erreur de connexion : " + error.message);
+            } finally {
+                // 5. Remise à zéro du bouton après traitement
+                submitBtn.disabled = false;
+                btnText.innerText = "Générer mon plan d'action";
+                spinner.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
