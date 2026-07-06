@@ -6,6 +6,8 @@
     <title>MyBusiness - Propulse ton idée</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Bibliothèque pour générer le PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         /* Couleurs personnalisées pour coller exactement à ta bannière */
         :root {
@@ -96,9 +98,10 @@
                 <h2 class="text-xl font-bold text-amber-500 flex items-center gap-2">
                     ✨ Ton Plan d'Avenir MyBusiness
                 </h2>
-                <button onclick="window.print()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg transition cursor-pointer">
-                    Imprimer / Sauvegarder
-                </button>
+                <button id="downloadPdfBtn" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg transition cursor-pointer shadow-md">
+    Télécharger le PDF 📄
+</button>
+                
             </div>
             <div id="aiOutput" class="prose max-w-none"></div>
         </div>
@@ -171,6 +174,47 @@
                 spinner.classList.add('hidden');
             }
         });
+        document.getElementById('downloadPdfBtn').addEventListener('click', () => {
+    const aiContent = document.getElementById('aiOutput').innerHTML;
+    const nomProjet = document.getElementById('nom_projet').value || 'MonProjet';
+
+    // 1. On crée un élément invisible temporaire stylisé proprement pour un PDF (fond blanc, texte noir)
+    const elementPDF = document.createElement('div');
+    elementPDF.style.padding = '40px';
+    elementPDF.style.color = '#1e293b'; // Texte sombre
+    elementPDF.style.backgroundColor = '#ffffff'; // Fond blanc
+    elementPDF.style.fontFamily = 'Arial, sans-serif';
+    
+    // On lui injecte un bel en-tête officiel pour le document
+    elementPDF.innerHTML = `
+        <div style="border-bottom: 2px solid #f59e0b; padding-bottom: 20px; margin-bottom: 30px; text-align: center;">
+            <h1 style="font-size: 28px; margin: 0; color: #0b1329;">MyBusiness AI</h1>
+            <p style="font-size: 14px; margin: 5px 0 0 0; color: #64748b;">Plan d'action et stratégie commerciale officielle</p>
+        </div>
+        <div style="margin-bottom: 30px; background-color: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+            <p style="margin: 0; font-size: 14px;"><strong>Projet :</strong> ${nomProjet}</p>
+            <p style="margin: 5px 0 0 0; font-size: 14px;"><strong>Généré le :</strong> ${new Date().toLocaleDateString('fr-FR')}</p>
+        </div>
+        <div class="prose" style="font-size: 14px; line-height: 1.6;">
+            ${aiContent}
+        </div>
+        <div style="margin-top: 50px; border-top: 1px solid #e2e8f0; padding-top: 15px; text-align: center; font-size: 11px; color: #94a3b8;">
+            Document généré par la plateforme MyBusiness &middot; Écosystème MIJO
+        </div>
+    `;
+
+    // 2. Configuration de la mise en page du PDF
+    const options = {
+        margin:       [0.5, 0.5, 0.5, 0.5], // Marges autour de la page
+        filename:     `Plan_Action_${nomProjet.replace(/\s+/g, '_')}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, logging: false, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    // 3. Lancement de la conversion et téléchargement automatique
+    html2pdf().set(options).from(elementPDF).save();
+});
     </script>
 </body>
 </html>
