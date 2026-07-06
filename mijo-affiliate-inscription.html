@@ -640,6 +640,7 @@ Kategori: Selon kantite moun ou afilye, w ap monte nan kategori (Bronze, Argent,
                 hideSpinner();
                 if (result.success) {
                     user.Solde = result.nouveauSolde ?? user.Solde;
+                   user.EstPremium = result.EstPremium ?? user.EstPremium;
                     user.Estafilia = result.Estafilia ?? user.Estafilia;
                     user.LienAffiliation = result.LienAffiliation ?? user.LienAffiliation;
                     localStorage.setItem('user', JSON.stringify(user));
@@ -673,6 +674,8 @@ Kategori: Selon kantite moun ou afilye, w ap monte nan kategori (Bronze, Argent,
                 hideSpinner();
                 if (result.success) {
                     user.Solde = result.nouveauSolde;
+                   user.EstPremium = result.EstPremium;
+
                     user.Estafilia = true;
                     user.LienAffiliation = result.LienAffiliation;
                     localStorage.setItem('user', JSON.stringify(user));
