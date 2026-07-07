@@ -8,7 +8,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-K43FXR4W');</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Faire un Don — MIJO PAY</title>
+<title>Devenir Sponsor — MIJO PAY</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -273,22 +273,6 @@ body{
 .amount-input:focus{border-color:var(--gold)}
 .amount-input::placeholder{color:rgba(247,243,238,.2)}
  
-.anon-row{
-  display:flex;align-items:center;gap:10px;
-  margin-top:14px;
-  cursor:pointer;
-  padding:10px 0;
-}
-.anon-check{
-  width:20px;height:20px;
-  border:2px solid rgba(255,255,255,.2);
-  border-radius:6px;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .2s;font-size:.7em;flex-shrink:0;
-}
-.anon-check.on{background:var(--green);border-color:var(--green);color:white}
-.anon-text{font-size:.82em;color:var(--muted)}
- 
 /* ── DONATE BUTTON ─────────────────────────── */
 .btn-donate{
   width:100%;
@@ -425,15 +409,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
  
 <!-- ═══ HERO ════════════════════════════════════ -->
 <section class="hero">
-  <div class="hero-eyebrow">❤️ Programme Solidarité MIJO</div>
+  <div class="hero-eyebrow">❤️ Programme Sponsors MIJO</div>
  
   <h1 class="hero-title">
-    Chaque don<br>
+    Chaque sponsor<br>
     <span>change une vie</span>
   </h1>
  
   <p class="hero-sub">
-    Votre générosité finance les rêves des jeunes entrepreneurs haïtiens.
+    Votre parrainage finance les rêves des jeunes entrepreneurs haïtiens.
     Ensemble, construisons une économie plus forte.
   </p>
   <a href="#causes" class="cta-scroll">
@@ -445,7 +429,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
  
 <!-- ═══ CAUSES ══════════════════════════════════ -->
 <section class="section reveal" id="causes">
-  <div class="section-title">Où va votre don ?</div>
+  <div class="section-title">Où va votre parrainage ?</div>
   <div class="section-sub">Choisissez la cause qui vous touche le plus</div>
  
   <div class="causes-grid" id="causes-grid">
@@ -481,7 +465,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="cause-icon">💙</div>
       <div class="cause-body">
         <div class="cause-name">Fonds Général MIJO</div>
-        <div class="cause-desc">Votre don est réparti intelligemment là où le besoin est le plus urgent. Faites confiance à MIJO pour maximiser votre impact.</div>
+        <div class="cause-desc">Votre parrainage est réparti intelligemment là où le besoin est le plus urgent. Faites confiance à MIJO pour maximiser votre impact.</div>
         </div>
       <div class="cause-check">✓</div>
     </div>
@@ -493,7 +477,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
  
 <!-- ═══ AMOUNT + FORM ════════════════════════════ -->
 <section class="section reveal" id="donate-form">
-  <div class="section-title">Votre contribution</div>
+  <div class="section-title">Votre parrainage</div>
   <div class="section-sub">Chaque gourde compte. Même 100 G fait la différence.</div>
  
   <div class="amount-section">
@@ -517,19 +501,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
              value="1000"
              min="1">
     </div>
- 
-    <div class="anon-row" onclick="toggleAnon()">
-      <div class="anon-check" id="anon-check"></div>
-      <span class="anon-text">Faire ce don de manière anonyme (votre nom n'apparaîtra pas)</span>
-    </div>
   </div>
  
   <button class="btn-donate" id="btn-donate" onclick="handleDonate()">
-    ❤️ &nbsp;Faire mon don maintenant
+    ❤️ &nbsp;Devenir Sponsor maintenant
   </button>
  
   <p style="text-align:center;font-size:.73em;color:var(--muted);margin-top:14px;line-height:1.6">
-    🔒 Transaction sécurisée via MIJO PAY &nbsp;·&nbsp; Reçu envoyé par email
+    🔒 Transaction sécurisée via MIJO PAY &nbsp;·&nbsp; Votre nom apparaîtra dans nos sponsors
   </p>
 </section>
  
@@ -541,7 +520,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="success-icon">🎉</div>
   <div class="success-title">Merci infiniment !</div>
   <p class="success-msg" id="success-msg">
-    Votre don a bien été reçu. Vous contribuez à changer des vies en Haïti. 🇭🇹
+    Votre parrainage a bien été reçu. Vous contribuez à changer des vies en Haïti. 🇭🇹
   </p>
   <a href="home_pro.html" class="success-back">← Retour à l'accueil</a>
 </div>
@@ -621,8 +600,6 @@ function selectCause(card){
 }
  
 /* ── QUICK AMOUNTS ─────────────────────────── */
-let isAnon=false;
- 
 function setAmount(v){
   document.querySelectorAll('.qa-btn').forEach(b=>b.classList.remove('active'));
   if(v===null){
@@ -633,11 +610,6 @@ function setAmount(v){
     document.getElementById('montant').value=v;
     event.target.classList.add('active');
   }
-}
- 
-function toggleAnon(){
-  isAnon=!isAnon;
-  document.getElementById('anon-check').classList.toggle('on',isAnon);
 }
  
 /* ── TOAST ─────────────────────────────────── */
@@ -694,7 +666,7 @@ function launchConfetti(){
   draw();
 }
  
-/* ── MAIN DONATE HANDLER ───────────────────── */
+/* ── MAIN SPONSOR HANDLER ──────────────────── */
 async function handleDonate(){
   const montant=parseFloat(document.getElementById('montant').value);
   const btn=document.getElementById('btn-donate');
@@ -714,7 +686,7 @@ async function handleDonate(){
  
   const user=JSON.parse(userString);
   const userId=user.userId;
-  const nom=isAnon?'Anonyme':(user.NomUtilisateur||'Donateur');
+  const nom=user.NomUtilisateur||'Sponsor';
  
   btn.disabled=true;
   btn.textContent='⏳  Traitement en cours…';
@@ -738,18 +710,18 @@ async function handleDonate(){
       // success!
       launchConfetti();
       document.getElementById('success-msg').textContent=
-        `Votre don de ${montant.toLocaleString()} G pour "${getCauseName()}" a bien été reçu. Merci ${isAnon?'':nom} ! 🇭🇹`;
+        `Votre parrainage de ${montant.toLocaleString()} G pour "${getCauseName()}" a bien été reçu. Merci ${nom} ! 🇭🇹`;
       document.getElementById('success-screen').classList.add('show');
  
     } else {
-      showToast('❌ '+(data.message||'Échec du don'),'error');
+      showToast('❌ '+(data.message||'Échec du parrainage'),'error');
       btn.disabled=false;
-      btn.innerHTML='❤️ &nbsp;Faire mon don maintenant';
+      btn.innerHTML='❤️ &nbsp;Devenir Sponsor maintenant';
     }
   }catch(err){
     showToast('❌ Erreur de connexion. Réessayez.','error');
     btn.disabled=false;
-    btn.innerHTML='❤️ &nbsp;Faire mon don maintenant';
+    btn.innerHTML='❤️ &nbsp;Devenir Sponsor maintenant';
   }
 }
  
