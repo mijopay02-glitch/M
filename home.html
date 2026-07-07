@@ -209,8 +209,7 @@
             background: var(--white); border-radius: var(--radius-lg);
             box-shadow: var(--shadow-sm); border: 1px solid var(--border); padding: 14px 16px;
         }
-        .donors-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 11px; }
-        .donors-left { display: flex; align-items: center; gap: 7px; }
+        
         .live-dot {
             width: 8px; height: 8px; background: var(--green);
             border-radius: 50%; position: relative;
@@ -221,11 +220,33 @@
         }
         @keyframes pulse { 0% { transform: scale(.8); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
         .donors-title { font-size: .75em; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: .4px; }
-        .sponsor-cta {
-            padding: 5px 13px; background: var(--blue); color: white;
-            font-size: .67em; font-weight: 700; border-radius: 20px;
-            text-decoration: none; transition: background .2s; box-shadow: 0 2px 8px rgba(26,111,232,.3);
-        }
+        .donors-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 11px;
+}
+.donors-left {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    align-self: flex-start; /* garde "Nos Donateurs" à gauche */
+}
+.sponsor-cta {
+    padding: 8px 20px;
+    background: var(--blue);
+    color: white;
+    font-size: .75em;
+    font-weight: 700;
+    border-radius: 20px;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(26,111,232,.3);
+    align-self: center;
+    width: 100%;
+    max-width: 220px;
+    text-align: center;
+}
         .ticker-wrap { position: relative; overflow: hidden; }
         .ticker-fade-l, .ticker-fade-r {
             position: absolute; top: 0; bottom: 0; width: 32px; z-index: 2; pointer-events: none;
