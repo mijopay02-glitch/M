@@ -55,9 +55,17 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
+    gap:14px;
+    flex-wrap:wrap;
     padding:clamp(14px,3vw,22px) clamp(16px,5vw,56px);
     max-width:1280px;
     margin:0 auto;
+  }
+  .topbar-left{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
   }
   .brand{
     display:flex; align-items:center; gap:10px;
@@ -72,6 +80,22 @@
   }
   .brand-name{font-size:clamp(15px,2vw,18px);}
   .brand-name span{color:var(--gold-300);}
+
+  /* ---------- Big Home button ---------- */
+  .btn-home{
+    display:inline-flex;align-items:center;gap:9px;
+    padding:12px 20px;
+    border-radius:12px;
+    border:none;
+    background:linear-gradient(135deg, var(--gold-300), var(--gold-500));
+    color:var(--navy-950);
+    font-weight:700; font-size:14.5px;
+    box-shadow:0 12px 24px rgba(212,175,55,0.3);
+    transition:transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .btn-home:hover{transform:translateY(-2px); box-shadow:0 16px 30px rgba(212,175,55,0.4);}
+  .btn-home:focus-visible{outline:2px solid var(--gold-100); outline-offset:3px;}
+  .btn-home svg{width:18px;height:18px;}
 
   .nav-cta{
     display:inline-flex;align-items:center;gap:8px;
@@ -458,9 +482,15 @@
 <body>
 
   <div class="topbar">
-    <div class="brand">
-      <div class="brand-mark">M</div>
-      <div class="brand-name">MBH <span>· MIJO Business Helper</span></div>
+    <div class="topbar-left">
+      <a class="btn-home" href="home.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+        Menu
+      </a>
+      <div class="brand">
+        <div class="brand-mark">M</div>
+        <div class="brand-name">MBH <span>· MIJO Business Helper</span></div>
+      </div>
     </div>
     <a class="nav-cta" href="community.html">
       Communauté
