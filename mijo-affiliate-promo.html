@@ -681,57 +681,50 @@
                 leaderboardList.innerHTML = "<p class='empty-note'>Impossible de charger le classement pour le moment.</p>";
             }
         }
+function displayLeaderboard(data) {
+    const leaderboardList = document.getElementById('leaderboardList');
+    leaderboardList.innerHTML = '<h2>LEADERBOARD</h2>';
 
-        function displayLeaderboard(data) {
-            const leaderboardList = document.getElementById('leaderboardList');
-            leaderboardList.innerHTML = '<h2>LEADERBOARD</h2>';
+    if (data.length === 0) {
+        leaderboardList.innerHTML += "<p class='empty-note'>Aucun classement disponible.</p>";
+        return;
+    }
 
-            if (data.length === 0) {
-                leaderboardList.innerHTML += "<p class='empty-note'>Aucun classement disponible.</p>";
-                return;
-            }
+    data.forEach((entry, index) => {
+        const rank = index + 1;
+        let rankDisplay = (rank <= 3) ? ['🥇', '🥈', '🥉'][rank - 1] : rank;
 
-            data.forEach((entry, index) => {
-                const rank = index + 1;
-                let rankDisplay;
+        const affiliateCount = entry.nbreaffilie || 0;
+        let stars = '';
+        if (affiliateCount >= 50) stars = '★★★★★';
+        else if (affiliateCount >= 25) stars = '★★★★☆';
+        else if (affiliateCount >= 10) stars = '★★★☆☆';
+        else if (affiliateCount >= 5) stars = '★★☆☆☆';
+        else if (affiliateCount >= 1) stars = '★☆☆☆☆';
+        else stars = '☆☆☆☆☆';
 
-                if (rank === 1) rankDisplay = '🥇';
-                else if (rank === 2) rankDisplay = '🥈';
-                else if (rank === 3) rankDisplay = '🥉';
-                else rankDisplay = rank;
+        // 1. Création de l'élément conteneur
+        const entryDiv = document.createElement('div');
+        entryDiv.className = 'leaderboard-entry';
 
-                const affiliateCount = entry.nbreaffilie || 0;
-                let starsHTML = '';
+        // 2. Construction sécurisée sans innerHTML pour les données utilisateur
+        entryDiv.innerHTML = `
+            <div class="rank">${rankDisplay}</div>
+            <div class="avatar-circle"></div>
+            <div class="player-info">
+                <div class="player-name"></div>
+                <div class="stars">${stars}</div>
+            </div>
+            <div class="score">${affiliateCount}</div>
+        `;
 
-                if (affiliateCount >= 50) {
-                    starsHTML = '★★★★★';
-                } else if (affiliateCount >= 25) {
-                    starsHTML = '★★★★☆';
-                } else if (affiliateCount >= 10) {
-                    starsHTML = '★★★☆☆';
-                } else if (affiliateCount >= 5) {
-                    starsHTML = '★★☆☆☆';
-                } else if (affiliateCount >= 1) {
-                    starsHTML = '★☆☆☆☆';
-                } else {
-                    starsHTML = '☆☆☆☆☆';
-                }
+        // 3. Utilisation de textContent pour injecter les noms (Neutralise le XSS)
+        entryDiv.querySelector('.avatar-circle').textContent = initials(entry.NomUtilisateur);
+        entryDiv.querySelector('.player-name').textContent = entry.NomUtilisateur;
 
-                const entryHTML = `
-                    <div class="leaderboard-entry">
-                        <div class="rank">${rankDisplay}</div>
-                        <div class="avatar-circle">${initials(entry.NomUtilisateur)}</div>
-                        <div class="player-info">
-                            <div class="player-name">${entry.NomUtilisateur}</div>
-                            <div class="stars">${starsHTML}</div>
-                        </div>
-                        <div class="score">${affiliateCount}</div>
-                    </div>
-                `;
-
-                leaderboardList.innerHTML += entryHTML;
-            });
-        }
+        leaderboardList.appendChild(entryDiv);
+    });
+}
 
         function copyCode() {
             const affiliateCode = document.getElementById('affiliateCode').innerText;
