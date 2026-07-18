@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<!-- Ajout de DOMPurify pour corriger la faille XSS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Plan d'Action IA — MyBusiness · MIJO</title>
@@ -350,17 +354,24 @@
           throw new Error("Pa t kapab jwenn sèvè a.");
         }
 
-        const data = await response.json();
+       const data = await response.json();
 
         if (data.plan) {
-          aiOutput.innerHTML = marked.parse(data.plan);
+          // 1. Conversion du Markdown en HTML (potentiellement dangereux)
+          const dirtyHtml = marked.parse(data.plan);
+          
+          // 2. CORRECTION DOM-XSS : Nettoyage strict du HTML avec DOMPurify
+          const cleanHtml = DOMPurify.sanitize(dirtyHtml);
+          
+          // 3. Injection sécurisée
+          aiOutput.innerHTML = cleanHtml;
+          
           resultContainer.classList.add('show');
           resultContainer.scrollIntoView({ behavior: 'smooth' });
           markMyBusinessStepDone(3);
         } else {
           showToast("Yon erè fèt pandan jenerasyon plan an.");
         }
-
       } catch (error) {
         console.error(error);
         showToast("Erè koneksyon: " + error.message);
