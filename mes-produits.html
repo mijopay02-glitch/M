@@ -252,37 +252,57 @@ function updateStats(products) {
 
 function renderProducts(products) {
   const grid = document.getElementById('products-grid');
+  grid.innerHTML = ''; // Nettoyage propre
 
   if (!products || products.length === 0) {
-    grid.innerHTML = `<div class="empty-state">
-      <div class="empty-icon">📭</div>
-      <h3>Aucun produit pour l'instant</h3>
-      <p>Tes achats apparaîtront ici dès que tu auras<br>commandé quelque chose dans la boutique.</p>
-      <a href="store.html">Découvrir la boutique →</a>
-    </div>`;
+    grid.innerHTML = `<div class="empty-state">...</div>`; // (Gardez votre code existant ici)
     return;
   }
 
-  grid.innerHTML = products.map(p => {
+  products.forEach(p => {
     const icon = ICON_MAP[(p.categorie || '').toLowerCase()] || '🎁';
     const hasLien = p.lien && p.lien.trim() !== '' && !p.lien.includes('LIEN_') && p.lien !== 'Lien_ici';
     const dateFormat = p.dateAchat ? new Date(p.dateAchat).toLocaleDateString('fr-FR', {day:'numeric', month:'short', year:'numeric'}) : '';
 
-    return `
-    <div class="product-card">
+    // Création sécurisée de la carte produit
+    const card = document.createElement('div');
+    card.className = 'product-card';
+
+    // Utilisation de textContent pour toutes les données venant de l'API
+    card.innerHTML = `
       <div class="product-icon">${icon}</div>
-      <div class="product-cat">${p.categorie || 'Produit'}</div>
-      <div class="product-name">${p.nom}</div>
-      ${p.vendeur ? `<div class="product-vendeur">Par ${p.vendeur}</div>` : ''}
-      <div class="product-date">${dateFormat}</div>
-      <div class="product-actions">
-        ${hasLien
-          ? `<a href="${p.lien}" target="_blank" class="access-btn">📥 Télécharger</a>`
-          : `<button class="access-btn disabled" disabled>🔒 Lien indisponible</button>`
-        }
-      </div>
-    </div>`;
-  }).join('');
+      <div class="product-cat"></div>
+      <div class="product-name"></div>
+      <div class="product-vendeur"></div>
+      <div class="product-date"></div>
+      <div class="product-actions"></div>
+    `;
+
+    // Injection sécurisée : textContent empêche toute interprétation de balise HTML
+    card.querySelector('.product-cat').textContent = p.categorie || 'Produit';
+    card.querySelector('.product-name').textContent = p.nom;
+    card.querySelector('.product-vendeur').textContent = p.vendeur ? `Par ${p.vendeur}` : '';
+    card.querySelector('.product-date').textContent = dateFormat;
+
+    // Gestion du bouton avec lien
+    const actions = card.querySelector('.product-actions');
+    if (hasLien) {
+      const a = document.createElement('a');
+      a.href = p.lien;
+      a.target = "_blank";
+      a.className = "access-btn";
+      a.textContent = "📥 Télécharger";
+      actions.appendChild(a);
+    } else {
+      const btn = document.createElement('button');
+      btn.className = "access-btn disabled";
+      btn.disabled = true;
+      btn.textContent = "🔒 Lien indisponible";
+      actions.appendChild(btn);
+    }
+
+    grid.appendChild(card);
+  });
 }
 
 // Recherche
