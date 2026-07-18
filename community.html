@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Le Cercle — MIJOPAY</title>
@@ -929,6 +930,10 @@
         const safeContent = escapeHtml(post.content);
         const safeTime = escapeHtml(post.timestamp);
         const safeId = escapeHtml(post.id);
+        
+        // 🔒 SÉCURITÉ : Forcer le typage en nombre (élimine tout risque d'injection ici)
+        const safeLikes = Number(post.likes) || 0; 
+        
         const badgeHtml = official ? `<span class="official-badge">${escapeHtml(officialAccount.badgeFull)}</span>` : '';
 
         const postHTML = `
@@ -945,7 +950,7 @@
 
             <div class="post-actions">
               <button class="action-btn like-btn ${isLikedByMe ? 'liked' : ''}" data-post-id="${safeId}">
-                <span class="action-icon">↑</span> <span class="like-count">${post.likes}</span> like
+                <span class="action-icon">↑</span> <span class="like-count">${safeLikes}</span> like
               </button>
               <button class="action-btn reply-btn" data-post-id="${safeId}" data-author-name="${safeName}">
                 <span class="action-icon">↩</span> Répondre
@@ -955,7 +960,14 @@
             ${renderReplies(post.replies)}
           </article>
         `;
-        container.insertAdjacentHTML('beforeend', postHTML);
+        
+        // 🔒 SÉCURITÉ : DOMPurify nettoie le HTML final avant l'insertion dans le DOM
+        const cleanHTML = DOMPurify.sanitize(postHTML, {
+          // Autoriser les variables CSS en ligne (car tu utilises --card-accent, etc.)
+          ALLOWED_ATTR: ['class', 'id', 'style', 'data-post-id', 'data-author-name'] 
+        });
+        
+        container.insertAdjacentHTML('beforeend', cleanHTML);
       });
     }
 
