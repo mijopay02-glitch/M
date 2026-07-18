@@ -212,9 +212,10 @@
         document.getElementById('success-screen').style.display = 'block';
 
         // Redirige le partenaire après 3 secondes
+        // Redirige le partenaire après 3 secondes
         if (redirect) {
           setTimeout(() => {
-            // Notifie la fenêtre parente (popup)
+            // Notifie la fenêtre parente (popup)[cite: 2]
             if (window.opener) {
               window.opener.postMessage({
                 type: 'MIJO_PAYMENT_SUCCESS',
@@ -223,24 +224,42 @@
                 merchant: merchant
               }, '*');
             }
-            window.location.href = redirect + 
-              '?payment=success&token=' + data.paymentToken;
+
+            // CORRECTION : Validation stricte de l'URL de redirection pour éviter l'Open Redirect
+            try {
+              // 1. On vérifie si c'est un chemin interne à MIJO PAY (commence par '/' mais pas '//')
+              const isLocalPath = redirect.startsWith('/') && !redirect.startsWith('//');
+              
+              if (isLocalPath) {
+                 window.location.href = redirect + '?payment=success&token=' + data.paymentToken;
+              } else {
+                 // 2. Si c'est une URL externe, on l'analyse de manière sécurisée
+                 const parsedUrl = new URL(redirect);
+                 
+                 // 3. Définis ici les domaines de tes partenaires marchands autorisés
+                 const domainesAutorises = [
+                     'localhost', 
+                     'mhb.com', 
+                     'ptiwa.ht'
+                 ];
+                 
+                 // 4. On exige le HTTPS et un domaine présent dans la liste blanche
+                 if (parsedUrl.protocol === 'https:' && domainesAutorises.includes(parsedUrl.hostname)) {
+                    window.location.href = parsedUrl.href + '?payment=success&token=' + data.paymentToken;
+                 } else {
+                    console.warn('Sécurité : Redirection bloquée vers un domaine non autorisé.');
+                    // Redirection de secours sécurisée vers ton accueil
+                    window.location.href = '/home.html';
+                 }
+              }
+            } catch (e) {
+              // Si la valeur de redirect n'est pas une URL valide (ex: texte brut malveillant)
+              console.error('URL de redirection invalide.');
+              window.location.href = '/home.html';
+            }
+            
           }, 3000);
         }
-      } else {
-        msg.style.color = 'red';
-        msg.innerText = data.error || 'Paiement refusé. Vérifiez vos informations.';
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa fa-lock"></i> Confirmer le paiement';
-      }
-
-    } catch (err) {
-      msg.style.color = 'red';
-      msg.innerText = 'Erreur de connexion. Réessayez.';
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fa fa-lock"></i> Confirmer le paiement';
-    }
-  }
 </script>
 </body>
 </html>
