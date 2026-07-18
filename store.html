@@ -888,26 +888,42 @@ function buildVendeurCard(p) {
   const safeVendeur = (p.vendeurId   || '');
   const safeLink    = (p.LienProduit || '');
 
-  card.innerHTML = `
+  // 1. On injecte UNIQUEMENT la structure HTML statique, sans les données sensibles
+card.innerHTML = `
     <div class="card-img">
-      ${badgeHTML}
-      ${vendeurTag}
-      <img src="${imgSrc}" alt="${p.NomProduit || 'Produit'}" loading="lazy" onerror="this.src='https://i.postimg.cc/vHfmQ1cM/a-clean-modern-book-cover-illustration-f-o79-YAln7-Tnao8fxz6p9-Pd-Q-g0-P-NGZVTcu08-SDb-QHh-Yy-Q.jpg'">
+      <!-- Les badges peuvent être insérés ici selon ta logique -->
+      <img class="img-produit" src="" alt="" loading="lazy" onerror="this.src='https://i.postimg.cc/vHfmQ1cM/a-clean-modern-book-cover-illustration-f-o79-YAln7-Tnao8fxz6p9-Pd-Q-g0-P-NGZVTcu08-SDb-QHh-Yy-Q.jpg'">
     </div>
     <div class="card-body">
-      <div class="card-cat">${p.Categorie || 'Produit'}</div>
-      <div class="card-title">${p.NomProduit || 'Sans titre'}</div>
-      <div class="card-price">${prixFormat} G</div>
-      <div class="card-seller">Par <b>${p.NomVendeur || 'Vendeur MIJO'}</b></div>
+      <div class="card-cat"></div>
+      <div class="card-title"></div>
+      <div class="card-price"></div>
+      <div class="card-seller">Par <b></b></div>
       <div class="card-actions">
-        <button class="btn-buy" onclick="addToCart('${safeName}',${p.Prix},'${prodId}','${safeLink}','${safeVendeur}')">Acheter</button>
-        <button class="btn-share" onclick="shareProduct('${safeName}','${prodId}')" title="Partager">🔗</button>
+        <button class="btn-buy">Acheter</button>
+        <button class="btn-share" title="Partager">🔗</button>
       </div>
     </div>
-  `;
+`;
 
-  return card;
-}
+// 2. On insère les données de manière 100% sécurisée via textContent et la manipulation d'attributs
+const img = card.querySelector('.img-produit');
+img.src = imgSrc;
+img.alt = p.NomProduit || 'Produit';
+
+card.querySelector('.card-cat').textContent = p.Categorie || 'Produit';
+card.querySelector('.card-title').textContent = p.NomProduit || 'Sans titre';
+card.querySelector('.card-price').textContent = `${prixFormat} G`;
+card.querySelector('.card-seller b').textContent = p.NomVendeur || 'Vendeur MIJO';
+
+// 3. On attache les événements proprement, ce qui évite les failles XSS dans les onclick=""
+card.querySelector('.btn-buy').addEventListener('click', () => {
+    addToCart(safeName, p.Prix, prodId, safeLink, safeVendeur);
+});
+
+card.querySelector('.btn-share').addEventListener('click', () => {
+    shareProduct(safeName, prodId);
+});
 
 // Retourner la classe CSS du badge selon le label
 function getBadgeStyle(label) {
