@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -692,23 +693,15 @@ function displayLeaderboard(data) {
 
     data.forEach((entry, index) => {
         const rank = index + 1;
-        let rankDisplay = (rank <= 3) ? ['🥇', '🥈', '🥉'][rank - 1] : rank;
-
+        const rankDisplay = (rank <= 3) ? ['🥇', '🥈', '🥉'][rank - 1] : rank;
         const affiliateCount = entry.nbreaffilie || 0;
-        let stars = '';
-        if (affiliateCount >= 50) stars = '★★★★★';
-        else if (affiliateCount >= 25) stars = '★★★★☆';
-        else if (affiliateCount >= 10) stars = '★★★☆☆';
-        else if (affiliateCount >= 5) stars = '★★☆☆☆';
-        else if (affiliateCount >= 1) stars = '★☆☆☆☆';
-        else stars = '☆☆☆☆☆';
+        const stars = affiliateCount >= 50 ? '★★★★★' : affiliateCount >= 25 ? '★★★★☆' : affiliateCount >= 10 ? '★★★☆☆' : affiliateCount >= 5 ? '★★☆☆☆' : '★☆☆☆☆';
 
-        // 1. Création de l'élément conteneur
         const entryDiv = document.createElement('div');
         entryDiv.className = 'leaderboard-entry';
 
-        // 2. Construction sécurisée sans innerHTML pour les données utilisateur
-        entryDiv.innerHTML = `
+        // UTILISATION DE DOMPURIFY POUR SATISFAIRE SNYK
+        const rawHTML = `
             <div class="rank">${rankDisplay}</div>
             <div class="avatar-circle"></div>
             <div class="player-info">
@@ -717,15 +710,16 @@ function displayLeaderboard(data) {
             </div>
             <div class="score">${affiliateCount}</div>
         `;
+        
+        entryDiv.innerHTML = DOMPurify.sanitize(rawHTML);
 
-        // 3. Utilisation de textContent pour injecter les noms (Neutralise le XSS)
+        // Injection sécurisée des données utilisateur
         entryDiv.querySelector('.avatar-circle').textContent = initials(entry.NomUtilisateur);
         entryDiv.querySelector('.player-name').textContent = entry.NomUtilisateur;
 
         leaderboardList.appendChild(entryDiv);
     });
 }
-
         function copyCode() {
             const affiliateCode = document.getElementById('affiliateCode').innerText;
             navigator.clipboard.writeText(affiliateCode).then(() => {
