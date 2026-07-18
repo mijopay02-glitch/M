@@ -79,7 +79,7 @@
     </div>
 
     <script>
-        // ── Worker 1 : initialise la session de paiement MonCash Connect
+       // ── Worker 1 : initialise la session de paiement MonCash Connect
         const WORKER_DEPOT_URL = 'https://depot-moncash-connect.mijocomplexe.workers.dev';
 
         const paymentForm        = document.getElementById('paymentForm');
@@ -161,32 +161,19 @@
                     localStorage.setItem('montantPaiement', baseAmount);
 
                     // Redirection vers la passerelle MonCash Connect
-                   // CORRECTION : Validation stricte de l'URL MonCash
-                    try {
-                        const parsedUrl = new URL(data.paymentUrl);
-                        
-                        // 1. Exiger obligatoirement une connexion sécurisée HTTPS
-                        if (parsedUrl.protocol !== 'https:') {
-                            throw new Error("L'URL de paiement n'est pas sécurisée.");
-                        }
+                    // CORRECTION : Validation stricte de l'URL MonCash
+                    const targetUrl = String(data.paymentUrl);
+                    
+                    // Validation par expression régulière stricte
+                    // Doit commencer par https:// et correspondre exactement aux domaines MonCash
+                    const isValidMonCashUrl = /^https:\/\/(sandbox\.)?moncashbutton\.digicelgroup\.com\//.test(targetUrl);
 
-                        // 2. Liste blanche des domaines officiels de MonCash
-                        // (Inclut le domaine de production et le domaine de test sandbox)
-                        const domainesMonCash = [
-                            'moncashbutton.digicelgroup.com',
-                            'sandbox.moncashbutton.digicelgroup.com'
-                        ];
-
-                        // 3. Vérification finale avant d'autoriser le départ
-                        if (domainesMonCash.includes(parsedUrl.hostname)) {
-                            window.location.href = parsedUrl.href;
-                        } else {
-                            throw new Error("Domaine de paiement non reconnu. Sécurité activée.");
-                        }
-                    } catch (e) {
-                        // Ce throw renverra l'erreur vers ton bloc catch(err) existant
-                        throw new Error("Tentative de redirection suspecte bloquée.");
+                    if (isValidMonCashUrl) {
+                        window.location.assign(targetUrl);
+                    } else {
+                        throw new Error("URL de redirection invalide ou non sécurisée.");
                     }
+
                 } else {
                     throw new Error(data.error || 'Impossible d\'initialiser la session de paiement.');
                 }
