@@ -544,37 +544,51 @@ function renderProfile(user) {
   document.getElementById("telephone").textContent     = user.NumeroTelephone || "—";
 
   const affiliationZone = document.getElementById("affiliationZone");
+  
   if (isAffilie && user.LienAffiliation) {
+    // 1. On injecte la structure HTML SANS les données utilisateur
     affiliationZone.innerHTML = `
       <div class="info-card">
         <div class="info-row">
           <div class="info-icon blue">🔗</div>
           <div class="info-body">
             <div class="info-label">Ton lien de parrainage</div>
-            <div class="info-value mono" style="color:var(--blue)">${user.LienAffiliation}</div>
+            <div class="info-value mono" style="color:var(--blue)" id="affiliateDisplay"></div>
           </div>
         </div>
       </div>
       <div class="share-box">
-        <span class="share-code" id="lienAffiliationVal">${user.LienAffiliation}</span>
+        <span class="share-code" id="lienAffiliationVal"></span>
         <div class="share-actions">
           <button class="icon-btn" onclick="copierValeur('lienAffiliationVal', this)">📋</button>
-          <button class="icon-btn" onclick="partagerAffiliation('${user.LienAffiliation}')">↗</button>
+          <!-- Appel sécurisé : plus aucun argument passé en ligne -->
+          <button class="icon-btn" onclick="partagerAffiliation()">↗</button>
         </div>
       </div>
-      ${user.nbreaffilie ? `
+      <div id="statsZone"></div>
+    `;
+
+    // 2. CORRECTION DOM-XSS : Injection sécurisée via textContent
+    document.getElementById("affiliateDisplay").textContent = user.LienAffiliation;
+    document.getElementById("lienAffiliationVal").textContent = user.LienAffiliation;
+
+    // Gestion sécurisée des statistiques d'affiliation
+    if (user.nbreaffilie) {
+      document.getElementById("statsZone").innerHTML = `
         <div class="info-card" style="margin-top:10px">
           <div class="info-row">
             <div class="info-icon green">👥</div>
             <div class="info-body">
               <div class="info-label">Affiliés recrutés</div>
-              <div class="info-value">${user.nbreaffilie} personne${user.nbreaffilie > 1 ? "s" : ""}</div>
+              <div class="info-value" id="affiliatesCount"></div>
             </div>
           </div>
-        </div>` : ""
-      }
-    `;
+        </div>
+      `;
+      document.getElementById("affiliatesCount").textContent = `${user.nbreaffilie} personne${user.nbreaffilie > 1 ? "s" : ""}`;
+    }
   } else {
+    // Le bloc CTA d'affiliation d'origine reste inchangé
     affiliationZone.innerHTML = `
       <div class="affiliate-cta">
         <div class="emoji">🚀</div>
@@ -637,8 +651,11 @@ function partagerCarte() {
   }
 }
 
-function partagerAffiliation(lien) {
+function partagerAffiliation() {
+  // Récupération sécurisée depuis le DOM au lieu des paramètres de la fonction
+  const lien = document.getElementById("lienAffiliationVal").textContent;
   const texte = `Rejoins MIJO PAY avec mon code de parrainage : ${lien} 🚀`;
+  
   if (navigator.share) {
     navigator.share({ text: texte });
   } else {
