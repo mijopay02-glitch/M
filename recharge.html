@@ -451,7 +451,10 @@
                 user.Solde = result.nouveauSolde;
                 localStorage.setItem('user', JSON.stringify(user));
 
-                successAmountDisplay.innerHTML = `Nouveau solde : <b>${result.nouveauSolde} HTG</b>`;
+                // CORRECTION 1 : Séparation de la balise HTML et de la donnée dynamique
+                successAmountDisplay.innerHTML = 'Nouveau solde : <b></b>';
+                successAmountDisplay.querySelector('b').textContent = `${result.nouveauSolde} HTG`;
+                
                 successOverlay.classList.add('active');
 
                 form.reset();
@@ -461,13 +464,18 @@
 
             } else {
                 messageDiv.className = 'error';
-                messageDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${result.message}`;
+                
+                // CORRECTION 2 : Injection sécurisée du texte d'erreur (DOM Text Node)
+                messageDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> ';
+                messageDiv.appendChild(document.createTextNode(result.message));
+                
                 messageDiv.style.display = 'block';
             }
         } catch (error) {
             messageDiv.className = 'error';
             messageDiv.textContent = "Erreur de connexion avec le serveur MIJO.";
             messageDiv.style.display = 'block';
+        }
         } finally {
             loader.style.display = 'none';
             btnText.textContent = "Valider la recharge";
