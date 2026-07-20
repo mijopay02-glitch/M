@@ -3,6 +3,9 @@ const cors = require('cors');
 const fetch = require('node-fetch'); // Installez aussi 'node-fetch'
 const app = express();
 
+// Désactiver l'en-tête X-Powered-By pour des raisons de sécurité (Snyk)
+app.disable('x-powered-by');
+
 app.use(cors()); // Active CORS pour votre site web
 app.use(express.json());
 
