@@ -174,59 +174,75 @@
             40% { transform: scale(1); opacity: 1; }
         }
 
-        /* Chaque partie du logo a sa propre animation, indépendante des autres */
+        /* Chaque partie du logo a sa propre animation, indépendante des autres, avec un easing plus physique */
         #mijoLogoAnim .part {
             transform-box: fill-box;
             transform-origin: center;
         }
+        #mijoLogoAnim .shadow {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: mijoShadowPulse 2.4s cubic-bezier(.45,0,.55,1) infinite;
+        }
         #mijoLogoAnim .phone {
-            animation: mijoPhoneBounce 2.2s ease-in-out infinite;
+            animation: mijoPhoneBounce 2.4s cubic-bezier(.45,0,.55,1) infinite;
         }
         #mijoLogoAnim .coin1 {
-            animation: mijoCoinFloat 1.8s ease-in-out infinite;
+            animation: mijoCoinFloat 2s cubic-bezier(.37,0,.63,1) infinite;
         }
         #mijoLogoAnim .coin2 {
-            animation: mijoCoinFloat 1.8s ease-in-out infinite;
-            animation-delay: 0.3s;
+            animation: mijoCoinFloat 2s cubic-bezier(.37,0,.63,1) infinite;
+            animation-delay: 0.35s;
         }
         #mijoLogoAnim .coin3 {
-            animation: mijoCoinFloat 1.8s ease-in-out infinite;
-            animation-delay: 0.6s;
+            animation: mijoCoinFloat 2s cubic-bezier(.37,0,.63,1) infinite;
+            animation-delay: 0.7s;
         }
         #mijoLogoAnim .bill1 {
-            animation: mijoBillWave 1.6s ease-in-out infinite;
+            animation: mijoBillWave 2.6s ease-in-out infinite;
         }
         #mijoLogoAnim .bill2 {
-            animation: mijoBillWave 1.6s ease-in-out infinite reverse;
-            animation-delay: 0.2s;
+            animation: mijoBillWave 2.6s ease-in-out infinite reverse;
+            animation-delay: 0.4s;
         }
         #mijoLogoAnim .wordMijo {
-            animation: mijoTextPop 0.6s ease-out 0.1s both, mijoTextFloat 2.4s ease-in-out 0.7s infinite;
+            animation: mijoTextPop 0.7s cubic-bezier(.34,1.56,.64,1) 0.15s both,
+                       mijoTextFloat 2.6s ease-in-out 0.9s infinite;
         }
         #mijoLogoAnim .wordPay {
-            animation: mijoTextPop 0.6s ease-out 0.3s both, mijoTextFloat 2.4s ease-in-out 0.9s infinite;
+            animation: mijoTextPop 0.7s cubic-bezier(.34,1.56,.64,1) 0.35s both,
+                       mijoTextFloat 2.6s ease-in-out 1.1s infinite;
+        }
+        @keyframes mijoShadowPulse {
+            0%, 100% { transform: scaleX(1) scaleY(1); opacity: 0.28; }
+            35% { transform: scaleX(0.82) scaleY(0.9); opacity: 0.14; }
         }
         @keyframes mijoPhoneBounce {
             0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-5px) rotate(-1.5deg); }
+            35% { transform: translateY(-12px) rotate(-2deg); }
+            65% { transform: translateY(0) rotate(1deg); }
         }
         @keyframes mijoCoinFloat {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-9px) rotate(18deg); }
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+            40% { transform: translateY(-14px) rotate(140deg) scale(1.06); }
+            70% { transform: translateY(-4px) rotate(220deg) scale(0.98); }
         }
         @keyframes mijoBillWave {
-            0%, 100% { transform: rotate(-6deg); }
-            50% { transform: rotate(6deg); }
+            0%, 100% { transform: rotate(-16deg) skewX(0deg); }
+            50% { transform: rotate(-24deg) skewX(-6deg); }
         }
         @keyframes mijoTextPop {
-            0% { opacity: 0; transform: translateY(8px) scale(0.9); }
+            0% { opacity: 0; transform: translateY(14px) scale(0.85); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes mijoTextFloat {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
+            50% { transform: translateY(-4px); }
         }
     </style>
+    <style>
+        #mijoLogoAnim { filter: drop-shadow(0 6px 10px rgba(15, 27, 61, 0.18)); }
+        #mijoLogoAnim .coin-shine { pointer-events: none; }
 </head>
 <body>
 
@@ -274,13 +290,18 @@
                     <stop offset="0%" stop-color="#4FC3E8"/>
                     <stop offset="100%" stop-color="#2196F3"/>
                 </linearGradient>
-                <linearGradient id="billGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#5FD37A"/>
-                    <stop offset="100%" stop-color="#2E9E4F"/>
+                <linearGradient id="screenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#1B2A56"/>
+                    <stop offset="100%" stop-color="#0B1330"/>
                 </linearGradient>
-                <linearGradient id="coinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#FFD166"/>
-                    <stop offset="100%" stop-color="#F2A93B"/>
+                <linearGradient id="billGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#63D982"/>
+                    <stop offset="100%" stop-color="#2A9448"/>
+                </linearGradient>
+                <linearGradient id="coinGrad" x1="20%" y1="10%" x2="90%" y2="100%">
+                    <stop offset="0%" stop-color="#FFE29A"/>
+                    <stop offset="55%" stop-color="#F7C24C"/>
+                    <stop offset="100%" stop-color="#DE9A24"/>
                 </linearGradient>
                 <linearGradient id="mijoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stop-color="#3A8DDE"/>
@@ -290,42 +311,63 @@
                     <stop offset="0%" stop-color="#F0733E"/>
                     <stop offset="100%" stop-color="#E85B4A"/>
                 </linearGradient>
+                <radialGradient id="shineGrad" cx="35%" cy="30%" r="65%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85"/>
+                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+                </radialGradient>
             </defs>
 
-            <!-- Téléphone : léger rebond -->
+            <!-- Ombre au sol : se contracte quand le téléphone "monte", comme un vrai objet qui saute -->
+            <ellipse class="part shadow" cx="95" cy="252" rx="52" ry="10" fill="#0F1B3D"/>
+
+            <!-- Téléphone : léger rebond avec un soupçon de rotation -->
             <g class="part phone">
-                <rect x="35" y="40" width="120" height="190" rx="22" fill="url(#phoneGrad)"/>
-                <rect x="47" y="58" width="96" height="140" rx="8" fill="#0F1B3D"/>
-                <rect x="80" y="212" width="30" height="6" rx="3" fill="#0F1B3D" opacity="0.6"/>
+                <rect x="35" y="40" width="120" height="190" rx="24" fill="url(#phoneGrad)"/>
+                <rect x="35" y="40" width="120" height="190" rx="24" fill="none" stroke="#1668b8" stroke-width="1.5" opacity="0.5"/>
+                <rect x="47" y="58" width="96" height="140" rx="10" fill="url(#screenGrad)"/>
+                <path d="M 50 62 Q 55 58 62 60 L 90 90 Q 82 100 70 96 Z" fill="#ffffff" opacity="0.06"/>
+                <circle cx="95" cy="50" r="2.6" fill="#0b1330" opacity="0.7"/>
+                <rect x="80" y="212" width="30" height="5" rx="2.5" fill="#0b1330" opacity="0.55"/>
             </g>
 
-            <!-- Billets : effet de balancement, chacun avec un délai différent -->
+            <!-- Billets : effet tissu (rotation + inclinaison), chacun avec un délai différent -->
             <g class="part bill1">
-                <rect x="95" y="35" width="70" height="42" rx="6" fill="url(#billGrad)" stroke="#1F7A38" stroke-width="2" transform="rotate(-18 130 56)"/>
-                <circle cx="130" cy="56" r="11" fill="#eafff0" transform="rotate(-18 130 56)"/>
-                <text x="130" y="61" font-size="13" font-weight="bold" fill="#2E9E4F" text-anchor="middle" transform="rotate(-18 130 56)">$</text>
+                <g transform="rotate(-18 130 56)">
+                    <rect x="95" y="35" width="70" height="42" rx="6" fill="url(#billGrad)" stroke="#1F7A38" stroke-width="2"/>
+                    <rect x="100" y="40" width="60" height="32" rx="4" fill="none" stroke="#eafff0" stroke-width="1" opacity="0.5"/>
+                    <path d="M 95 35 L 109 35 L 95 49 Z" fill="#1F7A38" opacity="0.35"/>
+                    <circle cx="130" cy="56" r="11" fill="#eafff0"/>
+                    <text x="130" y="61" font-size="13" font-weight="bold" fill="#2E9E4F" text-anchor="middle">$</text>
+                </g>
             </g>
             <g class="part bill2">
-                <rect x="118" y="60" width="70" height="42" rx="6" fill="url(#billGrad)" stroke="#1F7A38" stroke-width="2" transform="rotate(14 153 81)"/>
-                <circle cx="153" cy="81" r="11" fill="#eafff0" transform="rotate(14 153 81)"/>
-                <text x="153" y="86" font-size="13" font-weight="bold" fill="#2E9E4F" text-anchor="middle" transform="rotate(14 153 81)">$</text>
+                <g transform="rotate(14 153 81)">
+                    <rect x="118" y="60" width="70" height="42" rx="6" fill="url(#billGrad)" stroke="#1F7A38" stroke-width="2"/>
+                    <rect x="123" y="65" width="60" height="32" rx="4" fill="none" stroke="#eafff0" stroke-width="1" opacity="0.5"/>
+                    <path d="M 188 60 L 174 60 L 188 74 Z" fill="#1F7A38" opacity="0.35"/>
+                    <circle cx="153" cy="81" r="11" fill="#eafff0"/>
+                    <text x="153" y="86" font-size="13" font-weight="bold" fill="#2E9E4F" text-anchor="middle">$</text>
+                </g>
             </g>
 
-            <!-- Pièces : flottent et tournent chacune à leur rythme -->
+            <!-- Pièces : flottent, tournent et brillent, chacune à son propre rythme -->
             <g class="part coin1">
                 <circle cx="98" cy="80" r="15" fill="url(#coinGrad)" stroke="#C9821F" stroke-width="2"/>
+                <circle cx="98" cy="80" r="15" fill="url(#shineGrad)" class="coin-shine"/>
                 <text x="98" y="86" font-size="14" font-weight="bold" fill="#8a5a12" text-anchor="middle">$</text>
             </g>
             <g class="part coin2">
                 <circle cx="168" cy="118" r="17" fill="url(#coinGrad)" stroke="#C9821F" stroke-width="2"/>
+                <circle cx="168" cy="118" r="17" fill="url(#shineGrad)" class="coin-shine"/>
                 <text x="168" y="125" font-size="16" font-weight="bold" fill="#8a5a12" text-anchor="middle">$</text>
             </g>
             <g class="part coin3">
                 <circle cx="120" cy="150" r="13" fill="url(#coinGrad)" stroke="#C9821F" stroke-width="2"/>
+                <circle cx="120" cy="150" r="13" fill="url(#shineGrad)" class="coin-shine"/>
                 <text x="120" y="155" font-size="12" font-weight="bold" fill="#8a5a12" text-anchor="middle">$</text>
             </g>
 
-            <!-- Texte : apparait puis flotte doucement, "Mijo" et "Pay" indépendants -->
+            <!-- Texte : apparait avec un léger rebond puis flotte doucement, "Mijo" et "Pay" indépendants -->
             <text class="part wordMijo" x="210" y="115" font-family="Arial, sans-serif" font-size="52" font-weight="800" fill="url(#mijoGrad)">Mijo</text>
             <text class="part wordPay" x="210" y="175" font-family="Arial, sans-serif" font-size="52" font-weight="800" fill="url(#payGrad)">Pay</text>
         </svg>
