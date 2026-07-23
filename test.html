@@ -138,7 +138,7 @@
             100% { transform: translateY(0px); }
         }
 
-        /* ===== Ecran de chargement animé (remplace le texte "Redirection...") ===== */
+        /* ===== Ecran de chargement animé (chaque élément du logo bouge séparément) ===== */
         #loadingOverlay {
             display: none;
             flex-direction: column;
@@ -146,16 +146,17 @@
             justify-content: center;
             animation: mijoPopIn 0.4s ease-out;
         }
-        #loadingOverlay img {
-            max-width: 130px;
-            margin-bottom: 18px;
-            animation: mijoFloat 1.6s ease-in-out infinite;
-            filter: drop-shadow(0 8px 14px rgba(33, 150, 243, 0.35));
+        #loadingOverlay svg {
+            width: 190px;
+            height: auto;
+            margin-bottom: 10px;
+            overflow: visible;
         }
         #loadingOverlay p {
             font-weight: bold;
             color: #2196F3;
             letter-spacing: 0.3px;
+            margin-top: 6px;
         }
         .mijo-dots span {
             display: inline-block;
@@ -171,6 +172,59 @@
         @keyframes mijoDotPulse {
             0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
             40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Chaque partie du logo a sa propre animation, indépendante des autres */
+        #mijoLogoAnim .part {
+            transform-box: fill-box;
+            transform-origin: center;
+        }
+        #mijoLogoAnim .phone {
+            animation: mijoPhoneBounce 2.2s ease-in-out infinite;
+        }
+        #mijoLogoAnim .coin1 {
+            animation: mijoCoinFloat 1.8s ease-in-out infinite;
+        }
+        #mijoLogoAnim .coin2 {
+            animation: mijoCoinFloat 1.8s ease-in-out infinite;
+            animation-delay: 0.3s;
+        }
+        #mijoLogoAnim .coin3 {
+            animation: mijoCoinFloat 1.8s ease-in-out infinite;
+            animation-delay: 0.6s;
+        }
+        #mijoLogoAnim .bill1 {
+            animation: mijoBillWave 1.6s ease-in-out infinite;
+        }
+        #mijoLogoAnim .bill2 {
+            animation: mijoBillWave 1.6s ease-in-out infinite reverse;
+            animation-delay: 0.2s;
+        }
+        #mijoLogoAnim .wordMijo {
+            animation: mijoTextPop 0.6s ease-out 0.1s both, mijoTextFloat 2.4s ease-in-out 0.7s infinite;
+        }
+        #mijoLogoAnim .wordPay {
+            animation: mijoTextPop 0.6s ease-out 0.3s both, mijoTextFloat 2.4s ease-in-out 0.9s infinite;
+        }
+        @keyframes mijoPhoneBounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(-1.5deg); }
+        }
+        @keyframes mijoCoinFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-9px) rotate(18deg); }
+        }
+        @keyframes mijoBillWave {
+            0%, 100% { transform: rotate(-6deg); }
+            50% { transform: rotate(6deg); }
+        }
+        @keyframes mijoTextPop {
+            0% { opacity: 0; transform: translateY(8px) scale(0.9); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes mijoTextFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
         }
     </style>
 </head>
@@ -212,9 +266,69 @@
         <div id="inscriptionMessage"></div>
     </div>
 
-    <!-- Ecran de chargement avec le logo qui anime, affiché juste après l'envoi des infos -->
+    <!-- Ecran de chargement : chaque élément du logo (téléphone, billets, pièces, texte) anime séparément -->
     <div class="container" id="loadingOverlay">
-        <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY Logo">
+        <svg id="mijoLogoAnim" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="phoneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#4FC3E8"/>
+                    <stop offset="100%" stop-color="#2196F3"/>
+                </linearGradient>
+                <linearGradient id="billGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#5FD37A"/>
+                    <stop offset="100%" stop-color="#2E9E4F"/>
+                </linearGradient>
+                <linearGradient id="coinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#FFD166"/>
+                    <stop offset="100%" stop-color="#F2A93B"/>
+                </linearGradient>
+                <linearGradient id="mijoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#3A8DDE"/>
+                    <stop offset="100%" stop-color="#3FC6C6"/>
+                </linearGradient>
+                <linearGradient id="payGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#F0733E"/>
+                    <stop offset="100%" stop-color="#E85B4A"/>
+                </linearGradient>
+            </defs>
+
+            <!-- Téléphone : léger rebond -->
+            <g class="part phone">
+                <rect x="35" y="40" width="120" height="190" rx="22" fill="url(#phoneGrad)"/>
+                <rect x="47" y="58" width="96" height="140" rx="8" fill="#0F1B3D"/>
+                <rect x="80" y="212" width="30" height="6" rx="3" fill="#0F1B3D" opacity="0.6"/>
+            </g>
+
+            <!-- Billets : effet de balancement, chacun avec un délai différent -->
+            <g class="part bill1">
+                <rect x="95" y="35" width="70" height="42" rx="6" fill="url(#billGrad)" stroke="#1F7A38" stroke-width="2" transform="rotate(-18 130 56)"/>
+                <circle cx="130" cy="56" r="11" fill="#eafff0" transform="rotate(-18 130 56)"/>
+                <text x="130" y="61" font-size="13" font-weight="bold" fill="#2E9E4F" text-anchor="middle" transform="rotate(-18 130 56)">$</text>
+            </g>
+            <g class="part bill2">
+                <rect x="118" y="60" width="70" height="42" rx="6" fill="url(#billGrad)" stroke="#1F7A38" stroke-width="2" transform="rotate(14 153 81)"/>
+                <circle cx="153" cy="81" r="11" fill="#eafff0" transform="rotate(14 153 81)"/>
+                <text x="153" y="86" font-size="13" font-weight="bold" fill="#2E9E4F" text-anchor="middle" transform="rotate(14 153 81)">$</text>
+            </g>
+
+            <!-- Pièces : flottent et tournent chacune à leur rythme -->
+            <g class="part coin1">
+                <circle cx="98" cy="80" r="15" fill="url(#coinGrad)" stroke="#C9821F" stroke-width="2"/>
+                <text x="98" y="86" font-size="14" font-weight="bold" fill="#8a5a12" text-anchor="middle">$</text>
+            </g>
+            <g class="part coin2">
+                <circle cx="168" cy="118" r="17" fill="url(#coinGrad)" stroke="#C9821F" stroke-width="2"/>
+                <text x="168" y="125" font-size="16" font-weight="bold" fill="#8a5a12" text-anchor="middle">$</text>
+            </g>
+            <g class="part coin3">
+                <circle cx="120" cy="150" r="13" fill="url(#coinGrad)" stroke="#C9821F" stroke-width="2"/>
+                <text x="120" y="155" font-size="12" font-weight="bold" fill="#8a5a12" text-anchor="middle">$</text>
+            </g>
+
+            <!-- Texte : apparait puis flotte doucement, "Mijo" et "Pay" indépendants -->
+            <text class="part wordMijo" x="210" y="115" font-family="Arial, sans-serif" font-size="52" font-weight="800" fill="url(#mijoGrad)">Mijo</text>
+            <text class="part wordPay" x="210" y="175" font-family="Arial, sans-serif" font-size="52" font-weight="800" fill="url(#payGrad)">Pay</text>
+        </svg>
         <p>Connexion en cours <span class="mijo-dots"><span></span><span></span><span></span></span></p>
     </div>
 
