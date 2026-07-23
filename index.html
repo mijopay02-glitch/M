@@ -28,9 +28,9 @@
     <title>MIJO PAY - Connexion & Inscription Automatique</title>
     <meta name="description" content="Connectez-vous à MIJO PAY, votre plateforme sécurisée pour toutes vos transactions et gestions de compte en ligne.">
     <link rel="icon" type="image/png" href="https://i.postimg.cc/wMd7xQMX/a-digital-illustration-of-a-stylized-sma-e-Nct-Kg2v-RGmg-UPTRI4-Zs-UA-3q5o-P2yu-Q4yup5-Nnqd9-D-g.jpg" sizes="32x32">
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -102,8 +102,8 @@
             display: none;
             color: #2e7d32;
         }
-        
-        /* AJOUT : Style pour le bouton WhatsApp */
+
+        /* Bouton WhatsApp */
         .whatsapp-btn {
             display: inline-flex;
             align-items: center;
@@ -127,27 +127,133 @@
             box-shadow: 0 6px 15px rgba(37, 211, 102, 0.4);
             color: white;
         }
-       
-@keyframes mijoPopIn {
-    0% { transform: scale(0.85); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-}
-@keyframes mijoFloat {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-8px); }
-    100% { transform: translateY(0px); }
-}
 
+        @keyframes mijoPopIn {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes mijoFloat {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* ===== Ecran de chargement animé (chaque élément du logo bouge séparément) ===== */
+        #loadingOverlay {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: mijoPopIn 0.4s ease-out;
+        }
+        #loadingOverlay svg {
+            width: 190px;
+            height: auto;
+            margin-bottom: 10px;
+            overflow: visible;
+        }
+        #loadingOverlay p {
+            font-weight: bold;
+            color: #2196F3;
+            letter-spacing: 0.3px;
+            margin-top: 6px;
+        }
+        .mijo-dots span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin: 0 3px;
+            border-radius: 50%;
+            background: #2196F3;
+            animation: mijoDotPulse 1.2s infinite ease-in-out;
+        }
+        .mijo-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .mijo-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes mijoDotPulse {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Chaque partie du logo a sa propre animation, indépendante des autres, avec un easing plus physique */
+        #mijoLogoAnim .part {
+            transform-box: fill-box;
+            transform-origin: center;
+        }
+        #mijoLogoAnim .shadow {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: mijoShadowPulse 2.4s cubic-bezier(.45,0,.55,1) infinite;
+        }
+        #mijoLogoAnim .phone {
+            animation: mijoPhoneBounce 2.4s cubic-bezier(.45,0,.55,1) infinite;
+        }
+        #mijoLogoAnim .coin1 {
+            animation: mijoCoinFloat 2s cubic-bezier(.37,0,.63,1) infinite;
+        }
+        #mijoLogoAnim .coin2 {
+            animation: mijoCoinFloat 2s cubic-bezier(.37,0,.63,1) infinite;
+            animation-delay: 0.35s;
+        }
+        #mijoLogoAnim .coin3 {
+            animation: mijoCoinFloat 2s cubic-bezier(.37,0,.63,1) infinite;
+            animation-delay: 0.7s;
+        }
+        #mijoLogoAnim .bill1 {
+            animation: mijoBillWave 2.6s ease-in-out infinite;
+        }
+        #mijoLogoAnim .bill2 {
+            animation: mijoBillWave 2.6s ease-in-out infinite reverse;
+            animation-delay: 0.4s;
+        }
+        #mijoLogoAnim .wordMijo {
+            animation: mijoTextPop 0.7s cubic-bezier(.34,1.56,.64,1) 0.15s both,
+                       mijoTextFloat 2.6s ease-in-out 0.9s infinite;
+        }
+        #mijoLogoAnim .wordPay {
+            animation: mijoTextPop 0.7s cubic-bezier(.34,1.56,.64,1) 0.35s both,
+                       mijoTextFloat 2.6s ease-in-out 1.1s infinite;
+        }
+        @keyframes mijoShadowPulse {
+            0%, 100% { transform: scaleX(1) scaleY(1); opacity: 0.28; }
+            35% { transform: scaleX(0.82) scaleY(0.9); opacity: 0.14; }
+        }
+        @keyframes mijoPhoneBounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            35% { transform: translateY(-12px) rotate(-2deg); }
+            65% { transform: translateY(0) rotate(1deg); }
+        }
+        @keyframes mijoCoinFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+            40% { transform: translateY(-14px) rotate(140deg) scale(1.06); }
+            70% { transform: translateY(-4px) rotate(220deg) scale(0.98); }
+        }
+        @keyframes mijoBillWave {
+            0%, 100% { transform: rotate(-16deg) skewX(0deg); }
+            50% { transform: rotate(-24deg) skewX(-6deg); }
+        }
+        @keyframes mijoTextPop {
+            0% { opacity: 0; transform: translateY(14px) scale(0.85); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes mijoTextFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+    </style>
+    <style>
+        #mijoLogoAnim { filter: drop-shadow(0 6px 10px rgba(15, 27, 61, 0.18)); }
+        #mijoLogoAnim .coin-shine { pointer-events: none; }
     </style>
 </head>
 <body>
-  
-    
+
+
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K43FXR4W" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
     <div class="container" id="loginContainer">
         <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY Logo">
         <h2>Connexion</h2>
-        
+
         <div id="successCredentials" class="credentials-box">
             <h4>Inscription Réussie ! 🎉</h4>
             <p>Carte : <strong id="displayCard"></strong></p>
@@ -177,6 +283,98 @@
         <div id="inscriptionMessage"></div>
     </div>
 
+    <!-- Ecran de chargement : chaque élément du logo (téléphone, billets, pièces, texte) anime séparément -->
+    <div class="container" id="loadingOverlay">
+        <svg id="mijoLogoAnim" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="phoneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#4FC3E8"/>
+                    <stop offset="100%" stop-color="#2196F3"/>
+                </linearGradient>
+                <linearGradient id="screenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#1B2A56"/>
+                    <stop offset="100%" stop-color="#0B1330"/>
+                </linearGradient>
+                <linearGradient id="billGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#63D982"/>
+                    <stop offset="100%" stop-color="#2A9448"/>
+                </linearGradient>
+                <linearGradient id="coinGrad" x1="20%" y1="10%" x2="90%" y2="100%">
+                    <stop offset="0%" stop-color="#FFE29A"/>
+                    <stop offset="55%" stop-color="#F7C24C"/>
+                    <stop offset="100%" stop-color="#DE9A24"/>
+                </linearGradient>
+                <linearGradient id="mijoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#3A8DDE"/>
+                    <stop offset="100%" stop-color="#3FC6C6"/>
+                </linearGradient>
+                <linearGradient id="payGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#F0733E"/>
+                    <stop offset="100%" stop-color="#E85B4A"/>
+                </linearGradient>
+                <radialGradient id="shineGrad" cx="35%" cy="30%" r="65%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85"/>
+                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+                </radialGradient>
+            </defs>
+
+            <!-- Ombre au sol : se contracte quand le téléphone "monte", comme un vrai objet qui saute -->
+            <ellipse class="part shadow" cx="95" cy="252" rx="52" ry="10" fill="#0F1B3D"/>
+
+            <!-- Téléphone : léger rebond avec un soupçon de rotation -->
+            <g class="part phone">
+                <rect x="35" y="40" width="120" height="190" rx="24" fill="url(#phoneGrad)"/>
+                <rect x="35" y="40" width="120" height="190" rx="24" fill="none" stroke="#1668b8" stroke-width="1.5" opacity="0.5"/>
+                <rect x="47" y="58" width="96" height="140" rx="10" fill="url(#screenGrad)"/>
+                <path d="M 50 62 Q 55 58 62 60 L 90 90 Q 82 100 70 96 Z" fill="#ffffff" opacity="0.06"/>
+                <circle cx="95" cy="50" r="2.6" fill="#0b1330" opacity="0.7"/>
+                <rect x="80" y="212" width="30" height="5" rx="2.5" fill="#0b1330" opacity="0.55"/>
+            </g>
+
+            <!-- Billets : effet tissu (rotation + inclinaison), chacun avec un délai différent -->
+            <g class="part bill1">
+                <g transform="rotate(-18 130 56)">
+                    <rect x="95" y="35" width="70" height="42" rx="6" fill="url(#billGrad)" stroke="#1F7A38" stroke-width="2"/>
+                    <rect x="100" y="40" width="60" height="32" rx="4" fill="none" stroke="#eafff0" stroke-width="1" opacity="0.5"/>
+                    <path d="M 95 35 L 109 35 L 95 49 Z" fill="#1F7A38" opacity="0.35"/>
+                    <circle cx="130" cy="56" r="11" fill="#eafff0"/>
+                    <text x="130" y="61" font-size="13" font-weight="bold" fill="#2E9E4F" text-anchor="middle">$</text>
+                </g>
+            </g>
+            <g class="part bill2">
+                <g transform="rotate(14 153 81)">
+                    <rect x="118" y="60" width="70" height="42" rx="6" fill="url(#billGrad)" stroke="#1F7A38" stroke-width="2"/>
+                    <rect x="123" y="65" width="60" height="32" rx="4" fill="none" stroke="#eafff0" stroke-width="1" opacity="0.5"/>
+                    <path d="M 188 60 L 174 60 L 188 74 Z" fill="#1F7A38" opacity="0.35"/>
+                    <circle cx="153" cy="81" r="11" fill="#eafff0"/>
+                    <text x="153" y="86" font-size="13" font-weight="bold" fill="#2E9E4F" text-anchor="middle">$</text>
+                </g>
+            </g>
+
+            <!-- Pièces : flottent, tournent et brillent, chacune à son propre rythme -->
+            <g class="part coin1">
+                <circle cx="98" cy="80" r="15" fill="url(#coinGrad)" stroke="#C9821F" stroke-width="2"/>
+                <circle cx="98" cy="80" r="15" fill="url(#shineGrad)" class="coin-shine"/>
+                <text x="98" y="86" font-size="14" font-weight="bold" fill="#8a5a12" text-anchor="middle">$</text>
+            </g>
+            <g class="part coin2">
+                <circle cx="168" cy="118" r="17" fill="url(#coinGrad)" stroke="#C9821F" stroke-width="2"/>
+                <circle cx="168" cy="118" r="17" fill="url(#shineGrad)" class="coin-shine"/>
+                <text x="168" y="125" font-size="16" font-weight="bold" fill="#8a5a12" text-anchor="middle">$</text>
+            </g>
+            <g class="part coin3">
+                <circle cx="120" cy="150" r="13" fill="url(#coinGrad)" stroke="#C9821F" stroke-width="2"/>
+                <circle cx="120" cy="150" r="13" fill="url(#shineGrad)" class="coin-shine"/>
+                <text x="120" y="155" font-size="12" font-weight="bold" fill="#8a5a12" text-anchor="middle">$</text>
+            </g>
+
+            <!-- Texte : apparait avec un léger rebond puis flotte doucement, "Mijo" et "Pay" indépendants -->
+            <text class="part wordMijo" x="210" y="115" font-family="Arial, sans-serif" font-size="52" font-weight="800" fill="url(#mijoGrad)">Mijo</text>
+            <text class="part wordPay" x="210" y="175" font-family="Arial, sans-serif" font-size="52" font-weight="800" fill="url(#payGrad)">Pay</text>
+        </svg>
+        <p>Connexion en cours <span class="mijo-dots"><span></span><span></span><span></span></span></p>
+    </div>
+
     <script>
         window.addEventListener("DOMContentLoaded", () => {
             const savedUser = JSON.parse(localStorage.getItem("user"));
@@ -185,7 +383,7 @@
             }
 
             const urlParams = new URLSearchParams(window.location.search);
-            const cardNumberFromQr = urlParams.get('cardNumber'); 
+            const cardNumberFromQr = urlParams.get('cardNumber');
             if (cardNumberFromQr) {
                 document.getElementById("cardNumber").value = cardNumberFromQr.trim();
                 document.getElementById("message").style.color = "blue";
@@ -199,69 +397,84 @@
         const inscriptionBtn = document.getElementById('inscriptionButton');
         const messageDiv = document.getElementById('message');
         const inscriptionMessageDiv = document.getElementById('inscriptionMessage');
+        const loginContainer = document.getElementById('loginContainer');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        // Affiche l'écran avec le logo animé à la place du formulaire
+        function showLoadingOverlay() {
+            loginContainer.style.display = "none";
+            loadingOverlay.style.display = "flex";
+        }
+
+        function hideLoadingOverlay() {
+            loadingOverlay.style.display = "none";
+            loginContainer.style.display = "block";
+        }
 
         // --- FONCTION DE CONNEXION MODIFIÉE ---
         async function login() {
-    const cardNumber = document.getElementById("cardNumber").value.trim();
-    const cin = document.getElementById("cin").value.trim();
+            const cardNumber = document.getElementById("cardNumber").value.trim();
+            const cin = document.getElementById("cin").value.trim();
 
-    if (!cardNumber || !cin) {
-        messageDiv.style.color = "red";
-        messageDiv.innerText = "Veuillez remplir tous les champs.";
-        return;
-    }
-
-    loginBtn.disabled = true;
-    loginBtn.innerText = "Connexion en cours...";
-    messageDiv.innerText = "";
-
-    try {
-        // Utilise bien l'URL où tu as déployé le nouveau code Worker
-        const response = await fetch("https://mijopayv2.mijocomplexe.workers.dev/", {
-            method: "POST",
-            mode: "cors", // Force le mode CORS
-            headers: { 
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify({ 
-                action: "login_user_by_card", 
-                cardNumber: cardNumber, 
-                password: cin 
-            })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            // Vérification du blocage (Nombre_Echecs doit exister dans Airtable)
-            const echecs = data.user && data.user.Nombre_Echecs ? parseInt(data.user.Nombre_Echecs) : 0;
-            
-            if (echecs >= 5) {
-                messageDiv.style.color = "#e74c3c";
-                messageDiv.innerHTML = `<i class="fa-solid fa-lock"></i> Accès refusé. Compte suspendu.`;
+            if (!cardNumber || !cin) {
+                messageDiv.style.color = "red";
+                messageDiv.innerText = "Veuillez remplir tous les champs.";
                 return;
             }
 
-            localStorage.setItem("user", JSON.stringify(data.user));
-            localStorage.setItem('token', data.token);
-            messageDiv.style.color = "green";
-            messageDiv.innerText = "Connexion réussie ! Redirection...";
-            setTimeout(() => { window.location.href = "home.html"; }, 1000);
-        } else {
-            messageDiv.style.color = "red";
-            // Si le Worker renvoie une erreur détaillée (ex: Quota), on l'affiche
-            messageDiv.innerText = data.details ? `Erreur: ${data.error}` : (data.error || "Identifiants incorrects.");
+            loginBtn.disabled = true;
+            loginBtn.innerText = "Connexion en cours...";
+            messageDiv.innerText = "";
+
+            try {
+                const response = await fetch("https://mijopayv2.mijocomplexe.workers.dev/", {
+                    method: "POST",
+                    mode: "cors",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        action: "login_user_by_card",
+                        cardNumber: cardNumber,
+                        password: cin
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const echecs = data.user && data.user.Nombre_Echecs ? parseInt(data.user.Nombre_Echecs) : 0;
+
+                    if (echecs >= 5) {
+                        messageDiv.style.color = "#e74c3c";
+                        messageDiv.innerHTML = `<i class="fa-solid fa-lock"></i> Accès refusé. Compte suspendu.`;
+                        loginBtn.disabled = false;
+                        loginBtn.innerText = "Se connecter";
+                        return;
+                    }
+
+                    localStorage.setItem("user", JSON.stringify(data.user));
+                    localStorage.setItem('token', data.token);
+
+                    // Au lieu du texte "Redirection...", on montre le logo qui anime
+                    showLoadingOverlay();
+                    setTimeout(() => { window.location.href = "home.html"; }, 2800);
+                } else {
+                    messageDiv.style.color = "red";
+                    messageDiv.innerText = data.details ? `Erreur: ${data.error}` : (data.error || "Identifiants incorrects.");
+                    loginBtn.disabled = false;
+                    loginBtn.innerText = "Se connecter";
+                }
+            } catch (err) {
+                console.error("Erreur Fetch:", err);
+                messageDiv.style.color = "red";
+                messageDiv.innerText = "Le serveur ne répond pas. Vérifiez votre connexion.";
+                loginBtn.disabled = false;
+                loginBtn.innerText = "Se connecter";
+            }
         }
-    } catch (err) {
-        console.error("Erreur Fetch:", err);
-        messageDiv.style.color = "red";
-        messageDiv.innerText = "Le serveur ne répond pas. Vérifiez votre connexion.";
-    } finally {
-        loginBtn.disabled = false;
-        loginBtn.innerText = "Se connecter";
-    }
-}
+
         async function inscrire() {
             const nom = document.getElementById("nomcomplet").value.trim();
             const pays = document.getElementById("pays").value.trim();
@@ -308,7 +521,7 @@
                     document.getElementById("pays").value = "";
                     document.getElementById("adresseemail").value = "";
                     document.getElementById("telephone").value = "";
-                    
+
                     hideInscription();
                 } else {
                     throw new Error(data.message || "Erreur lors de la création.");
@@ -333,7 +546,7 @@
         function hideInscription() {
             document.getElementById("loginContainer").style.display = "block";
             document.getElementById("inscriptionForm").style.display = "none";
-        }  
+        }
     </script>
 </body>
 </html>
