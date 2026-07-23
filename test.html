@@ -416,7 +416,7 @@
 
                     // Au lieu du texte "Redirection...", on montre le logo qui anime
                     showLoadingOverlay();
-                    setTimeout(() => { window.location.href = "home.html"; }, 1200);
+                    setTimeout(() => { window.location.href = "home.html"; }, 2800);
                 } else {
                     messageDiv.style.color = "red";
                     messageDiv.innerText = data.details ? `Erreur: ${data.error}` : (data.error || "Identifiants incorrects.");
