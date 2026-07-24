@@ -730,6 +730,15 @@ function pollSoldeApresDepot() {
             const user = JSON.parse(storedUser);
             if (user && user.userId) {
                 updateUI(user);
+                window.OneSignalDeferred = window.OneSignalDeferred || [];
+                window.OneSignalDeferred.push(async function(OneSignal) {
+                    try {
+                        await OneSignal.login(user.userId);
+                        console.log("OneSignal lié avec succès pour l'utilisateur :", user.userId);
+                    } catch (err) {
+                        console.error("Erreur lors du login OneSignal:", err);
+                    }
+                });
                 initRealtime(user.userId, storedToken); // On passe le token ici
             } else throw new Error("Session invalide");
         } catch (e) { logout(); }
