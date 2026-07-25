@@ -71,7 +71,8 @@
                     <span id="feeAmount" class="text-gray-700">0.00 HTG</span>
                 </div>
 
-                <p class="text-xs text-gray-400 mt-2">Dépôt minimum : 100 HTG | Max par dépôt : 5 000 HTG</p>
+                <!-- Texte des limites rendu dynamique -->
+                <p id="depositLimitsText" class="text-xs text-gray-400 mt-2">Dépôt minimum : 100 HTG | Max par dépôt : ... HTG</p>
             </div>
 
             <button
@@ -123,25 +124,28 @@
         const maxSoldeText       = document.getElementById('maxSoldeText');
         const kycStatusTag       = document.getElementById('kycStatusTag');
         const upgradeKycPromoBtn = document.getElementById('upgradeKycPromoBtn');
+        const depositLimitsText  = document.getElementById('depositLimitsText');
 
         // Récupération de la session utilisateur
         const userRaw = localStorage.getItem('user');
         const user = userRaw ? JSON.parse(userRaw) : null;
 
-        // Calcul du plafond selon le statut KYC
+        // Calcul des plafonds selon le statut KYC
         const isKycVerified = user && user.kyc_status === 'verifier';
         const maxSoldeAutorise = isKycVerified ? 100000 : 10000;
+        const limiteParTransaction = isKycVerified ? 100000 : Number(user?.limit_per_transaction || 5000);
         const soldeActuel = user ? Number(user.Solde || 0) : 0;
 
-        // Initialisation de l'affichage KYC au chargement
+        // Initialisation de l'affichage KYC et Limites au chargement
         if (user) {
             maxSoldeText.textContent = `${maxSoldeAutorise.toLocaleString()} HTG`;
+            depositLimitsText.textContent = `Dépôt minimum : 100 HTG | Max par dépôt : ${limiteParTransaction.toLocaleString()} HTG`;
+            
             kycStatusTag.textContent = isKycVerified ? "Vérifié" : "Non vérifié";
             kycStatusTag.className = isKycVerified 
                 ? "px-2 py-0.5 rounded-full font-bold bg-green-100 text-green-700" 
                 : "px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-700";
             
-            // On affiche le bouton de promo KYC si le compte n'est pas encore vérifié
             if (!isKycVerified) {
                 upgradeKycPromoBtn.classList.remove('hidden');
             }
@@ -176,8 +180,7 @@
                 return;
             }
 
-            // 1. Contrôle Plafond BRH par dépôt (ex: 5 000 HTG max)
-            const limiteParTransaction = Number(user?.limit_per_transaction || 5000);
+            // 1. Contrôle Plafond BRH par dépôt dynamique
             if (amount > limiteParTransaction) {
                 showError(`Le montant maximal autorisé par dépôt est de ${limiteParTransaction.toLocaleString()} HTG.`);
                 submitBtn.disabled = true;
