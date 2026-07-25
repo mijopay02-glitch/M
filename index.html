@@ -286,6 +286,15 @@
         <input type="text" id="pays" placeholder="Pays">
         <input type="email" id="adresseemail" placeholder="Adresse email">
         <input type="tel" id="telephone" placeholder="Numéro téléphone">
+        <div style="display:flex; align-items:flex-start; gap:8px; margin:14px 0; text-align:left;">
+    <input type="checkbox" id="acceptCGU" style="margin-top:3px; width:auto;">
+    <label for="acceptCGU" style="font-size:.8em; color:#555; font-weight:normal;">
+        J'ai lu et j'accepte les
+        <a href="conditions.html" target="_blank" style="color:#2196F3; font-weight:600;">Conditions Générales d'Utilisation</a>
+        de MIJO PAY.
+    </label>
+</div>
+
         <button id="inscriptionButton" onclick="inscrire()">Valider et Générer mon compte</button>
         <button onclick="hideInscription()" style="background: #f44336;">Annuler</button>
         <div id="inscriptionMessage"></div>
@@ -488,7 +497,12 @@
             const pays = document.getElementById("pays").value.trim();
             const email = document.getElementById("adresseemail").value.trim();
             const telephone = document.getElementById("telephone").value.trim();
-
+const cguAcceptee = document.getElementById("acceptCGU").checked;
+    if (!cguAcceptee) {
+        inscriptionMessageDiv.style.color = "red";
+        inscriptionMessageDiv.innerText = "Vous devez accepter les Conditions Générales d'Utilisation pour continuer.";
+        return;
+    }
             if (!nom || !pays || !email || !telephone) {
                 inscriptionMessageDiv.style.color = "red";
                 inscriptionMessageDiv.innerText = "Veuillez remplir tous les champs.";
