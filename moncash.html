@@ -2,19 +2,19 @@
 <html lang="fr">
 <head>
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "92add420-4ef4-428a-8998-e42524f1d3de",
-    });
-  });
-</script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "92add420-4ef4-428a-8998-e42524f1d3de",
+        });
+      });
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MonCash | MIJO PAY</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2=family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -29,9 +29,15 @@
         </div>
 
         <h1 class="text-2xl font-bold text-gray-800 text-center mb-2">Recharge MonCash</h1>
-        <p class="text-gray-500 text-sm text-center mb-8">
+        <p class="text-gray-500 text-sm text-center mb-6">
             Indiquez le montant en gourdes (HTG) que vous souhaitez ajouter à votre solde.
         </p>
+
+        <!-- Badge récapitulatif des limites KYC de l'utilisateur -->
+        <div id="kycBadge" class="mb-6 p-3 bg-gray-50 rounded-xl border border-gray-200 text-xs text-gray-600 flex justify-between items-center">
+            <span>Plafond solde maxi : <strong id="maxSoldeText" class="text-gray-800">... HTG</strong></span>
+            <span id="kycStatusTag" class="px-2 py-0.5 rounded-full font-bold bg-gray-200 text-gray-700">KYC ...</span>
+        </div>
 
         <form id="paymentForm" class="space-y-6">
             <div>
@@ -54,11 +60,11 @@
                 
                 <!-- Petit récapitulatif dynamique des frais -->
                 <div id="feeDisplay" class="hidden flex justify-between items-center mt-3 px-1 text-sm font-medium text-gray-500">
-                    <span>Frais MonCash :</span>
+                    <span>Frais MonCash (5%) :</span>
                     <span id="feeAmount" class="text-gray-700">0.00 HTG</span>
                 </div>
 
-                <p class="text-xs text-gray-400 mt-2">Dépôt minimum obligatoire : 100 HTG</p>
+                <p class="text-xs text-gray-400 mt-2">Dépôt minimum : 100 HTG | Max par dépôt : 5 000 HTG</p>
             </div>
 
             <button
@@ -70,10 +76,16 @@
             </button>
         </form>
 
-        <div id="statusMessage" class="text-center text-sm font-semibold text-red-600 mt-4 h-5"></div>
+        <!-- Bloc dynamique pour les erreurs et l'invitation KYC1.html -->
+        <div id="errorContainer" class="hidden mt-6 p-4 rounded-xl bg-red-50 border border-red-200 text-center space-y-3">
+            <p id="statusMessage" class="text-xs font-semibold text-red-600"></p>
+            <a id="kycBtn" href="KYC1.html" class="hidden inline-flex items-center justify-center w-full py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-lg transition-colors">
+                Passer la vérification KYC (Niveau 1)
+            </a>
+        </div>
     </div>
 
-    <!-- Écran d'attente mis à jour pour MonCash Connect -->
+    <!-- Écran d'attente pour MonCash Connect -->
     <div id="redirecting-message" class="hidden bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center border border-gray-100">
         <div class="flex justify-center mb-6">
             <svg class="animate-spin h-12 w-12 text-[#cc0000]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -88,115 +100,171 @@
     </div>
 
     <script>
-       // ── Worker 1 : initialise la session de paiement MonCash Connect
         const WORKER_DEPOT_URL = 'https://depot-moncash-connect.mijocomplexe.workers.dev';
 
         const paymentForm        = document.getElementById('paymentForm');
         const amountInput        = document.getElementById('amountInput');
         const feeDisplay         = document.getElementById('feeDisplay');
         const feeAmount          = document.getElementById('feeAmount');
+        const submitBtn          = document.getElementById('submitBtn');
         const submitBtnText      = document.getElementById('submitBtnText');
+        const errorContainer     = document.getElementById('errorContainer');
         const statusMessageEl    = document.getElementById('statusMessage');
+        const kycBtn             = document.getElementById('kycBtn');
         const formContainer      = document.getElementById('payment-form-container');
         const redirectingMessage = document.getElementById('redirecting-message');
+        const maxSoldeText       = document.getElementById('maxSoldeText');
+        const kycStatusTag       = document.getElementById('kycStatusTag');
 
-        // ── Calcul en temps réel lors de la saisie ──
+        // Récupération de la session utilisateur
+        const userRaw = localStorage.getItem('user');
+        const user = userRaw ? JSON.parse(userRaw) : null;
+
+        // Calcul du plafond selon le statut KYC
+        const isKycVerified = user && user.kyc_status === 'verifier';
+        const maxSoldeAutorise = isKycVerified ? 100000 : 10000;
+        const soldeActuel = user ? Number(user.Solde || 0) : 0;
+
+        // Initialisation de l'affichage KYC au chargement
+        if (user) {
+            maxSoldeText.textContent = `${maxSoldeAutorise.toLocaleString()} HTG`;
+            kycStatusTag.textContent = isKycVerified ? "Vérifié" : "Non vérifié";
+            kycStatusTag.className = isKycVerified 
+                ? "px-2 py-0.5 rounded-full font-bold bg-green-100 text-green-700" 
+                : "px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-700";
+        }
+
+        // Fonction d'affichage des erreurs avec option KYC
+        function showError(message, showKycOption = false) {
+            statusMessageEl.textContent = message;
+            errorContainer.classList.remove('hidden');
+            if (showKycOption && !isKycVerified) {
+                kycBtn.classList.remove('hidden');
+            } else {
+                kycBtn.classList.add('hidden');
+            }
+        }
+
+        function clearError() {
+            errorContainer.classList.add('hidden');
+            statusMessageEl.textContent = '';
+            kycBtn.classList.add('hidden');
+        }
+
+        // ── Validation et calcul en temps réel lors de la saisie ──
         amountInput.addEventListener('input', function() {
+            clearError();
             const amount = parseFloat(amountInput.value);
 
             if (isNaN(amount) || amount <= 0) {
                 feeDisplay.classList.add('hidden');
                 submitBtnText.textContent = 'Continuer vers MonCash';
+                submitBtn.disabled = false;
                 return;
             }
+
+            // 1. Contrôle Plafond BRH par dépôt (ex: 5 000 HTG max)
+            const limiteParTransaction = Number(user?.limit_per_transaction || 5000);
+            if (amount > limiteParTransaction) {
+                showError(`Le montant maximal autorisé par dépôt est de ${limiteParTransaction.toLocaleString()} HTG.`);
+                submitBtn.disabled = true;
+                return;
+            }
+
+            // 2. Contrôle Plafond Solde KYC en temps réel
+            if ((soldeActuel + amount) > maxSoldeAutorise) {
+                const restePossible = Math.max(0, maxSoldeAutorise - soldeActuel);
+                showError(
+                    `Ce dépôt dépassera votre plafond de solde (${maxSoldeAutorise.toLocaleString()} HTG). ` +
+                    `Vous pouvez encore ajouter au maximum ${restePossible.toLocaleString()} HTG.`,
+                    true
+                );
+                submitBtn.disabled = true;
+                return;
+            }
+
+            submitBtn.disabled = false;
 
             // Calcul des frais (5%) et du total général
             const calculatedFee = amount * 0.05;
             const totalToPay = amount + calculatedFee;
 
-            // Mise à jour de l'affichage discret des frais
             feeAmount.textContent = `${calculatedFee.toFixed(2)} HTG`;
             feeDisplay.classList.remove('hidden');
-
-            // Mise à jour du texte du bouton d'action principal
             submitBtnText.textContent = `Payer ${totalToPay.toFixed(2)} HTG`;
         });
 
-        // ── Traitement de la soumission du formulaire ──
+        // ── Soumission du formulaire ──
         paymentForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
+    e.preventDefault();
+    clearError();
 
-            const baseAmount = parseFloat(amountInput.value);
+    const baseAmount = parseFloat(amountInput.value);
 
-            // Validation alignée sur DEPOT_MIN = 100 dans le Worker
-            if (isNaN(baseAmount) || baseAmount < 100) {
-                statusMessageEl.textContent = 'Le montant minimum de dépôt est de 100 HTG.';
-                return;
-            }
+    if (isNaN(baseAmount) || baseAmount < 100) {
+        showError('Le montant minimum de dépôt est de 100 HTG.');
+        return;
+    }
 
-            statusMessageEl.textContent = '';
+    // NOUVEAU : récupérer le token stocké au login
+    const storedToken = localStorage.getItem('token');
+    if (!user || !user.userId || !storedToken) {
+        showError('Session expirée. Veuillez vous reconnecter.');
+        setTimeout(() => window.location.href = 'index.html', 1500);
+        return;
+    }
 
-            // Calcul final du total à envoyer au Worker (Montant saisi + 5% de frais)
-            const calculatedFee = baseAmount * 0.05;
-            const totalWithFees = parseFloat((baseAmount + calculatedFee).toFixed(2));
+    const calculatedFee = baseAmount * 0.05;
+    const totalWithFees = parseFloat((baseAmount + calculatedFee).toFixed(2));
 
-            // Afficher l'écran d'attente
-            formContainer.classList.add('hidden');
-            redirectingMessage.classList.remove('hidden');
+    formContainer.classList.add('hidden');
+    redirectingMessage.classList.remove('hidden');
 
-            try {
-                // Récupérer la session utilisateur locale
-                const userRaw = localStorage.getItem('user');
-                if (!userRaw) throw new Error('Utilisateur non identifié. Veuillez vous connecter.');
-
-                const user = JSON.parse(userRaw);
-                if (!user || !user.userId) throw new Error('Identifiant utilisateur introuvable. Reconnectez-vous.');
-
-                const userId = user.userId;
-
-                // Appel au Worker 1 — On passe 'totalWithFees' pour que l'API facture le montant total réel
-                const response = await fetch(WORKER_DEPOT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId, amount: totalWithFees })
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success && data.paymentUrl) {
-                    // Sauvegarder la référence pour depot-verification.html
-                    localStorage.setItem('depotReference', data.reference);
-                    // On stocke le montant net (ce que l'utilisateur aura réellement sur son solde après traitement)
-                    localStorage.setItem('montantPaiement', baseAmount);
-
-                    // Redirection vers la passerelle MonCash Connect
-                    // CORRECTION : Validation stricte de l'URL MonCash
-                    const targetUrl = String(data.paymentUrl);
-                    
-                    // Validation par expression régulière stricte
-                    // Doit commencer par https:// et correspondre exactement aux domaines MonCash
-                    const isValidMonCashUrl = /^https:\/\/(sandbox\.)?moncashbutton\.digicelgroup\.com\//.test(targetUrl);
-
-                    if (isValidMonCashUrl) {
-                        window.location.assign(targetUrl);
-                    } else {
-                        throw new Error("URL de redirection invalide ou non sécurisée.");
-                    }
-
-                } else {
-                    throw new Error(data.error || 'Impossible d\'initialiser la session de paiement.');
-                }
-
-            } catch (err) {
-                console.error('Erreur transactionnelle:', err);
-
-                // Remettre le formulaire en cas d'erreur
-                redirectingMessage.classList.add('hidden');
-                formContainer.classList.remove('hidden');
-                statusMessageEl.textContent = err.message;
-            }
+    try {
+        const response = await fetch(WORKER_DEPOT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${storedToken}` // ← ajouté
+            },
+            body: JSON.stringify({ amount: totalWithFees }) // ← userId retiré
         });
-    </script>
 
+        const data = await response.json();
+
+        if (response.ok && data.success && data.paymentUrl) {
+            localStorage.setItem('depotReference', data.reference);
+            localStorage.setItem('montantPaiement', baseAmount);
+
+            const targetUrl = String(data.paymentUrl);
+            const isValidMonCashUrl = /^https:\/\/(sandbox\.)?moncashbutton\.digicelgroup\.com\//.test(targetUrl);
+
+            if (isValidMonCashUrl) {
+                window.location.assign(targetUrl);
+            } else {
+                throw new Error("URL de redirection invalide ou non sécurisée.");
+            }
+        } else {
+            const errorText = data.error || 'Impossible d\'initialiser la session de paiement.';
+            const isKycError = errorText.toLowerCase().includes('kyc') || errorText.toLowerCase().includes('solde');
+            const isSessionError = errorText.toLowerCase().includes('session') || errorText.toLowerCase().includes('authentification');
+
+            if (isSessionError) {
+                setTimeout(() => window.location.href = 'index.html', 1500);
+            }
+
+            throw { message: errorText, isKyc: isKycError };
+        }
+
+    } catch (err) {
+        redirectingMessage.classList.add('hidden');
+        formContainer.classList.remove('hidden');
+        showError(
+            err.message || "Une erreur est survenue lors de la communication avec le serveur.",
+            err.isKyc || false
+        );
+    }
+});
+    </script>
 </body>
 </html>
