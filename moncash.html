@@ -34,9 +34,16 @@
         </p>
 
         <!-- Badge récapitulatif des limites KYC de l'utilisateur -->
-        <div id="kycBadge" class="mb-6 p-3 bg-gray-50 rounded-xl border border-gray-200 text-xs text-gray-600 flex justify-between items-center">
-            <span>Plafond solde maxi : <strong id="maxSoldeText" class="text-gray-800">... HTG</strong></span>
-            <span id="kycStatusTag" class="px-2 py-0.5 rounded-full font-bold bg-gray-200 text-gray-700">KYC ...</span>
+        <div id="kycBadgeContainer" class="mb-6 p-3 bg-gray-50 rounded-xl border border-gray-200 text-xs flex flex-col gap-3">
+            <div class="flex justify-between items-center text-gray-600">
+                <span>Plafond solde maxi : <strong id="maxSoldeText" class="text-gray-800">... HTG</strong></span>
+                <span id="kycStatusTag" class="px-2 py-0.5 rounded-full font-bold bg-gray-200 text-gray-700">KYC ...</span>
+            </div>
+            
+            <!-- NOUVEAU BOUTON : Augmenter le plafond (caché par défaut) -->
+            <a id="upgradeKycPromoBtn" href="KYC1.html" class="hidden text-center w-full py-2 bg-white border border-gray-300 text-gray-700 hover:text-[#cc0000] hover:border-red-200 font-semibold rounded-lg transition-colors shadow-sm">
+                🚀 Augmenter mon plafond via KYC
+            </a>
         </div>
 
         <form id="paymentForm" class="space-y-6">
@@ -76,7 +83,7 @@
             </button>
         </form>
 
-        <!-- Bloc dynamique pour les erreurs et l'invitation KYC1.html -->
+        <!-- Bloc dynamique pour les erreurs -->
         <div id="errorContainer" class="hidden mt-6 p-4 rounded-xl bg-red-50 border border-red-200 text-center space-y-3">
             <p id="statusMessage" class="text-xs font-semibold text-red-600"></p>
             <a id="kycBtn" href="KYC1.html" class="hidden inline-flex items-center justify-center w-full py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-lg transition-colors">
@@ -100,7 +107,6 @@
     </div>
 
     <script>
-        console.log(localStorage.getItem('token'));
         const WORKER_DEPOT_URL = 'https://depot-moncash-connect.mijocomplexe.workers.dev';
 
         const paymentForm        = document.getElementById('paymentForm');
@@ -116,6 +122,7 @@
         const redirectingMessage = document.getElementById('redirecting-message');
         const maxSoldeText       = document.getElementById('maxSoldeText');
         const kycStatusTag       = document.getElementById('kycStatusTag');
+        const upgradeKycPromoBtn = document.getElementById('upgradeKycPromoBtn');
 
         // Récupération de la session utilisateur
         const userRaw = localStorage.getItem('user');
@@ -133,6 +140,11 @@
             kycStatusTag.className = isKycVerified 
                 ? "px-2 py-0.5 rounded-full font-bold bg-green-100 text-green-700" 
                 : "px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-700";
+            
+            // On affiche le bouton de promo KYC si le compte n'est pas encore vérifié
+            if (!isKycVerified) {
+                upgradeKycPromoBtn.classList.remove('hidden');
+            }
         }
 
         // Fonction d'affichage des erreurs avec option KYC
@@ -197,75 +209,74 @@
 
         // ── Soumission du formulaire ──
         paymentForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    clearError();
+            e.preventDefault();
+            clearError();
 
-    const baseAmount = parseFloat(amountInput.value);
+            const baseAmount = parseFloat(amountInput.value);
 
-    if (isNaN(baseAmount) || baseAmount < 100) {
-        showError('Le montant minimum de dépôt est de 100 HTG.');
-        return;
-    }
-
-    // NOUVEAU : récupérer le token stocké au login
-    const storedToken = localStorage.getItem('token');
-    if (!user || !user.userId || !storedToken) {
-        showError('Session expirée. Veuillez vous reconnecter.');
-        setTimeout(() => window.location.href = 'index.html', 1500);
-        return;
-    }
-
-    const calculatedFee = baseAmount * 0.05;
-    const totalWithFees = parseFloat((baseAmount + calculatedFee).toFixed(2));
-
-    formContainer.classList.add('hidden');
-    redirectingMessage.classList.remove('hidden');
-
-    try {
-        const response = await fetch(WORKER_DEPOT_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${storedToken}` // ← ajouté
-            },
-            body: JSON.stringify({ amount: totalWithFees }) // ← userId retiré
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.success && data.paymentUrl) {
-            localStorage.setItem('depotReference', data.reference);
-            localStorage.setItem('montantPaiement', baseAmount);
-
-            const targetUrl = String(data.paymentUrl);
-            const isValidMonCashUrl = /^https:\/\/(sandbox\.)?moncashbutton\.digicelgroup\.com\//.test(targetUrl);
-
-            if (isValidMonCashUrl) {
-                window.location.assign(targetUrl);
-            } else {
-                throw new Error("URL de redirection invalide ou non sécurisée.");
+            if (isNaN(baseAmount) || baseAmount < 100) {
+                showError('Le montant minimum de dépôt est de 100 HTG.');
+                return;
             }
-        } else {
-            const errorText = data.error || 'Impossible d\'initialiser la session de paiement.';
-            const isKycError = errorText.toLowerCase().includes('kyc') || errorText.toLowerCase().includes('solde');
-            const isSessionError = errorText.toLowerCase().includes('session') || errorText.toLowerCase().includes('authentification');
 
-            if (isSessionError) {
+            const storedToken = localStorage.getItem('token');
+            if (!user || !user.userId || !storedToken) {
+                showError('Session expirée. Veuillez vous reconnecter.');
                 setTimeout(() => window.location.href = 'index.html', 1500);
+                return;
             }
 
-            throw { message: errorText, isKyc: isKycError };
-        }
+            const calculatedFee = baseAmount * 0.05;
+            const totalWithFees = parseFloat((baseAmount + calculatedFee).toFixed(2));
 
-    } catch (err) {
-        redirectingMessage.classList.add('hidden');
-        formContainer.classList.remove('hidden');
-        showError(
-            err.message || "Une erreur est survenue lors de la communication avec le serveur.",
-            err.isKyc || false
-        );
-    }
-});
+            formContainer.classList.add('hidden');
+            redirectingMessage.classList.remove('hidden');
+
+            try {
+                const response = await fetch(WORKER_DEPOT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${storedToken}`
+                    },
+                    body: JSON.stringify({ amount: totalWithFees })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success && data.paymentUrl) {
+                    localStorage.setItem('depotReference', data.reference);
+                    localStorage.setItem('montantPaiement', baseAmount);
+
+                    const targetUrl = String(data.paymentUrl);
+                    const isValidMonCashUrl = /^https:\/\/(sandbox\.)?moncashbutton\.digicelgroup\.com\//.test(targetUrl);
+
+                    if (isValidMonCashUrl) {
+                        window.location.assign(targetUrl);
+                    } else {
+                        throw new Error("URL de redirection invalide ou non sécurisée.");
+                    }
+                } else {
+                    const errorText = data.error || 'Impossible d\'initialiser la session de paiement.';
+                    const isKycError = errorText.toLowerCase().includes('kyc') || errorText.toLowerCase().includes('solde');
+                    const isSessionError = errorText.toLowerCase().includes('session') || errorText.toLowerCase().includes('authentification');
+
+                    if (isSessionError) {
+                        setTimeout(() => window.location.href = 'index.html', 1500);
+                    }
+
+                    throw { message: errorText, isKyc: isKycError };
+                }
+
+            } catch (err) {
+                redirectingMessage.classList.add('hidden');
+                formContainer.classList.remove('hidden');
+                showError(
+                    err.message || "Une erreur est survenue lors de la communication avec le serveur.",
+                    err.isKyc || false
+                );
+            }
+        });
     </script>
 </body>
 </html>
