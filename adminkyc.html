@@ -214,8 +214,7 @@
                 const rectoUrl  = (docs[0] || '').trim();
                 const versoUrl  = (docs[1] || '').trim();
                 const selfieUrl = user.kyc_selfie_url || '';
-                const fullName  = `${user.Nom || ''} ${user.Prenom || ''}`.trim() || 'Nom non renseigné';
-
+                const fullName = user.NomUtilisateur || 'Nom non renseigné';
                 const card = document.createElement('div');
                 card.className = "bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-gray-200 fade-in";
                 card.id = `card-${user.userId}`;
