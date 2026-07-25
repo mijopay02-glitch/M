@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conditions Générales d'Utilisation | MIJO PAY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --blue: #1A6FE8;
+            --blue-dark: #1255C0;
+            --blue-light: #EBF2FF;
+            --gold: #F59E0B;
+            --gold-light: #FEF3C7;
+            --text: #111827;
+            --text-2: #6B7280;
+            --border: #E5E7EB;
+            --bg: #F3F6FB;
+            --white: #FFFFFF;
+            --radius-lg: 14px;
+            --radius-md: 10px;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+        .header-bar {
+            background: linear-gradient(145deg, #1A6FE8 0%, #1255C0 60%, #0D3E9A 100%);
+            padding: 28px 20px 36px;
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+            box-shadow: 0 8px 30px rgba(18,85,192,.25);
+        }
+        .header-bar .brand {
+            font-size: 1.3em;
+            font-weight: 800;
+            color: white;
+            letter-spacing: .3px;
+        }
+        .header-bar .brand span { color: #FCD34D; }
+        .header-bar h1 {
+            color: white;
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-top: 14px;
+        }
+        .header-bar p {
+            color: rgba(255,255,255,.75);
+            font-size: .8em;
+            margin-top: 6px;
+        }
+        .container {
+            max-width: 720px;
+            margin: -20px auto 0;
+            padding: 0 16px;
+        }
+        .toc {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 18px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,.06);
+        }
+        .toc-title {
+            font-size: .7em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: var(--text-2);
+            margin-bottom: 10px;
+        }
+        .toc ol {
+            list-style: none;
+            counter-reset: toc-counter;
+        }
+        .toc li {
+            counter-increment: toc-counter;
+            font-size: .85em;
+            padding: 5px 0;
+        }
+        .toc li a {
+            color: var(--blue-dark);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .toc li a:before {
+            content: counter(toc-counter) ". ";
+            color: var(--gold);
+            font-weight: 700;
+        }
+        .section {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 22px 20px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.04);
+        }
+        .section h2 {
+            font-size: 1.02em;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section h2 .num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px; height: 26px;
+            background: var(--blue-light);
+            color: var(--blue-dark);
+            border-radius: 8px;
+            font-size: .75em;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+        .section p, .section li {
+            font-size: .87em;
+            color: var(--text-2);
+            margin-bottom: 8px;
+        }
+        .section ul {
+            padding-left: 18px;
+            margin: 8px 0;
+        }
+        .section strong { color: var(--text); font-weight: 600; }
+        .highlight-box {
+            background: var(--gold-light);
+            border: 1px solid #FDE68A;
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            margin: 12px 0;
+        }
+        .highlight-box p {
+            color: #92400E;
+            font-size: .85em;
+            margin: 0;
+        }
+        .contact-box {
+            background: var(--blue-light);
+            border: 1px solid #C7D9F8;
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-top: 8px;
+        }
+        .contact-box p { color: var(--blue-dark); margin-bottom: 4px; }
+        .footer-note {
+            text-align: center;
+            font-size: .75em;
+            color: var(--text-2);
+            margin-top: 24px;
+            padding: 0 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin: 20px 16px 0;
+            font-size: .85em;
+            color: var(--blue-dark);
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-bar">
+        <div class="brand">MIJO<span>PAY</span></div>
+        <h1>Conditions Générales d'Utilisation</h1>
+        <p>Dernière mise à jour : 25 juillet 2026</p>
+    </div>
+
+    <div class="container">
+
+        <div class="toc">
+            <div class="toc-title">Sommaire</div>
+            <ol>
+                <li><a href="#objet">Objet et acceptation</a></li>
+                <li><a href="#compte">Ouverture et usage du compte</a></li>
+                <li><a href="#services">Services et usages autorisés</a></li>
+                <li><a href="#plafonds">Plafonds et limites</a></li>
+                <li><a href="#obligations">Obligations et responsabilités</a></li>
+                <li><a href="#risques">Risques et mesures de prudence</a></li>
+                <li><a href="#perte">Perte, vol, fraude — opposition</a></li>
+                <li><a href="#contestation">Contestation des opérations</a></li>
+                <li><a href="#remboursement">Remboursement</a></li>
+                <li><a href="#donnees">Protection des données</a></li>
+                <li><a href="#resiliation">Résiliation</a></li>
+                <li><a href="#contact">Contact et assistance</a></li>
+            </ol>
+        </div>
+
+        <div class="section" id="objet">
+            <h2><span class="num">1</span>Objet et acceptation</h2>
+            <p>Les présentes Conditions Générales d'Utilisation (CGU) régissent la relation entre <strong>MIJO PAY</strong> et toute personne (« le Client ») qui crée un compte ou utilise les services de paiement électronique proposés par MIJO PAY.</p>
+            <p>En créant un compte, le Client déclare avoir lu, compris et accepté sans réserve l'intégralité des présentes CGU. L'acceptation est obligatoire pour finaliser l'inscription.</p>
+        </div>
+
+        <div class="section" id="compte">
+            <h2><span class="num">2</span>Ouverture et usage du compte</h2>
+            <p>L'ouverture d'un compte MIJO PAY nécessite la fourniture d'informations exactes et à jour, ainsi qu'un document d'identité officiel en cours de validité dans le cadre de la vérification d'identité (KYC).</p>
+            <p>Le Client s'engage à :</p>
+            <ul>
+                <li>Fournir des informations sincères et véridiques lors de l'inscription et de la vérification KYC</li>
+                <li>Maintenir la confidentialité de son mot de passe et de tout code d'accès à son compte</li>
+                <li>Ne jamais partager ses identifiants de connexion avec un tiers</li>
+                <li>Informer MIJO PAY sans délai en cas de changement significatif de ses informations personnelles</li>
+            </ul>
+        </div>
+
+        <div class="section" id="services">
+            <h2><span class="num">3</span>Services et usages autorisés</h2>
+            <p>MIJO PAY permet au Client d'effectuer, selon les modalités techniques disponibles sur la plateforme :</p>
+            <ul>
+                <li>Des dépôts et retraits via les partenaires de paiement intégrés</li>
+                <li>Des transferts vers d'autres utilisateurs MIJO PAY identifiés</li>
+                <li>Des paiements pour l'accès à des services premium, formations, ou produits digitaux disponibles sur MIJO Store</li>
+            </ul>
+            <p>Les fonds disponibles sur le compte MIJO PAY ne peuvent être utilisés qu'aux fins prévues par la plateforme. Toute utilisation détournée, frauduleuse, ou visant à contourner les limites fixées, est strictement interdite et peut entraîner la suspension immédiate du compte.</p>
+        </div>
+
+        <div class="section" id="plafonds">
+            <h2><span class="num">4</span>Plafonds et limites</h2>
+            <p>Des limites de transaction et de solde sont appliquées à chaque compte, selon le niveau de vérification d'identité (KYC) du Client :</p>
+            <ul>
+                <li><strong>Compte non vérifié :</strong> plafond de solde et de transaction réduit</li>
+                <li><strong>Compte vérifié (KYC complet) :</strong> plafonds plus élevés, dans la limite réglementaire applicable</li>
+            </ul>
+            <p>Ces limites peuvent être ajustées par MIJO PAY à tout moment, en fonction de l'évolution du cadre réglementaire ou du profil de risque du Client. Le Client est informé de ses limites en vigueur directement dans son espace compte.</p>
+        </div>
+
+        <div class="section" id="obligations">
+            <h2><span class="num">5</span>Obligations et responsabilités</h2>
+            <p><strong>MIJO PAY s'engage à :</strong></p>
+            <ul>
+                <li>Assurer la disponibilité de la plateforme dans des conditions raisonnables</li>
+                <li>Traiter les opérations initiées par le Client conformément aux présentes CGU</li>
+                <li>Protéger les données et fonds du Client selon les mesures de sécurité en vigueur</li>
+                <li>Fournir un reçu ou une notification pour chaque transaction effectuée</li>
+            </ul>
+            <p><strong>Le Client s'engage à :</strong></p>
+            <ul>
+                <li>Utiliser le service conformément à la loi et aux présentes CGU</li>
+                <li>Ne pas utiliser MIJO PAY à des fins de blanchiment de capitaux, de financement du terrorisme, ou toute autre activité illicite</li>
+                <li>Vérifier l'exactitude des informations saisies (montants, destinataires) avant de confirmer une opération</li>
+            </ul>
+        </div>
+
+        <div class="section" id="risques">
+            <h2><span class="num">6</span>Risques et mesures de prudence</h2>
+            <p>L'usage de tout service de paiement électronique comporte des risques inhérents, notamment :</p>
+            <ul>
+                <li>Le risque de perte d'accès au compte en cas d'oubli des identifiants ou de compromission de l'appareil du Client</li>
+                <li>Le risque de fraude en cas de partage des identifiants ou de réponse à des tentatives d'hameçonnage (phishing)</li>
+                <li>Le risque d'erreur de saisie lors d'un transfert (destinataire ou montant incorrect)</li>
+            </ul>
+            <div class="highlight-box">
+                <p><strong>MIJO PAY ne demande jamais</strong> le mot de passe du Client par téléphone, WhatsApp, email ou tout autre canal. Toute demande de ce type doit être considérée comme frauduleuse.</p>
+            </div>
+        </div>
+
+        <div class="section" id="perte">
+            <h2><span class="num">7</span>Perte, vol, fraude — modalités d'opposition</h2>
+            <p>En cas de perte, de vol, ou de suspicion d'utilisation frauduleuse de son compte, le Client doit :</p>
+            <ul>
+                <li><strong>Signaler l'incident immédiatement</strong> via l'assistance MIJO PAY (WhatsApp ou email de support)</li>
+                <li>Fournir les informations permettant d'identifier le compte concerné</li>
+            </ul>
+            <p>Dès réception du signalement, MIJO PAY procède sans délai au blocage temporaire du compte concerné, le temps de vérifier la situation. Le Client reste responsable des opérations effectuées avant le signalement, sauf en cas de faute avérée de MIJO PAY dans la sécurisation de la plateforme.</p>
+        </div>
+
+        <div class="section" id="contestation">
+            <h2><span class="num">8</span>Contestation des opérations</h2>
+            <p>Le Client dispose d'un délai de <strong>30 jours calendaires</strong> à compter de la date d'une transaction pour la contester auprès de MIJO PAY, en fournissant les éléments justifiant la contestation (référence de transaction, description du problème).</p>
+            <p>MIJO PAY examine chaque contestation et communique sa décision au Client dans un délai raisonnable. Les prélèvements non autorisés, une fois confirmés, font l'objet d'un remboursement inconditionnel.</p>
+        </div>
+
+        <div class="section" id="remboursement">
+            <h2><span class="num">9</span>Conditions et modalités de remboursement</h2>
+            <p>Le Client peut retirer tout ou partie de ses fonds disponibles à tout moment, sous réserve du respect des plafonds en vigueur et des délais de traitement propres à chaque méthode de retrait.</p>
+            <p>En cas de défaillance technique empêchant le bon déroulement d'une opération, MIJO PAY s'engage à rétablir le compte du Client dans l'état où il se trouvait avant l'opération non exécutée, dans les plus brefs délais.</p>
+        </div>
+
+        <div class="section" id="donnees">
+            <h2><span class="num">10</span>Protection des données</h2>
+            <p>MIJO PAY collecte et conserve les données nécessaires à la fourniture du service et au respect de ses obligations légales, notamment en matière de vérification d'identité et de lutte contre le blanchiment de capitaux.</p>
+            <p>Ces données sont conservées de manière sécurisée et ne sont partagées avec des tiers que dans la mesure requise par la loi ou nécessaire à l'exécution du service (par exemple, les partenaires de paiement).</p>
+        </div>
+
+        <div class="section" id="resiliation">
+            <h2><span class="num">11</span>Résiliation</h2>
+            <p>Le Client peut demander la fermeture de son compte à tout moment, sous réserve du retrait préalable de tout solde disponible. MIJO PAY se réserve le droit de suspendre ou clôturer un compte en cas de violation des présentes CGU, d'activité suspecte, ou de demande d'une autorité compétente.</p>
+        </div>
+
+        <div class="section" id="contact">
+            <h2><span class="num">12</span>Contact et assistance</h2>
+            <p>Pour toute question relative aux présentes CGU, à une transaction, ou pour signaler un incident, le Client peut contacter l'assistance MIJO PAY :</p>
+            <div class="contact-box">
+                <p>📱 WhatsApp : <strong>+509 44990203</strong></p>
+                <p>✉️ Email : mijopay02@mijopay.com</p>
+            </div>
+        </div>
+
+        <p class="footer-note">
+            En utilisant MIJO PAY, vous confirmez avoir pris connaissance des présentes Conditions Générales d'Utilisation et vous engagez à les respecter.
+        </p>
+
+        <a href="index.html" class="back-link">← Retour à la connexion</a>
+
+    </div>
+
+</body>
+</html>
