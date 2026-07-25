@@ -791,40 +791,51 @@ function pollSoldeApresDepot() {
     // REFRESH BALANCE — garde le même Worker
     // ══════════════════════════════════════════════════
     async function refreshBalance(event) {
-        if (event) event.preventDefault();
-        const btn = document.getElementById('refresh-button');
-        const userString = localStorage.getItem('user');
-        if (!userString) return logout();
-        const user = JSON.parse(userString);
- 
-        btn.style.opacity = '.4';
-        btn.style.pointerEvents = 'none';
- 
-        try {
-            // Nouvelle action get_user_by_id — pas besoin du CIN
-            const res = await fetch(loginUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    action: "get_user_by_id",
-                    userId: user.userId
-                })
-            });
-            const data = await res.json();
-            if (data.success && data.user) {
-                const updatedUser = { ...data.user };
-                localStorage.setItem("user", JSON.stringify(updatedUser));
-                updateUI(updatedUser);
-            } else {
-                updateUI(user);
+    if (event) event.preventDefault();
+    const btn = document.getElementById('refresh-button');
+    const userString = localStorage.getItem('user');
+    const storedToken = localStorage.getItem('token');
+    if (!userString || !storedToken) return logout();
+    const user = JSON.parse(userString);
+
+    btn.style.opacity = '.4';
+    btn.style.pointerEvents = 'none';
+
+    try {
+        const res = await fetch(loginUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${storedToken}`
+            },
+            body: JSON.stringify({
+                action: "get_user_by_id"
+            })
+        });
+        const data = await res.json();
+        if (data.success && data.user) {
+            const updatedUser = { ...data.user };
+            localStorage.setItem("user", JSON.stringify(updatedUser));
+
+            // Le Worker renvoie un token rafraîchi — on le sauvegarde aussi
+            if (data.token) {
+                localStorage.setItem("token", data.token);
             }
-        } catch (e) {
+
+            updateUI(updatedUser);
+        } else if (data.error && data.error.includes("Session")) {
+            // Token invalide/expiré côté Worker → forcer reconnexion
+            return logout();
+        } else {
             updateUI(user);
-        } finally {
-            btn.style.opacity = '1';
-            btn.style.pointerEvents = 'auto';
         }
+    } catch (e) {
+        updateUI(user);
+    } finally {
+        btn.style.opacity = '1';
+        btn.style.pointerEvents = 'auto';
     }
+}
  
     // ══════════════════════════════════════════════════
     // USD ACTIVATION
