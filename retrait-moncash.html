@@ -2,14 +2,14 @@
 <html lang="fr">
 <head>
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "92add420-4ef4-428a-8998-e42524f1d3de",
-    });
-  });
-</script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "92add420-4ef4-428a-8998-e42524f1d3de",
+        });
+      });
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retrait MonCash | MIJO PAY</title>
@@ -20,14 +20,19 @@
 <body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
 
     <!-- Formulaire Principal -->
-    <div id="payment-form-container" class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full border border-gray-100">
+    <div id="payment-form-container" class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full border border-gray-100 transition-all duration-300">
         <div class="flex items-center justify-center gap-2 mb-6">
             <span class="text-2xl font-black tracking-wider text-gray-900">MIJO<span class="text-red-600">PAY</span></span>
         </div>
         <h1 class="text-2xl font-bold text-gray-800 text-center mb-2">Retrait MonCash</h1>
-        <p class="text-gray-500 text-sm text-center mb-8">
+        <p class="text-gray-500 text-sm text-center mb-6">
             Indiquez le numéro MonCash et le montant à retirer de votre solde MIJO PAY.
         </p>
+
+        <!-- Badge récapitulatif du solde -->
+        <div id="balanceBadge" class="mb-6 p-3 bg-gray-50 rounded-xl border border-gray-200 text-xs text-gray-600 flex justify-between items-center">
+            <span>Solde disponible : <strong id="soldeActuelText" class="text-gray-800">... HTG</strong></span>
+        </div>
 
         <form id="payoutForm" class="space-y-5">
             <div>
@@ -57,7 +62,7 @@
                     <span id="frais-montant" class="font-semibold text-gray-800">—</span>
                 </div>
                 <div class="flex justify-between text-gray-500">
-                    <span>Frais moncash</span>
+                    <span>Frais système (10%)</span>
                     <span id="frais-val" class="text-red-500">—</span>
                 </div>
                 <div class="border-t border-gray-200 pt-2 flex justify-between font-bold text-gray-800">
@@ -78,7 +83,7 @@
             </div>
 
             <button type="submit" id="submitBtn"
-                class="w-full bg-[#cc0000] hover:bg-[#a30000] text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
+                class="w-full bg-[#cc0000] hover:bg-[#a30000] text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                 <span id="submitBtnText">Confirmer le retrait</span>
             </button>
         </form>
@@ -102,16 +107,57 @@
         const WORKER_RETRAIT_URL = 'https://retrait-moncash.mijocomplexe.workers.dev';
         const FRAIS_TOTAL_RATE   = 0.10;
 
+        const statusEl = document.getElementById('statusMessage');
+        const submitBtn = document.getElementById('submitBtn');
+        const soldeActuelText = document.getElementById('soldeActuelText');
+
+        // Récupération de la session utilisateur
+        const storedToken = localStorage.getItem('token');
+        const userRaw     = localStorage.getItem('user');
+        const user        = userRaw ? JSON.parse(userRaw) : null;
+
+        // Variables de vérification
+        const soldeActuel = user ? Number(user.Solde || 0) : 0;
+        const limiteParTransaction = user ? Number(user.limit_per_transaction || 5000) : 5000;
+
+        // Initialisation de l'affichage du solde
+        if (user) {
+            soldeActuelText.textContent = `${soldeActuel.toLocaleString('fr')} HTG`;
+        }
+
+        // Vérification en temps réel
         function calculerFrais() {
+            statusEl.textContent = ''; // Réinitialiser le message d'erreur
             const montant  = parseFloat(document.getElementById('amountInput').value);
             const fraisBox = document.getElementById('frais-box');
-            if (!montant || montant < 1) { fraisBox.classList.add('hidden'); return; }
+            
+            if (!montant || montant < 1) { 
+                fraisBox.classList.add('hidden'); 
+                submitBtn.disabled = false;
+                return; 
+            }
 
             const frais = parseFloat((montant * FRAIS_TOTAL_RATE).toFixed(2));
             const total = parseFloat((montant + frais).toFixed(2));
 
+            // Contrôle 1 : Plafond par transaction
+            if (montant > limiteParTransaction) {
+                statusEl.textContent = `Le montant maximal par transaction est de ${limiteParTransaction.toLocaleString('fr')} HTG.`;
+                submitBtn.disabled = true;
+                fraisBox.classList.add('hidden');
+                return;
+            }
+
+            // Contrôle 2 : Solde disponible (incluant les frais)
+            if (total > soldeActuel) {
+                statusEl.textContent = `Fonds insuffisants. Total requis (avec frais) : ${total.toLocaleString('fr')} HTG.`;
+                submitBtn.disabled = true;
+            } else {
+                submitBtn.disabled = false;
+            }
+
             document.getElementById('frais-montant').textContent = montant.toLocaleString('fr') + ' G';
-            document.getElementById('frais-val').textContent     = '−' + frais.toLocaleString('fr') + ' G';
+            document.getElementById('frais-val').textContent     = '+' + frais.toLocaleString('fr') + ' G';
             document.getElementById('frais-total').textContent   = total.toLocaleString('fr') + ' G';
             fraisBox.classList.remove('hidden');
         }
@@ -122,7 +168,6 @@
             const montant         = parseFloat(document.getElementById('amountInput').value);
             const phone            = document.getElementById('phoneInput').value.trim();
             const confirmPassword  = document.getElementById('confirmPasswordInput').value.trim();
-            const statusEl         = document.getElementById('statusMessage');
 
             if (isNaN(montant) || montant < 100) {
                 statusEl.textContent = 'Le montant minimum est de 100 HTG.';
@@ -134,19 +179,8 @@
                 return;
             }
 
-            // ── NOUVEAU : session requise (user + token JWT) ──
-            const storedToken = localStorage.getItem('token');
-            const userRaw     = localStorage.getItem('user');
-
-            if (!userRaw || !storedToken) {
+            if (!userRaw || !storedToken || !user?.userId) {
                 statusEl.textContent = 'Session expirée. Veuillez vous reconnecter.';
-                setTimeout(() => window.location.href = 'index.html', 1500);
-                return;
-            }
-
-            const user = JSON.parse(userRaw);
-            if (!user?.userId) {
-                statusEl.textContent = 'Session invalide. Reconnectez-vous.';
                 setTimeout(() => window.location.href = 'index.html', 1500);
                 return;
             }
@@ -160,10 +194,11 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${storedToken}` // ← ajouté
+                        'Authorization': `Bearer ${storedToken}`
                     },
-                    body: JSON.stringify({ amount: montant, phone, confirmPassword }) // ← userId retiré
+                    body: JSON.stringify({ amount: montant, phone, confirmPassword }) 
                 });
+                
                 const data = await response.json();
 
                 if (response.ok && data.success) {
@@ -173,7 +208,6 @@
                     }
                     window.location.href = 'home.html?retrait=encours';
                 } else {
-                    // Si session expirée détectée par le worker, renvoyer au login
                     const isSessionError = (data.error || '').toLowerCase().includes('session')
                         || (data.error || '').toLowerCase().includes('authentification');
 
@@ -190,7 +224,6 @@
                 statusEl.className = "text-center text-sm font-semibold text-red-600 mt-4 min-h-5";
                 statusEl.textContent = err.message;
 
-                // Efface le champ mot de passe après un échec, pour ne pas le laisser traîner à l'écran
                 document.getElementById('confirmPasswordInput').value = '';
             }
         });
