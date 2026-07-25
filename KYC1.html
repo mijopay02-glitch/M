@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérification KYC (Niveau 1) | MIJO PAY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 max-w-lg w-full border border-gray-100">
+        
+        <div class="flex items-center justify-between mb-6">
+            <span class="text-2xl font-black tracking-wider text-gray-900">MIJO<span class="text-red-600">PAY</span></span>
+            <span class="px-3 py-1 bg-red-100 text-red-700 font-bold text-xs rounded-full">Niveau 1</span>
+        </div>
+
+        <h1 class="text-2xl font-bold text-gray-800 text-center mb-1">Vérification d'identité</h1>
+        <p class="text-gray-500 text-xs sm:text-sm text-center mb-6">
+            Soumettez vos 3 documents pour débloquer votre plafond de solde à <strong>100 000 HTG</strong>.
+        </p>
+
+        <form id="kycForm" class="space-y-5">
+
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1.5 uppercase">
+                    1. Recto de la pièce d'identité (CIN / Passeport / NIF) *
+                </label>
+                <div class="relative border-2 border-dashed border-gray-300 hover:border-red-500 rounded-xl p-4 text-center cursor-pointer transition-colors" onclick="document.getElementById('idFrontInput').click()">
+                    <input type="file" id="idFrontInput" accept="image/*" capture="environment" class="hidden" required onchange="previewImage(this, 'previewFront')">
+                    <div id="previewFront" class="flex flex-col items-center justify-center space-y-1">
+                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <span class="text-xs font-medium text-gray-600">Prendre / Choisir la photo du recto</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1.5 uppercase">
+                    2. Verso de la pièce d'identité (Arrière) *
+                </label>
+                <div class="relative border-2 border-dashed border-gray-300 hover:border-red-500 rounded-xl p-4 text-center cursor-pointer transition-colors" onclick="document.getElementById('idBackInput').click()">
+                    <input type="file" id="idBackInput" accept="image/*" capture="environment" class="hidden" required onchange="previewImage(this, 'previewBack')">
+                    <div id="previewBack" class="flex flex-col items-center justify-center space-y-1">
+                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <span class="text-xs font-medium text-gray-600">Prendre / Choisir la photo du verso</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1.5 uppercase">
+                    3. Photo de votre visage (Selfie clair) *
+                </label>
+                <div class="relative border-2 border-dashed border-gray-300 hover:border-red-500 rounded-xl p-4 text-center cursor-pointer transition-colors" onclick="document.getElementById('selfieInput').click()">
+                    <input type="file" id="selfieInput" accept="image/*" capture="user" class="hidden" required onchange="previewImage(this, 'previewSelfie')">
+                    <div id="previewSelfie" class="flex flex-col items-center justify-center space-y-1">
+                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        <span class="text-xs font-medium text-gray-600">Prendre un selfie</span>
+                    </div>
+                </div>
+            </div>
+
+            <button
+                type="submit"
+                id="submitBtn"
+                class="w-full bg-[#cc0000] hover:bg-[#a30000] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition-all duration-300 mt-6 text-sm flex items-center justify-center gap-2"
+            >
+                Soumettre le dossier KYC
+            </button>
+        </form>
+
+        <div id="statusMessage" class="hidden mt-4 p-3 rounded-xl text-xs font-semibold text-center"></div>
+
+    </div>
+
+    <script>
+        // Prévisualisation instantanée de l'image sélectionnée
+        function previewImage(input, previewContainerId) {
+            const container = document.getElementById(previewContainerId);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    container.innerHTML = `
+                        <img src="${e.target.result}" class="max-h-24 mx-auto rounded-lg object-cover border border-gray-200">
+                        <span class="text-[10px] text-green-600 font-bold mt-1 block">✓ Photo ajoutée (Cliquer pour changer)</span>
+                    `;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        document.getElementById('kycForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const statusEl = document.getElementById('statusMessage');
+            const submitBtn = document.getElementById('submitBtn');
+
+            const userRaw = localStorage.getItem('user');
+            if (!userRaw) {
+                alert("Session expirée. Veuillez vous reconnecter.");
+                return window.location.href = 'index.html';
+            }
+            const user = JSON.parse(userRaw);
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = "Envoi en cours...";
+            statusEl.className = "mt-4 p-3 rounded-xl text-xs font-semibold text-center bg-blue-50 text-blue-700 block";
+            statusEl.textContent = "Téléversement des documents sécurisés...";
+
+            try {
+                // Conversion des 3 fichiers en Base64 ou FormData
+                const frontFile = document.getElementById('idFrontInput').files[0];
+                const backFile = document.getElementById('idBackInput').files[0];
+                const selfieFile = document.getElementById('selfieInput').files[0];
+
+                const formData = new FormData();
+                formData.append('userId', user.userId);
+                formData.append('recto', frontFile);
+                formData.append('verso', backFile);
+                formData.append('selfie', selfieFile);
+const storedToken = localStorage.getItem('token');
+if (!storedToken) {
+    alert("Session expirée. Veuillez vous reconnecter.");
+    return window.location.href = 'index.html';
+}
+// ...
+const res = await fetch('kyc.mijocomplexe.workers.dev/submit-kyc', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${storedToken}` }, 
+    body: formData  
+});
+                
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    statusEl.className = "mt-4 p-3 rounded-xl text-xs font-semibold text-center bg-green-50 text-green-700 block";
+                    statusEl.textContent = " Vos documents ont été soumis avec succès ! Votre dossier est en cours de vérification.";
+                    
+                    // Mettre à jour la session locale
+                    user.kyc_status = "en_attente";
+                    localStorage.setItem('user', JSON.stringify(user));
+
+                    setTimeout(() => { window.location.href = 'home.html'; }, 3000);
+                } else {
+                    throw new Error(data.error || "Échec de l'envoi des documents.");
+                }
+
+            } catch (err) {
+                statusEl.className = "mt-4 p-3 rounded-xl text-xs font-semibold text-center bg-red-50 text-red-700 block";
+                statusEl.textContent = err.message;
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Réessayer la soumission";
+            }
+        });
+    </script>
+</body>
+</html>
