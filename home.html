@@ -579,7 +579,18 @@
             <button class="modal-close" onclick="hideTransferModal()">✕</button>
             <div class="modal-title">Effectuer un transfert</div>
             <div class="field-label">Montant (Gourdes)</div>
-            <input type="number" id="transferAmount" class="field-input" placeholder="Ex: 500">
+            
+<input type="number" id="transferAmount" class="field-input" placeholder="Ex: 500">
+<div id="feePreview" style="display:none; background:var(--bg); border-radius:8px; padding:10px 12px; margin:-6px 0 14px; font-size:.78em; color:var(--text-2);">
+    <div style="display:flex; justify-content:space-between;">
+        <span>Frais MIJO (2%)</span>
+        <span id="feeAmountPreview">0 G</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; font-weight:700; color:var(--text); margin-top:4px;">
+        <span>Le destinataire recevra</span>
+        <span id="netAmountPreview">0 G</span>
+    </div>
+</div>
             <div class="field-label">Email du destinataire</div>
             <input type="email" id="recipientEmail" class="field-input" placeholder="nom@email.com">
             <button class="confirm-btn" onclick="handleTransfer()">Confirmer le transfert</button>
@@ -1112,7 +1123,22 @@ function pollSoldeApresDepot() {
     document.getElementById('premiumRequiredModal').addEventListener('click', function(e) {
         if (e.target === this) hidePremiumModal();
     });
- 
+ document.getElementById('transferAmount').addEventListener('input', function() {
+    const amount = parseFloat(this.value);
+    const preview = document.getElementById('feePreview');
+
+    if (!amount || amount <= 0) {
+        preview.style.display = 'none';
+        return;
+    }
+
+    const commission = parseFloat((amount * 0.02).toFixed(2));
+    const netRecu = parseFloat((amount - commission).toFixed(2));
+
+    document.getElementById('feeAmountPreview').textContent = `${commission.toLocaleString()} G`;
+    document.getElementById('netAmountPreview').textContent = `${netRecu.toLocaleString()} G`;
+    preview.style.display = 'block';
+});
     // ══════════════════════════════════════════════════
     // AUTO EXPAND / COLLAPSE DES BOUTONS FLOTTANTS
     // ══════════════════════════════════════════════════
