@@ -894,55 +894,59 @@ function pollSoldeApresDepot() {
     }
  
     async function handleTransfer() {
-        const amount         = parseFloat(document.getElementById('transferAmount').value);
-        const recipientEmail = document.getElementById('recipientEmail').value.trim();
-        const msg            = document.getElementById('transferMessage');
- 
-        if (!amount || amount <= 0 || !recipientEmail) {
-            msg.style.color = '#EF4444';
-            msg.innerText   = "Veuillez vérifier le montant et l'email.";
-            return;
-        }
- 
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (!user) return logout();
- 
-        msg.style.color = '#1A6FE8';
-        msg.innerText   = "Traitement en cours…";
- 
-        try {
-            const res = await fetch(transferUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    action: "automatic_transfer",
-                    senderId: user.userId,
-                    recipientEmail,
-                    amount
-                })
-            });
-            const data = await res.json();
-            if (data.success) {
-                // Mettre à jour le localStorage
-                const updatedUser = { ...user, Solde: Math.round(parseFloat(data.newBalance) * 100) / 100 };
-                localStorage.setItem('user', JSON.stringify(updatedUser));
-                updateUI(updatedUser);
-                saveToHistory('Transfert', amount, 'Envoyé', recipientEmail, user.userId);
-                msg.style.color = '#10B981';
-                msg.innerText   = "✅ Transfert réussi !";
-                document.getElementById('transferAmount').value  = "";
-                document.getElementById('recipientEmail').value  = "";
-                setTimeout(hideTransferModal, 2000);
-            } else {
-                msg.style.color = '#EF4444';
-                msg.innerText   = data.error || "Échec du transfert.";
-            }
-        } catch (e) {
-            msg.style.color = '#EF4444';
-            msg.innerText   = "Erreur de connexion serveur.";
-        }
+    const amount         = parseFloat(document.getElementById('transferAmount').value);
+    const recipientEmail = document.getElementById('recipientEmail').value.trim();
+    const msg            = document.getElementById('transferMessage');
+
+    if (!amount || amount <= 0 || !recipientEmail) {
+        msg.style.color = '#EF4444';
+        msg.innerText   = "Veuillez vérifier le montant et l'email.";
+        return;
     }
- 
+
+    const user = JSON.parse(localStorage.getItem('user'));
+    const storedToken = localStorage.getItem('token');
+    if (!user || !storedToken) return logout();
+
+    msg.style.color = '#1A6FE8';
+    msg.innerText   = "Traitement en cours…";
+
+    try {
+        const res = await fetch(transferUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${storedToken}` // ← ajouté
+            },
+            body: JSON.stringify({
+                action: "automatic_transfer",
+                recipientEmail, // ← senderId retiré
+                amount
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            const updatedUser = { ...user, Solde: Math.round(parseFloat(data.newBalance) * 100) / 100 };
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+            updateUI(updatedUser);
+            saveToHistory('Transfert', amount, 'Envoyé', recipientEmail, user.userId);
+            msg.style.color = '#10B981';
+            msg.innerText   = "✅ Transfert réussi !";
+            document.getElementById('transferAmount').value  = "";
+            document.getElementById('recipientEmail').value  = "";
+            setTimeout(hideTransferModal, 2000);
+        } else {
+            msg.style.color = '#EF4444';
+            msg.innerText   = data.error || "Échec du transfert.";
+            if (data.error && data.error.toLowerCase().includes('session')) {
+                setTimeout(() => window.location.href = 'index.html', 1500);
+            }
+        }
+    } catch (e) {
+        msg.style.color = '#EF4444';
+        msg.innerText   = "Erreur de connexion serveur.";
+    }
+}
     // ══════════════════════════════════════════════════
     // AFFILIATE
     // ══════════════════════════════════════════════════
