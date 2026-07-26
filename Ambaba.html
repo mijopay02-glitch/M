@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alertes AML | Admin MIJO PAY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --blue: #1A6FE8; --blue-dark: #1255C0; --blue-light: #EBF2FF;
+            --red: #EF4444; --red-light: #FEE2E2;
+            --green: #10B981; --green-light: #D1FAE5;
+            --amber: #F59E0B; --amber-light: #FEF3C7;
+            --text: #111827; --text-2: #6B7280; --border: #E5E7EB;
+            --bg: #F3F6FB; --white: #FFFFFF;
+            --radius: 12px;
+        }
+        body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); padding-bottom:60px; }
+        .header {
+            background: linear-gradient(145deg,#1A6FE8 0%,#1255C0 60%,#0D3E9A 100%);
+            padding: 24px 20px; color:white;
+        }
+        .header h1 { font-size:1.2em; font-weight:800; }
+        .header p { font-size:.78em; opacity:.75; margin-top:4px; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px 16px; }
+
+        .auth-gate {
+            max-width: 360px; margin: 80px auto; background:var(--white);
+            border-radius:var(--radius); padding:28px 24px; box-shadow:0 4px 20px rgba(0,0,0,.08);
+            text-align:center;
+        }
+        .auth-gate input {
+            width:100%; padding:12px 14px; margin:14px 0; border:1.5px solid var(--border);
+            border-radius:8px; font-family:inherit; font-size:.9em;
+        }
+        .auth-gate button {
+            width:100%; padding:12px; background:var(--blue); color:white; border:none;
+            border-radius:8px; font-weight:700; cursor:pointer; font-size:.9em;
+        }
+        .auth-gate .err { color:var(--red); font-size:.8em; margin-top:10px; min-height:16px; }
+
+        .stats-row { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+        .stat-card {
+            flex:1; min-width:120px; background:var(--white); border-radius:var(--radius);
+            padding:14px 16px; border:1px solid var(--border);
+        }
+        .stat-card .num { font-size:1.5em; font-weight:800; }
+        .stat-card .label { font-size:.72em; color:var(--text-2); text-transform:uppercase; letter-spacing:.4px; }
+        .stat-card.pending .num { color:var(--amber); }
+        .stat-card.treated .num { color:var(--green); }
+        .stat-card.false_positive .num { color:var(--text-2); }
+
+        .filters { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+        .filter-btn {
+            padding:7px 14px; border-radius:20px; border:1px solid var(--border);
+            background:var(--white); font-size:.78em; font-weight:600; cursor:pointer;
+            color:var(--text-2); transition:.15s;
+        }
+        .filter-btn.active { background:var(--blue); color:white; border-color:var(--blue); }
+
+        .alert-card {
+            background:var(--white); border-radius:var(--radius); border:1px solid var(--border);
+            padding:16px 18px; margin-bottom:12px;
+        }
+        .alert-card.a_revoir { border-left:4px solid var(--amber); }
+        .alert-card.traite { border-left:4px solid var(--green); opacity:.75; }
+        .alert-card.faux_positif { border-left:4px solid var(--text-2); opacity:.6; }
+
+        .alert-top { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+        .alert-type { font-weight:700; font-size:.92em; }
+        .alert-badge {
+            font-size:.68em; font-weight:700; padding:3px 10px; border-radius:12px;
+            text-transform:uppercase; letter-spacing:.3px; white-space:nowrap;
+        }
+        .badge-a_revoir { background:var(--amber-light); color:#92400E; }
+        .badge-traite { background:var(--green-light); color:#065F46; }
+        .badge-faux_positif { background:var(--border); color:var(--text-2); }
+
+        .alert-details { font-size:.85em; color:var(--text-2); margin:8px 0; line-height:1.5; }
+        .alert-meta { font-size:.75em; color:var(--text-2); display:flex; gap:14px; flex-wrap:wrap; margin-top:6px; }
+        .alert-meta span strong { color:var(--text); }
+
+        .alert-actions { display:flex; gap:8px; margin-top:12px; }
+        .action-btn {
+            padding:7px 14px; border-radius:8px; border:none; font-size:.78em;
+            font-weight:700; cursor:pointer;
+        }
+        .action-btn.suspect { background:var(--red-light); color:#991B1B; }
+        .action-btn.false-pos { background:var(--border); color:var(--text-2); }
+
+        .empty-state { text-align:center; padding:60px 20px; color:var(--text-2); }
+        .loading { text-align:center; padding:40px; color:var(--text-2); font-size:.85em; }
+    </style>
+</head>
+<body>
+
+    <div id="authGate" class="auth-gate">
+        <h2 style="margin-bottom:6px;">Accès Admin</h2>
+        <p style="font-size:.8em; color:var(--text-2);">MIJO PAY — Alertes AML</p>
+        <input type="password" id="adminToken" placeholder="Token administrateur">
+        <button onclick="verifierAcces()">Accéder</button>
+        <div class="err" id="authErr"></div>
+    </div>
+
+    <div id="dashboard" style="display:none;">
+        <div class="header">
+            <h1>🛡️ Alertes AML — MIJO PAY</h1>
+            <p>Suivi des patterns de fractionnement (smurfing) et transferts suspects</p>
+        </div>
+
+        <div class="container">
+            <div class="stats-row">
+                <div class="stat-card pending">
+                    <div class="num" id="statPending">—</div>
+                    <div class="label">À revoir</div>
+                </div>
+                <div class="stat-card treated">
+                    <div class="num" id="statTreated">—</div>
+                    <div class="label">Traitées</div>
+                </div>
+                <div class="stat-card false_positive">
+                    <div class="num" id="statFalsePositive">—</div>
+                    <div class="label">Faux positifs</div>
+                </div>
+            </div>
+
+            <div class="filters">
+                <button class="filter-btn active" data-filter="a_revoir" onclick="filtrer('a_revoir', this)">À revoir</button>
+                <button class="filter-btn" data-filter="traite" onclick="filtrer('traite', this)">Traitées</button>
+                <button class="filter-btn" data-filter="faux_positif" onclick="filtrer('faux_positif', this)">Faux positifs</button>
+                <button class="filter-btn" data-filter="all" onclick="filtrer('all', this)">Tout afficher</button>
+            </div>
+
+            <div id="alertsList">
+                <div class="loading">Chargement des alertes…</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CENTRAL_WORKER_URL = "https://central.mijocomplexe.workers.dev"; // ← à ajuster selon votre URL réelle du worker central
+        let ADMIN_TOKEN = "";
+        let ADMIN_BRIDGE_TOKEN = ""; // le X-MIJO-Bridge-Token, saisi ou en dur si page protégée autrement
+        let filtreActuel = "a_revoir";
+        let toutesLesAlertes = [];
+
+        function verifierAcces() {
+            const token = document.getElementById('adminToken').value.trim();
+            if (!token) {
+                document.getElementById('authErr').innerText = "Veuillez entrer un token.";
+                return;
+            }
+            // Le token saisi sert directement de X-MIJO-Bridge-Token pour les appels
+            ADMIN_BRIDGE_TOKEN = token;
+            document.getElementById('authGate').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            chargerAlertes();
+        }
+
+        async function chargerAlertes() {
+            try {
+                const res = await fetch(`${CENTRAL_WORKER_URL}/Alertes_AML?select=*&order=Date.desc&limit=200`, {
+                    method: "GET",
+                    headers: {
+                        "X-MIJO-Bridge-Token": ADMIN_BRIDGE_TOKEN,
+                        "Accept": "application/json"
+                    }
+                });
+
+                if (res.status === 403 || res.status === 401) {
+                    document.getElementById('authGate').style.display = 'block';
+                    document.getElementById('dashboard').style.display = 'none';
+                    document.getElementById('authErr').innerText = "Token invalide.";
+                    return;
+                }
+
+                const data = await res.json();
+                toutesLesAlertes = Array.isArray(data) ? data : [];
+                mettreAJourStats();
+                afficherAlertes();
+            } catch (e) {
+                document.getElementById('alertsList').innerHTML =
+                    `<div class="empty-state">Erreur de connexion au serveur.</div>`;
+            }
+        }
+
+        function mettreAJourStats() {
+            document.getElementById('statPending').innerText =
+                toutesLesAlertes.filter(a => a.statut === 'a_revoir').length;
+            document.getElementById('statTreated').innerText =
+                toutesLesAlertes.filter(a => a.statut === 'traite').length;
+            document.getElementById('statFalsePositive').innerText =
+                toutesLesAlertes.filter(a => a.statut === 'faux_positif').length;
+        }
+
+        function filtrer(statut, btn) {
+            filtreActuel = statut;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            afficherAlertes();
+        }
+
+        function afficherAlertes() {
+            const liste = filtreActuel === 'all'
+                ? toutesLesAlertes
+                : toutesLesAlertes.filter(a => a.statut === filtreActuel);
+
+            const container = document.getElementById('alertsList');
+
+            if (liste.length === 0) {
+                container.innerHTML = `<div class="empty-state">Aucune alerte dans cette catégorie.</div>`;
+                return;
+            }
+
+            container.innerHTML = liste.map(a => `
+                <div class="alert-card ${a.statut}">
+                    <div class="alert-top">
+                        <div class="alert-type">${escapeHtml(a.type_alerte || 'Alerte')}</div>
+                        <span class="alert-badge badge-${a.statut}">${labelStatut(a.statut)}</span>
+                    </div>
+                    <div class="alert-details">${escapeHtml(a.details || '')}</div>
+                    <div class="alert-meta">
+                        <span>Utilisateur : <strong>${escapeHtml(a.userId || '—')}</strong></span>
+                        <span>Montant : <strong>${a.montant_transaction ? Number(a.montant_transaction).toLocaleString() + ' HTG' : '—'}</strong></span>
+                        <span>Date : <strong>${formatDate(a.Date)}</strong></span>
+                    </div>
+                    ${a.statut === 'a_revoir' ? `
+                        <div class="alert-actions">
+                            <button class="action-btn suspect" onclick="marquerStatut(${a.id}, 'traite')">Confirmer suspect — traité</button>
+                            <button class="action-btn false-pos" onclick="marquerStatut(${a.id}, 'faux_positif')">Faux positif</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function marquerStatut(id, nouveauStatut) {
+            try {
+                const res = await fetch(`${CENTRAL_WORKER_URL}/Alertes_AML?id=eq.${id}`, {
+                    method: "PATCH",
+                    headers: {
+                        "X-MIJO-Bridge-Token": ADMIN_BRIDGE_TOKEN,
+                        "Content-Type": "application/json",
+                        "Prefer": "return=minimal"
+                    },
+                    body: JSON.stringify({
+                        statut: nouveauStatut,
+                        traite_le: new Date().toISOString()
+                    })
+                });
+
+                if (res.ok) {
+                    chargerAlertes();
+                } else {
+                    alert("Erreur lors de la mise à jour du statut.");
+                }
+            } catch (e) {
+                alert("Erreur de connexion.");
+            }
+        }
+
+        function labelStatut(s) {
+            return { a_revoir: 'À revoir', traite: 'Traité', faux_positif: 'Faux positif' }[s] || s;
+        }
+
+        function formatDate(d) {
+            if (!d) return '—';
+            const date = new Date(d);
+            return date.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
