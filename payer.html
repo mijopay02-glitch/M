@@ -184,11 +184,10 @@
 
 <script>
  
-  const ENTREPRISES_ENDPOINT = "https://listentreprise.mijocomplexe.workers.dev/";
+  const ENTREPRISES_ENDPOINT = "listentreprise.mijocomplexe.workers.dev";
 
- 
   const PAY_PAGE_URL = "mijopay.com/pay*";
-  const MERCHANT_PARAM = "merchant";
+  const MERCHANT_PARAM = "businessId";
 
   let entreprisesData = [];
 
@@ -209,8 +208,8 @@
 
     content.innerHTML = `<div class="grid">${list.map(biz => `
       <a class="biz-card" href="${PAY_PAGE_URL}?${MERCHANT_PARAM}=${encodeURIComponent(biz.businessId)}">
-        ${biz.logo
-          ? `<img class="biz-logo" src="${biz.logo}" alt="${biz.nom}" loading="lazy" onerror="this.outerHTML='<div class=&quot;biz-logo&quot;>${initiale(biz.nom)}</div>'">`
+        ${biz.logoUrl
+          ? `<img class="biz-logo" src="${biz.logoUrl}" alt="${biz.nom}" loading="lazy" onerror="this.outerHTML='<div class=&quot;biz-logo&quot;>${initiale(biz.nom)}</div>'">`
           : `<div class="biz-logo">${initiale(biz.nom)}</div>`
         }
         <span class="biz-name">${biz.nom}</span>
