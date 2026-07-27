@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payer — MIJO Pay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue-deep:#1255C0;
+    --blue:#1A6FE8;
+    --gold:#E8A93A;
+    --gold-soft:#F6D888;
+    --ink:#0E1B33;
+    --paper:#F5F7FB;
+    --card:#FFFFFF;
+    --line:#E3E8F2;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    font-family:'Space Grotesk',sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+  }
+  header{
+    background:linear-gradient(135deg,var(--blue-deep),var(--blue));
+    padding:28px 20px 60px;
+    color:#fff;
+    position:relative;
+  }
+  header .back{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color:rgba(255,255,255,.85);
+    text-decoration:none;
+    font-size:14px;
+    margin-bottom:18px;
+  }
+  header h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:28px;
+    margin:0 0 6px;
+  }
+  header p{
+    margin:0;
+    opacity:.85;
+    font-size:14px;
+  }
+  .search-wrap{
+    max-width:520px;
+    margin:-32px auto 0;
+    padding:0 20px;
+  }
+  .search{
+    background:var(--card);
+    border-radius:16px;
+    box-shadow:0 8px 24px rgba(18,85,192,.14);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 18px;
+  }
+  .search input{
+    border:none;
+    outline:none;
+    flex:1;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:15px;
+    color:var(--ink);
+    background:transparent;
+  }
+  .search svg{flex-shrink:0;opacity:.5;}
+
+  main{
+    max-width:520px;
+    margin:0 auto;
+    padding:28px 20px 60px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:#8290AB;
+    margin:0 0 14px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+  }
+  .biz-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:18px 14px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    gap:10px;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    text-decoration:none;
+    color:inherit;
+  }
+  .biz-card:hover, .biz-card:focus-visible{
+    transform:translateY(-3px);
+    box-shadow:0 10px 22px rgba(18,85,192,.12);
+    border-color:var(--blue);
+    outline:none;
+  }
+  .biz-logo{
+    width:64px;
+    height:64px;
+    border-radius:16px;
+    object-fit:cover;
+    background:linear-gradient(135deg,var(--gold-soft),var(--gold));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:22px;
+    color:var(--blue-deep);
+  }
+  .biz-name{
+    font-size:14px;
+    font-weight:500;
+    line-height:1.25;
+  }
+
+  .state{
+    text-align:center;
+    padding:60px 20px;
+    color:#8290AB;
+    font-size:14px;
+  }
+  .state.error{color:#C0392B;}
+  .spinner{
+    width:28px;height:28px;
+    border:3px solid var(--line);
+    border-top-color:var(--blue);
+    border-radius:50%;
+    margin:0 auto 14px;
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  @media (min-width:480px){
+    .grid{grid-template-columns:repeat(3,1fr);}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back" href="home.html">&larr; Retour</a>
+  <h1>Payer une entreprise</h1>
+  <p>Choisissez le commerce que vous souhaitez régler</p>
+</header>
+
+<div class="search-wrap">
+  <div class="search">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="search-input" type="text" placeholder="Rechercher une entreprise..." autocomplete="off">
+  </div>
+</div>
+
+<main>
+  <p class="eyebrow" id="results-label">Entreprises disponibles</p>
+  <div id="content">
+    <div class="state" id="loading-state">
+      <div class="spinner"></div>
+      Chargement des entreprises...
+    </div>
+  </div>
+</main>
+
+<script>
+ 
+  const ENTREPRISES_ENDPOINT = "https://listentreprise.mijocomplexe.workers.dev/";
+
+ 
+  const PAY_PAGE_URL = "mijopay.com/pay*";
+  const MERCHANT_PARAM = "merchant";
+
+  let entreprisesData = [];
+
+  function initiale(nom){
+    return (nom || "?").trim().charAt(0).toUpperCase();
+  }
+
+  function renderGrid(list){
+    const content = document.getElementById("content");
+    const label = document.getElementById("results-label");
+
+    if (!list.length){
+      content.innerHTML = `<div class="state">Aucune entreprise ne correspond à votre recherche.</div>`;
+      return;
+    }
+
+    label.textContent = `${list.length} entreprise${list.length > 1 ? "s" : ""} disponible${list.length > 1 ? "s" : ""}`;
+
+    content.innerHTML = `<div class="grid">${list.map(biz => `
+      <a class="biz-card" href="${PAY_PAGE_URL}?${MERCHANT_PARAM}=${encodeURIComponent(biz.businessId)}">
+        ${biz.logo
+          ? `<img class="biz-logo" src="${biz.logo}" alt="${biz.nom}" loading="lazy" onerror="this.outerHTML='<div class=&quot;biz-logo&quot;>${initiale(biz.nom)}</div>'">`
+          : `<div class="biz-logo">${initiale(biz.nom)}</div>`
+        }
+        <span class="biz-name">${biz.nom}</span>
+      </a>
+    `).join("")}</div>`;
+  }
+
+  async function loadEntreprises(){
+    try {
+      const res = await fetch(ENTREPRISES_ENDPOINT);
+      const data = await res.json();
+
+      if (!data.success) throw new Error(data.error || "Erreur inconnue");
+
+      entreprisesData = data.entreprises || [];
+      renderGrid(entreprisesData);
+    } catch (err) {
+      document.getElementById("content").innerHTML = `
+        <div class="state error">
+          Impossible de charger la liste des entreprises.<br>Réessayez dans un instant.
+        </div>`;
+      console.error(err);
+    }
+  }
+
+  document.getElementById("search-input").addEventListener("input", (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    const filtered = q
+      ? entreprisesData.filter(b => b.nom.toLowerCase().includes(q))
+      : entreprisesData;
+    renderGrid(filtered);
+  });
+
+  loadEntreprises();
+</script>
+
+</body>
+</html>
