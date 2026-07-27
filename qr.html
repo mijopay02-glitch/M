@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon QR Code — MIJO PAY</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{
+    --navy-950:#0a1120; --navy-900:#0f1830; --navy-800:#16213f;
+    --line:#28345a; --orange:#ff6b35; --text-hi:#f4f6fb; --text-mid:#aab4cc; --text-low:#6b769a;
+    --error:#ff5c72; --ok:#38d996; --warn:#ffb648;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:radial-gradient(ellipse 900px 500px at 50% -10%, #ff6b3514, transparent), var(--navy-950);
+    color:var(--text-hi); font-family:'Inter',sans-serif; min-height:100vh;
+    display:flex; align-items:center; justify-content:center; padding:32px 16px;
+  }
+
+  .wrap{max-width:420px; width:100%;}
+
+  .brand{display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:28px;}
+  .brand-mark{width:30px; height:30px; border-radius:8px; background:linear-gradient(135deg,var(--orange),#ff9d5c);
+    display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:13px; color:var(--navy-950);}
+  .brand-name{font-family:'Syne',sans-serif; font-weight:700; font-size:14px;}
+  .brand-name span{color:var(--orange);}
+
+  .card{
+    background:var(--navy-900); border:1px solid var(--line); border-radius:20px;
+    padding:32px 28px; text-align:center;
+  }
+
+  h1{font-family:'Syne',sans-serif; font-weight:800; font-size:20px; margin-bottom:6px;}
+  .business-name{color:var(--text-mid); font-size:13.5px; margin-bottom:24px;}
+
+  .qr-frame{
+    background:#ffffff; border-radius:16px; padding:20px;
+    display:inline-flex; align-items:center; justify-content:center;
+    margin-bottom:20px; position:relative;
+  }
+  #qrcode{line-height:0;}
+  #qrcode img, #qrcode canvas{border-radius:6px; display:block;}
+
+  .logo-overlay{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:44px; height:44px; border-radius:10px; background:#fff;
+    border:3px solid #fff; box-shadow:0 0 0 1px var(--line);
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+  }
+  .logo-overlay img{width:100%; height:100%; object-fit:cover;}
+
+  .business-id{
+    font-family:monospace; font-size:11.5px; color:var(--text-low);
+    background:var(--navy-800); border:1px solid var(--line); border-radius:8px;
+    padding:7px 12px; margin-bottom:24px; display:inline-block;
+  }
+
+  .btn-row{display:flex; gap:10px;}
+  .btn{
+    flex:1; padding:13px; border-radius:11px; border:none; font-family:'Syne',sans-serif;
+    font-weight:700; font-size:13.5px; cursor:pointer; transition:filter .15s;
+    display:flex; align-items:center; justify-content:center; gap:7px;
+  }
+  .btn:hover{filter:brightness(1.08);}
+  .btn-primary{background:var(--orange); color:var(--navy-950);}
+  .btn-secondary{background:var(--navy-800); color:var(--text-hi); border:1px solid var(--line);}
+
+  .hint{font-size:12px; color:var(--text-low); margin-top:18px; line-height:1.6;}
+
+  .state-msg{text-align:center; padding:40px 20px; color:var(--text-mid);}
+  .state-msg .icon{font-size:26px; margin-bottom:10px;}
+  .state-msg .action-link{
+    display:inline-block; margin-top:16px; padding:11px 20px; background:var(--orange);
+    color:var(--navy-950); border-radius:10px; text-decoration:none; font-weight:700; font-size:13px;
+    font-family:'Syne',sans-serif;
+  }
+
+  .status-pill{
+    display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700;
+    padding:5px 12px; border-radius:100px; margin-bottom:20px; text-transform:uppercase; letter-spacing:0.03em;
+  }
+  .status-pill.en_attente{background:#ffb64818; color:var(--warn); border:1px solid #ffb64840;}
+  .status-pill.rejete{background:#ff5c7218; color:var(--error); border:1px solid #ff5c7240;}
+
+  @media print{
+    body{background:#fff !important; padding:0;}
+    .brand, .btn-row, .hint{display:none !important;}
+    .card{border:none; box-shadow:none; padding:0;}
+    .qr-frame{border:2px solid #000;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <div class="brand-mark">M</div>
+    <div class="brand-name">MIJO <span>PAY</span></div>
+  </div>
+
+  <div class="card" id="card">
+    <div class="state-msg" id="loadingMsg"><div class="icon">⏳</div>Chargement…</div>
+  </div>
+
+</div>
+
+<script>
+  // ────────────────────────────────────────────────────────────
+  // CONFIGURATION — à ajuster selon vos noms réels
+  // ────────────────────────────────────────────────────────────
+  const CONFIG = {
+    API_URL: "https://entreprises.mijocomplexe.workers.dev/", // même Worker business-request, route GET /me
+    // Page où le client atterrit en scannant, saisit son montant et paie.
+    // Ajustez si le vrai nom de cette page diffère.
+    PAY_PAGE_URL: "https://mijopay.com/pay*"
+  };
+
+  const card = document.getElementById("card");
+
+  function getToken() { return localStorage.getItem("token") || ""; }
+  function getUser() {
+    try { return JSON.parse(localStorage.getItem("user") || "null"); }
+    catch (e) { return null; }
+  }
+
+  function renderLoginGate() {
+    card.innerHTML = `
+      <div class="state-msg">
+        <div class="icon">🔒</div>
+        Connectez-vous à votre compte Business pour voir votre QR code.
+        <a class="action-link" href="index.html">Se connecter</a>
+      </div>`;
+  }
+
+  function renderNoBusiness() {
+    card.innerHTML = `
+      <div class="state-msg">
+        <div class="icon">🏪</div>
+        Aucun compte Business associé à ce profil.
+        <a class="action-link" href="business-request-form.html">Créer un compte Business</a>
+      </div>`;
+  }
+
+  function renderPending() {
+    card.innerHTML = `
+      <div class="state-msg">
+        <div class="icon">⏳</div>
+        <span class="status-pill en_attente" style="display:inline-flex;">En attente d'approbation</span>
+        <div>Votre demande est en cours d'examen. Le QR code sera disponible dès l'approbation (48 à 72h).</div>
+      </div>`;
+  }
+
+  function renderRejected() {
+    card.innerHTML = `
+      <div class="state-msg">
+        <div class="icon">✕</div>
+        <span class="status-pill rejete" style="display:inline-flex;">Demande rejetée</span>
+        <div>Votre demande de compte Business n'a pas été approuvée. Contactez le support pour plus de détails.</div>
+      </div>`;
+  }
+
+  function renderQR(entreprise) {
+    const payUrl = `${CONFIG.PAY_PAGE_URL}?businessId=${encodeURIComponent(entreprise.businessId)}`;
+
+    card.innerHTML = `
+      <h1>Votre QR Code</h1>
+      <div class="business-name">${escapeHtml(entreprise.NomCommercial)}</div>
+
+      <div class="qr-frame">
+        <div id="qrcode"></div>
+        ${entreprise.LogoURL ? `<div class="logo-overlay"><img src="${entreprise.LogoURL}" alt=""></div>` : ""}
+      </div>
+
+      <div class="business-id">${escapeHtml(entreprise.businessId)}</div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="downloadBtn">⬇ Télécharger</button>
+        <button class="btn btn-secondary" id="printBtn">🖨 Imprimer</button>
+      </div>
+
+      <p class="hint">Affichez ce QR code dans votre commerce. Vos clients le scannent, saisissent leur montant, et paient directement sur votre compte MIJO PAY.</p>
+    `;
+
+    new QRCode(document.getElementById("qrcode"), {
+      text: payUrl,
+      width: 220,
+      height: 220,
+      colorDark: "#0a1120",
+      colorLight: "#ffffff",
+      correctLevel: entreprise.LogoURL ? QRCode.CorrectLevel.H : QRCode.CorrectLevel.M
+      // Niveau H (haute correction d'erreur) quand un logo recouvre le centre,
+      // pour que le QR reste scannable malgré l'overlay.
+    });
+
+    document.getElementById("downloadBtn").addEventListener("click", () => downloadQR(entreprise));
+    document.getElementById("printBtn").addEventListener("click", () => window.print());
+  }
+
+  function downloadQR(entreprise) {
+    // qrcode.js génère soit un <canvas>, soit un <img> selon le navigateur.
+    const canvas = document.querySelector("#qrcode canvas");
+    const img = document.querySelector("#qrcode img");
+    const source = canvas || img;
+    if (!source) return;
+
+    const link = document.createElement("a");
+    link.download = `qrcode-${entreprise.businessId}.png`;
+    link.href = canvas ? canvas.toDataURL("image/png") : img.src;
+    link.click();
+  }
+
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return "";
+    return String(str).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  async function init() {
+    const token = getToken();
+    const user = getUser();
+
+    if (!user || !user.userId || !token) {
+      renderLoginGate();
+      return;
+    }
+
+    try {
+      const res = await fetch(CONFIG.API_URL, {
+        method: "GET",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        if (res.status === 404) {
+          renderNoBusiness();
+        } else {
+          card.innerHTML = `<div class="state-msg"><div class="icon">⚠️</div>${escapeHtml(data.error || "Erreur de chargement.")}</div>`;
+        }
+        return;
+      }
+
+      const entreprise = data.entreprise;
+      if (entreprise.Statut === "approuve") {
+        renderQR(entreprise);
+      } else if (entreprise.Statut === "en_attente") {
+        renderPending();
+      } else if (entreprise.Statut === "rejete") {
+        renderRejected();
+      } else {
+        renderNoBusiness();
+      }
+
+    } catch (err) {
+      card.innerHTML = `<div class="state-msg"><div class="icon">⚠️</div>Connexion au serveur impossible.</div>`;
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>
