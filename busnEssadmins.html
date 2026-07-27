@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Comptes Business | MIJO PAY</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#0a1120; --navy-900:#0f1830; --navy-800:#16213f; --navy-700:#1e2c52;
+    --line:#28345a; --orange:#ff6b35; --text-hi:#f4f6fb; --text-mid:#aab4cc; --text-low:#6b769a;
+    --error:#ff5c72; --ok:#38d996; --warn:#ffb648;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--navy-950); color:var(--text-hi); font-family:'Inter',sans-serif; min-height:100vh;}
+
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    background:var(--navy-900); border-bottom:1px solid var(--line);
+    padding:16px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{width:30px; height:30px; border-radius:8px; background:linear-gradient(135deg,var(--orange),#ff9d5c);
+    display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:13px; color:var(--navy-950);}
+  .brand-title{font-family:'Syne',sans-serif; font-weight:700; font-size:14px;}
+  .brand-title span{color:var(--orange);}
+  .brand-sub{font-size:11.5px; color:var(--text-low); margin-left:4px;}
+
+  .tabs{display:flex; gap:6px; background:var(--navy-800); padding:4px; border-radius:11px; border:1px solid var(--line);}
+  .tab{
+    padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;
+    color:var(--text-mid); border:none; background:transparent; font-family:'Inter',sans-serif;
+    display:flex; align-items:center; gap:7px; transition:background .15s, color .15s;
+  }
+  .tab.active{background:var(--orange); color:var(--navy-950);}
+  .tab .count{
+    background:#00000022; padding:1px 7px; border-radius:100px; font-size:11px;
+  }
+  .tab.active .count{background:#0a112033;}
+
+  .container{max-width:920px; margin:0 auto; padding:28px 20px 80px;}
+
+  .state-msg{text-align:center; padding:80px 20px; color:var(--text-low);}
+  .state-msg .icon{font-size:28px; margin-bottom:12px;}
+
+  .card{
+    background:var(--navy-900); border:1px solid var(--line); border-radius:16px;
+    padding:20px; margin-bottom:16px;
+  }
+  .card-head{display:flex; justify-content:space-between; align-items:flex-start; gap:14px; margin-bottom:16px;}
+  .card-title{font-family:'Syne',sans-serif; font-weight:700; font-size:17px; margin-bottom:3px;}
+  .card-sub{font-size:12.5px; color:var(--text-low);}
+  .status-pill{
+    font-size:11px; font-weight:700; padding:4px 10px; border-radius:100px; white-space:nowrap;
+    text-transform:uppercase; letter-spacing:0.03em;
+  }
+  .status-pill.en_attente{background:#ffb64818; color:var(--warn); border:1px solid #ffb64840;}
+  .status-pill.approuve{background:#38d99618; color:var(--ok); border:1px solid #38d99640;}
+  .status-pill.rejete{background:#ff5c7218; color:var(--error); border:1px solid #ff5c7240;}
+
+  .info-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; margin-bottom:16px;
+  }
+  .info-item .label{font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-low); margin-bottom:4px;}
+  .info-item .value{font-size:13.5px; font-weight:600; color:var(--text-hi); word-break:break-word;}
+
+  .docs-row{display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;}
+  .doc-link{
+    display:flex; align-items:center; gap:8px; padding:9px 13px; background:var(--navy-800);
+    border:1px solid var(--line); border-radius:10px; font-size:12.5px; font-weight:600;
+    color:var(--text-hi); text-decoration:none; transition:border-color .15s;
+  }
+  .doc-link:hover{border-color:var(--orange);}
+  .doc-link img{width:20px; height:20px; border-radius:4px; object-fit:cover;}
+
+  .action-row{display:flex; gap:10px; align-items:center; flex-wrap:wrap; border-top:1px solid var(--line); padding-top:16px;}
+  .plafond-input{
+    display:flex; align-items:center; gap:8px; background:var(--navy-800); border:1px solid var(--line);
+    border-radius:10px; padding:8px 12px;
+  }
+  .plafond-input label{font-size:12px; color:var(--text-low); white-space:nowrap;}
+  .plafond-input input{
+    background:transparent; border:none; color:var(--text-hi); font-size:13.5px; font-weight:600;
+    width:100px; font-family:'Inter',sans-serif;
+  }
+  .plafond-input input:focus{outline:none;}
+
+  .btn{
+    padding:10px 18px; border-radius:10px; border:none; font-weight:700; font-size:13px;
+    font-family:'Syne',sans-serif; cursor:pointer; transition:filter .15s, opacity .15s;
+    display:flex; align-items:center; gap:7px;
+  }
+  .btn:disabled{opacity:0.5; cursor:not-allowed;}
+  .btn:hover:not(:disabled){filter:brightness(1.1);}
+  .btn-approve{background:var(--ok); color:var(--navy-950);}
+  .btn-reject{background:transparent; color:var(--error); border:1px solid #ff5c7250;}
+  .btn-reject:hover:not(:disabled){background:#ff5c7212;}
+
+  .meta-line{font-size:12px; color:var(--text-low); margin-top:14px; padding-top:14px; border-top:1px solid var(--line);}
+
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    padding:13px 22px; border-radius:11px; font-size:13.5px; font-weight:600;
+    display:none; align-items:center; gap:9px; z-index:100; box-shadow:0 10px 30px #00000060;
+  }
+  .toast.show{display:flex;}
+  .toast.success{background:var(--ok); color:var(--navy-950);}
+  .toast.error{background:var(--error); color:#2b0006;}
+
+  .login-gate{max-width:380px; margin:100px auto; text-align:center; padding:0 20px;}
+  .login-gate h2{font-family:'Syne',sans-serif; font-size:20px; margin-bottom:10px;}
+  .login-gate p{color:var(--text-mid); font-size:13.5px; line-height:1.6;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">M</div>
+    <div class="brand-title">MIJO <span>PAY</span></div>
+    <div class="brand-sub">— Admin Business</div>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-statut="en_attente">En attente <span class="count" id="count-en_attente">0</span></button>
+    <button class="tab" data-statut="approuve">Approuvées <span class="count" id="count-approuve">0</span></button>
+    <button class="tab" data-statut="rejete">Rejetées <span class="count" id="count-rejete">0</span></button>
+  </div>
+</div>
+
+<div class="container" id="container">
+  <div class="state-msg" id="loadingMsg"><div class="icon">⏳</div>Chargement des demandes…</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const CONFIG = {
+    API_URL: "https://business-admin.mijocomplexe.workers.dev"
+  };
+
+  const container = document.getElementById("container");
+  const toast = document.getElementById("toast");
+  const tabs = document.querySelectorAll(".tab");
+  let currentStatut = "en_attente";
+
+  function getToken() { return localStorage.getItem("token") || ""; }
+  function getUser() {
+    try { return JSON.parse(localStorage.getItem("user") || "null"); }
+    catch (e) { return null; }
+  }
+
+  function showToast(type, msg) {
+    toast.className = `toast show ${type}`;
+    toast.textContent = msg;
+    setTimeout(() => toast.classList.remove("show"), 3200);
+  }
+
+  function formatDate(iso) {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" }) +
+      " à " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function cardTemplate(ent) {
+    const isPending = ent.Statut === "en_attente";
+
+    return `
+      <div class="card" id="card-${ent.businessId}">
+        <div class="card-head">
+          <div>
+            <div class="card-title">${escapeHtml(ent.NomCommercial)}</div>
+            <div class="card-sub">${escapeHtml(ent.RaisonSociale)}</div>
+          </div>
+          <span class="status-pill ${ent.Statut}">${labelStatut(ent.Statut)}</span>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item"><div class="label">Secteur</div><div class="value">${escapeHtml(ent.SecteurActivite)}</div></div>
+          <div class="info-item"><div class="label">NIF</div><div class="value">${escapeHtml(ent.NIF || "—")}</div></div>
+          <div class="info-item"><div class="label">Représentant</div><div class="value">${escapeHtml(ent.NomRepresentant)}</div></div>
+          <div class="info-item"><div class="label">Téléphone</div><div class="value">${escapeHtml(ent.TelephoneEntreprise || "—")}</div></div>
+        </div>
+
+        <div class="docs-row">
+          ${ent.PieceIdentiteSignedUrl
+            ? `<a class="doc-link" href="${ent.PieceIdentiteSignedUrl}" target="_blank" rel="noopener">📄 Pièce d'identité</a>`
+            : `<span class="doc-link" style="opacity:0.5; cursor:not-allowed;" title="Lien signé indisponible, réessayez">📄 Document indisponible</span>`}
+          ${ent.LogoURL ? `<a class="doc-link" href="${ent.LogoURL}" target="_blank" rel="noopener"><img src="${ent.LogoURL}" alt=""> Logo</a>` : ""}
+        </div>
+
+        ${isPending ? `
+        <div class="action-row">
+          <div class="plafond-input">
+            <label>Plafond (HTG)</label>
+            <input type="number" min="1" value="50000" id="plafond-${ent.businessId}">
+          </div>
+          <button class="btn btn-approve" onclick="approve('${ent.businessId}')">✓ Approuver</button>
+          <button class="btn btn-reject" onclick="reject('${ent.businessId}')">✕ Rejeter</button>
+        </div>` : `
+        <div class="meta-line">
+          ${ent.Statut === "approuve" ? `Plafond fixé : <strong>${Number(ent.PlafondSolde || 0).toLocaleString()} HTG</strong> · ` : ""}
+          Traité le ${formatDate(ent.DateApprobation)}
+        </div>`}
+
+        <div class="meta-line">Demande soumise le ${formatDate(ent.DateCreation)}</div>
+      </div>
+    `;
+  }
+
+  function labelStatut(s) {
+    return { en_attente: "En attente", approuve: "Approuvé", rejete: "Rejeté" }[s] || s;
+  }
+
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return "";
+    return String(str).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  async function loadList(statut) {
+    container.innerHTML = `<div class="state-msg"><div class="icon">⏳</div>Chargement des demandes…</div>`;
+
+    const token = getToken();
+    const user = getUser();
+    if (!user || !user.userId || !token) {
+      container.innerHTML = `
+        <div class="login-gate">
+          <h2>Connexion requise</h2>
+          <p>Connectez-vous avec un compte administrateur pour accéder à cette page.</p>
+        </div>`;
+      return;
+    }
+
+    try {
+      const res = await fetch(`${CONFIG.API_URL}/list?statut=${statut}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        if (res.status === 403) {
+          container.innerHTML = `
+            <div class="login-gate">
+              <h2>Accès refusé</h2>
+              <p>Ce compte n'a pas les droits administrateur nécessaires pour cette page.</p>
+            </div>`;
+        } else {
+          container.innerHTML = `<div class="state-msg"><div class="icon">⚠️</div>${escapeHtml(data.error || "Erreur de chargement.")}</div>`;
+        }
+        return;
+      }
+
+      const entreprises = data.entreprises || [];
+      document.getElementById(`count-${statut}`).textContent = entreprises.length;
+
+      if (entreprises.length === 0) {
+        container.innerHTML = `<div class="state-msg"><div class="icon">📭</div>Aucune demande dans cette catégorie.</div>`;
+        return;
+      }
+
+      container.innerHTML = entreprises.map(cardTemplate).join("");
+
+    } catch (err) {
+      container.innerHTML = `<div class="state-msg"><div class="icon">⚠️</div>Connexion au serveur impossible.</div>`;
+    }
+  }
+
+  async function approve(businessId) {
+    const plafondInput = document.getElementById(`plafond-${businessId}`);
+    const plafondSolde = Number(plafondInput.value) || 50000;
+    await performAction("approve", businessId, { plafondSolde });
+  }
+
+  async function reject(businessId) {
+    if (!confirm("Confirmer le rejet de cette demande de compte Business ?")) return;
+    await performAction("reject", businessId, {});
+  }
+
+  async function performAction(action, businessId, extra) {
+    const card = document.getElementById(`card-${businessId}`);
+    const buttons = card.querySelectorAll(".btn");
+    buttons.forEach(b => b.disabled = true);
+
+    try {
+      const res = await fetch(`${CONFIG.API_URL}/${action}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${getToken()}`
+        },
+        body: JSON.stringify({ businessId, ...extra })
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        showToast("error", data.error || "Une erreur est survenue.");
+        buttons.forEach(b => b.disabled = false);
+        return;
+      }
+
+      showToast("success", action === "approve" ? "Compte Business approuvé." : "Demande rejetée.");
+      card.style.transition = "opacity .25s, transform .25s";
+      card.style.opacity = "0";
+      card.style.transform = "translateY(-8px)";
+      setTimeout(() => {
+        card.remove();
+        const remaining = document.getElementById(`count-${currentStatut}`);
+        remaining.textContent = Math.max(0, Number(remaining.textContent) - 1);
+        if (container.querySelectorAll(".card").length === 0) {
+          container.innerHTML = `<div class="state-msg"><div class="icon">📭</div>Aucune demande dans cette catégorie.</div>`;
+        }
+      }, 250);
+
+    } catch (err) {
+      showToast("error", "Connexion au serveur impossible.");
+      buttons.forEach(b => b.disabled = false);
+    }
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      currentStatut = tab.dataset.statut;
+      loadList(currentStatut);
+    });
+  });
+
+  loadList(currentStatut);
+</script>
+</body>
+</html>
