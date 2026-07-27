@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demande de compte Business — MIJO PAY</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#0a1120;
+    --navy-900:#0f1830;
+    --navy-800:#16213f;
+    --navy-700:#1e2c52;
+    --line:#28345a;
+    --orange:#ff6b35;
+    --orange-dim:#ff6b3522;
+    --text-hi:#f4f6fb;
+    --text-mid:#aab4cc;
+    --text-low:#6b769a;
+    --error:#ff5c72;
+    --ok:#38d996;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, #ff6b3514, transparent),
+      var(--navy-950);
+    color:var(--text-hi);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding:32px 16px 80px;
+  }
+
+  .wrap{max-width:640px; margin:0 auto;}
+
+  /* ── Header ── */
+  .brand{
+    display:flex; align-items:center; gap:10px; margin-bottom:36px;
+  }
+  .brand-mark{
+    width:34px; height:34px; border-radius:9px;
+    background:linear-gradient(135deg, var(--orange), #ff9d5c);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Syne',sans-serif; font-weight:800; font-size:15px; color:var(--navy-950);
+  }
+  .brand-name{font-family:'Syne',sans-serif; font-weight:700; font-size:15px; letter-spacing:0.5px;}
+  .brand-name span{color:var(--orange);}
+
+  h1{
+    font-family:'Syne',sans-serif; font-weight:800;
+    font-size:clamp(26px,5vw,34px);
+    line-height:1.15; letter-spacing:-0.01em;
+    margin-bottom:10px;
+  }
+  .subhead{color:var(--text-mid); font-size:15px; line-height:1.6; max-width:52ch; margin-bottom:8px;}
+  .eta{
+    display:inline-flex; align-items:center; gap:7px;
+    font-size:13px; color:var(--text-low); margin-top:14px; margin-bottom:34px;
+    padding:7px 12px; border:1px solid var(--line); border-radius:100px;
+  }
+  .eta::before{content:""; width:6px; height:6px; border-radius:50%; background:var(--orange);}
+
+  /* ── Sections ── */
+  .section{margin-bottom:8px;}
+  .section-label{
+    font-family:'Syne',sans-serif; font-weight:700; font-size:12.5px;
+    text-transform:uppercase; letter-spacing:0.09em; color:var(--orange);
+    margin:34px 0 16px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .section-label::after{content:""; flex:1; height:1px; background:var(--line);}
+  .section-label.first{margin-top:0;}
+
+  .field{margin-bottom:18px;}
+  .field label{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-size:13.5px; font-weight:600; color:var(--text-hi); margin-bottom:8px;
+  }
+  .field label .opt{font-size:11.5px; font-weight:500; color:var(--text-low); text-transform:none; letter-spacing:0;}
+
+  input[type=text], input[type=tel], select{
+    width:100%; padding:13px 14px;
+    background:var(--navy-900); border:1px solid var(--line); border-radius:11px;
+    color:var(--text-hi); font-family:'Inter',sans-serif; font-size:14.5px;
+    transition:border-color .15s, background .15s;
+  }
+  input::placeholder{color:var(--text-low);}
+  input:focus, select:focus{
+    outline:none; border-color:var(--orange); background:var(--navy-800);
+  }
+  select{appearance:none; -webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='8'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23aab4cc' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 16px center; padding-right:38px;
+  }
+  select option{background:var(--navy-900);}
+
+  .hint{font-size:12px; color:var(--text-low); margin-top:6px; line-height:1.5;}
+  .field-error{font-size:12px; color:var(--error); margin-top:6px; display:none;}
+  .field.invalid input, .field.invalid select{border-color:var(--error); background:#ff5c7211;}
+  .field.invalid .field-error{display:block;}
+
+  /* ── Upload ── */
+  .upload{
+    position:relative; border:1.5px dashed var(--line); border-radius:14px;
+    padding:20px; text-align:center; cursor:pointer; transition:border-color .15s, background .15s;
+    background:var(--navy-900);
+  }
+  .upload:hover{border-color:var(--orange); background:var(--navy-800);}
+  .upload.has-file{border-style:solid; border-color:var(--ok);}
+  .upload input[type=file]{position:absolute; inset:0; opacity:0; cursor:pointer;}
+  .upload-icon{font-size:20px; margin-bottom:6px; opacity:0.7;}
+  .upload-text{font-size:13.5px; color:var(--text-mid); font-weight:500;}
+  .upload-sub{font-size:11.5px; color:var(--text-low); margin-top:3px;}
+  .upload-preview{
+    display:none; align-items:center; gap:12px; text-align:left;
+  }
+  .upload-preview img{width:44px; height:44px; border-radius:9px; object-fit:cover; border:1px solid var(--line);}
+  .upload-preview .pv-name{font-size:13.5px; font-weight:600; color:var(--text-hi); word-break:break-all;}
+  .upload-preview .pv-size{font-size:11.5px; color:var(--text-low);}
+
+  /* ── Submit ── */
+  .submit-btn{
+    width:100%; margin-top:32px; padding:16px;
+    background:var(--orange); color:var(--navy-950); border:none; border-radius:12px;
+    font-family:'Syne',sans-serif; font-weight:700; font-size:15px; letter-spacing:0.01em;
+    cursor:pointer; transition:filter .15s, transform .1s;
+    display:flex; align-items:center; justify-content:center; gap:9px;
+  }
+  .submit-btn:hover{filter:brightness(1.08);}
+  .submit-btn:active{transform:scale(0.99);}
+  .submit-btn:disabled{opacity:0.55; cursor:not-allowed;}
+  .spinner{
+    width:16px; height:16px; border:2px solid #0a112044; border-top-color:#0a1120;
+    border-radius:50%; animation:spin .7s linear infinite; display:none;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .legal{font-size:11.5px; color:var(--text-low); text-align:center; margin-top:16px; line-height:1.6;}
+
+  /* ── Status banner ── */
+  .banner{
+    display:none; padding:15px 16px; border-radius:12px; font-size:13.5px; line-height:1.5;
+    margin-bottom:26px; align-items:flex-start; gap:11px;
+  }
+  .banner.show{display:flex;}
+  .banner.success{background:#38d99614; border:1px solid #38d99640; color:#c6f5df;}
+  .banner.error{background:#ff5c7214; border:1px solid #ff5c7240; color:#ffd3da;}
+  .banner-icon{font-size:15px; margin-top:1px;}
+
+  /* ── Success state ── */
+  .success-state{display:none; text-align:center; padding:60px 20px;}
+  .success-state.show{display:block;}
+  .success-mark{
+    width:56px; height:56px; border-radius:50%; background:#38d99618; border:1px solid #38d99650;
+    display:flex; align-items:center; justify-content:center; font-size:24px; margin:0 auto 22px;
+  }
+  .success-state h2{font-family:'Syne',sans-serif; font-size:22px; margin-bottom:10px;}
+  .success-state p{color:var(--text-mid); font-size:14px; line-height:1.6; max-width:38ch; margin:0 auto;}
+  .success-id{
+    display:inline-block; margin-top:18px; padding:8px 14px; background:var(--navy-900);
+    border:1px solid var(--line); border-radius:8px; font-size:12px; color:var(--text-low);
+    font-family:monospace;
+  }
+
+  form.hide{display:none;}
+
+  @media (prefers-reduced-motion: reduce){
+    .submit-btn, .upload{transition:none;}
+    .spinner{animation:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <div class="brand-mark">M</div>
+    <div class="brand-name">MIJO <span>PAY</span></div>
+  </div>
+
+  <h1>Ouvrir un compte Business</h1>
+  <p class="subhead">Acceptez les paiements MIJO PAY directement dans votre commerce. Remplissez ce formulaire — un membre de l'équipe examine chaque demande manuellement.</p>
+  <div class="eta">Réponse sous 48 à 72 heures</div>
+
+  <div class="banner" id="banner"></div>
+
+  <form id="bizForm">
+
+    <div class="section-label first">Votre entreprise</div>
+
+    <div class="field" id="f-nomCommercial">
+      <label>Nom commercial</label>
+      <input type="text" id="nomCommercial" placeholder="Ex : Ti Manje Lakay" maxlength="100" required>
+      <div class="field-error">Le nom commercial est obligatoire.</div>
+    </div>
+
+    <div class="field" id="f-raisonSociale">
+      <label>Raison sociale <span class="opt">nom légal complet</span></label>
+      <input type="text" id="raisonSociale" placeholder="Ex : Ti Manje Lakay SA" maxlength="150" required>
+      <div class="field-error">La raison sociale est obligatoire.</div>
+    </div>
+
+    <div class="field" id="f-secteurActivite">
+      <label>Secteur d'activité</label>
+      <select id="secteurActivite" required>
+        <option value="" disabled selected>Choisir un secteur</option>
+        <option>Restauration</option>
+        <option>Retail</option>
+        <option>Services</option>
+        <option>Technologie</option>
+        <option>Éducation</option>
+        <option>Santé</option>
+        <option>Transport</option>
+        <option>Beauté</option>
+        <option>Agriculture</option>
+        <option>Artisanat</option>
+        <option>Autre</option>
+      </select>
+      <div class="field-error">Sélectionnez un secteur d'activité.</div>
+    </div>
+
+    <div class="field" id="f-nif">
+      <label>NIF <span class="opt">optionnel</span></label>
+      <input type="text" id="nif" placeholder="Ex : 001-234-567-8" maxlength="50">
+    </div>
+
+    <div class="section-label">Représentant</div>
+
+    <div class="field" id="f-nomRepresentant">
+      <label>Nom du représentant</label>
+      <input type="text" id="nomRepresentant" placeholder="Personne responsable du compte" maxlength="100" required>
+      <div class="field-error">Le nom du représentant est obligatoire.</div>
+    </div>
+
+    <div class="field" id="f-telephoneEntreprise">
+      <label>Téléphone de l'entreprise <span class="opt">optionnel</span></label>
+      <input type="tel" id="telephoneEntreprise" placeholder="Ex : 3712-3456" maxlength="20">
+    </div>
+
+    <div class="section-label">Documents</div>
+
+    <div class="field" id="f-pieceIdentite">
+      <label>Pièce d'identité du représentant</label>
+      <div class="upload" id="upload-piece">
+        <input type="file" id="pieceIdentite" accept="image/*,.pdf">
+        <div class="upload-body">
+          <div class="upload-icon">📎</div>
+          <div class="upload-text">Cliquez pour ajouter un fichier</div>
+          <div class="upload-sub">CIN, passeport ou permis — JPG, PNG ou PDF, 3 Mo max</div>
+        </div>
+        <div class="upload-preview" id="preview-piece">
+          <img id="preview-piece-img" alt="">
+          <div>
+            <div class="pv-name" id="preview-piece-name"></div>
+            <div class="pv-size" id="preview-piece-size"></div>
+          </div>
+        </div>
+      </div>
+      <div class="field-error">La pièce d'identité est obligatoire.</div>
+    </div>
+
+    <div class="field" id="f-logo">
+      <label>Logo de l'entreprise <span class="opt">optionnel</span></label>
+      <div class="upload" id="upload-logo">
+        <input type="file" id="logo" accept="image/*">
+        <div class="upload-body">
+          <div class="upload-icon">🖼️</div>
+          <div class="upload-text">Cliquez pour ajouter votre logo</div>
+          <div class="upload-sub">PNG ou JPG, 3 Mo max</div>
+        </div>
+        <div class="upload-preview" id="preview-logo">
+          <img id="preview-logo-img" alt="">
+          <div>
+            <div class="pv-name" id="preview-logo-name"></div>
+            <div class="pv-size" id="preview-logo-size"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">
+      <div class="spinner" id="spinner"></div>
+      <span id="submitLabel">Soumettre ma demande</span>
+    </button>
+
+    <p class="legal">En soumettant, vous confirmez que les informations fournies sont exactes. Les comptes du secteur des jeux de hasard ne sont pas acceptés.</p>
+
+  </form>
+
+  <div class="success-state" id="successState">
+    <div class="success-mark">✓</div>
+    <h2>Demande envoyée</h2>
+    <p>Votre demande de compte Business a été soumise. Elle sera examinée sous 48 à 72 heures. Vous recevrez une notification dès qu'une décision sera prise.</p>
+    <div class="success-id" id="successId"></div>
+  </div>
+
+</div>
+
+<script>
+  // ────────────────────────────────────────────────────────────
+  // CONFIGURATION — à ajuster selon votre déploiement
+  // ────────────────────────────────────────────────────────────
+  const CONFIG = {
+    API_URL: "https://entreprises.mijocomplexe.workers.dev/",
+    MAX_FILE_BYTES: 3 * 1024 * 1024 // 3 Mo — doit matcher la limite du Worker
+  };
+
+  const form = document.getElementById("bizForm");
+  const banner = document.getElementById("banner");
+  const submitBtn = document.getElementById("submitBtn");
+  const spinner = document.getElementById("spinner");
+  const submitLabel = document.getElementById("submitLabel");
+
+  let pieceFile = { base64: null, type: null };
+  let logoFile = { base64: null, type: null };
+
+  function showBanner(type, msg) {
+    banner.className = "banner show " + type;
+    banner.innerHTML = `<span class="banner-icon">${type === "error" ? "⚠️" : "✓"}</span><span>${msg}</span>`;
+  }
+
+  function clearFieldError(fieldId) {
+    document.getElementById(fieldId).classList.remove("invalid");
+  }
+  function setFieldError(fieldId) {
+    document.getElementById(fieldId).classList.add("invalid");
+  }
+
+  function formatSize(bytes) {
+    return (bytes / 1024 / 1024).toFixed(2) + " Mo";
+  }
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result); // data URL complet
+      reader.onerror = () => reject(new Error("Lecture du fichier impossible."));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function wireUpload(inputId, previewPrefix, uploadBoxId, targetObj, isRequired) {
+    const input = document.getElementById(inputId);
+    const box = document.getElementById(uploadBoxId);
+    const preview = document.getElementById(`preview-${previewPrefix}`);
+    const previewImg = document.getElementById(`preview-${previewPrefix}-img`);
+    const previewName = document.getElementById(`preview-${previewPrefix}-name`);
+    const previewSize = document.getElementById(`preview-${previewPrefix}-size`);
+    const body = box.querySelector(".upload-body");
+
+    input.addEventListener("change", async () => {
+      const file = input.files[0];
+      if (!file) return;
+
+      if (file.size > CONFIG.MAX_FILE_BYTES) {
+        showBanner("error", `Le fichier "${file.name}" dépasse 3 Mo. Choisissez un fichier plus léger.`);
+        input.value = "";
+        return;
+      }
+
+      try {
+        const dataUrl = await fileToBase64(file);
+        targetObj.base64 = dataUrl;
+        targetObj.type = file.type || "image/jpeg";
+
+        if (file.type.startsWith("image/")) {
+          previewImg.src = dataUrl;
+          previewImg.style.display = "block";
+        } else {
+          previewImg.style.display = "none";
+        }
+        previewName.textContent = file.name;
+        previewSize.textContent = formatSize(file.size);
+
+        body.style.display = "none";
+        preview.style.display = "flex";
+        box.classList.add("has-file");
+
+        if (isRequired) clearFieldError("f-pieceIdentite");
+      } catch (err) {
+        showBanner("error", "Impossible de lire ce fichier. Réessayez avec un autre.");
+      }
+    });
+  }
+
+  wireUpload("pieceIdentite", "piece", "upload-piece", pieceFile, true);
+  wireUpload("logo", "logo", "upload-logo", logoFile, false);
+
+  function getJWT() {
+    return localStorage.getItem("token") || "";
+  }
+
+  function getUser() {
+    const userRaw = localStorage.getItem("user");
+    try {
+      return userRaw ? JSON.parse(userRaw) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    banner.className = "banner";
+
+    const nomCommercial = document.getElementById("nomCommercial").value.trim();
+    const raisonSociale = document.getElementById("raisonSociale").value.trim();
+    const secteurActivite = document.getElementById("secteurActivite").value;
+    const nif = document.getElementById("nif").value.trim();
+    const nomRepresentant = document.getElementById("nomRepresentant").value.trim();
+    const telephoneEntreprise = document.getElementById("telephoneEntreprise").value.trim();
+
+    // ── Validation côté client, miroir des règles du Worker ──
+    let valid = true;
+    [
+      ["f-nomCommercial", !nomCommercial],
+      ["f-raisonSociale", !raisonSociale],
+      ["f-secteurActivite", !secteurActivite],
+      ["f-nomRepresentant", !nomRepresentant],
+      ["f-pieceIdentite", !pieceFile.base64],
+    ].forEach(([id, failed]) => {
+      if (failed) { setFieldError(id); valid = false; }
+      else clearFieldError(id);
+    });
+
+    if (!valid) {
+      showBanner("error", "Merci de compléter les champs obligatoires en surbrillance.");
+      return;
+    }
+
+    const token = getJWT();
+    const user = getUser();
+    if (!user || !user.userId || !token) {
+      showBanner("error", "Session expirée. Redirection vers la connexion…");
+      setTimeout(() => window.location.href = "index.html", 1500);
+      return;
+    }
+
+    submitBtn.disabled = true;
+    spinner.style.display = "block";
+    submitLabel.textContent = "Envoi en cours…";
+
+    try {
+      const res = await fetch(CONFIG.API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          nomCommercial,
+          raisonSociale,
+          secteurActivite,
+          nif: nif || null,
+          nomRepresentant,
+          telephoneEntreprise: telephoneEntreprise || null,
+          pieceIdentiteBase64: pieceFile.base64,
+          pieceIdentiteType: pieceFile.type,
+          logoBase64: logoFile.base64,
+          logoType: logoFile.type
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        const errorText = data.error || "Une erreur est survenue. Réessayez.";
+        const isSessionError = errorText.toLowerCase().includes("session") || errorText.toLowerCase().includes("authentification");
+
+        showBanner("error", errorText);
+        submitBtn.disabled = false;
+        spinner.style.display = "none";
+        submitLabel.textContent = "Soumettre ma demande";
+
+        if (isSessionError) {
+          setTimeout(() => window.location.href = "index.html", 1500);
+        }
+        return;
+      }
+
+      form.classList.add("hide");
+      banner.className = "banner";
+      document.getElementById("successId").textContent = data.businessId || "";
+      document.getElementById("successState").classList.add("show");
+
+    } catch (err) {
+      showBanner("error", "Connexion impossible. Vérifiez votre réseau et réessayez.");
+      submitBtn.disabled = false;
+      spinner.style.display = "none";
+      submitLabel.textContent = "Soumettre ma demande";
+    }
+  });
+</script>
+</body>
+</html>
