@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Payer — MIJO Pay</title>
 <meta http-equiv="Content-Security-Policy"
-      content="default-src 'self'; img-src 'self' https: data:; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; script-src 'self'; connect-src https://listentreprise.mijocomplexe.workers.dev;">
+      content="default-src 'self'; img-src 'self' https: data:; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; script-src 'self'; connect-src https://listentreprise.mijocomplexe.workers.dev https://*.supabase.co;">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -190,19 +190,12 @@
   'use strict';
 
   const ENTREPRISES_ENDPOINT = "https://listentreprise.mijocomplexe.workers.dev/";
-  const PAY_PAGE_URL = "https://mijopay.com/pay*";
+  const PAY_PAGE_URL = "https://mijopay.com/pay*"; 
   const MERCHANT_PARAM = "businessId";
-
-  // Format attendu du businessId — miroir de la validation faite côté
-  // Worker payment/business-request. N'affecte pas le rendu (fait ici
-  // pour ignorer silencieusement toute entrée malformée dans la liste).
   const BUSINESS_ID_REGEX = /^biz-[a-zA-Z0-9]{10,32}$/;
 
   let entreprisesData = [];
 
-  // ── Échappement HTML systématique — jamais de donnée serveur dans
-  // innerHTML sans passer par ici, y compris NomCommercial (saisi par
-  // le commerçant lui-même dans le formulaire de demande business) ──
   function escapeHtml(str) {
     if (str === null || str === undefined) return "";
     return String(str).replace(/[&<>"']/g, c => ({
@@ -210,9 +203,6 @@
     }[c]));
   }
 
-  // ── Validation stricte d'une URL de logo avant de l'utiliser comme
-  // src d'image — bloque javascript:, data: exécutable, etc. N'autorise
-  // que https, cohérent avec la CSP (img-src https:). ──
   function urlLogoValide(url) {
     if (!url || typeof url !== "string") return false;
     try {
@@ -228,10 +218,6 @@
     return escapeHtml(clean.charAt(0).toUpperCase() || "?");
   }
 
-  // ── Construction du DOM via createElement/textContent plutôt que
-  // innerHTML avec des templates de chaînes — élimine structurellement
-  // le risque d'injection, même si escapeHtml() était mal appliqué
-  // quelque part. Défense en profondeur : les deux mécanismes ensemble. ──
   function creerCarteBusiness(biz) {
     if (!biz || !BUSINESS_ID_REGEX.test(biz.businessId)) return null;
 
@@ -239,14 +225,12 @@
 
     const a = document.createElement("a");
     a.className = "biz-card";
-    // encodeURIComponent protège contre l'injection de paramètres
-    // supplémentaires dans l'URL (ex: businessId="x&redirect=evil.com")
     a.href = `${PAY_PAGE_URL}?${MERCHANT_PARAM}=${encodeURIComponent(biz.businessId)}`;
 
     if (urlLogoValide(biz.logoUrl)) {
       const img = document.createElement("img");
       img.className = "biz-logo";
-      img.src = biz.logoUrl; // déjà validé https: par urlLogoValide()
+      img.src = biz.logoUrl;
       img.alt = nomSain;
       img.loading = "lazy";
       img.referrerPolicy = "no-referrer";
@@ -266,7 +250,7 @@
 
     const nameSpan = document.createElement("span");
     nameSpan.className = "biz-name";
-    nameSpan.textContent = nomSain; // textContent — jamais interprété comme HTML
+    nameSpan.textContent = nomSain;
     a.appendChild(nameSpan);
 
     return a;
@@ -288,7 +272,7 @@
     label.textContent = `${list.length} entreprise${list.length > 1 ? "s" : ""} disponible${list.length > 1 ? "s" : ""}`;
 
     const grid = document.createElement("div");
-    grid.className = "grid";
+    grid.className="grid";
 
     list.forEach(biz => {
       const carte = creerCarteBusiness(biz);
@@ -317,8 +301,6 @@
       const data = await res.json();
       if (!data.success) throw new Error(data.error || "Erreur inconnue");
 
-      // Filtre défensif : ne garde que des entrées bien formées, ignore
-      // silencieusement tout objet suspect renvoyé par erreur.
       entreprisesData = (data.entreprises || []).filter(biz =>
         biz && typeof biz.businessId === "string" && typeof biz.nom === "string"
       );
