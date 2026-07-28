@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Payer — MIJO Pay</title>
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' https: data:; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; script-src 'self'; connect-src https://listentreprise.mijocomplexe.workers.dev;">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -133,6 +135,7 @@
     font-size:14px;
     font-weight:500;
     line-height:1.25;
+    word-break: break-word;
   }
 
   .state{
@@ -168,7 +171,7 @@
 <div class="search-wrap">
   <div class="search">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input id="search-input" type="text" placeholder="Rechercher une entreprise..." autocomplete="off">
+    <input id="search-input" type="text" placeholder="Rechercher une entreprise..." autocomplete="off" maxlength="100">
   </div>
 </div>
 
@@ -183,61 +186,158 @@
 </main>
 
 <script>
+(function() {
+  'use strict';
 
-const ENTREPRISES_ENDPOINT = "https://listentreprise.mijocomplexe.workers.dev/";
+  const ENTREPRISES_ENDPOINT = "https://listentreprise.mijocomplexe.workers.dev/";
+  const PAY_PAGE_URL = "https://mijopay.com/pay*";
+  const MERCHANT_PARAM = "businessId";
 
-
-const PAY_PAGE_URL = "https://mijopay.com/pay*";
-const MERCHANT_PARAM = "businessId";
+  // Format attendu du businessId — miroir de la validation faite côté
+  // Worker payment/business-request. N'affecte pas le rendu (fait ici
+  // pour ignorer silencieusement toute entrée malformée dans la liste).
+  const BUSINESS_ID_REGEX = /^biz-[a-zA-Z0-9]{10,32}$/;
 
   let entreprisesData = [];
 
-  function initiale(nom){
-    return (nom || "?").trim().charAt(0).toUpperCase();
+  // ── Échappement HTML systématique — jamais de donnée serveur dans
+  // innerHTML sans passer par ici, y compris NomCommercial (saisi par
+  // le commerçant lui-même dans le formulaire de demande business) ──
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return "";
+    return String(str).replace(/[&<>"']/g, c => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
   }
 
-  function renderGrid(list){
+  // ── Validation stricte d'une URL de logo avant de l'utiliser comme
+  // src d'image — bloque javascript:, data: exécutable, etc. N'autorise
+  // que https, cohérent avec la CSP (img-src https:). ──
+  function urlLogoValide(url) {
+    if (!url || typeof url !== "string") return false;
+    try {
+      const parsed = new URL(url);
+      return parsed.protocol === "https:";
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function initiale(nom) {
+    const clean = (nom || "?").trim();
+    return escapeHtml(clean.charAt(0).toUpperCase() || "?");
+  }
+
+  // ── Construction du DOM via createElement/textContent plutôt que
+  // innerHTML avec des templates de chaînes — élimine structurellement
+  // le risque d'injection, même si escapeHtml() était mal appliqué
+  // quelque part. Défense en profondeur : les deux mécanismes ensemble. ──
+  function creerCarteBusiness(biz) {
+    if (!biz || !BUSINESS_ID_REGEX.test(biz.businessId)) return null;
+
+    const nomSain = String(biz.nom || "Entreprise").slice(0, 100);
+
+    const a = document.createElement("a");
+    a.className = "biz-card";
+    // encodeURIComponent protège contre l'injection de paramètres
+    // supplémentaires dans l'URL (ex: businessId="x&redirect=evil.com")
+    a.href = `${PAY_PAGE_URL}?${MERCHANT_PARAM}=${encodeURIComponent(biz.businessId)}`;
+
+    if (urlLogoValide(biz.logoUrl)) {
+      const img = document.createElement("img");
+      img.className = "biz-logo";
+      img.src = biz.logoUrl; // déjà validé https: par urlLogoValide()
+      img.alt = nomSain;
+      img.loading = "lazy";
+      img.referrerPolicy = "no-referrer";
+      img.onerror = function() {
+        const fallback = document.createElement("div");
+        fallback.className = "biz-logo";
+        fallback.textContent = initiale(nomSain);
+        img.replaceWith(fallback);
+      };
+      a.appendChild(img);
+    } else {
+      const fallback = document.createElement("div");
+      fallback.className = "biz-logo";
+      fallback.textContent = initiale(nomSain);
+      a.appendChild(fallback);
+    }
+
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "biz-name";
+    nameSpan.textContent = nomSain; // textContent — jamais interprété comme HTML
+    a.appendChild(nameSpan);
+
+    return a;
+  }
+
+  function renderGrid(list) {
     const content = document.getElementById("content");
     const label = document.getElementById("results-label");
 
-    if (!list.length){
-      content.innerHTML = `<div class="state">Aucune entreprise ne correspond à votre recherche.</div>`;
+    if (!list.length) {
+      content.textContent = "";
+      const stateDiv = document.createElement("div");
+      stateDiv.className = "state";
+      stateDiv.textContent = "Aucune entreprise ne correspond à votre recherche.";
+      content.appendChild(stateDiv);
       return;
     }
 
     label.textContent = `${list.length} entreprise${list.length > 1 ? "s" : ""} disponible${list.length > 1 ? "s" : ""}`;
 
-    content.innerHTML = `<div class="grid">${list.map(biz => `
-      <a class="biz-card" href="${PAY_PAGE_URL}?${MERCHANT_PARAM}=${encodeURIComponent(biz.businessId)}">
-        ${biz.logoUrl
-          ? `<img class="biz-logo" src="${biz.logoUrl}" alt="${biz.nom}" loading="lazy" onerror="this.outerHTML='<div class=&quot;biz-logo&quot;>${initiale(biz.nom)}</div>'">`
-          : `<div class="biz-logo">${initiale(biz.nom)}</div>`
-        }
-        <span class="biz-name">${biz.nom}</span>
-      </a>
-    `).join("")}</div>`;
+    const grid = document.createElement("div");
+    grid.className = "grid";
+
+    list.forEach(biz => {
+      const carte = creerCarteBusiness(biz);
+      if (carte) grid.appendChild(carte);
+    });
+
+    content.textContent = "";
+    content.appendChild(grid);
   }
 
-  async function loadEntreprises(){
-    try {
-      const res = await fetch(ENTREPRISES_ENDPOINT);
-      const data = await res.json();
+  async function loadEntreprises() {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
+    try {
+      const res = await fetch(ENTREPRISES_ENDPOINT, {
+        method: "GET",
+        headers: { "Accept": "application/json" },
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) throw new Error("Réponse serveur invalide");
+
+      const data = await res.json();
       if (!data.success) throw new Error(data.error || "Erreur inconnue");
 
-      entreprisesData = data.entreprises || [];
+      // Filtre défensif : ne garde que des entrées bien formées, ignore
+      // silencieusement tout objet suspect renvoyé par erreur.
+      entreprisesData = (data.entreprises || []).filter(biz =>
+        biz && typeof biz.businessId === "string" && typeof biz.nom === "string"
+      );
+
       renderGrid(entreprisesData);
+
     } catch (err) {
-      document.getElementById("content").innerHTML = `
-        <div class="state error">
-          Impossible de charger la liste des entreprises.<br>Réessayez dans un instant.
-        </div>`;
-      console.error(err);
+      clearTimeout(timeoutId);
+      const content = document.getElementById("content");
+      content.textContent = "";
+      const errDiv = document.createElement("div");
+      errDiv.className = "state error";
+      errDiv.textContent = "Impossible de charger la liste des entreprises. Réessayez dans un instant.";
+      content.appendChild(errDiv);
     }
   }
 
-  document.getElementById("search-input").addEventListener("input", (e) => {
-    const q = e.target.value.trim().toLowerCase();
+  document.getElementById("search-input").addEventListener("input", function(e) {
+    const q = e.target.value.trim().toLowerCase().slice(0, 100);
     const filtered = q
       ? entreprisesData.filter(b => b.nom.toLowerCase().includes(q))
       : entreprisesData;
@@ -245,6 +345,8 @@ const MERCHANT_PARAM = "businessId";
   });
 
   loadEntreprises();
+
+})();
 </script>
 
 </body>
