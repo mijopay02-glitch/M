@@ -186,13 +186,15 @@
 </main>
 
 <script>
-(function() {
+(function () {
   'use strict';
 
   const ENTREPRISES_ENDPOINT = "https://listentreprise.mijocomplexe.workers.dev/";
-  const PAY_PAGE_URL = "https://mijopay.com/pay*"; 
+  const PAY_PAGE_URL = "pay.html";
   const MERCHANT_PARAM = "businessId";
   const BUSINESS_ID_REGEX = /^biz-[a-zA-Z0-9]{10,32}$/;
+  const FETCH_TIMEOUT_MS = 8000;
+  const MAX_ENTREPRISES = 200; // anti-DoS côté rendu si l'API renvoie un payload énorme
 
   let entreprisesData = [];
 
@@ -207,7 +209,8 @@
     if (!url || typeof url !== "string") return false;
     try {
       const parsed = new URL(url);
-      return parsed.protocol === "https:";
+      // https uniquement, et on restreint au domaine supabase attendu (déclaré dans le CSP connect-src)
+      return parsed.protocol === "https:" && parsed.hostname.endsWith(".supabase.co");
     } catch (e) {
       return false;
     }
@@ -219,7 +222,8 @@
   }
 
   function creerCarteBusiness(biz) {
-    if (!biz || !BUSINESS_ID_REGEX.test(biz.businessId)) return null;
+    if (!biz || typeof biz !== "object") return null;
+    if (typeof biz.businessId !== "string" || !BUSINESS_ID_REGEX.test(biz.businessId)) return null;
 
     const nomSain = String(biz.nom || "Entreprise").slice(0, 100);
 
@@ -234,7 +238,7 @@
       img.alt = nomSain;
       img.loading = "lazy";
       img.referrerPolicy = "no-referrer";
-      img.onerror = function() {
+      img.onerror = function () {
         const fallback = document.createElement("div");
         fallback.className = "biz-logo";
         fallback.textContent = initiale(nomSain);
@@ -272,7 +276,7 @@
     label.textContent = `${list.length} entreprise${list.length > 1 ? "s" : ""} disponible${list.length > 1 ? "s" : ""}`;
 
     const grid = document.createElement("div");
-    grid.className="grid";
+    grid.className = "grid";
 
     list.forEach(biz => {
       const carte = creerCarteBusiness(biz);
@@ -283,39 +287,64 @@
     content.appendChild(grid);
   }
 
- async function loadEntreprises() {
+  function afficherErreur(message) {
+    const content = document.getElementById("content");
+    content.textContent = "";
+    const errDiv = document.createElement("div");
+    errDiv.className = "state error";
+    errDiv.textContent = message;
+    content.appendChild(errDiv);
+  }
+
+  async function loadEntreprises() {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
     try {
       const res = await fetch(ENTREPRISES_ENDPOINT, {
         method: "GET",
-        headers: { "Accept": "application/json" }
+        headers: { "Accept": "application/json" },
+        credentials: "omit",
+        cache: "no-store",
+        referrerPolicy: "no-referrer",
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        throw new Error(`Le serveur a répondu avec le statut ${res.status}`);
+      }
+
+      const contentType = res.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        throw new Error("Réponse inattendue du serveur (format invalide)");
+      }
+
       const data = await res.json();
-      console.log("Données brutes reçues du Worker :", data); // Ouvre ta console F12 pour voir ça
 
-      if (!data.success) throw new Error(data.error || "Erreur inconnue");
+      if (!data || data.success !== true || !Array.isArray(data.entreprises)) {
+        throw new Error((data && data.error) || "Format de données invalide");
+      }
 
-      // Désactivation temporaire du filtre strict pour voir si l'objet passe
-      entreprisesData = data.entreprises || [];
-      console.log("Entreprises chargées :", entreprisesData);
-
+      entreprisesData = data.entreprises.slice(0, MAX_ENTREPRISES);
       renderGrid(entreprisesData);
 
     } catch (err) {
+      clearTimeout(timeoutId);
+      const msg = err && err.name === "AbortError"
+        ? "Le chargement a pris trop de temps. Réessayez."
+        : "Impossible de charger les entreprises. Réessayez plus tard.";
+      afficherErreur(msg);
+      // Détail technique uniquement en console, jamais affiché à l'utilisateur
       console.error("Erreur de chargement :", err);
-      const content = document.getElementById("content");
-      content.textContent = "";
-      const errDiv = document.createElement("div");
-      errDiv.className = "state error";
-      errDiv.textContent = "Erreur : " + err.message;
-      content.appendChild(errDiv);
     }
   }
 
-  document.getElementById("search-input").addEventListener("input", function(e) {
+  document.getElementById("search-input").addEventListener("input", function (e) {
     const q = e.target.value.trim().toLowerCase().slice(0, 100);
     const filtered = q
-      ? entreprisesData.filter(b => b.nom.toLowerCase().includes(q))
+      ? entreprisesData.filter(b => typeof b.nom === "string" && b.nom.toLowerCase().includes(q))
       : entreprisesData;
     renderGrid(filtered);
   });
