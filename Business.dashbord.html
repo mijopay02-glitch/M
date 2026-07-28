@@ -5,8 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard Business — MIJO PAY</title>
 
+<!-- Durcissement côté page. NOTE : pas de frame-ancestors ici — les
+     navigateurs l'ignorent en balise <meta>, seul un en-tête HTTP réel
+     fonctionne. Pour une vraie protection anti-clickjacking, servez
+     cette page via un petit Worker dédié (même modèle que pay-page). -->
 <meta http-equiv="Content-Security-Policy"
-      content="frame-ancestors 'none'; default-src 'self'; img-src 'self' https://*.supabase.co data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src https://business-dashboard.mijocomplexe.workers.dev https://retrait-moncash-connect.mijocomplexe.workers.dev;">
+      content="default-src 'self'; img-src 'self' https://*.supabase.co data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; connect-src https://business-dashboard.mijocomplexe.workers.dev https://retrait-moncash-connect.mijocomplexe.workers.dev https://static.cloudflareinsights.com;">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
