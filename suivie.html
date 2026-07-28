@@ -163,12 +163,12 @@
         // =======================================================================
 
         function loadApiKey() {
-            // Utilise la clé par défaut si elle est définie, sinon vérifie le LocalStorage
+            // Utilise la clé par défaut si elle est définie, sinon vérifie le stockage de session
             if (AIRTABLE_API_KEY_DEFAULT && AIRTABLE_API_KEY_DEFAULT.startsWith('pat')) {
                  airtableApiKey = AIRTABLE_API_KEY_DEFAULT;
                  return true;
             }
-            const storedKey = localStorage.getItem(LOCAL_KEY_API);
+            const storedKey = sessionStorage.getItem(LOCAL_KEY_API);
             if (storedKey) {
                 airtableApiKey = storedKey;
                 return true;
@@ -181,7 +181,7 @@
                 title: 'Entrez votre Clé API Airtable (PAT)',
                 html: `
                     <p class="text-sm text-gray-600 mb-3">
-                        Cette clé (commençant par 'pat') est nécessaire pour accéder aux données. Elle sera stockée localement dans votre navigateur.
+                        Cette clé (commençant par 'pat') est nécessaire pour accéder aux données. Elle sera conservée uniquement pour la session en cours.
                     </p>
                     <input id="swal-api-key" class="swal2-input" placeholder="Airtable API Key (PAT)" value="${airtableApiKey}">
                 `,
@@ -200,7 +200,7 @@
 
             if (result.isConfirmed) {
                 airtableApiKey = result.value;
-                localStorage.setItem(LOCAL_KEY_API, airtableApiKey);
+                sessionStorage.setItem(LOCAL_KEY_API, airtableApiKey);
                 // Si la clé est changée, forcer l'actualisation
                 fetchData(true);
             }
