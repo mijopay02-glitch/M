@@ -318,9 +318,16 @@
   let logoFile = { base64: null, type: null };
 
   function showBanner(type, msg) {
-    banner.className = "banner show " + type;
-    banner.innerHTML = `<span class="banner-icon">${type === "error" ? "⚠️" : "✓"}</span><span>${msg}</span>`;
-  }
+  banner.className = "banner show " + type;
+  banner.textContent = "";
+  const icon = document.createElement("span");
+  icon.className = "banner-icon";
+  icon.textContent = type === "error" ? "⚠️" : "✓";
+  const text = document.createElement("span");
+  text.textContent = msg;
+  banner.appendChild(icon);
+  banner.appendChild(text);
+}
 
   function clearFieldError(fieldId) {
     document.getElementById(fieldId).classList.remove("invalid");
