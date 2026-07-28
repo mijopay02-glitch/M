@@ -283,37 +283,31 @@
     content.appendChild(grid);
   }
 
-  async function loadEntreprises() {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
-
+ async function loadEntreprises() {
     try {
       const res = await fetch(ENTREPRISES_ENDPOINT, {
         method: "GET",
-        headers: { "Accept": "application/json" },
-        signal: controller.signal
+        headers: { "Accept": "application/json" }
       });
 
-      clearTimeout(timeoutId);
-
-      if (!res.ok) throw new Error("Réponse serveur invalide");
-
       const data = await res.json();
+      console.log("Données brutes reçues du Worker :", data); // Ouvre ta console F12 pour voir ça
+
       if (!data.success) throw new Error(data.error || "Erreur inconnue");
 
-      entreprisesData = (data.entreprises || []).filter(biz =>
-        biz && typeof biz.businessId === "string" && typeof biz.nom === "string"
-      );
+      // Désactivation temporaire du filtre strict pour voir si l'objet passe
+      entreprisesData = data.entreprises || [];
+      console.log("Entreprises chargées :", entreprisesData);
 
       renderGrid(entreprisesData);
 
     } catch (err) {
-      clearTimeout(timeoutId);
+      console.error("Erreur de chargement :", err);
       const content = document.getElementById("content");
       content.textContent = "";
       const errDiv = document.createElement("div");
       errDiv.className = "state error";
-      errDiv.textContent = "Impossible de charger la liste des entreprises. Réessayez dans un instant.";
+      errDiv.textContent = "Erreur : " + err.message;
       content.appendChild(errDiv);
     }
   }
