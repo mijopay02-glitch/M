@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Business — MIJO PAY</title>
+
+<meta http-equiv="Content-Security-Policy"
+      content="frame-ancestors 'none'; default-src 'self'; img-src 'self' https://*.supabase.co data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src https://business-dashboard.mijocomplexe.workers.dev https://retrait-moncash-connect.mijocomplexe.workers.dev;">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#0a1120; --navy-900:#0f1830; --navy-800:#16213f;
+    --line:#28345a; --orange:#ff6b35; --text-hi:#f4f6fb; --text-mid:#aab4cc; --text-low:#6b769a;
+    --error:#ff5c72; --ok:#38d996; --warn:#ffb648;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:radial-gradient(ellipse 900px 500px at 50% -10%, #ff6b3514, transparent), var(--navy-950);
+    color:var(--text-hi); font-family:'Inter',sans-serif; min-height:100vh; padding-bottom:60px;
+  }
+
+  .topbar{
+    background:var(--navy-900); border-bottom:1px solid var(--line);
+    padding:16px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand img{width:30px; height:30px; border-radius:8px; object-fit:cover;}
+  .brand-mark{width:30px; height:30px; border-radius:8px; background:linear-gradient(135deg,var(--orange),#ff9d5c);
+    display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:13px; color:var(--navy-950);}
+  .brand-title{font-family:'Syne',sans-serif; font-weight:700; font-size:14px;}
+  .brand-title span{color:var(--orange);}
+  .business-name{font-size:12.5px; color:var(--text-low);}
+  .logout-btn{
+    background:transparent; border:1px solid var(--line); color:var(--text-mid); padding:8px 14px;
+    border-radius:9px; font-size:12.5px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif;
+  }
+  .logout-btn:hover{border-color:var(--error); color:var(--error);}
+
+  .container{max-width:920px; margin:0 auto; padding:28px 20px;}
+
+  .state-msg{text-align:center; padding:100px 20px; color:var(--text-mid);}
+  .state-msg .icon{font-size:30px; margin-bottom:14px;}
+  .state-msg h2{font-family:'Syne',sans-serif; font-size:19px; margin-bottom:8px; color:var(--text-hi);}
+  .state-msg p{font-size:13.5px; line-height:1.6; max-width:40ch; margin:0 auto;}
+  .action-link{
+    display:inline-block; margin-top:20px; padding:12px 22px; background:var(--orange);
+    color:var(--navy-950); border-radius:11px; text-decoration:none; font-weight:700; font-size:13.5px;
+    font-family:'Syne',sans-serif;
+  }
+
+  .status-pill{
+    display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700;
+    padding:5px 13px; border-radius:100px; margin-bottom:18px; text-transform:uppercase; letter-spacing:0.03em;
+  }
+  .status-pill.en_attente{background:#ffb64818; color:var(--warn); border:1px solid #ffb64840;}
+  .status-pill.rejete{background:#ff5c7218; color:var(--error); border:1px solid #ff5c7240;}
+
+  .cards-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:24px;}
+  .stat-card{
+    background:var(--navy-900); border:1px solid var(--line); border-radius:16px; padding:20px;
+  }
+  .stat-card .label{font-size:11.5px; color:var(--text-low); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:8px;}
+  .stat-card .value{font-family:'Syne',sans-serif; font-weight:800; font-size:24px;}
+  .stat-card .sub{font-size:11.5px; color:var(--text-low); margin-top:4px;}
+  .stat-card.balance .value{color:var(--orange);}
+
+  .withdraw-row{display:flex; gap:12px; margin-bottom:28px; flex-wrap:wrap;}
+  .withdraw-btn{
+    flex:1; min-width:220px; padding:16px; border-radius:14px; border:1px solid var(--line);
+    background:var(--navy-900); color:var(--text-hi); cursor:pointer; font-family:'Inter',sans-serif;
+    text-align:left; transition:border-color .15s, background .15s;
+  }
+  .withdraw-btn:hover{border-color:var(--orange); background:var(--navy-800);}
+  .withdraw-btn .wb-title{font-family:'Syne',sans-serif; font-weight:700; font-size:14px; margin-bottom:4px;}
+  .withdraw-btn .wb-sub{font-size:12px; color:var(--text-low);}
+
+  .section-title{font-family:'Syne',sans-serif; font-weight:700; font-size:15px; margin-bottom:14px;}
+
+  .tx-table{width:100%; border-collapse:collapse; background:var(--navy-900); border:1px solid var(--line); border-radius:14px; overflow:hidden;}
+  .tx-table th{
+    text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-low);
+    padding:12px 16px; border-bottom:1px solid var(--line); background:var(--navy-800);
+  }
+  .tx-table td{padding:13px 16px; font-size:13px; border-bottom:1px solid var(--line);}
+  .tx-table tr:last-child td{border-bottom:none;}
+  .tx-amount{font-weight:700; color:var(--ok);}
+  .tx-badge{font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:100px; text-transform:uppercase;}
+  .tx-badge.ok{background:#38d99618; color:var(--ok);}
+  .tx-badge.warn{background:#ffb64818; color:var(--warn);}
+  .tx-badge.err{background:#ff5c7218; color:var(--error);}
+  .tx-desc{color:var(--text-low); font-size:11.5px; margin-top:2px; max-width:260px;}
+  .empty-history{text-align:center; padding:40px 20px; color:var(--text-low); font-size:13px;}
+
+  .modal-overlay{
+    display:none; position:fixed; inset:0; background:#00000090; z-index:50;
+    align-items:center; justify-content:center; padding:20px;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal{
+    background:var(--navy-900); border:1px solid var(--line); border-radius:18px; padding:26px;
+    max-width:380px; width:100%;
+  }
+  .modal h3{font-family:'Syne',sans-serif; font-size:17px; margin-bottom:6px;}
+  .modal .modal-sub{font-size:12.5px; color:var(--text-low); margin-bottom:18px; line-height:1.5;}
+  .modal label{display:block; font-size:12.5px; font-weight:600; margin-bottom:6px; margin-top:14px;}
+  .modal input{
+    width:100%; padding:12px 13px; background:var(--navy-800); border:1px solid var(--line); border-radius:10px;
+    color:var(--text-hi); font-size:14px; font-family:'Inter',sans-serif;
+  }
+  .modal input:focus{outline:none; border-color:var(--orange);}
+  .modal-actions{display:flex; gap:10px; margin-top:20px;}
+  .modal-btn{
+    flex:1; padding:12px; border-radius:10px; border:none; font-family:'Syne',sans-serif;
+    font-weight:700; font-size:13.5px; cursor:pointer;
+  }
+  .modal-btn.confirm{background:var(--orange); color:var(--navy-950);}
+  .modal-btn.cancel{background:transparent; color:var(--text-mid); border:1px solid var(--line);}
+  .modal-btn:disabled{opacity:0.5; cursor:not-allowed;}
+  .modal-error{color:var(--error); font-size:12.5px; margin-top:10px; display:none;}
+  .modal-success{color:var(--ok); font-size:12.5px; margin-top:10px; display:none; line-height:1.5;}
+  .modal-success .action-link{margin-top:12px; display:inline-block; padding:9px 16px; font-size:12.5px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand" id="brandBlock">
+    <div class="brand-mark">M</div>
+    <div>
+      <div class="brand-title">MIJO <span>PAY</span> — Business</div>
+      <div class="business-name" id="businessNameTag"></div>
+    </div>
+  </div>
+  <button class="logout-btn" id="logoutBtn">Déconnexion</button>
+</div>
+
+<div class="container" id="container">
+  <div class="state-msg"><div class="icon">⏳</div>Chargement…</div>
+</div>
+
+<div class="modal-overlay" id="withdrawModal">
+  <div class="modal">
+    <h3>Retirer vers mon compte personnel</h3>
+    <p class="modal-sub">Le montant est transféré immédiatement vers votre solde personnel MIJO PAY. Vous pourrez ensuite le retirer vers MonCash depuis votre compte personnel.</p>
+
+    <label for="withdrawAmount">Montant (HTG)</label>
+    <input type="number" id="withdrawAmount" min="100" placeholder="Ex : 500">
+
+    <div class="modal-error" id="withdrawError"></div>
+    <div class="modal-success" id="withdrawSuccess"></div>
+
+    <div class="modal-actions" id="withdrawActions">
+      <button class="modal-btn cancel" id="withdrawCancel">Annuler</button>
+      <button class="modal-btn confirm" id="withdrawConfirm">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const CONFIG = {
+    API_URL: "https://business-dashboard.mijocomplexe.workers.dev",
+    MONCASH_WITHDRAW_PAGE: "retrait-moncash.html",
+    SUBMIT_BUSINESS_PAGE: "https://mijopay.com/submit.html"
+  };
+
+  const container = document.getElementById("container");
+  const businessNameTag = document.getElementById("businessNameTag");
+  const withdrawModal = document.getElementById("withdrawModal");
+  const withdrawAmount = document.getElementById("withdrawAmount");
+  const withdrawError = document.getElementById("withdrawError");
+  const withdrawSuccess = document.getElementById("withdrawSuccess");
+  const withdrawActions = document.getElementById("withdrawActions");
+  const withdrawConfirm = document.getElementById("withdrawConfirm");
+  const withdrawCancel = document.getElementById("withdrawCancel");
+
+  let overviewData = null;
+
+  function getToken() { return localStorage.getItem("token") || ""; }
+  function getUser() {
+    try { return JSON.parse(localStorage.getItem("user") || "null"); }
+    catch (e) { return null; }
+  }
+
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return "";
+    return String(str).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function formatDate(iso) {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short" }) +
+      " · " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function badgeClass(statut) {
+    const s = (statut || "").toLowerCase();
+    if (["complété", "payé", "réussi", "reçu"].includes(s)) return "ok";
+    if (["échoué", "refusé", "annulé"].includes(s)) return "err";
+    return "warn";
+  }
+
+  function renderLoginGate() {
+    container.innerHTML = `
+      <div class="state-msg">
+        <div class="icon">🔒</div>
+        <h2>Connexion requise</h2>
+        <p>Connectez-vous à votre compte pour accéder au dashboard Business.</p>
+        <a class="action-link" href="index.html">Se connecter</a>
+      </div>`;
+  }
+
+  function renderNotRegistered() {
+    container.innerHTML = `
+      <div class="state-msg">
+        <div class="icon">🏪</div>
+        <h2>Entreprise non enregistrée</h2>
+        <p>Ce compte n'a pas encore de compte Business associé sur MIJO PAY.</p>
+        <a class="action-link" href="${CONFIG.SUBMIT_BUSINESS_PAGE}">Soumettre mon entreprise</a>
+      </div>`;
+  }
+
+  function renderPending(nom) {
+    container.innerHTML = `
+      <div class="state-msg">
+        <span class="status-pill en_attente" style="display:inline-flex;">En attente d'approbation</span>
+        <h2>${escapeHtml(nom || "Votre entreprise")}</h2>
+        <p>Votre demande est en cours d'examen (48 à 72h). Le dashboard sera disponible dès l'approbation.</p>
+      </div>`;
+  }
+
+  function renderRejected(nom) {
+    container.innerHTML = `
+      <div class="state-msg">
+        <span class="status-pill rejete" style="display:inline-flex;">Demande rejetée</span>
+        <h2>${escapeHtml(nom || "Votre entreprise")}</h2>
+        <p>Votre demande n'a pas été approuvée. Contactez le support pour plus de détails, ou soumettez une nouvelle demande.</p>
+        <a class="action-link" href="${CONFIG.SUBMIT_BUSINESS_PAGE}">Nouvelle demande</a>
+      </div>`;
+  }
+
+  function renderDashboard(data) {
+    const ent = data.entreprise;
+    const stats = data.stats;
+    const historique = data.historique || [];
+
+    businessNameTag.textContent = ent.NomCommercial;
+    if (ent.LogoURL) {
+      document.getElementById("brandBlock").querySelector(".brand-mark").outerHTML =
+        `<img src="${ent.LogoURL}" alt="">`;
+    }
+
+    const historiqueHtml = historique.length === 0
+      ? `<div class="empty-history">Aucune transaction pour le moment.</div>`
+      : `<table class="tx-table">
+          <thead><tr><th>Date</th><th>Type</th><th>Montant</th><th>Statut</th></tr></thead>
+          <tbody>
+            ${historique.map(tx => `
+              <tr>
+                <td>${formatDate(tx.Date)}</td>
+                <td>${escapeHtml(tx.TypeTransaction || "—")}${tx.Description ? `<div class="tx-desc">${escapeHtml(tx.Description.slice(0, 80))}</div>` : ""}</td>
+                <td class="tx-amount">${Number(tx.Montant || 0).toLocaleString()} ${escapeHtml(tx.Devise || "HTG")}</td>
+                <td><span class="tx-badge ${badgeClass(tx.Statut)}">${escapeHtml(tx.Statut || "—")}</span></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>`;
+
+    container.innerHTML = `
+      <div class="cards-row">
+        <div class="stat-card balance">
+          <div class="label">Solde Business</div>
+          <div class="value">${ent.Solde.toLocaleString()} HTG</div>
+          ${ent.PlafondSolde ? `<div class="sub">Plafond : ${Number(ent.PlafondSolde).toLocaleString()} HTG</div>` : ""}
+        </div>
+        <div class="stat-card">
+          <div class="label">Aujourd'hui</div>
+          <div class="value">${stats.totalAujourdhui.toLocaleString()} HTG</div>
+          <div class="sub">${stats.nombreAujourdhui} transaction(s)</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Ce mois-ci</div>
+          <div class="value">${stats.totalMois.toLocaleString()} HTG</div>
+          <div class="sub">${stats.nombreMois} transaction(s)</div>
+        </div>
+      </div>
+
+      <div class="withdraw-row">
+        <button class="withdraw-btn" id="openWithdrawBtn">
+          <div class="wb-title">↓ Retirer vers mon compte MIJO PAY</div>
+          <div class="wb-sub">Transfert immédiat vers votre solde personnel</div>
+        </button>
+        <a class="withdraw-btn" href="${CONFIG.MONCASH_WITHDRAW_PAGE}" style="text-decoration:none; display:block;">
+          <div class="wb-title">📱 Retirer vers MonCash</div>
+          <div class="wb-sub">Depuis votre compte personnel, après transfert</div>
+        </a>
+      </div>
+
+      <div class="section-title">Historique des transactions</div>
+      ${historiqueHtml}
+    `;
+
+    document.getElementById("openWithdrawBtn").addEventListener("click", openWithdrawModal);
+  }
+
+  function openWithdrawModal() {
+    withdrawAmount.value = "";
+    withdrawError.style.display = "none";
+    withdrawSuccess.style.display = "none";
+    withdrawActions.style.display = "flex";
+    withdrawAmount.disabled = false;
+    withdrawModal.classList.add("show");
+    withdrawAmount.focus();
+  }
+
+  function closeWithdrawModal() {
+    withdrawModal.classList.remove("show");
+  }
+
+  withdrawCancel.addEventListener("click", closeWithdrawModal);
+  withdrawModal.addEventListener("click", (e) => { if (e.target === withdrawModal) closeWithdrawModal(); });
+
+  withdrawConfirm.addEventListener("click", async () => {
+    const amount = parseFloat(withdrawAmount.value);
+    withdrawError.style.display = "none";
+
+    if (isNaN(amount) || amount < 100) {
+      withdrawError.textContent = "Montant minimum : 100 HTG.";
+      withdrawError.style.display = "block";
+      return;
+    }
+
+    if (overviewData && amount > overviewData.entreprise.Solde) {
+      withdrawError.textContent = "Solde insuffisant pour ce retrait.";
+      withdrawError.style.display = "block";
+      return;
+    }
+
+    withdrawConfirm.disabled = true;
+    withdrawCancel.disabled = true;
+    withdrawAmount.disabled = true;
+    withdrawConfirm.textContent = "Traitement…";
+
+    try {
+      const withdrawReference = `mijo-biz-wd-client-${crypto.randomUUID()}`;
+      const res = await fetch(`${CONFIG.API_URL}/withdraw`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${getToken()}`
+        },
+        body: JSON.stringify({ amount, withdrawReference })
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        withdrawError.textContent = data.error || "Échec du retrait.";
+        withdrawError.style.display = "block";
+        withdrawConfirm.disabled = false;
+        withdrawCancel.disabled = false;
+        withdrawAmount.disabled = false;
+        withdrawConfirm.textContent = "Confirmer";
+        return;
+      }
+
+      withdrawActions.style.display = "none";
+      withdrawSuccess.innerHTML = `
+        ${escapeHtml(data.message)}
+        <br>
+        <a class="action-link" href="${CONFIG.MONCASH_WITHDRAW_PAGE}">Retirer vers MonCash maintenant</a>
+      `;
+      withdrawSuccess.style.display = "block";
+
+      loadOverview();
+
+    } catch (err) {
+      withdrawError.textContent = "Connexion au serveur impossible.";
+      withdrawError.style.display = "block";
+      withdrawConfirm.disabled = false;
+      withdrawCancel.disabled = false;
+      withdrawAmount.disabled = false;
+      withdrawConfirm.textContent = "Confirmer";
+    }
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "index.html";
+  });
+
+  async function loadOverview() {
+    const token = getToken();
+    const user = getUser();
+
+    if (!user || !user.userId || !token) {
+      renderLoginGate();
+      return;
+    }
+
+    try {
+      const res = await fetch(`${CONFIG.API_URL}/overview`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        if (res.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          setTimeout(() => window.location.href = "index.html", 1200);
+          return;
+        }
+        if (res.status === 404) {
+          renderNotRegistered();
+          return;
+        }
+        container.innerHTML = `<div class="state-msg"><div class="icon">⚠️</div><p>${escapeHtml(data.error || "Erreur de chargement.")}</p></div>`;
+        return;
+      }
+
+      if (data.entreprise.Statut === "en_attente") {
+        renderPending(data.entreprise.NomCommercial);
+        return;
+      }
+      if (data.entreprise.Statut === "rejete") {
+        renderRejected(data.entreprise.NomCommercial);
+        return;
+      }
+
+      overviewData = data;
+      renderDashboard(data);
+
+    } catch (err) {
+      container.innerHTML = `<div class="state-msg"><div class="icon">⚠️</div><p>Connexion au serveur impossible.</p></div>`;
+    }
+  }
+
+  loadOverview();
+</script>
+</body>
+</html>
