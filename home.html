@@ -129,16 +129,6 @@
         .balance-refresh:active { transform: rotate(-360deg); }
         .balance-refresh img { width: 13px; filter: invert(1); }
         .balance-divider { width: 1px; height: 50px; background: rgba(255,255,255,.2); margin: 0 16px; }
-        .usd-activate-btn {
-            display: inline-block; margin-top: 6px; padding: 4px 12px;
-            border-radius: 20px; background: rgba(255,255,255,.18);
-            border: 1px solid rgba(255,255,255,.3); color: white;
-            font-size: .68em; font-weight: 600; cursor: pointer;
-            text-decoration: none; transition: background .2s;
-        }
-        .usd-activate-btn.active-usd {
-            background: rgba(16,185,129,.25); border-color: rgba(16,185,129,.5);
-        }
  
         /* Live indicator */
         .live-indicator {
@@ -375,10 +365,6 @@
             box-shadow: 0 10px 32px rgba(26,111,232,.28);
         }
  
-        .float-btn.store.expanded {
-            box-shadow: 0 10px 32px rgba(26,111,232,.28);
-        }
- 
         .float-btn.tx.expanded {
             box-shadow: 0 10px 32px rgba(245,158,11,.28);
         }
@@ -413,20 +399,12 @@
             transform: translateX(0);
         }
  
-        /* Store button — blue */
-        .float-btn.store .float-btn-icon {
-            background: linear-gradient(135deg, var(--blue), var(--blue-dark));
-        }
- 
         /* Transactions button — gold */
         .float-btn.tx .float-btn-icon {
             background: linear-gradient(135deg, #F59E0B, #D97706);
         }
  
         /* Entry animations */
-        .float-btn.store {
-            animation: floatIn .5s cubic-bezier(.34,1.56,.64,1) .8s both;
-        }
         .float-btn.tx {
             animation: floatIn .5s cubic-bezier(.34,1.56,.64,1) .95s both;
         }
@@ -434,22 +412,6 @@
         @keyframes floatIn {
             from { opacity: 0; transform: translateX(60px) scale(.7); }
             to   { opacity: 1; transform: translateX(0) scale(1); }
-        }
- 
-        /* Pulse ring on store btn */
-        .float-btn.store::before {
-            content: '';
-            position: absolute;
-            right: 4px; bottom: 4px;
-            width: 44px; height: 44px;
-            border-radius: 50%;
-            border: 2px solid rgba(26,111,232,.4);
-            animation: ringPulse 2.5s ease-out infinite;
-            pointer-events: none;
-        }
-        @keyframes ringPulse {
-            0%   { transform: scale(1); opacity: .8; }
-            100% { transform: scale(1.7); opacity: 0; }
         }
  
         .header-card.premium {
@@ -499,13 +461,34 @@
                     </a>
                 </div>
             </div>
-            <div class="balance-divider"></div>
-            <div class="balance-col">
-                <span class="balance-label">Compte USD</span>
-                <div id="usd-section" style="display:flex;flex-direction:column;align-items:center;">
-                    <span class="balance-amount">…</span>
-                </div>
+        </div>
+    </div>
+ 
+    <!-- ACCÈS RAPIDES -->
+    <div class="actions-strip">
+        <div class="action-item" onclick="window.location.href='store.html'">
+            <div class="action-btn">
+                <img src="https://i.postimg.cc/DZysBdZm/store.png" alt="Store">
             </div>
+            <span class="action-label">Store</span>
+        </div>
+        <div class="action-item" onclick="window.location.href='submit.html'">
+            <div class="action-btn">
+                <img src="https://i.postimg.cc/T3VDxH5C/diagram.png" alt="Business">
+            </div>
+            <span class="action-label">Business</span>
+        </div>
+        <div class="action-item" onclick="window.location.href='marchand.html'">
+            <div class="action-btn">
+                <img src="https://i.postimg.cc/KvnPcYdF/pay.png" alt="Payer">
+            </div>
+            <span class="action-label">Payer</span>
+        </div>
+        <div class="action-item" onclick="window.location.href='profil.html'">
+            <div class="action-btn">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIeottYUxPxnwj44hoOmHKtI7Ie3O6oTDm6s7h0-zE0Q&s=10" alt="Profil">
+            </div>
+            <span class="action-label">Profil</span>
         </div>
     </div>
  
@@ -616,11 +599,6 @@
  
     <!-- FLOATING NAV BUTTONS -->
     <div class="float-nav">
-        <!-- Store -->
-        <a href="store.html" class="float-btn store">
-            <div class="float-btn-icon">🛒</div>
-            <span class="float-btn-label">Store</span>
-        </a>
         <!-- Mes Transactions -->
         <a href="transaction.html" class="float-btn tx">
             <div class="float-btn-icon">📋</div>
@@ -772,22 +750,6 @@ function pollSoldeApresDepot() {
         document.getElementById('balance').innerText =
             (solde % 1 === 0 ? solde : solde.toFixed(2)) + " G";
  
-        // Section USD
-        const usdSection = document.getElementById('usd-section');
-        const usActif = user.Compte_US_Actif === true || user.Compte_US_Actif === "true";
-        if (usActif) {
-            const usd = (parseFloat(user.Solde_USD) || 0).toFixed(2);
-            usdSection.innerHTML = `
-                <span class="balance-amount">${usd} $</span>
-                <a href="change.html" class="usd-activate-btn active-usd">🔄 Change</a>
-            `;
-        } else {
-            usdSection.innerHTML = `
-                <span class="balance-amount" style="opacity:.5;font-size:1.4em;">🔒</span>
-                <a href="#" class="usd-activate-btn" onclick="initiateUSDActivation(event)">Activer</a>
-            `;
-        }
- 
         // Premium
         if (user.EstPremium === true || user.EstPremium === "true") {
             header.classList.add('premium');
@@ -847,44 +809,6 @@ function pollSoldeApresDepot() {
         btn.style.pointerEvents = 'auto';
     }
 }
- 
-    // ══════════════════════════════════════════════════
-    // USD ACTIVATION
-    // ══════════════════════════════════════════════════
-    async function initiateUSDActivation(event) {
-        event.preventDefault();
-        const userString = localStorage.getItem('user');
-        if (!userString) return logout();
-        const user = JSON.parse(userString);
- 
-        if (!confirm("Activer le compte Stable USD pour 200 Gdes ?")) return;
- 
-        const btn = event.target;
-        btn.innerText = "...";
-        btn.style.pointerEvents = "none";
- 
-        try {
-            const res = await fetch(activateUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ senderId: user.userId })
-            });
-            const data = await res.json();
-            if (data.success) {
-                alert("Félicitations ! Votre compte USD est désormais actif.");
-                const updatedUser = { ...user, ...data.user };
-                localStorage.setItem("user", JSON.stringify(updatedUser));
-                updateUI(updatedUser);
-            } else {
-                alert("Erreur : " + (data.error || "Impossible d'activer le compte."));
-            }
-        } catch (e) {
-            alert("Erreur de connexion au serveur.");
-        } finally {
-            btn.innerText = "Activer";
-            btn.style.pointerEvents = "auto";
-        }
-    }
  
     // ══════════════════════════════════════════════════
     // LOGOUT
@@ -1144,11 +1068,12 @@ function pollSoldeApresDepot() {
     // ══════════════════════════════════════════════════
     (function() {
         const btns = document.querySelectorAll('.float-btn');
+        if (!btns.length) return;
  
         // Durée de chaque état (ms)
         const EXPAND_DURATION   = 2000;  // resté ouvert 2 secondes
         const COLLAPSE_DURATION = 3000;  // resté fermé 3 secondes
-        const STAGGER           = 400;   // décalage entre les deux boutons
+        const STAGGER           = 400;   // décalage entre boutons
  
         let autoTimer = null;
         let isUserInteracting = false;
@@ -1174,22 +1099,22 @@ function pollSoldeApresDepot() {
         async function runCycle() {
             if (isUserInteracting) return;
  
-            // 1. Dérouler bouton 1
-            await expandBtn(btns[0], 0);
-            // 2. Dérouler bouton 2 avec décalage
-            await expandBtn(btns[1], STAGGER);
+            // 1. Dérouler chaque bouton, décalé
+            for (let i = 0; i < btns.length; i++) {
+                await expandBtn(btns[i], i === 0 ? 0 : STAGGER);
+            }
  
-            // 3. Attendre pendant EXPAND_DURATION
+            // 2. Attendre pendant EXPAND_DURATION
             await new Promise(r => setTimeout(r, EXPAND_DURATION));
  
             if (isUserInteracting) return;
  
-            // 4. Enrouler bouton 1
-            await collapseBtn(btns[0], 0);
-            // 5. Enrouler bouton 2 avec décalage
-            await collapseBtn(btns[1], STAGGER);
+            // 3. Enrouler chaque bouton, décalé
+            for (let i = 0; i < btns.length; i++) {
+                await collapseBtn(btns[i], i === 0 ? 0 : STAGGER);
+            }
  
-            // 6. Attendre pendant COLLAPSE_DURATION puis recommencer
+            // 4. Attendre pendant COLLAPSE_DURATION puis recommencer
             autoTimer = setTimeout(runCycle, COLLAPSE_DURATION);
         }
  
