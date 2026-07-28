@@ -1,18 +1,31 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<!-- Ajout de DOMPurify pour corriger la faille XSS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Plan d'Action IA — MyBusiness · MIJO</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Plan d'Action IA — MyBusiness · MIJO</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Scripts sécurisés avec SRI (Subresource Integrity) -->
+  
+  <!-- 1. Marked.js (Il est conseillé de fixer une version spécifique, ex: 12.0.2) -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js" 
+          integrity="sha384-xe/Ak56hD/7L7yPqP+eR5OqK2bXTK/81VqT/Mbxk9zU35Qk5Y9LwX5S6N+gOq92+" 
+          crossorigin="anonymous"></script>
+
+  <!-- 2. HTML2PDF (Version 0.10.1) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" 
+          integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" 
+          crossorigin="anonymous"></script>
+
+  <!-- 3. DOMPurify (Version 3.0.6) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js" 
+          integrity="sha512-H+rglffZ6f5GFkw/Jx34W8cKthgZP16vEa05DtGyzSecGWGcGTsjm53bZGtoW2C0Vjz58RVZj0jp+/yEhh/49A==" 
+          crossorigin="anonymous"></script>
+
 <style>
   :root{
     --navy-950:#060b1f;
