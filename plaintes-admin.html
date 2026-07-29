@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Plaintes MIJO Pay</title>
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' https: data:; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; script-src 'self'; connect-src https://plaintes.mijocomplexe.workers.dev; base-uri 'self'; form-action 'self'; object-src 'none';">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue-deep:#1255C0; --blue:#1A6FE8; --gold:#E8A93A;
+    --ink:#0E1B33; --paper:#F5F7FB; --card:#FFFFFF; --line:#E3E8F2;
+    --red:#C0392B; --amber:#B8860B; --green:#1E824C;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);font-family:'Space Grotesk',sans-serif;color:var(--ink);min-height:100vh;}
+
+  /* ── Écran mot de passe ── */
+  #gate{
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+    background:linear-gradient(135deg,var(--blue-deep),var(--blue));
+  }
+  #gate .box{
+    background:var(--card);border-radius:20px;padding:36px 28px;max-width:360px;width:100%;
+    box-shadow:0 20px 50px rgba(0,0,0,.25);
+  }
+  #gate h1{font-family:'Fraunces',serif;font-size:22px;margin:0 0 6px;}
+  #gate p{margin:0 0 20px;font-size:13px;color:#5A6B8C;}
+  #gate input{
+    width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:10px;
+    font-size:15px;margin-bottom:14px;font-family:'Space Grotesk',sans-serif;
+  }
+  #gate button{
+    width:100%;padding:13px;border:none;border-radius:10px;background:var(--blue);color:#fff;
+    font-weight:600;font-size:14px;cursor:pointer;
+  }
+  #gate button:disabled{opacity:.5;cursor:not-allowed;}
+  #gate-msg{margin-top:12px;font-size:13px;color:var(--red);display:none;}
+
+  /* ── Panneau admin ── */
+  #panel{display:none;}
+  header{background:linear-gradient(135deg,var(--blue-deep),var(--blue));padding:24px 20px 28px;color:#fff;}
+  header h1{font-family:'Fraunces',serif;font-weight:600;font-size:22px;margin:0 0 4px;}
+  header p{margin:0;opacity:.85;font-size:13px;}
+  main{max-width:820px;margin:0 auto;padding:20px;}
+
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center;}
+  .toolbar select{padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:13px;background:var(--card);}
+  .toolbar button.refresh{padding:9px 14px;border:1px solid var(--line);border-radius:8px;background:var(--card);cursor:pointer;font-size:13px;}
+  .toolbar .spacer{flex:1;}
+  .logout{background:none;border:none;color:var(--red);font-size:13px;cursor:pointer;text-decoration:underline;}
+
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--line);}
+  thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#8290AB;padding:12px 14px;border-bottom:1px solid var(--line);}
+  tbody td{padding:12px 14px;font-size:13px;border-bottom:1px solid var(--line);vertical-align:top;}
+  tbody tr:last-child td{border-bottom:none;}
+  .badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;text-transform:uppercase;white-space:nowrap;}
+  .badge.ouvert{background:#FDEDEC;color:var(--red);}
+  .badge.en_cours{background:#FEF6E4;color:var(--amber);}
+  .badge.resolu{background:#EAF7EF;color:var(--green);}
+  .badge.rejete{background:#EFEFEF;color:#666;}
+
+  .edit-row td{background:#FAFBFD;}
+  .edit-row select, .edit-row textarea{
+    width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:8px;
+  }
+  .edit-row textarea{min-height:60px;resize:vertical;}
+  .edit-row button{padding:8px 14px;border:none;border-radius:8px;background:var(--blue);color:#fff;font-size:13px;cursor:pointer;}
+  .edit-row button:disabled{opacity:.5;cursor:not-allowed;}
+  .edit-row .save-msg{font-size:12px;margin-top:6px;}
+  .edit-row .save-msg.error{color:var(--red);}
+  .edit-row .save-msg.success{color:var(--green);}
+
+  .expand-btn{background:none;border:none;color:var(--blue);cursor:pointer;font-size:12px;text-decoration:underline;padding:0;}
+  .mono{font-family:'JetBrains Mono',monospace;font-size:11px;color:#8290AB;}
+  .state{text-align:center;padding:40px 20px;color:#8290AB;font-size:14px;}
+  .state.error{color:var(--red);}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="box">
+    <h1>Accès administrateur</h1>
+    <p>Entrez le mot de passe pour gérer les plaintes.</p>
+    <form id="gate-form">
+      <input type="password" id="gate-password" placeholder="Mot de passe" autocomplete="off" required>
+      <button type="submit" id="gate-submit">Se connecter</button>
+    </form>
+    <div id="gate-msg"></div>
+  </div>
+</div>
+
+<div id="panel">
+  <header>
+    <h1>Gestion des plaintes</h1>
+    <p>MIJO Pay — Contestations utilisateurs</p>
+  </header>
+  <main>
+    <div class="toolbar">
+      <select id="statut-filter">
+        <option value="">Tous les statuts</option>
+        <option value="ouvert">Ouvert</option>
+        <option value="en_cours">En cours</option>
+        <option value="resolu">Résolu</option>
+        <option value="rejete">Rejeté</option>
+      </select>
+      <button class="refresh" id="refresh-btn">Actualiser</button>
+      <div class="spacer"></div>
+      <button class="logout" id="logout-btn">Déconnexion</button>
+    </div>
+
+    <div id="table-wrap">
+      <div class="state" id="loading-state">Chargement...</div>
+    </div>
+  </main>
+</div>
+
+<script src="plaintes-admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mes plaintes — MIJO Pay</title>
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' https: data:; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; script-src 'self'; connect-src https://plaintes.mijocomplexe.workers.dev; base-uri 'self'; form-action 'self'; object-src 'none';">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue-deep:#1255C0; --blue:#1A6FE8; --gold:#E8A93A; --gold-soft:#F6D888;
+    --ink:#0E1B33; --paper:#F5F7FB; --card:#FFFFFF; --line:#E3E8F2;
+    --red:#C0392B; --amber:#B8860B; --green:#1E824C;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);font-family:'Space Grotesk',sans-serif;color:var(--ink);min-height:100vh;}
+  header{background:linear-gradient(135deg,var(--blue-deep),var(--blue));padding:28px 20px 32px;color:#fff;}
+  header .back{display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,.85);text-decoration:none;font-size:14px;margin-bottom:18px;}
+  header h1{font-family:'Fraunces',serif;font-weight:600;font-size:26px;margin:0 0 6px;}
+  header p{margin:0;opacity:.85;font-size:14px;}
+  main{max-width:560px;margin:0 auto;padding:24px 20px 60px;}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:24px;}
+  .card h2{font-family:'Fraunces',serif;font-size:18px;margin:0 0 16px;}
+  label{display:block;font-size:13px;font-weight:500;color:#5A6B8C;margin:14px 0 6px;}
+  label:first-of-type{margin-top:0;}
+  select,textarea,input{
+    width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;
+    font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--ink);background:var(--paper);
+  }
+  textarea{resize:vertical;min-height:90px;}
+  button{
+    margin-top:18px;width:100%;padding:14px;border:none;border-radius:12px;
+    background:var(--blue);color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;
+    cursor:pointer;transition:opacity .15s;
+  }
+  button:disabled{opacity:.5;cursor:not-allowed;}
+  .msg{margin-top:12px;font-size:13px;padding:10px 12px;border-radius:8px;display:none;}
+  .msg.error{display:block;background:#FDEDEC;color:var(--red);}
+  .msg.success{display:block;background:#EAF7EF;color:var(--green);}
+
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8290AB;margin:0 0 14px;}
+  .plainte{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;}
+  .plainte-top{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .plainte-motif{font-weight:500;font-size:14px;}
+  .badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;}
+  .badge.ouvert{background:#FDEDEC;color:var(--red);}
+  .badge.en_cours{background:#FEF6E4;color:var(--amber);}
+  .badge.resolu{background:#EAF7EF;color:var(--green);}
+  .badge.rejete{background:#EFEFEF;color:#666;}
+  .plainte-desc{font-size:13px;color:#5A6B8C;margin-top:8px;line-height:1.4;}
+  .plainte-note{font-size:13px;color:var(--ink);margin-top:8px;padding-top:8px;border-top:1px solid var(--line);}
+  .plainte-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:#8290AB;margin-top:6px;}
+
+  .state{text-align:center;padding:40px 20px;color:#8290AB;font-size:14px;}
+  .state.error{color:var(--red);}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back" href="home.html">&larr; Retour</a>
+  <h1>Plaintes &amp; contestations</h1>
+  <p>Signalez un problème sur une transaction</p>
+</header>
+
+<main>
+  <section class="card">
+    <h2>Nouvelle plainte</h2>
+    <form id="plainte-form">
+      <label for="transaction-select">Transaction concernée</label>
+      <select id="transaction-select" required>
+        <option value="" disabled selected>Chargement de vos transactions...</option>
+      </select>
+
+      <label for="motif-select">Motif</label>
+      <select id="motif-select" required>
+        <option value="" disabled selected>Choisissez un motif</option>
+        <option value="transaction_non_recue">Transaction non reçue</option>
+        <option value="montant_incorrect">Montant incorrect</option>
+        <option value="double_debit">Double débit</option>
+        <option value="erreur_marchand">Erreur du marchand</option>
+        <option value="fraude_suspectee">Fraude suspectée</option>
+        <option value="autre">Autre</option>
+      </select>
+
+      <label for="description-input">Description</label>
+      <textarea id="description-input" maxlength="1000" placeholder="Expliquez ce qui s'est passé..." required></textarea>
+
+      <button type="submit" id="submit-btn">Envoyer la plainte</button>
+      <div class="msg" id="form-msg"></div>
+    </form>
+  </section>
+
+  <p class="eyebrow">Mes plaintes</p>
+  <div id="plaintes-list">
+    <div class="state" id="plaintes-loading">Chargement...</div>
+  </div>
+</main>
+
+<script src="plaintes.js"></script>
+</body>
+</html>
