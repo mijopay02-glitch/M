@@ -4,7 +4,7 @@
   // ⚠️ Adapte cette clé si ton système de login stocke l'ID utilisateur
   // sous un autre nom dans localStorage.
   const USER_ID_STORAGE_KEY = "mijo_user_id";
-  const WORKER_URL = "https://plaintes.mijocomplexe.workers.dev";
+  const WORKER_URL = "https://plaintes-worker.mijocomplexe.workers.dev";
   const FETCH_TIMEOUT_MS = 8000;
 
   const MOTIF_LABELS = {
