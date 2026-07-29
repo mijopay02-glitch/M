@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const WORKER_URL = "https://plaintes.mijocomplexe.workers.dev";
+  const WORKER_URL = "https://plaintes-worker.mijocomplexe.workers.dev";
   const FETCH_TIMEOUT_MS = 8000;
   // Session stockée en sessionStorage (effacée à la fermeture de l'onglet),
   // jamais en localStorage, pour limiter la durée de vie d'un token volé.
