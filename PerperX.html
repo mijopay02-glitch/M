@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ajustement de solde — MIJO PAY</title>
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#0a1120; --navy-900:#0f1830; --navy-800:#16213f;
+    --line:#28345a; --orange:#ff6b35; --text-hi:#f4f6fb; --text-mid:#aab4cc; --text-low:#6b769a;
+    --error:#ff5c72; --ok:#38d996; --warn:#ffb648;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:radial-gradient(ellipse 900px 500px at 50% -10%, #ff6b3514, transparent), var(--navy-950);
+    color:var(--text-hi); font-family:'Inter',sans-serif; min-height:100vh;
+  }
+
+  .gate{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;}
+  .gate-card{
+    background:var(--navy-900); border:1px solid var(--line); border-radius:20px; padding:36px 30px;
+    max-width:360px; width:100%;
+  }
+  .gate-icon{font-size:28px; margin-bottom:14px; text-align:center;}
+  .gate-card h2{font-family:'Syne',sans-serif; font-size:19px; margin-bottom:8px; text-align:center;}
+  .gate-card p{font-size:13px; color:var(--text-low); margin-bottom:22px; line-height:1.5; text-align:center;}
+  .gate-card label{display:block; font-size:12px; font-weight:600; margin-bottom:6px; margin-top:14px;}
+  .gate-card input{
+    width:100%; padding:12px 13px; background:var(--navy-800); border:1px solid var(--line); border-radius:10px;
+    color:var(--text-hi); font-size:14px;
+  }
+  .gate-card input:focus{outline:none; border-color:var(--orange);}
+  .gate-btn{
+    width:100%; padding:13px; background:var(--orange); color:var(--navy-950); border:none; border-radius:11px;
+    font-family:'Syne',sans-serif; font-weight:700; font-size:14px; cursor:pointer; margin-top:20px;
+  }
+  .gate-btn:disabled{opacity:0.5; cursor:not-allowed;}
+  .gate-error{color:var(--error); font-size:12.5px; margin-top:12px; text-align:center; display:none;}
+
+  #app{display:none;}
+  .topbar{
+    background:var(--navy-900); border-bottom:1px solid var(--line);
+    padding:16px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{width:30px; height:30px; border-radius:8px; background:linear-gradient(135deg,var(--orange),#ff9d5c);
+    display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:13px; color:var(--navy-950);}
+  .brand-title{font-family:'Syne',sans-serif; font-weight:700; font-size:14px;}
+  .brand-title span{color:var(--orange);}
+  .admin-tag{font-size:12px; color:var(--text-low);}
+  .logout-btn{
+    background:transparent; border:1px solid var(--line); color:var(--text-mid); padding:8px 14px;
+    border-radius:9px; font-size:12.5px; font-weight:600; cursor:pointer;
+  }
+  .logout-btn:hover{border-color:var(--error); color:var(--error);}
+
+  .container{max-width:520px; margin:0 auto; padding:28px 20px 60px;}
+
+  .mijo-reserve{
+    background:var(--navy-900); border:1px solid var(--line); border-radius:16px; padding:18px 20px;
+    margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;
+  }
+  .mijo-reserve .label{font-size:11.5px; color:var(--text-low); text-transform:uppercase; letter-spacing:0.04em;}
+  .mijo-reserve .value{font-family:'Syne',sans-serif; font-weight:800; font-size:20px; color:var(--orange);}
+
+  .card{background:var(--navy-900); border:1px solid var(--line); border-radius:18px; padding:24px; margin-bottom:16px;}
+  .card h3{font-family:'Syne',sans-serif; font-size:15px; margin-bottom:16px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-size:12.5px; font-weight:600; margin-bottom:7px;}
+  .field .hint{font-size:11.5px; color:var(--text-low); margin-top:6px; line-height:1.5;}
+  .field input, .field select, .field textarea{
+    width:100%; padding:12px 13px; background:var(--navy-800); border:1px solid var(--line); border-radius:10px;
+    color:var(--text-hi); font-size:14px; font-family:'Inter',sans-serif;
+  }
+  .field textarea{resize:vertical; min-height:70px;}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--orange);}
+  .field input:disabled{opacity:0.6; background:var(--navy-900);}
+
+  .btn{
+    padding:12px 20px; border-radius:11px; border:none; font-family:'Syne',sans-serif;
+    font-weight:700; font-size:13.5px; cursor:pointer; width:100%;
+  }
+  .btn:disabled{opacity:0.5; cursor:not-allowed;}
+  .btn-primary{background:var(--orange); color:var(--navy-950);}
+  .btn-secondary{background:transparent; color:var(--text-mid); border:1px solid var(--line); margin-top:10px;}
+
+  .user-found{
+    background:var(--navy-800); border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin-bottom:16px;
+  }
+  .user-found .uf-name{font-family:'Syne',sans-serif; font-weight:700; font-size:14px; margin-bottom:4px;}
+  .user-found .uf-row{display:flex; justify-content:space-between; font-size:12.5px; color:var(--text-mid); margin-top:4px;}
+  .user-found .uf-row strong{color:var(--text-hi);}
+
+  .type-toggle{display:flex; gap:8px; margin-bottom:16px;}
+  .type-btn{
+    flex:1; padding:12px; border-radius:10px; border:1px solid var(--line); background:var(--navy-800);
+    color:var(--text-mid); font-family:'Syne',sans-serif; font-weight:700; font-size:13px; cursor:pointer;
+  }
+  .type-btn.active.credit{background:var(--ok); color:var(--navy-950); border-color:var(--ok);}
+  .type-btn.active.debit{background:var(--error); color:var(--navy-950); border-color:var(--error);}
+
+  .msg{padding:12px 14px; border-radius:10px; font-size:12.5px; margin-top:14px; line-height:1.5; display:none;}
+  .msg.show{display:block;}
+  .msg.error{background:#ff5c7214; border:1px solid #ff5c7240; color:#ffd3da;}
+  .msg.success{background:#38d99614; border:1px solid #38d99640; color:#c6f5df;}
+
+  .checkbox-row{display:flex; align-items:center; gap:8px; margin-bottom:14px; font-size:12.5px; color:var(--text-mid);}
+  .checkbox-row input{width:auto;}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <div class="gate-icon">🔐</div>
+    <h2>Ajustement de solde</h2>
+    <p>Outil interne — connexion administrateur requise.</p>
+
+    <label for="adminName">Nom</label>
+    <input type="text" id="adminName" autocomplete="off">
+
+    <label for="adminPassword">Mot de passe</label>
+    <input type="password" id="adminPassword" autocomplete="off">
+
+    <button class="gate-btn" id="loginBtn">Se connecter</button>
+    <div class="gate-error" id="loginError"></div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div>
+        <div class="brand-title">MIJO <span>PAY</span> — Ajustement</div>
+        <div class="admin-tag" id="adminTag"></div>
+      </div>
+    </div>
+    <button class="logout-btn" id="logoutBtn">Déconnexion</button>
+  </div>
+
+  <div class="container">
+
+    <div class="mijo-reserve">
+      <div class="label">Réserve MIJO disponible</div>
+      <div class="value" id="mijoBalanceValue">…</div>
+    </div>
+
+    <!-- ═══════ Étape 1 : recherche ═══════ -->
+    <div class="card" id="searchCard">
+      <h3>1. Rechercher le client</h3>
+      <div class="field">
+        <label for="numeroCarteSearch">Numéro de carte MIJO</label>
+        <input type="text" id="numeroCarteSearch" placeholder="Demandez-le directement au client" autocomplete="off">
+        <div class="hint">Le numéro affiché après recherche sera partiellement masqué — vous devrez le ressaisir en entier à l'étape 3 pour confirmer.</div>
+      </div>
+      <button class="btn btn-primary" id="searchBtn">Rechercher</button>
+      <div class="msg error" id="searchError"></div>
+    </div>
+
+    <!-- ═══════ Étape 2 : détails de l'ajustement ═══════ -->
+    <div class="card" id="adjustCard" style="display:none;">
+      <h3>2. Détails de l'ajustement</h3>
+
+      <div class="user-found" id="userFoundBlock"></div>
+
+      <div class="type-toggle">
+        <button class="type-btn credit" id="typeCreditBtn">↑ Crédit</button>
+        <button class="type-btn debit" id="typeDebitBtn">↓ Débit</button>
+      </div>
+
+      <div class="field">
+        <label for="amountInput">Montant (HTG)</label>
+        <input type="number" id="amountInput" min="1" placeholder="Ex : 500">
+      </div>
+
+      <div class="field">
+        <label for="motifInput">Motif (obligatoire, pour la comptabilité)</label>
+        <textarea id="motifInput" placeholder="Ex : Compensation erreur dépôt agent du 24/07, dossier #12"></textarea>
+      </div>
+
+      <div class="checkbox-row" id="forceNegativeRow" style="display:none;">
+        <input type="checkbox" id="forceNegativeCheckbox">
+        <label for="forceNegativeCheckbox">Forcer malgré un solde client insuffisant (solde deviendra négatif)</label>
+      </div>
+
+      <label>Confirmez le numéro de carte</label>
+      <input type="text" id="numeroCarteConfirm" placeholder="Retapez le numéro complet" autocomplete="off">
+      <div class="hint" style="margin-bottom:16px;">Doit correspondre exactement au numéro recherché à l'étape 1.</div>
+
+      <button class="btn btn-primary" id="confirmAdjustBtn">Confirmer l'ajustement</button>
+      <button class="btn btn-secondary" id="cancelAdjustBtn">Annuler et recommencer</button>
+
+      <div class="msg error" id="adjustError"></div>
+      <div class="msg success" id="adjustSuccess"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const CONFIG = {
+    API_URL: "https://business-user-adjustment.mijocomplexe.workers.dev"
+  };
+
+  let sessionToken = null;
+  let searchedNumeroCarte = null;
+  let selectedType = null;
+
+  const gate = document.getElementById("gate");
+  const app = document.getElementById("app");
+
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return "";
+    return String(str).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  // ══════════════════════════════════════════
+  // Connexion
+  // ══════════════════════════════════════════
+  document.getElementById("loginBtn").addEventListener("click", async () => {
+    const name = document.getElementById("adminName").value.trim();
+    const password = document.getElementById("adminPassword").value;
+    const errorEl = document.getElementById("loginError");
+    const btn = document.getElementById("loginBtn");
+
+    if (!name || !password) {
+      errorEl.textContent = "Nom et mot de passe requis.";
+      errorEl.style.display = "block";
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Connexion…";
+    errorEl.style.display = "none";
+
+    try {
+      const res = await fetch(`${CONFIG.API_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, password })
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        errorEl.textContent = data.error || "Échec de la connexion.";
+        errorEl.style.display = "block";
+        btn.disabled = false;
+        btn.textContent = "Se connecter";
+        return;
+      }
+
+      sessionToken = data.sessionToken;
+      document.getElementById("adminTag").textContent = `Connecté : ${data.adminName}`;
+      gate.style.display = "none";
+      app.style.display = "block";
+      loadMijoBalance();
+
+    } catch (err) {
+      errorEl.textContent = "Connexion au serveur impossible.";
+      errorEl.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Se connecter";
+    }
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+    try {
+      await fetch(`${CONFIG.API_URL}/logout`, {
+        method: "POST",
+        headers: { "X-MIJO-Admin-Session": sessionToken }
+      });
+    } catch (e) {}
+    sessionToken = null;
+    app.style.display = "none";
+    gate.style.display = "flex";
+    document.getElementById("adminPassword").value = "";
+  });
+
+  async function apiCall(path, options = {}) {
+    const res = await fetch(`${CONFIG.API_URL}${path}`, {
+      ...options,
+      headers: { ...(options.headers || {}), "X-MIJO-Admin-Session": sessionToken }
+    });
+    const data = await res.json();
+    if (res.status === 401) {
+      sessionToken = null;
+      app.style.display = "none";
+      gate.style.display = "flex";
+      document.getElementById("loginError").textContent = "Session expirée, reconnectez-vous.";
+      document.getElementById("loginError").style.display = "block";
+      throw new Error("unauthorized");
+    }
+    return { ok: res.ok, data };
+  }
+
+  async function loadMijoBalance() {
+    try {
+      const { ok, data } = await apiCall("/mijo-balance");
+      document.getElementById("mijoBalanceValue").textContent =
+        ok && data.success ? `${data.soldeMijo.toLocaleString()} HTG` : "—";
+    } catch (e) {}
+  }
+
+  // ══════════════════════════════════════════
+  // Étape 1 : recherche
+  // ══════════════════════════════════════════
+  document.getElementById("searchBtn").addEventListener("click", async () => {
+    const numeroCarte = document.getElementById("numeroCarteSearch").value.trim();
+    const errorEl = document.getElementById("searchError");
+    errorEl.classList.remove("show");
+
+    if (!numeroCarte) {
+      errorEl.textContent = "Entrez un numéro de carte.";
+      errorEl.classList.add("show");
+      return;
+    }
+
+    try {
+      const { ok, data } = await apiCall(`/find-user?numeroCarte=${encodeURIComponent(numeroCarte)}`);
+      if (!ok || !data.success) {
+        errorEl.textContent = data.error || "Utilisateur introuvable.";
+        errorEl.classList.add("show");
+        return;
+      }
+
+      searchedNumeroCarte = numeroCarte;
+
+      document.getElementById("userFoundBlock").innerHTML = `
+        <div class="uf-name">${escapeHtml(data.nomUtilisateur)}</div>
+        <div class="uf-row"><span>Numéro de carte</span><strong>${escapeHtml(data.numeroCarteMasque)}</strong></div>
+        <div class="uf-row"><span>Solde actuel</span><strong>${data.solde.toLocaleString()} HTG</strong></div>
+      `;
+
+      document.getElementById("adjustCard").style.display = "block";
+      document.getElementById("amountInput").value = "";
+      document.getElementById("motifInput").value = "";
+      document.getElementById("numeroCarteConfirm").value = "";
+      document.getElementById("adjustError").classList.remove("show");
+      document.getElementById("adjustSuccess").classList.remove("show");
+      selectType(null);
+
+      document.getElementById("adjustCard").scrollIntoView({ behavior: "smooth", block: "start" });
+
+    } catch (e) {
+      if (e.message !== "unauthorized") {
+        errorEl.textContent = "Connexion au serveur impossible.";
+        errorEl.classList.add("show");
+      }
+    }
+  });
+
+  // ══════════════════════════════════════════
+  // Étape 2 : type + montant + motif
+  // ══════════════════════════════════════════
+  function selectType(type) {
+    selectedType = type;
+    document.getElementById("typeCreditBtn").classList.toggle("active", type === "credit");
+    document.getElementById("typeDebitBtn").classList.toggle("active", type === "debit");
+    document.getElementById("forceNegativeRow").style.display = type === "debit" ? "flex" : "none";
+  }
+
+  document.getElementById("typeCreditBtn").addEventListener("click", () => selectType("credit"));
+  document.getElementById("typeDebitBtn").addEventListener("click", () => selectType("debit"));
+
+  document.getElementById("cancelAdjustBtn").addEventListener("click", () => {
+    document.getElementById("adjustCard").style.display = "none";
+    document.getElementById("numeroCarteSearch").value = "";
+    searchedNumeroCarte = null;
+    selectType(null);
+  });
+
+  // ══════════════════════════════════════════
+  // Étape 3 : confirmation finale
+  // ══════════════════════════════════════════
+  document.getElementById("confirmAdjustBtn").addEventListener("click", async () => {
+    const errorEl = document.getElementById("adjustError");
+    const successEl = document.getElementById("adjustSuccess");
+    errorEl.classList.remove("show");
+    successEl.classList.remove("show");
+
+    const amount = parseFloat(document.getElementById("amountInput").value);
+    const motif = document.getElementById("motifInput").value.trim();
+    const numeroCarteConfirmation = document.getElementById("numeroCarteConfirm").value.trim();
+    const forcerNegatif = document.getElementById("forceNegativeCheckbox").checked;
+    const btn = document.getElementById("confirmAdjustBtn");
+
+    if (!selectedType) {
+      errorEl.textContent = "Choisissez Crédit ou Débit.";
+      errorEl.classList.add("show");
+      return;
+    }
+    if (isNaN(amount) || amount <= 0) {
+      errorEl.textContent = "Montant invalide.";
+      errorEl.classList.add("show");
+      return;
+    }
+    if (motif.length < 5) {
+      errorEl.textContent = "Un motif d'au moins 5 caractères est requis.";
+      errorEl.classList.add("show");
+      return;
+    }
+    if (numeroCarteConfirmation !== searchedNumeroCarte) {
+      errorEl.textContent = "Le numéro de carte confirmé ne correspond pas à celui recherché.";
+      errorEl.classList.add("show");
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Traitement…";
+
+    try {
+      const reference = `mijo-adj-${crypto.randomUUID()}`;
+      const { ok, data } = await apiCall("/adjust", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          numeroCarte: searchedNumeroCarte,
+          numeroCarteConfirmation,
+          type: selectedType,
+          amount,
+          motif,
+          reference,
+          forcerNegatif
+        })
+      });
+
+      if (!ok || !data.success) {
+        errorEl.textContent = data.error || "Échec de l'ajustement.";
+        errorEl.classList.add("show");
+        btn.disabled = false;
+        btn.textContent = "Confirmer l'ajustement";
+        return;
+      }
+
+      successEl.innerHTML = `
+        ${escapeHtml(data.message)}<br>
+        Nouveau solde client (${escapeHtml(data.clientNom)}) : <strong>${data.nouveauSoldeClient.toLocaleString()} HTG</strong><br>
+        Nouvelle réserve MIJO : <strong>${data.nouveauSoldeMijo.toLocaleString()} HTG</strong>
+      `;
+      successEl.classList.add("show");
+
+      document.getElementById("mijoBalanceValue").textContent = `${data.nouveauSoldeMijo.toLocaleString()} HTG`;
+      btn.disabled = false;
+      btn.textContent = "Confirmer l'ajustement";
+
+    } catch (err) {
+      if (err.message !== "unauthorized") {
+        errorEl.textContent = "Connexion au serveur impossible.";
+        errorEl.classList.add("show");
+        btn.disabled = false;
+        btn.textContent = "Confirmer l'ajustement";
+      }
+    }
+  });
+</script>
+</body>
+</html>
