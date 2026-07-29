@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comptabilité — MIJO PAY</title>
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --navy-950:#0a1120; --navy-900:#0f1830; --navy-800:#16213f;
+    --line:#28345a; --orange:#ff6b35; --text-hi:#f4f6fb; --text-mid:#aab4cc; --text-low:#6b769a;
+    --error:#ff5c72; --ok:#38d996; --warn:#ffb648; --purple:#a78bfa;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:radial-gradient(ellipse 900px 500px at 50% -10%, #ff6b3514, transparent), var(--navy-950);
+    color:var(--text-hi); font-family:'Inter',sans-serif; min-height:100vh; padding-bottom:60px;
+  }
+
+  .gate{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;}
+  .gate-card{
+    background:var(--navy-900); border:1px solid var(--line); border-radius:20px; padding:36px 30px;
+    max-width:360px; width:100%; text-align:center;
+  }
+  .gate-icon{font-size:28px; margin-bottom:14px;}
+  .gate-card h2{font-family:'Syne',sans-serif; font-size:19px; margin-bottom:8px;}
+  .gate-card p{font-size:13px; color:var(--text-low); margin-bottom:22px; line-height:1.5;}
+  .gate-card input{
+    width:100%; padding:13px 14px; background:var(--navy-800); border:1px solid var(--line); border-radius:11px;
+    color:var(--text-hi); font-size:14.5px; margin-bottom:12px; text-align:center; letter-spacing:2px;
+  }
+  .gate-card input:focus{outline:none; border-color:var(--orange);}
+  .gate-btn{
+    width:100%; padding:13px; background:var(--orange); color:var(--navy-950); border:none; border-radius:11px;
+    font-family:'Syne',sans-serif; font-weight:700; font-size:14px; cursor:pointer;
+  }
+  .gate-btn:disabled{opacity:0.5; cursor:not-allowed;}
+  .gate-error{color:var(--error); font-size:12.5px; margin-top:12px; display:none;}
+
+  #dashboard{display:none;}
+  .topbar{
+    background:var(--navy-900); border-bottom:1px solid var(--line);
+    padding:16px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{width:30px; height:30px; border-radius:8px; background:linear-gradient(135deg,var(--orange),#ff9d5c);
+    display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:13px; color:var(--navy-950);}
+  .brand-title{font-family:'Syne',sans-serif; font-weight:700; font-size:14px;}
+  .brand-title span{color:var(--orange);}
+  .lock-btn{
+    background:transparent; border:1px solid var(--line); color:var(--text-mid); padding:8px 14px;
+    border-radius:9px; font-size:12.5px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif;
+  }
+  .lock-btn:hover{border-color:var(--error); color:var(--error);}
+
+  .container{max-width:1080px; margin:0 auto; padding:26px 20px;}
+
+  .filters-bar{
+    background:var(--navy-900); border:1px solid var(--line); border-radius:16px; padding:16px 18px;
+    display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; margin-bottom:20px;
+  }
+  .filter-group label{display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-low); margin-bottom:6px;}
+  .filter-group input, .filter-group select{
+    background:var(--navy-800); border:1px solid var(--line); border-radius:9px; padding:9px 11px;
+    color:var(--text-hi); font-size:13px; font-family:'Inter',sans-serif;
+  }
+  .preset-row{display:flex; gap:6px; flex-wrap:wrap;}
+  .preset-btn{
+    padding:8px 13px; border-radius:8px; border:1px solid var(--line); background:var(--navy-800);
+    color:var(--text-mid); font-size:12px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif;
+  }
+  .preset-btn.active{background:var(--orange); color:var(--navy-950); border-color:var(--orange);}
+  .apply-btn{
+    padding:9px 18px; background:var(--orange); color:var(--navy-950); border:none; border-radius:9px;
+    font-family:'Syne',sans-serif; font-weight:700; font-size:13px; cursor:pointer;
+  }
+
+  .view-toggle{display:flex; gap:6px; background:var(--navy-800); padding:4px; border-radius:10px; border:1px solid var(--line);}
+  .view-btn{
+    padding:8px 15px; border-radius:7px; border:none; background:transparent; color:var(--text-mid);
+    font-size:12.5px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif;
+  }
+  .view-btn.active{background:var(--orange); color:var(--navy-950);}
+
+  .cards-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin-bottom:20px;}
+  .stat-card{background:var(--navy-900); border:1px solid var(--line); border-radius:16px; padding:20px;}
+  .stat-card .label{font-size:11px; color:var(--text-low); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:8px;}
+  .stat-card .value{font-family:'Syne',sans-serif; font-weight:800; font-size:22px;}
+  .stat-card .sub{font-size:11.5px; color:var(--text-low); margin-top:4px;}
+  .stat-card.highlight .value{color:var(--orange);}
+
+  .charts-row{display:grid; grid-template-columns:1.6fr 1fr; gap:16px; margin-bottom:24px;}
+  @media (max-width:800px){ .charts-row{grid-template-columns:1fr;} }
+  .chart-card{background:var(--navy-900); border:1px solid var(--line); border-radius:16px; padding:20px;}
+  .chart-card h3{font-family:'Syne',sans-serif; font-size:14px; margin-bottom:14px;}
+  .chart-wrap{position:relative; height:260px;}
+
+  .section-title{font-family:'Syne',sans-serif; font-weight:700; font-size:15px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;}
+  .type-filter{
+    background:var(--navy-800); border:1px solid var(--line); border-radius:8px; padding:7px 10px;
+    color:var(--text-hi); font-size:12.5px; font-family:'Inter',sans-serif;
+  }
+  .tx-table-wrap{background:var(--navy-900); border:1px solid var(--line); border-radius:14px; overflow:hidden; overflow-x:auto;}
+  .tx-table{width:100%; border-collapse:collapse; min-width:640px;}
+  .tx-table th{
+    text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-low);
+    padding:12px 16px; border-bottom:1px solid var(--line); background:var(--navy-800); position:sticky; top:0;
+  }
+  .tx-table td{padding:12px 16px; font-size:12.5px; border-bottom:1px solid var(--line); vertical-align:top;}
+  .tx-table tr:last-child td{border-bottom:none;}
+  .tx-amount{font-weight:700;}
+  .tx-amount.positive{color:var(--ok);}
+  .tx-badge{font-size:10px; font-weight:700; padding:3px 8px; border-radius:100px; text-transform:uppercase; white-space:nowrap;}
+  .tx-badge.ok{background:#38d99618; color:var(--ok);}
+  .tx-badge.warn{background:#ffb64818; color:var(--warn);}
+  .tx-badge.err{background:#ff5c7218; color:var(--error);}
+  .tx-desc{color:var(--text-low); font-size:11px; margin-top:2px; max-width:280px;}
+  .tx-userid{font-family:monospace; font-size:11px; color:var(--text-low);}
+  .table-scroll{max-height:520px; overflow-y:auto;}
+  .empty-state, .loading-state{text-align:center; padding:50px 20px; color:var(--text-low); font-size:13px;}
+  .cap-warning{
+    background:#ffb64814; border:1px solid #ffb64840; color:var(--warn); font-size:12px;
+    padding:10px 14px; border-radius:10px; margin-bottom:16px;
+  }
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <div class="gate-icon">🔐</div>
+    <h2>Dashboard Comptabilité</h2>
+    <p>Accès interne — mot de passe requis. Non sauvegardé après fermeture de la page.</p>
+    <input type="password" id="pwdInput" placeholder="Mot de passe" autocomplete="off">
+    <button class="gate-btn" id="pwdSubmit">Accéder</button>
+    <div class="gate-error" id="pwdError"></div>
+  </div>
+</div>
+
+<div id="dashboard">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-title">MIJO <span>PAY</span> — Comptabilité</div>
+    </div>
+    <button class="lock-btn" id="lockBtn">🔒 Verrouiller</button>
+  </div>
+
+  <div class="container">
+
+    <div class="filters-bar">
+      <div class="filter-group">
+        <label>Période</label>
+        <div class="preset-row">
+          <button class="preset-btn" data-preset="today">Aujourd'hui</button>
+          <button class="preset-btn active" data-preset="7d">7 jours</button>
+          <button class="preset-btn" data-preset="30d">30 jours</button>
+          <button class="preset-btn" data-preset="month">Ce mois</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>Du</label>
+        <input type="date" id="dateFrom">
+      </div>
+      <div class="filter-group">
+        <label>Au</label>
+        <input type="date" id="dateTo">
+      </div>
+      <button class="apply-btn" id="applyFilters">Appliquer</button>
+      <div style="flex:1;"></div>
+      <div class="view-toggle">
+        <button class="view-btn active" data-view="all">Toutes les transactions</button>
+        <button class="view-btn" data-view="mijo">Revenus MIJO uniquement</button>
+      </div>
+    </div>
+
+    <div id="capWarning"></div>
+
+    <div class="cards-row" id="cardsRow"></div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3 id="lineChartTitle">Volume par jour</h3>
+        <div class="chart-wrap"><canvas id="lineChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3 id="pieChartTitle">Répartition par type</h3>
+        <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <span>Transactions</span>
+      <select class="type-filter" id="typeFilter"><option value="">Tous les types</option></select>
+    </div>
+    <div class="tx-table-wrap">
+      <div class="table-scroll" id="tableContainer">
+        <div class="loading-state">Chargement…</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const CONFIG = {
+    API_URL: "https://business-accounting.mijocomplexe.workers.dev"
+  };
+
+  let currentPassword = null;
+  let currentView = "all";
+  let currentData = null;
+  let lineChartInstance = null;
+  let pieChartInstance = null;
+  const MIJO_USERID = "rec6v8Z0K0G4bwbdE";
+
+  const gate = document.getElementById("gate");
+  const dashboard = document.getElementById("dashboard");
+  const pwdInput = document.getElementById("pwdInput");
+  const pwdSubmit = document.getElementById("pwdSubmit");
+  const pwdError = document.getElementById("pwdError");
+
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return "";
+    return String(str).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function formatDateShort(iso) {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short" }) + " · " +
+      d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function badgeClass(statut) {
+    const s = (statut || "").toLowerCase();
+    if (["complété", "payé", "réussi", "reçu"].includes(s)) return "ok";
+    if (["échoué", "refusé", "annulé"].includes(s)) return "err";
+    return "warn";
+  }
+
+  async function verifyPassword() {
+    const pwd = pwdInput.value;
+    if (!pwd) return;
+
+    pwdSubmit.disabled = true;
+    pwdSubmit.textContent = "Vérification…";
+    pwdError.style.display = "none";
+
+    try {
+      const res = await fetch(`${CONFIG.API_URL}/verify`, {
+        method: "POST",
+        headers: { "X-MIJO-Accounting-Password": pwd }
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        pwdError.textContent = data.error || "Mot de passe incorrect.";
+        pwdError.style.display = "block";
+        pwdSubmit.disabled = false;
+        pwdSubmit.textContent = "Accéder";
+        return;
+      }
+
+      currentPassword = pwd;
+      gate.style.display = "none";
+      dashboard.style.display = "block";
+      setPreset("7d");
+      loadData();
+
+    } catch (err) {
+      pwdError.textContent = "Connexion au serveur impossible.";
+      pwdError.style.display = "block";
+      pwdSubmit.disabled = false;
+      pwdSubmit.textContent = "Accéder";
+    }
+  }
+
+  pwdSubmit.addEventListener("click", verifyPassword);
+  pwdInput.addEventListener("keydown", (e) => { if (e.key === "Enter") verifyPassword(); });
+
+  document.getElementById("lockBtn").addEventListener("click", () => {
+    currentPassword = null;
+    pwdInput.value = "";
+    dashboard.style.display = "none";
+    gate.style.display = "flex";
+  });
+
+  function toDateInputValue(d) { return d.toISOString().slice(0, 10); }
+
+  function setPreset(preset) {
+    document.querySelectorAll(".preset-btn").forEach(b => b.classList.toggle("active", b.dataset.preset === preset));
+    const today = new Date();
+    let from = new Date();
+
+    if (preset === "today") { from = new Date(today); }
+    else if (preset === "7d") { from.setDate(today.getDate() - 6); }
+    else if (preset === "30d") { from.setDate(today.getDate() - 29); }
+    else if (preset === "month") { from = new Date(today.getFullYear(), today.getMonth(), 1); }
+
+    document.getElementById("dateFrom").value = toDateInputValue(from);
+    document.getElementById("dateTo").value = toDateInputValue(today);
+  }
+
+  document.querySelectorAll(".preset-btn").forEach(btn => {
+    btn.addEventListener("click", () => { setPreset(btn.dataset.preset); loadData(); });
+  });
+
+  document.getElementById("applyFilters").addEventListener("click", () => {
+    document.querySelectorAll(".preset-btn").forEach(b => b.classList.remove("active"));
+    loadData();
+  });
+
+  document.querySelectorAll(".view-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".view-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentView = btn.dataset.view;
+      loadData();
+    });
+  });
+
+  document.getElementById("typeFilter").addEventListener("change", renderTable);
+
+  async function apiGet(path) {
+    const res = await fetch(`${CONFIG.API_URL}${path}`, {
+      headers: { "X-MIJO-Accounting-Password": currentPassword }
+    });
+    const data = await res.json();
+    if (res.status === 401) {
+      currentPassword = null;
+      dashboard.style.display = "none";
+      gate.style.display = "flex";
+      pwdError.textContent = "Session expirée, ressaisissez le mot de passe.";
+      pwdError.style.display = "block";
+      throw new Error("unauthorized");
+    }
+    if (!res.ok || !data.success) throw new Error(data.error || "Erreur serveur.");
+    return data;
+  }
+
+  async function loadData() {
+    const from = document.getElementById("dateFrom").value;
+    const to = document.getElementById("dateTo").value;
+    document.getElementById("tableContainer").innerHTML = `<div class="loading-state">Chargement…</div>`;
+
+    try {
+      const endpoint = currentView === "mijo" ? "/mijo-revenue" : "/summary";
+      const summaryData = await apiGet(`${endpoint}?from=${from}&to=${to}`);
+
+      const txEndpoint = currentView === "mijo"
+        ? `/transactions?from=${from}&to=${to}&userId=${MIJO_USERID}`
+        : `/transactions?from=${from}&to=${to}`;
+      const txData = await apiGet(txEndpoint);
+
+      currentData = { summary: summaryData, transactions: txData.transactions };
+      renderAll();
+
+    } catch (err) {
+      if (err.message !== "unauthorized") {
+        document.getElementById("tableContainer").innerHTML = `<div class="empty-state">⚠️ ${escapeHtml(err.message)}</div>`;
+      }
+    }
+  }
+
+  function renderAll() {
+    renderCapWarning();
+    renderKPIs();
+    renderCharts();
+    populateTypeFilter();
+    renderTable();
+  }
+
+  function renderCapWarning() {
+    const cap = document.getElementById("capWarning");
+    if (currentData.summary.plafondAtteint) {
+      cap.innerHTML = `<div class="cap-warning">⚠️ Plus de 3000 transactions dans cette plage — certaines données peuvent manquer. Réduisez la période pour un calcul exact.</div>`;
+    } else {
+      cap.innerHTML = "";
+    }
+  }
+
+  function renderKPIs() {
+    const s = currentData.summary;
+    const cardsRow = document.getElementById("cardsRow");
+
+    if (currentView === "mijo") {
+      const parType = s.parType || {};
+      const typesTriés = Object.entries(parType).sort((a, b) => b[1].total - a[1].total);
+
+      cardsRow.innerHTML = `
+        <div class="stat-card highlight">
+          <div class="label">Revenu total MIJO</div>
+          <div class="value">${s.total.toLocaleString()} HTG</div>
+          <div class="sub">${(s.transactions || []).length} transaction(s)</div>
+        </div>
+        ${typesTriés.slice(0, 3).map(([type, agg]) => `
+          <div class="stat-card">
+            <div class="label">${escapeHtml(type)}</div>
+            <div class="value">${agg.total.toLocaleString()} HTG</div>
+            <div class="sub">${agg.nombre} transaction(s)</div>
+          </div>
+        `).join("")}
+      `;
+    } else {
+      cardsRow.innerHTML = `
+        <div class="stat-card highlight">
+          <div class="label">Volume total</div>
+          <div class="value">${s.total.toLocaleString()} HTG</div>
+          <div class="sub">${s.nombreTransactions} transaction(s)</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Dépôts</div>
+          <div class="value">${sommeTypesContenant(s.parType, "Dépôt").toLocaleString()} HTG</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Retraits</div>
+          <div class="value">${sommeTypesContenant(s.parType, "Retrait").toLocaleString()} HTG</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Revenus MIJO</div>
+          <div class="value">${sommeTypesContenant(s.parType, "Revenu").toLocaleString()} HTG</div>
+        </div>
+      `;
+    }
+  }
+
+  function sommeTypesContenant(parType, motCle) {
+    if (!parType) return 0;
+    return Object.entries(parType)
+      .filter(([type]) => type.toLowerCase().includes(motCle.toLowerCase()))
+      .reduce((sum, [, agg]) => sum + agg.total, 0);
+  }
+
+  function renderCharts() {
+    const parJour = currentData.summary.parJour || {};
+    const parType = currentData.summary.parType || {};
+
+    const joursTries = Object.keys(parJour).sort();
+    const labelsJours = joursTries.map(j => {
+      const d = new Date(j + "T00:00:00");
+      return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short" });
+    });
+    const valeursJours = joursTries.map(j => parJour[j]);
+
+    document.getElementById("lineChartTitle").textContent =
+      currentView === "mijo" ? "Revenu MIJO par jour" : "Volume total par jour";
+
+    if (lineChartInstance) lineChartInstance.destroy();
+    lineChartInstance = new Chart(document.getElementById("lineChart"), {
+      type: "line",
+      data: {
+        labels: labelsJours,
+        datasets: [{
+          label: "Montant (HTG)",
+          data: valeursJours,
+          borderColor: "#ff6b35",
+          backgroundColor: "#ff6b3522",
+          fill: true,
+          tension: 0.3,
+          pointRadius: 3
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: "#aab4cc" }, grid: { color: "#28345a" } },
+          y: { ticks: { color: "#aab4cc" }, grid: { color: "#28345a" } }
+        }
+      }
+    });
+
+    const typesTypes = Object.keys(parType);
+    const valeursType = typesTypes.map(t => parType[t].total);
+    const palette = ["#ff6b35", "#38d996", "#a78bfa", "#ffb648", "#ff5c72", "#38bdf8", "#f472b6", "#a3e635"];
+
+    document.getElementById("pieChartTitle").textContent =
+      currentView === "mijo" ? "Répartition des revenus MIJO" : "Répartition par type";
+
+    if (pieChartInstance) pieChartInstance.destroy();
+    pieChartInstance = new Chart(document.getElementById("pieChart"), {
+      type: "doughnut",
+      data: {
+        labels: typesTypes,
+        datasets: [{ data: valeursType, backgroundColor: palette, borderColor: "#0f1830", borderWidth: 2 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom", labels: { color: "#aab4cc", boxWidth: 11, font: { size: 10.5 } } } }
+      }
+    });
+  }
+
+  function populateTypeFilter() {
+    const select = document.getElementById("typeFilter");
+    const currentValue = select.value;
+    const types = [...new Set(currentData.transactions.map(tx => tx.TypeTransaction || "Autre"))].sort();
+
+    select.innerHTML = `<option value="">Tous les types</option>` +
+      types.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
+    select.value = types.includes(currentValue) ? currentValue : "";
+  }
+
+  function renderTable() {
+    const typeFilter = document.getElementById("typeFilter").value;
+    const rows = currentData.transactions.filter(tx => !typeFilter || tx.TypeTransaction === typeFilter);
+
+    if (rows.length === 0) {
+      document.getElementById("tableContainer").innerHTML = `<div class="empty-state">Aucune transaction pour cette sélection.</div>`;
+      return;
+    }
+
+    document.getElementById("tableContainer").innerHTML = `
+      <table class="tx-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Utilisateur</th>
+            <th>Type</th>
+            <th>Montant</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(tx => `
+            <tr>
+              <td>${formatDateShort(tx.Date)}</td>
+              <td><span class="tx-userid">${escapeHtml(tx.userId || "—")}</span></td>
+              <td>
+                ${escapeHtml(tx.TypeTransaction || "—")}
+                ${tx.Description ? `<div class="tx-desc">${escapeHtml(tx.Description.slice(0, 100))}</div>` : ""}
+              </td>
+              <td class="tx-amount positive">${Number(tx.Montant || 0).toLocaleString()} ${escapeHtml(tx.Devise || "HTG")}</td>
+              <td><span class="tx-badge ${badgeClass(tx.Statut)}">${escapeHtml(tx.Statut || "—")}</span></td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+  }
+</script>
+</body>
+</html>
