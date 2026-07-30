@@ -10,39 +10,68 @@
 <style>
   :root{
     --navy-950:#0a1120; --navy-900:#0f1830; --navy-800:#16213f;
-    --line:#28345a; --orange:#ff6b35; --text-hi:#f4f6fb; --text-mid:#aab4cc; --text-low:#6b769a;
+    --line:#28345a; --orange:#ff6b35; --gold:#ffc266;
+    --text-hi:#f4f6fb; --text-mid:#aab4cc; --text-low:#6b769a;
     --error:#ff5c72; --ok:#38d996; --warn:#ffb648;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   body{
-    background:radial-gradient(ellipse 900px 500px at 50% -10%, #ff6b3514, transparent), var(--navy-950);
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -10%, #ff6b3518, transparent),
+      radial-gradient(ellipse 600px 400px at 90% 100%, #ffc26612, transparent),
+      var(--navy-950);
     color:var(--text-hi); font-family:'Inter',sans-serif; min-height:100vh;
     display:flex; align-items:center; justify-content:center; padding:32px 16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important;}
   }
 
   .wrap{max-width:420px; width:100%;}
 
-  .brand{display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:28px;}
-  .brand-mark{width:30px; height:30px; border-radius:8px; background:linear-gradient(135deg,var(--orange),#ff9d5c);
-    display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:13px; color:var(--navy-950);}
-  .brand-name{font-family:'Syne',sans-serif; font-weight:700; font-size:14px;}
-  .brand-name span{color:var(--orange);}
-
-  .card{
-    background:var(--navy-900); border:1px solid var(--line); border-radius:20px;
-    padding:32px 28px; text-align:center;
+  /* ---------- Hero de marque : le "poster" MIJO PAY ---------- */
+  .hero-brand{text-align:center; margin-bottom:22px;}
+  .hero-logo{width:76px; height:76px; object-fit:contain; margin-bottom:10px;
+    filter:drop-shadow(0 6px 18px #ff6b3540);}
+  .hero-tagline{
+    font-family:'Syne',sans-serif; font-weight:800; font-size:22px; letter-spacing:-0.01em;
+    color:var(--text-hi);
+  }
+  .hero-tagline span{
+    background:linear-gradient(120deg, var(--gold), var(--orange));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
   }
 
-  h1{font-family:'Syne',sans-serif; font-weight:800; font-size:20px; margin-bottom:6px;}
-  .business-name{color:var(--text-mid); font-size:13.5px; margin-bottom:24px;}
+  .card{
+    background:linear-gradient(165deg, var(--navy-900), var(--navy-800));
+    border:1px solid var(--line); border-radius:22px;
+    padding:32px 28px; text-align:center; position:relative; overflow:hidden;
+  }
+  .card::before{
+    content:""; position:absolute; top:-40%; left:50%; transform:translateX(-50%);
+    width:140%; height:160px; background:radial-gradient(ellipse, #ff6b3520, transparent 70%);
+    pointer-events:none;
+  }
 
+  h1{font-family:'Syne',sans-serif; font-weight:800; font-size:18px; margin-bottom:4px; position:relative;}
+  .business-name{color:var(--text-mid); font-size:13.5px; margin-bottom:24px; position:relative;}
+
+  /* ---------- Cadre QR avec coins "viseur" ---------- */
   .qr-frame{
-    background:#ffffff; border-radius:16px; padding:20px;
+    background:#ffffff; border-radius:18px; padding:22px;
     display:inline-flex; align-items:center; justify-content:center;
     margin-bottom:20px; position:relative;
+    box-shadow:0 0 0 1px var(--line), 0 20px 40px -20px #000a;
   }
   #qrcode{line-height:0;}
   #qrcode img, #qrcode canvas{border-radius:6px; display:block;}
+
+  .corner{position:absolute; width:22px; height:22px; border:3px solid var(--orange);}
+  .corner.tl{top:6px; left:6px; border-right:none; border-bottom:none; border-radius:6px 0 0 0;}
+  .corner.tr{top:6px; right:6px; border-left:none; border-bottom:none; border-radius:0 6px 0 0;}
+  .corner.bl{bottom:6px; left:6px; border-right:none; border-top:none; border-radius:0 0 0 6px;}
+  .corner.br{bottom:6px; right:6px; border-left:none; border-top:none; border-radius:0 0 6px 0;}
 
   .logo-overlay{
     position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
@@ -55,20 +84,22 @@
   .business-id{
     font-family:monospace; font-size:11.5px; color:var(--text-low);
     background:var(--navy-800); border:1px solid var(--line); border-radius:8px;
-    padding:7px 12px; margin-bottom:24px; display:inline-block;
+    padding:7px 12px; margin-bottom:24px; display:inline-block; position:relative;
   }
 
-  .btn-row{display:flex; gap:10px;}
+  .btn-row{display:flex; gap:10px; position:relative;}
   .btn{
     flex:1; padding:13px; border-radius:11px; border:none; font-family:'Syne',sans-serif;
-    font-weight:700; font-size:13.5px; cursor:pointer; transition:filter .15s;
+    font-weight:700; font-size:13.5px; cursor:pointer; transition:filter .15s, transform .15s;
     display:flex; align-items:center; justify-content:center; gap:7px;
   }
-  .btn:hover{filter:brightness(1.08);}
-  .btn-primary{background:var(--orange); color:var(--navy-950);}
+  .btn:hover{filter:brightness(1.08); transform:translateY(-1px);}
+  .btn:focus-visible{outline:2px solid var(--orange); outline-offset:2px;}
+  .btn-primary{background:linear-gradient(135deg, var(--gold), var(--orange)); color:var(--navy-950);}
   .btn-secondary{background:var(--navy-800); color:var(--text-hi); border:1px solid var(--line);}
 
-  .hint{font-size:12px; color:var(--text-low); margin-top:18px; line-height:1.6;}
+  .hint{font-size:12px; color:var(--text-low); margin-top:18px; line-height:1.6; position:relative;}
+  .err-detail{font-size:10.5px; color:var(--text-low); margin-top:10px; word-break:break-all;}
 
   .state-msg{text-align:center; padding:40px 20px; color:var(--text-mid);}
   .state-msg .icon{font-size:26px; margin-bottom:10px;}
@@ -85,20 +116,27 @@
   .status-pill.en_attente{background:#ffb64818; color:var(--warn); border:1px solid #ffb64840;}
   .status-pill.rejete{background:#ff5c7218; color:var(--error); border:1px solid #ff5c7240;}
 
+  /* ---------- Impression : garde le "poster" de marque, cache les contrôles ---------- */
   @media print{
-    body{background:#fff !important; padding:0;}
-    .brand, .btn-row, .hint{display:none !important;}
-    .card{border:none; box-shadow:none; padding:0;}
-    .qr-frame{border:2px solid #000;}
+    body{background:#fff !important; padding:0; display:block;}
+    .wrap{max-width:none;}
+    .hero-tagline{color:#0a1120;}
+    .hero-tagline span{-webkit-text-fill-color:var(--orange); color:var(--orange);}
+    .card{border:none; box-shadow:none; background:#fff; padding:20px;}
+    .card::before{display:none;}
+    h1, .business-name{color:#0a1120;}
+    .business-id{background:#f2f2f2; color:#333; border-color:#ddd;}
+    .btn-row, .hint{display:none !important;}
+    .qr-frame{box-shadow:none; border:2px solid #0a1120;}
   }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <div class="brand">
-    <div class="brand-mark">M</div>
-    <div class="brand-name">MIJO <span>PAY</span></div>
+  <div class="hero-brand">
+    <img class="hero-logo" src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY">
+    <div class="hero-tagline">Payez via <span>MIJO PAY</span></div>
   </div>
 
   <div class="card" id="card">
@@ -114,8 +152,10 @@
   const CONFIG = {
     API_URL: "https://entreprises.mijocomplexe.workers.dev/", // même Worker business-request, route GET /me
     // Page où le client atterrit en scannant, saisit son montant et paie.
-    // Ajustez si le vrai nom de cette page diffère.
-    PAY_PAGE_URL: "https://mijopay.com/pay*"
+    // Ajustez si le vrai nom de cette page diffère — le "*" ci-dessous est un
+    // repère à remplacer, il ne doit pas rester dans l'URL finale.
+    PAY_PAGE_URL: "https://mijopay.com/pay",
+    MIJOPAY_LOGO: "https://i.postimg.cc/yYCsdY18/remove.png"
   };
 
   const card = document.getElementById("card");
@@ -162,14 +202,28 @@
       </div>`;
   }
 
+  // err est optionnel : quand fourni, on affiche un détail technique discret
+  // pour pouvoir diagnostiquer (CORS, DNS, JSON invalide...) sans devoir
+  // rouvrir les devtools à chaque fois.
+  function renderServerError(err) {
+    card.innerHTML = `
+      <div class="state-msg">
+        <div class="icon">⚠️</div>
+        Connexion au serveur impossible.
+        ${err ? `<div class="err-detail">${escapeHtml(err.message || String(err))}</div>` : ""}
+      </div>`;
+  }
+
   function renderQR(entreprise) {
     const payUrl = `${CONFIG.PAY_PAGE_URL}?businessId=${encodeURIComponent(entreprise.businessId)}`;
 
     card.innerHTML = `
-      <h1>Votre QR Code</h1>
-      <div class="business-name">${escapeHtml(entreprise.NomCommercial)}</div>
+      <h1>${escapeHtml(entreprise.NomCommercial)}</h1>
+      <div class="business-name">Scannez pour payer en toute sécurité</div>
 
       <div class="qr-frame">
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
         <div id="qrcode"></div>
         ${entreprise.LogoURL ? `<div class="logo-overlay"><img src="${entreprise.LogoURL}" alt=""></div>` : ""}
       </div>
@@ -199,17 +253,108 @@
     document.getElementById("printBtn").addEventListener("click", () => window.print());
   }
 
-  function downloadQR(entreprise) {
-    // qrcode.js génère soit un <canvas>, soit un <img> selon le navigateur.
-    const canvas = document.querySelector("#qrcode canvas");
-    const img = document.querySelector("#qrcode img");
-    const source = canvas || img;
-    if (!source) return;
+  // Compose une petite affiche marketing (logo MIJO PAY + accroche + QR +
+  // nom du commerce) dans un canvas hors-écran, puis la télécharge en PNG.
+  // Si l'image du logo est hébergée sans en-têtes CORS ouverts, le canvas
+  // est "taché" et l'export échoue silencieusement — on retombe alors sur
+  // le téléchargement simple du QR seul, sans casser le bouton.
+  async function downloadQR(entreprise) {
+    const qrCanvas = document.querySelector("#qrcode canvas");
+    const qrImg = document.querySelector("#qrcode img");
+    const qrSource = qrCanvas || qrImg;
+    if (!qrSource) return;
 
-    const link = document.createElement("a");
-    link.download = `qrcode-${entreprise.businessId}.png`;
-    link.href = canvas ? canvas.toDataURL("image/png") : img.src;
-    link.click();
+    try {
+      const poster = document.createElement("canvas");
+      poster.width = 600;
+      poster.height = 780;
+      const ctx = poster.getContext("2d");
+
+      // fond
+      ctx.fillStyle = "#0a1120";
+      ctx.fillRect(0, 0, poster.width, poster.height);
+      const glow = ctx.createRadialGradient(300, 40, 10, 300, 40, 320);
+      glow.addColorStop(0, "#ff6b3530");
+      glow.addColorStop(1, "#0a112000");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, poster.width, 400);
+
+      const logoImg = await loadImage(CONFIG.MIJOPAY_LOGO);
+      const logoSize = 110;
+      ctx.drawImage(logoImg, poster.width / 2 - logoSize / 2, 46, logoSize, logoSize);
+
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#f4f6fb";
+      ctx.font = "800 34px Syne, sans-serif";
+      ctx.fillText("Payez via", poster.width / 2, 205);
+      ctx.fillStyle = "#ff6b35";
+      ctx.font = "800 34px Syne, sans-serif";
+      ctx.fillText("MIJO PAY", poster.width / 2, 246);
+
+      // cadre blanc du QR
+      const frameSize = 320, frameX = poster.width / 2 - frameSize / 2, frameY = 288;
+      ctx.fillStyle = "#ffffff";
+      roundRect(ctx, frameX, frameY, frameSize, frameSize, 20);
+      ctx.fill();
+      const qrSize = 260;
+      ctx.drawImage(qrSource, frameX + (frameSize - qrSize) / 2, frameY + (frameSize - qrSize) / 2, qrSize, qrSize);
+
+      if (entreprise.LogoURL) {
+        try {
+          const bizLogo = await loadImage(entreprise.LogoURL);
+          const badge = 56, bx = poster.width / 2 - badge / 2, by = frameY + (frameSize - badge) / 2;
+          ctx.fillStyle = "#ffffff";
+          roundRect(ctx, bx - 4, by - 4, badge + 8, badge + 8, 12);
+          ctx.fill();
+          ctx.save();
+          roundRect(ctx, bx, by, badge, badge, 8);
+          ctx.clip();
+          ctx.drawImage(bizLogo, bx, by, badge, badge);
+          ctx.restore();
+        } catch (e) { /* logo du commerce indisponible en export — on garde le QR seul */ }
+      }
+
+      ctx.fillStyle = "#f4f6fb";
+      ctx.font = "700 24px Syne, sans-serif";
+      ctx.fillText(entreprise.NomCommercial, poster.width / 2, frameY + frameSize + 56);
+
+      ctx.fillStyle = "#6b769a";
+      ctx.font = "400 15px Inter, sans-serif";
+      ctx.fillText("Scannez pour payer en toute sécurité", poster.width / 2, frameY + frameSize + 84);
+
+      const link = document.createElement("a");
+      link.download = `mijopay-qr-${entreprise.businessId}.png`;
+      link.href = poster.toDataURL("image/png");
+      link.click();
+
+    } catch (e) {
+      // canvas "taché" (CORS) ou autre échec de composition : on retombe sur
+      // le téléchargement simple du QR seul plutôt que de bloquer l'action.
+      const link = document.createElement("a");
+      link.download = `qrcode-${entreprise.businessId}.png`;
+      link.href = qrCanvas ? qrCanvas.toDataURL("image/png") : qrImg.src;
+      link.click();
+    }
+  }
+
+  function loadImage(src) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = src;
+    });
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
   }
 
   function escapeHtml(str) {
@@ -231,9 +376,25 @@
         method: "GET",
         headers: { "Authorization": `Bearer ${token}` }
       });
-      const data = await res.json();
+
+      let data;
+      try {
+        data = await res.json();
+      } catch (parseErr) {
+        // la réponse n'est pas du JSON valide (page d'erreur HTML, blocage
+        // en amont du Worker, etc.) — on le signale explicitement plutôt
+        // que de laisser planter silencieusement.
+        renderServerError(new Error(`Réponse invalide du serveur (statut ${res.status}).`));
+        return;
+      }
 
       if (!res.ok || !data.success) {
+        if (res.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          renderLoginGate();
+          return;
+        }
         if (res.status === 404) {
           renderNoBusiness();
         } else {
@@ -254,7 +415,10 @@
       }
 
     } catch (err) {
-      card.innerHTML = `<div class="state-msg"><div class="icon">⚠️</div>Connexion au serveur impossible.</div>`;
+      // fetch a rejeté avant même d'obtenir une réponse : le plus souvent
+      // CORS, DNS, ou le Worker injoignable. Le détail ci-dessous aide à
+      // distinguer les trois cas sans rouvrir les devtools.
+      renderServerError(err);
     }
   }
 
