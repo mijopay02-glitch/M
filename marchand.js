@@ -2,7 +2,7 @@
   'use strict';
 
   const ENTREPRISES_ENDPOINT = "https://listentreprise.mijocomplexe.workers.dev/";
-  const PAY_PAGE_URL = "pay.html";
+  const PAY_PAGE_URL = "https://mijopay.com/pay";
   const MERCHANT_PARAM = "businessId";
   const BUSINESS_ID_REGEX = /^biz-[a-zA-Z0-9]{10,32}$/;
   const FETCH_TIMEOUT_MS = 8000;
