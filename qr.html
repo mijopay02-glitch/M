@@ -8,103 +8,102 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --navy-950:#0a1120; --navy-900:#0f1830; --navy-800:#16213f;
-    --line:#28345a; --orange:#ff6b35; --gold:#ffc266;
-    --text-hi:#f4f6fb; --text-mid:#aab4cc; --text-low:#6b769a;
-    --error:#ff5c72; --ok:#38d996; --warn:#ffb648;
+    --blue:#2f8fd6; --teal:#38c2c9; --orange:#ff7a3d; --gold:#ffb648;
+    --ink:#141a2b; --ink-soft:#59627a; --line:#e3e7f0; --paper:#ffffff;
+    --page-1:#e9eef7; --page-2:#dde6f2;
+    --error:#d93f56; --ok:#1f9d6e; --warn:#c97a10;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   body{
     background:
-      radial-gradient(ellipse 900px 500px at 50% -10%, #ff6b3518, transparent),
-      radial-gradient(ellipse 600px 400px at 90% 100%, #ffc26612, transparent),
-      var(--navy-950);
-    color:var(--text-hi); font-family:'Inter',sans-serif; min-height:100vh;
-    display:flex; align-items:center; justify-content:center; padding:32px 16px;
+      radial-gradient(ellipse 800px 460px at 50% -8%, #2f8fd614, transparent),
+      radial-gradient(ellipse 600px 420px at 100% 100%, #ff7a3d10, transparent),
+      linear-gradient(180deg, var(--page-1), var(--page-2));
+    color:var(--ink); font-family:'Inter',sans-serif; min-height:100vh;
+    display:flex; align-items:center; justify-content:center; padding:40px 16px;
     -webkit-font-smoothing:antialiased;
   }
   @media (prefers-reduced-motion: reduce){
     *{animation-duration:0.001ms !important; animation-iteration-count:1 !important;}
   }
 
-  .wrap{max-width:420px; width:100%;}
+  .wrap{max-width:380px; width:100%;}
 
-  /* ---------- Hero de marque : le "poster" MIJO PAY ---------- */
-  .hero-brand{text-align:center; margin-bottom:22px;}
-  .hero-logo{width:76px; height:76px; object-fit:contain; margin-bottom:10px;
-    filter:drop-shadow(0 6px 18px #ff6b3540);}
-  .hero-tagline{
-    font-family:'Syne',sans-serif; font-weight:800; font-size:22px; letter-spacing:-0.01em;
-    color:var(--text-hi);
-  }
-  .hero-tagline span{
-    background:linear-gradient(120deg, var(--gold), var(--orange));
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-  }
-
+  /* ---------- Le panneau : pensé comme un vrai support imprimé
+     affiché sur un comptoir, façon enseigne "Payer par QR code" ---------- */
   .card{
-    background:linear-gradient(165deg, var(--navy-900), var(--navy-800));
-    border:1px solid var(--line); border-radius:22px;
-    padding:32px 28px; text-align:center; position:relative; overflow:hidden;
-  }
-  .card::before{
-    content:""; position:absolute; top:-40%; left:50%; transform:translateX(-50%);
-    width:140%; height:160px; background:radial-gradient(ellipse, #ff6b3520, transparent 70%);
-    pointer-events:none;
+    background:var(--paper); border-radius:22px; overflow:hidden;
+    box-shadow:0 30px 60px -24px #1a233530, 0 2px 0 #ffffff inset;
+    text-align:center; position:relative;
   }
 
-  h1{font-family:'Syne',sans-serif; font-weight:800; font-size:18px; margin-bottom:4px; position:relative;}
-  .business-name{color:var(--text-mid); font-size:13.5px; margin-bottom:24px; position:relative;}
+  .card-accent{
+    height:8px;
+    background:linear-gradient(90deg, var(--blue), var(--teal) 55%, var(--orange));
+  }
+  .card-band{
+    background:var(--page-1);
+    padding:22px 20px 18px;
+  }
+  .card-band img{height:46px; display:block; margin:0 auto;}
 
-  /* ---------- Cadre QR avec coins "viseur" ---------- */
+  .card-body{padding:26px 26px 22px;}
+
+  .headline{
+    font-family:'Syne',sans-serif; font-weight:800; font-size:20px; letter-spacing:0.01em;
+    text-transform:uppercase; color:var(--ink); margin-bottom:4px;
+  }
+  .business-name{color:var(--ink-soft); font-size:13.5px; margin-bottom:22px;}
+
+  /* ---------- Cadre QR : simple, net, comme sur un support imprimé ---------- */
   .qr-frame{
-    background:#ffffff; border-radius:18px; padding:22px;
+    background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px;
     display:inline-flex; align-items:center; justify-content:center;
-    margin-bottom:20px; position:relative;
-    box-shadow:0 0 0 1px var(--line), 0 20px 40px -20px #000a;
+    margin-bottom:16px; position:relative;
   }
   #qrcode{line-height:0;}
-  #qrcode img, #qrcode canvas{border-radius:6px; display:block;}
-
-  .corner{position:absolute; width:22px; height:22px; border:3px solid var(--orange);}
-  .corner.tl{top:6px; left:6px; border-right:none; border-bottom:none; border-radius:6px 0 0 0;}
-  .corner.tr{top:6px; right:6px; border-left:none; border-bottom:none; border-radius:0 6px 0 0;}
-  .corner.bl{bottom:6px; left:6px; border-right:none; border-top:none; border-radius:0 0 0 6px;}
-  .corner.br{bottom:6px; right:6px; border-left:none; border-top:none; border-radius:0 0 6px 0;}
+  #qrcode img, #qrcode canvas{border-radius:4px; display:block;}
 
   .logo-overlay{
     position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-    width:44px; height:44px; border-radius:10px; background:#fff;
+    width:42px; height:42px; border-radius:9px; background:#fff;
     border:3px solid #fff; box-shadow:0 0 0 1px var(--line);
     display:flex; align-items:center; justify-content:center; overflow:hidden;
   }
   .logo-overlay img{width:100%; height:100%; object-fit:cover;}
 
   .business-id{
-    font-family:monospace; font-size:11.5px; color:var(--text-low);
-    background:var(--navy-800); border:1px solid var(--line); border-radius:8px;
-    padding:7px 12px; margin-bottom:24px; display:inline-block; position:relative;
+    font-family:monospace; font-size:11px; color:var(--ink-soft);
+    background:var(--page-1); border:1px solid var(--line); border-radius:8px;
+    padding:6px 11px; margin-bottom:18px; display:inline-block;
   }
 
-  .btn-row{display:flex; gap:10px; position:relative;}
+  .instruction{
+    font-size:12.5px; color:var(--ink-soft); line-height:1.55; padding:0 6px 4px;
+    border-top:1px dashed var(--line); padding-top:16px;
+  }
+  .instruction b{color:var(--ink);}
+
+  /* ---------- Contrôles (hors du panneau imprimable) ---------- */
+  .btn-row{display:flex; gap:10px; margin-top:20px;}
   .btn{
     flex:1; padding:13px; border-radius:11px; border:none; font-family:'Syne',sans-serif;
     font-weight:700; font-size:13.5px; cursor:pointer; transition:filter .15s, transform .15s;
     display:flex; align-items:center; justify-content:center; gap:7px;
   }
-  .btn:hover{filter:brightness(1.08); transform:translateY(-1px);}
-  .btn:focus-visible{outline:2px solid var(--orange); outline-offset:2px;}
-  .btn-primary{background:linear-gradient(135deg, var(--gold), var(--orange)); color:var(--navy-950);}
-  .btn-secondary{background:var(--navy-800); color:var(--text-hi); border:1px solid var(--line);}
+  .btn:hover{filter:brightness(1.06); transform:translateY(-1px);}
+  .btn:focus-visible{outline:2px solid var(--blue); outline-offset:2px;}
+  .btn-primary{background:linear-gradient(120deg, var(--orange), var(--gold)); color:#241205;}
+  .btn-secondary{background:#fff; color:var(--ink); border:1px solid var(--line);}
 
-  .hint{font-size:12px; color:var(--text-low); margin-top:18px; line-height:1.6; position:relative;}
-  .err-detail{font-size:10.5px; color:var(--text-low); margin-top:10px; word-break:break-all;}
+  .hint{font-size:12px; color:var(--ink-soft); margin-top:16px; line-height:1.6; text-align:center;}
+  .err-detail{font-size:10.5px; color:var(--ink-soft); margin-top:10px; word-break:break-all;}
 
-  .state-msg{text-align:center; padding:40px 20px; color:var(--text-mid);}
+  .state-msg{text-align:center; padding:40px 26px; color:var(--ink-soft);}
   .state-msg .icon{font-size:26px; margin-bottom:10px;}
   .state-msg .action-link{
-    display:inline-block; margin-top:16px; padding:11px 20px; background:var(--orange);
-    color:var(--navy-950); border-radius:10px; text-decoration:none; font-weight:700; font-size:13px;
+    display:inline-block; margin-top:16px; padding:11px 20px; background:var(--blue);
+    color:#fff; border-radius:10px; text-decoration:none; font-weight:700; font-size:13px;
     font-family:'Syne',sans-serif;
   }
 
@@ -112,34 +111,30 @@
     display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700;
     padding:5px 12px; border-radius:100px; margin-bottom:20px; text-transform:uppercase; letter-spacing:0.03em;
   }
-  .status-pill.en_attente{background:#ffb64818; color:var(--warn); border:1px solid #ffb64840;}
-  .status-pill.rejete{background:#ff5c7218; color:var(--error); border:1px solid #ff5c7240;}
+  .status-pill.en_attente{background:#c97a1014; color:var(--warn); border:1px solid #c97a1030;}
+  .status-pill.rejete{background:#d93f5614; color:var(--error); border:1px solid #d93f5630;}
 
-  /* ---------- Impression : garde le "poster" de marque, cache les contrôles ---------- */
+  /* ---------- Impression : uniquement le panneau, tel un vrai support ---------- */
   @media print{
     body{background:#fff !important; padding:0; display:block;}
     .wrap{max-width:none;}
-    .hero-tagline{color:#0a1120;}
-    .hero-tagline span{-webkit-text-fill-color:var(--orange); color:var(--orange);}
-    .card{border:none; box-shadow:none; background:#fff; padding:20px;}
-    .card::before{display:none;}
-    h1, .business-name{color:#0a1120;}
-    .business-id{background:#f2f2f2; color:#333; border-color:#ddd;}
+    .card{box-shadow:none; border-radius:0;}
     .btn-row, .hint{display:none !important;}
-    .qr-frame{box-shadow:none; border:2px solid #0a1120;}
+    .qr-frame{border:1px solid #ccc;}
   }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <div class="hero-brand">
-    <img class="hero-logo" src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY">
-    <div class="hero-tagline">Payez via <span>MIJO PAY</span></div>
-  </div>
-
   <div class="card" id="card">
-    <div class="state-msg" id="loadingMsg"><div class="icon">⏳</div>Chargement…</div>
+    <div class="card-accent"></div>
+    <div class="card-band">
+      <img src="https://i.postimg.cc/yYCsdY18/remove.png" alt="MIJO PAY">
+    </div>
+    <div class="card-body">
+      <div class="state-msg" id="loadingMsg"><div class="icon">⏳</div>Chargement…</div>
+    </div>
   </div>
 
 </div>
@@ -2452,7 +2447,22 @@ var qrcode = function() {
 }(function () {
     return qrcode;
 }));
-
+//---------------------------------------------------------------------
+//
+// QR Code Generator for JavaScript UTF8 Support (optional)
+//
+// Copyright (c) 2011 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//  http://www.opensource.org/licenses/mit-license.php
+//
+// The word 'QR Code' is registered trademark of
+// DENSO WAVE INCORPORATED
+//  http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
 
 !function(qrcode) {
 
@@ -2570,36 +2580,41 @@ var qrcode = function() {
     const payUrl = `${CONFIG.PAY_PAGE_URL}?businessId=${encodeURIComponent(entreprise.businessId)}`;
 
     card.innerHTML = `
-      <h1>${escapeHtml(entreprise.NomCommercial)}</h1>
-      <div class="business-name">Scannez pour payer en toute sécurité</div>
-
-      <div class="qr-frame">
-        <span class="corner tl"></span><span class="corner tr"></span>
-        <span class="corner bl"></span><span class="corner br"></span>
-        <div id="qrcode"></div>
-        ${entreprise.LogoURL ? `<div class="logo-overlay"><img src="${entreprise.LogoURL}" alt=""></div>` : ""}
+      <div class="card-accent"></div>
+      <div class="card-band">
+        <img src="${CONFIG.MIJOPAY_LOGO}" alt="MIJO PAY">
       </div>
+      <div class="card-body">
+        <div class="headline">Paiement par QR code</div>
+        <div class="business-name">${escapeHtml(entreprise.NomCommercial)}</div>
 
-      <div class="business-id">${escapeHtml(entreprise.businessId)}</div>
+        <div class="qr-frame">
+          <div id="qrcode"></div>
+          ${entreprise.LogoURL ? `<div class="logo-overlay"><img src="${entreprise.LogoURL}" alt=""></div>` : ""}
+        </div>
 
-      <div class="btn-row">
-        <button class="btn btn-primary" id="downloadBtn">⬇ Télécharger</button>
-        <button class="btn btn-secondary" id="printBtn">🖨 Imprimer</button>
+        <div class="business-id">${escapeHtml(entreprise.businessId)}</div>
+
+        <p class="instruction"><b>Comment ça marche :</b> le client ouvre l'app MIJO PAY, scanne ce code, saisit le montant et paie — reçu direct sur votre compte.</p>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" id="downloadBtn">⬇ Télécharger</button>
+          <button class="btn btn-secondary" id="printBtn">🖨 Imprimer</button>
+        </div>
       </div>
-
-      <p class="hint">Affichez ce QR code dans votre commerce. Vos clients le scannent, saisissent leur montant, et paient directement sur votre compte MIJO PAY.</p>
     `;
 
     // Niveau H (haute correction d'erreur) quand un logo recouvre le centre,
     // pour que le QR reste scannable malgré l'overlay.
-    drawQRCode(document.getElementById("qrcode"), payUrl, 220, entreprise.LogoURL ? "H" : "M");
+    drawQRCode(document.getElementById("qrcode"), payUrl, 200, entreprise.LogoURL ? "H" : "M");
 
     document.getElementById("downloadBtn").addEventListener("click", () => downloadQR(entreprise));
     document.getElementById("printBtn").addEventListener("click", () => window.print());
   }
 
-  // Compose une petite affiche marketing (logo MIJO PAY + accroche + QR +
-  // nom du commerce) dans un canvas hors-écran, puis la télécharge en PNG.
+  // Compose la même affiche que celle affichée à l'écran (bande de marque,
+  // titre, QR, nom du commerce) dans un canvas hors-écran, puis la télécharge
+  // en PNG — prête à imprimer et afficher au comptoir.
   // Si l'image du logo est hébergée sans en-têtes CORS ouverts, le canvas
   // est "taché" et l'export échoue silencieusement — on retombe alors sur
   // le téléchargement simple du QR seul, sans casser le bouton.
@@ -2610,44 +2625,54 @@ var qrcode = function() {
     if (!qrSource) return;
 
     try {
+      const W = 640, H = 860;
       const poster = document.createElement("canvas");
-      poster.width = 600;
-      poster.height = 780;
+      poster.width = W;
+      poster.height = H;
       const ctx = poster.getContext("2d");
 
-      // fond
-      ctx.fillStyle = "#0a1120";
-      ctx.fillRect(0, 0, poster.width, poster.height);
-      const glow = ctx.createRadialGradient(300, 40, 10, 300, 40, 320);
-      glow.addColorStop(0, "#ff6b3530");
-      glow.addColorStop(1, "#0a112000");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, poster.width, 400);
+      // fond blanc + bande d'accent en dégradé (bleu → sarcelle → orange)
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, W, H);
+      const accentH = 14;
+      const accent = ctx.createLinearGradient(0, 0, W, 0);
+      accent.addColorStop(0, "#2f8fd6");
+      accent.addColorStop(0.55, "#38c2c9");
+      accent.addColorStop(1, "#ff7a3d");
+      ctx.fillStyle = accent;
+      ctx.fillRect(0, 0, W, accentH);
 
+      // bande logo
+      ctx.fillStyle = "#e9eef7";
+      ctx.fillRect(0, accentH, W, 150);
       const logoImg = await loadImage(CONFIG.MIJOPAY_LOGO);
-      const logoSize = 110;
-      ctx.drawImage(logoImg, poster.width / 2 - logoSize / 2, 46, logoSize, logoSize);
+      const logoH = 90, logoW = logoH * (logoImg.width / logoImg.height);
+      ctx.drawImage(logoImg, W / 2 - logoW / 2, accentH + 32, logoW, logoH);
 
       ctx.textAlign = "center";
-      ctx.fillStyle = "#f4f6fb";
-      ctx.font = "800 34px Syne, sans-serif";
-      ctx.fillText("Payez via", poster.width / 2, 205);
-      ctx.fillStyle = "#ff6b35";
-      ctx.font = "800 34px Syne, sans-serif";
-      ctx.fillText("MIJO PAY", poster.width / 2, 246);
+      ctx.fillStyle = "#141a2b";
+      ctx.font = "800 30px Syne, sans-serif";
+      ctx.fillText("PAIEMENT PAR QR CODE", W / 2, 258);
+
+      ctx.fillStyle = "#59627a";
+      ctx.font = "400 18px Inter, sans-serif";
+      ctx.fillText(entreprise.NomCommercial, W / 2, 296);
 
       // cadre blanc du QR
-      const frameSize = 320, frameX = poster.width / 2 - frameSize / 2, frameY = 288;
+      const frameSize = 360, frameX = W / 2 - frameSize / 2, frameY = 336;
       ctx.fillStyle = "#ffffff";
-      roundRect(ctx, frameX, frameY, frameSize, frameSize, 20);
+      ctx.strokeStyle = "#e3e7f0";
+      ctx.lineWidth = 2;
+      roundRect(ctx, frameX, frameY, frameSize, frameSize, 18);
       ctx.fill();
-      const qrSize = 260;
+      ctx.stroke();
+      const qrSize = 300;
       ctx.drawImage(qrSource, frameX + (frameSize - qrSize) / 2, frameY + (frameSize - qrSize) / 2, qrSize, qrSize);
 
       if (entreprise.LogoURL) {
         try {
           const bizLogo = await loadImage(entreprise.LogoURL);
-          const badge = 56, bx = poster.width / 2 - badge / 2, by = frameY + (frameSize - badge) / 2;
+          const badge = 60, bx = W / 2 - badge / 2, by = frameY + (frameSize - badge) / 2;
           ctx.fillStyle = "#ffffff";
           roundRect(ctx, bx - 4, by - 4, badge + 8, badge + 8, 12);
           ctx.fill();
@@ -2659,13 +2684,12 @@ var qrcode = function() {
         } catch (e) { /* logo du commerce indisponible en export — on garde le QR seul */ }
       }
 
-      ctx.fillStyle = "#f4f6fb";
-      ctx.font = "700 24px Syne, sans-serif";
-      ctx.fillText(entreprise.NomCommercial, poster.width / 2, frameY + frameSize + 56);
+      ctx.fillStyle = "#59627a";
+      ctx.font = "500 14px Inter, sans-serif";
+      ctx.fillText(entreprise.businessId, W / 2, frameY + frameSize + 46);
 
-      ctx.fillStyle = "#6b769a";
-      ctx.font = "400 15px Inter, sans-serif";
-      ctx.fillText("Scannez pour payer en toute sécurité", poster.width / 2, frameY + frameSize + 84);
+      ctx.font = "400 14px Inter, sans-serif";
+      wrapText(ctx, "Scannez avec l'app MIJO PAY pour payer instantanément.", W / 2, frameY + frameSize + 78, 460, 20);
 
       const link = document.createElement("a");
       link.download = `mijopay-qr-${entreprise.businessId}.png`;
@@ -2680,6 +2704,24 @@ var qrcode = function() {
       link.href = qrCanvas ? qrCanvas.toDataURL("image/png") : qrImg.src;
       link.click();
     }
+  }
+
+  // Retour à la ligne centré pour le texte d'instruction du poster exporté.
+  function wrapText(ctx, text, cx, y, maxWidth, lineHeight) {
+    const words = text.split(" ");
+    let line = "";
+    const lines = [];
+    for (const word of words) {
+      const test = line ? `${line} ${word}` : word;
+      if (ctx.measureText(test).width > maxWidth && line) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = test;
+      }
+    }
+    if (line) lines.push(line);
+    lines.forEach((l, i) => ctx.fillText(l, cx, y + i * lineHeight));
   }
 
   function loadImage(src) {
