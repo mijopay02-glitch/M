@@ -177,6 +177,15 @@
             background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
             animation: shine .9s ease forwards;
         }
+        .float-btn.plaintes .float-btn-icon {
+    background: linear-gradient(135deg, #EF4444, #B91C1C);
+}
+.float-btn.plaintes.expanded {
+    box-shadow: 0 10px 32px rgba(239,68,68,.28);
+}
+.float-btn.plaintes {
+    animation: floatIn .5s cubic-bezier(.34,1.56,.64,1) 1.05s both;
+}
         .action-item:nth-child(1) .action-btn::after { animation-delay: .20s; }
         .action-item:nth-child(2) .action-btn::after { animation-delay: .30s; }
         .action-item:nth-child(3) .action-btn::after { animation-delay: .40s; }
@@ -598,13 +607,16 @@
     </div>
  
     <!-- FLOATING NAV BUTTONS -->
-    <div class="float-nav">
-        <!-- Mes Transactions -->
-        <a href="transaction.html" class="float-btn tx">
-            <div class="float-btn-icon">📋</div>
-            <span class="float-btn-label">Transactions</span>
-        </a>
-    </div>
+   <div class="float-nav">
+    <a href="transaction.html" class="float-btn tx">
+        <div class="float-btn-icon">📋</div>
+        <span class="float-btn-label">Transactions</span>
+    </a>
+    <a href="plaintes.html" class="float-btn plaintes">
+        <div class="float-btn-icon">📢</div>
+        <span class="float-btn-label">Plaintes</span>
+    </a>
+</div>
  
     <script>
     // ══════════════════════════════════════════════════
