@@ -1,9 +1,6 @@
 (function () {
   'use strict';
 
-  // ⚠️ Adapte cette clé si ton système de login stocke l'ID utilisateur
-  // sous un autre nom dans localStorage.
-  const USER_ID_STORAGE_KEY = "mijo_user_id";
   const WORKER_URL = "https://plaintes-worker.mijocomplexe.workers.dev";
   const FETCH_TIMEOUT_MS = 8000;
 
@@ -22,9 +19,15 @@
     rejete: "Rejeté"
   };
 
-  const userId = localStorage.getItem(USER_ID_STORAGE_KEY);
+  let userId = null;
+  try {
+    const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+    userId = storedUser && storedUser.userId ? storedUser.userId : null;
+  } catch (e) {
+    userId = null;
+  }
   if (!userId) {
-    window.location.href = "login.html"; // adapte si ta page de login a un autre nom
+    window.location.href = "index.html"; // même comportement que checkUserSession() sur home.html
     return;
   }
 
