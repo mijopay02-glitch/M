@@ -2596,7 +2596,7 @@ var qrcode = function() {
         <div class="business-id">${escapeHtml(entreprise.businessId)}</div>
 
         <div class="btn-row">
-          <button class="btn btn-primary" id="downloadBtn">⬇ Télécharger</button>
+          <button class="btn btn-primary" id="downloadBtn">⬇ Télécharger (PDF)</button>
           <button class="btn btn-secondary" id="printBtn">🖨 Imprimer</button>
         </div>
 
@@ -2702,19 +2702,84 @@ var qrcode = function() {
       ctx.font = "500 13px Inter, sans-serif";
       ctx.fillText(entreprise.businessId, W / 2, tagY + 70);
 
-      const link = document.createElement("a");
-      link.download = `mijopay-qr-${entreprise.businessId}.png`;
-      link.href = poster.toDataURL("image/png");
-      link.click();
+      downloadCanvasAsPdf(poster, `mijopay-qr-${entreprise.businessId}.pdf`);
 
     } catch (e) {
       // canvas "taché" (CORS) ou autre échec de composition : on retombe sur
-      // le téléchargement simple du QR seul plutôt que de bloquer l'action.
-      const link = document.createElement("a");
-      link.download = `qrcode-${entreprise.businessId}.png`;
-      link.href = qrCanvas ? qrCanvas.toDataURL("image/png") : qrImg.src;
-      link.click();
+      // un PDF ne contenant que le QR seul plutôt que de bloquer l'action.
+      const size = qrCanvas ? qrCanvas.width : 240;
+      const fallback = document.createElement("canvas");
+      fallback.width = size;
+      fallback.height = size;
+      const fctx = fallback.getContext("2d");
+      fctx.fillStyle = "#ffffff";
+      fctx.fillRect(0, 0, size, size);
+      fctx.drawImage(qrSource, 0, 0, size, size);
+      downloadCanvasAsPdf(fallback, `qrcode-${entreprise.businessId}.pdf`);
     }
+  }
+
+  // Convertit un canvas en PDF d'une page (image plein cadre) et déclenche
+  // le téléchargement. Construit le PDF nous-mêmes, octet par octet, plutôt
+  // que d'ajouter une bibliothèque externe (~400 Ko) ou une dépendance CDN —
+  // exactement le genre de dépendance externe qui a cassé le QR la dernière
+  // fois. Validé séparément par relecture avec deux analyseurs PDF indépendants.
+  function downloadCanvasAsPdf(canvas, filename) {
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
+    const base64 = dataUrl.split(",")[1];
+    const binary = atob(base64);
+    const jpegBytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) jpegBytes[i] = binary.charCodeAt(i);
+
+    const pdfBytes = buildSingleImagePdf(jpegBytes, canvas.width, canvas.height);
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+
+  // Construit un PDF minimal à une page contenant une seule image JPEG en
+  // plein cadre (filtre DCTDecode standard — le JPEG est intégré tel quel,
+  // sans ré-encodage). Aucune dépendance externe.
+  function buildSingleImagePdf(jpegBytes, width, height) {
+    const enc = new TextEncoder();
+    const chunks = [];
+    let offset = 0;
+    const objOffsets = [];
+    function push(strOrBytes) {
+      const bytes = typeof strOrBytes === "string" ? enc.encode(strOrBytes) : strOrBytes;
+      chunks.push(bytes);
+      offset += bytes.length;
+    }
+    push("%PDF-1.4\n");
+    objOffsets[1] = offset;
+    push("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+    objOffsets[2] = offset;
+    push("2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n");
+    objOffsets[3] = offset;
+    push(`3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${width} ${height}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>\nendobj\n`);
+    objOffsets[4] = offset;
+    push(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${width} /Height ${height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`);
+    push(jpegBytes);
+    push("\nendstream\nendobj\n");
+    const contentStr = `q\n${width} 0 0 ${height} 0 0 cm\n/Im0 Do\nQ`;
+    objOffsets[5] = offset;
+    push(`5 0 obj\n<< /Length ${enc.encode(contentStr).length} >>\nstream\n${contentStr}\nendstream\nendobj\n`);
+    const xrefOffset = offset;
+    let xref = "xref\n0 6\n0000000000 65535 f \n";
+    for (let i = 1; i <= 5; i++) xref += String(objOffsets[i]).padStart(10, "0") + " 00000 n \n";
+    push(xref);
+    push(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`);
+
+    let total = 0;
+    for (const c of chunks) total += c.length;
+    const result = new Uint8Array(total);
+    let p = 0;
+    for (const c of chunks) { result.set(c, p); p += c.length; }
+    return result;
   }
 
   // Dessine les 4 coins "viseur" bleus autour du cadre QR exporté, pour
