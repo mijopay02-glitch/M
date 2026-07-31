@@ -29,7 +29,7 @@
 
   .wrap{max-width:380px; width:100%;}
 
-  /* ---------- Le panneau : logo du marchand + QR, façon
+  /* ---------- Le panneau : titre de marque + logo + QR, façon
      affichette "scannez pour payer" ---------- */
   .card{
     background:var(--paper); border-radius:22px;
@@ -39,21 +39,19 @@
 
   .card-body{padding:32px 26px 26px;}
 
-  /* Logo du marchand affiché en haut du panneau (remplace l'ancien
-     bandeau "Payer via MIJO PAY" + logo MIJO PAY) */
-  .merchant-logo-header{
-    width:104px; height:104px; border-radius:20px; object-fit:cover;
-    display:block; margin:2px auto 22px;
-    border:1px solid var(--line);
-    box-shadow:0 14px 30px -18px #1a233540;
+  .headline{
+    font-family:'Syne',sans-serif; font-weight:800; font-size:19px; letter-spacing:0.01em;
+    text-transform:uppercase; color:var(--ink); margin-bottom:2px;
   }
-  /* Repli texte si le marchand n'a pas encore de logo */
-  .merchant-name-header{
-    font-family:'Syne',sans-serif; font-weight:800; font-size:20px;
-    color:var(--ink); margin:8px auto 24px; padding:0 6px; line-height:1.3;
+  .headline .brand-name{
+    background:linear-gradient(120deg, var(--orange), var(--gold));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
   }
 
-  .business-name{color:var(--ink-soft); font-size:13px; margin-top:14px; margin-bottom:4px;}
+  .merchant-name{
+    font-family:'Syne',sans-serif; font-weight:700; font-size:20px; color:var(--ink);
+    margin:16px 0 22px; line-height:1.3; word-break:break-word;
+  }
 
   /* ---------- Cadre QR avec coins "viseur" bleus ---------- */
   .qr-frame{
@@ -65,11 +63,11 @@
   #qrcode{line-height:0;}
   #qrcode img, #qrcode canvas{border-radius:4px; display:block;}
 
-  .corner{position:absolute; width:22px; height:22px; border:3px solid var(--blue);}
-  .corner.tl{top:6px; left:6px; border-right:none; border-bottom:none; border-radius:6px 0 0 0;}
-  .corner.tr{top:6px; right:6px; border-left:none; border-bottom:none; border-radius:0 6px 0 0;}
-  .corner.bl{bottom:6px; left:6px; border-right:none; border-top:none; border-radius:0 0 0 6px;}
-  .corner.br{bottom:6px; right:6px; border-left:none; border-top:none; border-radius:0 0 6px 0;}
+  .corner{position:absolute; width:22px; height:22px; border:3px solid transparent;}
+  .corner.tl{top:6px; left:6px; border-right:none; border-bottom:none; border-radius:6px 0 0 0; border-color:var(--blue);}
+  .corner.tr{top:6px; right:6px; border-left:none; border-bottom:none; border-radius:0 6px 0 0; border-color:var(--teal);}
+  .corner.bl{bottom:6px; left:6px; border-right:none; border-top:none; border-radius:0 0 0 6px; border-color:var(--orange);}
+  .corner.br{bottom:6px; right:6px; border-left:none; border-top:none; border-radius:0 0 6px 0; border-color:var(--gold);}
 
   .logo-overlay{
     position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
@@ -2488,9 +2486,10 @@ var qrcode = function() {
     // Ajustez si le vrai nom de cette page diffère — le "*" ci-dessous est un
     // repère à remplacer, il ne doit pas rester dans l'URL finale.
     PAY_PAGE_URL: "https://mijopay.com/pay",
-    // Logo affiché en repli si le marchand n'a pas encore fourni de logo
-    // (LogoURL vide). Laissez vide pour afficher le nom du commerce à la place.
-    FALLBACK_LOGO: ""
+    // Logo MIJO PAY intégré en base64 (au lieu d'une URL externe) : il reste
+    // au centre du QR à côté du canvas, donc aucune requête cross-origine
+    // n'entre en jeu et le canvas n'est jamais "taché" (export PDF fiable).
+    MIJOPAY_LOGO: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAEsASwDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9JCTk/MfzpMn1P500k5pM5r2DzB+T6n86Mn1P50i0tABk+p/Ol3t/eP50lFABuJ7n86Mn1P50UoUmkMVelSIhNCJgetSqtQ2WkCjPFPCU5UxTwvFZtlpDQKUA08D2pQuam5Q3bxRipNuKXaaXMOxGF9qMVKFpdvtSuOxEBQRUm2l25pXDlIcZpCvtUxWmlKaYrEe2k21JtxSbadwsRlfwpu38am200rVXJIGXnimMuRzVgrTWWqTFYqsmBUZQ4q0ykVGyVakQ1cr8+v60ZPqfzp5THamYxV3IasGT6n86Nx9T+dFFMQu4+p/Ok3H1P50UY4pMBwJPc/nT0UEHOT9aizT4zwfrUjuRNSU5v603NWIcOlLSDpRmgApaTOakRMkZpNjSEValVOKcqZqYJWbZokNRMCpFFKq8VIq1m2WkIqmnBfxpyilAyeKhstIQLzTgMmnhKcFqblWGBKXbT9opcVI7DAlG32qTbRtouOwzZ7UFKk20m2lcLEZTPak2VKRijbmncLEOykK4qYrSbaLisQlaaUqYrSFKq4rEBWmMoNTsMdqYy5qkyWiBhxTCnFTsP/10m2ruQ0VinBqB054q4V61E65q0yWimcg0tSsnJ7ZqJvlrVMzasFGeKKKCQp8fQ/WmU+PofrSYDOuaZTz1NFUAi0tJT0XNK40riomTzUyIM0saCpVjxWTZokCqAal20KuKeB7Vm2aJAq08CgCnqtZtlpCBakVaVVxTgM1JQgFOxS96XbmlcdhtL1p2BS1IxmKXbT8cUAfWi4DNpo2mnge1GKVwGYpMVIRSUXGMpMU/bnnFG2mIZtpCtPxjrSUwImUZpjLj2qYjJpCPaquKxXZc00rxU7LTCvFVcmxXYetMZe9WGXioyuKtMhoqsuKhdKuMveoXHXFapmbRUxiipZE7gVFWqdzNoKfH0P1plOQ4B+tMkb601qdSBeaBiouanROKRE496njXis5MtIWNeanC01FqRRyKxbNEhQtPxShc08LWbZpYFSnhcCgCngVJQmBTgKAtOAzUtlWEAxTscUoFLg1Fx2G7aXFOApaVx2Ghc0pWndaAM0rgM20baeBRii4DNpoIxTjxRRcBlGKfigincLEZFNIzUmOaQj1ppisREUhFSEU0irTEMK0wrxUtNxTuKxAy1GVqwVqNl5qkyWiBlqJlqwwqNhmtUzNoqyLioJFxVtxxULrxWqZm0V6Ve9DDFKgyD9a1RmNPWnxrTVGTUyLipbGkSRrxUyLSItSKOKxbNUhyipQOaaq4qVBWTZqkOVaeBQoxTsVmygA9KcBQBTgKlsoAtOA9KAM04CouVYAMUUuPWjAqQuGOaMU6kIzQIb0pRmlxSHgUDAdaXHNIB3pcc0CAjNIRinUhGaAE7UoFGOKKAEx+NNIp44NIetA7jMc00inmkNUmDIiPSkIqRhTcelWSRleKYVqU00iqQmV2GKjYc1OwzUTLVpkMgdahdasuKhdeK1TM2VJFwKSPofrUrjOajRTg/WtU9DJoI171YQY96Yq9KlQdKmTLSJUqRRTVGBUiCsmzRD161KvWmItSgVmzQUCngUgHNPArNsoUDFKBmgDinVDZSCnCkHWqWt6xa6DpN3qF5J5VrbRtLI/sPT3PQe5qSZyUE5Sdkjgfjp8Y7L4R+GJLp3RtSmU/Z4jzjtvI788Adz7A18q/Dv8Aaq8cG5uXSK51G3Vy8iyss6jJzj5ipB9lb6CqPjLxDL8WvGOoa3qyLNYLI0NrbP8AMnHBPuF+6Pfee4rLGraNo95BpMc1vazuQI7aNccnp0GAT79a4J1G3ofhGbcQ4nGYt1cPNxjH4bO2nd+v/APo7w5+2Nokzxwa5p8mnTng4bYf++ZNv6E16jo3xs8Ha2qGLWYrdm6LdAxfqeP1r4r1ZJZdLulhiSefym8qOUAqXwduQeOuK5L4BfDfXPGnjWGxikubNY5MSoSyLnGW3L0wo5I75A71UKsmnqd2B4qzRyVJpVG9EmtX91j9MrHUbXU4POtLmG6izjzIZA65+oqwRmsrwv4bsvCWh22l2EYjt4Fxn+J27s3qSeTWqM12K9tT9lpObhF1VaVtbbXDGKWikzzTNRaQnFGcUhoAUHIpaaOhpQc0ALSEZoFLQAygjNOIzSNQO4w00insOKbjjmqTBkZpp6GpCKZWiJIm69KibrUzVGwq0SQvUTip3HXFROM1aM2VmpgyM4qVxUY71sjNoeoqVBTFFSoMVDGh6jmpV60xBipAKyZqiVOlPHFNTingc1DLRHeXkGm2c11dTJb20KGSWWQ4VFAyST2AFfG37SX/AAUu8K/AXxBFpNvpcuuXLrvWOL77JkjzCCVCKSCBk5OCcAV7D+2Ff6hYfBub7CzKk1/bxXJX/nlknB9iwQGvyB/b/wDCU1r8SNF8WR7n07X9OjZGI4R05K5+j/8Ajpr2cNg4vCvEyV9bW7ba/ieNXxEp4yGEUuVWu2t3vp6f8MfX9t/wWo0BgPO8C6gh+q/0kNaEf/BZ3wrxv8G6ioIyM55Hr1NfkbjP096VhJGcBmUgYwDggU/ZQ6wX4/5npfV2tqkvw/yP18i/4LPeBsjzfCeor9XI/wDZTXQ337bdp+098Op4fC2k3OjWz36WbXFxIT5r7dxCjavCAhyeeQBX4uSMz43MzY55Oa/SL4J6J/wrX4PaFEIgLmz0tbuRWHW7uzvOf91Ng+lcGJjBx5I00m/X9W0fH8U4ieEwHs4zbc3bpt16fL5ntEb2ej20FsZYreFFCRrI4XgcDr1rHHgaxm8SnWzPJK7P5yxZBQPjg57j2rx28luL+d57mR7iZzlpJDkmun+G2u3Ona5BYF2azum2GInhWxww9PQ15lTBTpxclLU/F/ZuKvc9Z1G9+w2TyqvmS8JFH/fkY4VfxJFfUH7Mfw5Twn4S/ta4/e3+oc+aRyUzkt/wNsn6Ba+avDGgyeMviHomixZ2iRZJCP4WYlVP4KJW/AV9l/EHXx4G8IKlgixybRb26jogAAB/DivIq16eCozxNb4Yq/8AX9dT9H4GymWOxjr2vbSPq+vyX5k/in4naN4Um8ieYz3X/PCAbmH1xUvhL4iad4tOyDfDMc4jk/ix1x7j0r57dFfTmm3SSzSHdI5QFpJSeBnPT6D1rs/hbo80/jCyjjyI9ND3V2w6K7oUjjz64JJHtX51gOKcwx2Y06cYr2cmtOtn590rv5PQ/pfE5JhMPhJzcnzxvr6eXm7L5o97B4pM80oHy03oa/XT4IUjmg15v8X/AI5aR8Io7GO8tbjUb693NFbW5C4RSAWZjwBk4HXNb/w3+I2l/E7w3Hq+l70jLmOWCYASQyDGVbHHcEEdQa6nha0aKxDi+R9TljiqEqzw6l761sdRSr0peKyfFPiax8G6De6xqUnlWdqm9yBlj2CgdySQAPU1zJOTSW50SnGEXKTskaq0ueTXl/wy+Pmj/ErWZ9LgsrrT7tIzNGtwVYSoCM4KngjI4/WuY8c/tMf8Ir43utHtNGW8tLGXyrmaSYo7sB8wQYxxnHPU+ldscDiJVHSUfeSueVPN8FTorEOp7jdr67nu9B5715b8UvjXF4G0jRp7GzF/c6tH50ImYoiR4B3Njkn5gMD3rd+FXxFT4keHpL37N9juYJfJnhDblDYBBU+hB/nWTw1WNL2zXumscxws8U8JGfv2vb8d9ttTtMDFNI4pcUpHFcx6ZERTGFSEcUwitExEZ61Gw5qQ9aYwq0QyJhg1EwyKmcVEwrREsgcVD0zkVYcVA5wa0RnYkX2qVaYowKkQc0mCRKo4qRRTB1qRBWTNUSKKkXpUYqQdKhlo5j4oeDV+IPw91/w+2A99aPHEx/hlA3Rt+DBa/ML9o/4V6h4u/ZcmtL+3X/hIfC8jXUUSkM6Rgsdhx32+aPqwr9ZgOK+QfjT4TXQ/i7e2gi/4l/iK1eNgR8oL5ZCfYSqw+j19Hk9TnVTCyej1X5P8PyPls7UqEqWKh0dn+a+V/wAz4Q/4JrfB7w34r8Raj4u1q1h1O602RrewtrlFeKKTy1cylSMFsMduemCevT7G+JPwp8J/F6yl0/xV4W0rV1bcI5IbcW15B7xXCfMCMdGyDjkYr4k/Zo8ZP+zv+0nr/ga7kFtp19fBbNpThVl5MKnPZ0cxn3C1+id7JEklvq9sXWzmPmCVRloX7gjvg8EdwfcV/O3GlTMcFnTq+0cbWcWntHbT0kmn9/U/dMijg8Zl9OUYJ8y1v/Nq/wAU1b0a6H5T/tD/ALH+q/BnxXpcmnTTa14M1e+js7XUXj2zW0rMP9HuVHCyYOQR8rjkdwPtG20ZL7TdRtOUilmMaf7KxhUT8tle+eJ9Ds9Ytnj1mzjv7K5Cpc2z4cOsbBlZT1JUgOjH5gQAa86Hhf8AsHVvsF1NuhWbcbkDAeN23B/xU5r9D4W4i/tilOlif4tJXf8AeXf17/8ADn4T4l5PWws8LVoK9KbcV5SdtH92j9TyL/hAtZnnMNvplzeuP+fWJpR/46P5103hL4Z6tpGoxalqunXNjHDkxrPEVLN0BOegHvX0Hc262V0LIL5NjG37uCOTy0KeuR1J/vHNJO32SZEspNkuDvjhZmwc8BlLMp/r3Ar5XEeIvNKcYYf3E7b+9+Vj2KXhEp0IqrjLVGr6RvFfjf56eha/ZQ0BdT8Z6xrbrlYA/lt9f3Sfosh/4FX0N498If8ACV6WIwR5kWSqZxvzjjPY8DBrlvgT4fs9C0/VXtoktmnljMkEYwsZCZIX0BLE4963/il8UNL+GHh2bUL+VDMUJhgZsFiO59FHc/gOTX1/+zZtgbyX7uotuv8Aw6sZZXhpcJ4ZxrySlTbbfTeyfzVvP5nnmjfDLXZbsw2+nDRos4fUL+VJZAP+mcaEjPoSa9e8K+FrLwlpi2VkpwSXllkOXlc9XY9ya+PfhP8Atd3K+Mr/APtfzZ9PvbjeVkPrgBl7I3QBehGB1r7L0LXbHxFpsN/p9wlzayjKunY9wR2I7g1xZVkuCyxuVGL5u7te3lbT9e7PRw/Fq4jg4p8rW8evk93f77Lsi/mgdKXijsa+lOg+Qf21h/xV/hk/9OE3/owVzP7M3xIbwN44jsbqXZpGrlbebcfljlz+7k/M7T7N7V1H7ag/4q/wz6fYJv8A0YK8Vu/C95pfh3R9akGbHUzMsUi/wvG+1lPocYI9j7V+m4OnTr5XTo1dpJr53b/S5+V5jVq4bNKmIpbxafysl+tj9JB0zXyz+1Z8QjqWr23hSzk/0eyIuLwqeGmI+RD/ALqnP1Yeldr4E+PEJ+CNxreoyrNq+koLOWJj8082MQn/AIGME/7relfNVhpupeNr7WL53aeaG3n1O9uG7Ackn3ZiAB7+1fN5bgXRrTqV9FB2+f8AX5o9fPc0VfCwoYZ3dRXfp2+/f0Z6D+y+uPipB/143H/sten/ABE8J/Cy9+IynW9Wew1q5ZDcWkMpWKRiAFMh2kIWGO4z+teY/sw/8lSg/wCvK4/ktc98bHI+LnigD/n5H/otK7qtF1cfJKbj7vT1PDoYmOGyeMpU1O9TaW2x9PfF/wAOeDLvw1ZHxPcf2Za2jCO0ngOJEJGNiAA7gQo4wemeMVs/CvSvDml+FYR4Xm+1adKzSG4LFnkfoS2QMEYAxgYxXkv7UJP/AAjPg7k/fc/+Qlq78FvFUfgz4Ia5rUy+YtpdSusefvuVQIv4sQK8N4ecsFGSk3eVrdN7H1CxlGnm84SpxVoXcra7J/dbQ9j8SeM9F8IwLLq+owWKv9xXbLv/ALqjk/gK5ey+PHgy9uPKGqPDk4Dz28iJ+ZFfNOiad4h+MfjF8zfatRnzLNPKSI4Ywf0UZACivTdQ/Zk1Ky05pbHWYb28Rc+Q8JjD+ytk4P1raWBwlC0MRU959tvyZ5f9uZvjOatl2HTprvu/xX3K59BW15Bf28c9tMk8Eg3JLEwZWHqCOtONfMPwj8cXvgvxLHpt0XTTribyLi3k/wCWMhO3eB2IPB9R9K+oCOK8zE4Z4afLe6ezPpsmzeGb4d1FHllHSS7P/IiYc0xhUjUw9a50e8yJxxUTdKnfnNQv0NWiGQMMiq8p+YfSrJ6VXmHzfhWyMmTLyBUicmmL1FSJ1qZDRKvWpVFRL1qYdKzZqOXtUgpi8mpBWbKQ5eteG/tYeFp9Q8FQa5Ykx3umuUMgGSEkwAfwcL+Zr3JetZ3ijQYPE/h3UdJuP9TewPAx9NwwD+BwfwrfCV3hsRCr2f4dfwOPG4ZYrDTovqtPXp+J+Hv7ePhNZ9e8NfEGxjMUOtW4iuSnGycEnHHQhxKP++a9k/Y9/bTtdVtrbwf47uYodTcLBFfXTBYtQxwu5jwk+OMnh/rxW58fvAUvjH4R+LPC0sQXV9Ike6gTHKyI21wP+Bqh+havzotoBcwq2zhhypHT1Br1uI+HsLnMPY1tHvGS3T6+qatzJ6O/ezJ4Xzarh6LUemjT6rp6NO9n0P3Fbw/bT/Ppk6GPGTE33k+o6/zHocVyvjC3tze2dtDIk0trALebaQSpHIDehweh5wRX5b+Gfj/8TPCmiDSdM8YalFYBdkccrLMYR6Rs4LL+B4qh4J+JfjL4ca62u6TrF5b3N4xlna5JliveeTIr8SfXqPUV8FwzwTWyXMJYytUi1ZpKN9b909vS8teuh6vGWInxFlDwGHdpXTvLpZ9Gu+17bdNT9UtM8QXujW4gJS8tE+5Dcx7/AC/ZTkED2zUtz8Tbq3hK2mn2tvLjAdY+n5k/yr5/+C/7UFt8S7Botc0K50W6hQmTUIEL6fIR6OeUY/3Tn6112r+NYZIJLi32WNiv/L/eKcH/AHI+rk9s4H1r08dwlkkKzrypavWyen/A+TXkfjS444uy5PL8RNXirczjGT/8C2k/N3fc9g+En7Qr+BvAGtSazDLe+Ib7U3eztyh/eDy0XI7kAqRx+YHNee+JrvUviLqU2peKpftby5CWe7McQ7ZxwWHbHC9snmuAsfiboFtdtIsV9cTP8sl7Mil2H0zwPYYHtXcW93Dr2ktNp92NsyMsc6DlGxjOD3B7Gueq4p8tOChFbJbI+UzPOsdmjX1qbaX4vu+7/pWItL8NaZpFpNb29nGkMwxKrjd5g9GJ6itzwz8TNa+DU/260vGn0gsqyW8zbiBnAUgn94PQ8OPUiuJ8FeEdR8OXV1Nf6j9qEq7ViVmYE5zvO7v/AImrHj7TE1rR4rVZGW7Mu62jUZMjAEEEemDkt2rJaT3PJo1qlCoqlKTUl1R9m/Dn9o/wp48tYgbuPTrtsLslfMbN6B+x9mANesA5Ga+Xf2WP2eR4bs4vEGtQh5ZMSQROv+sbtIQf4R/CD1PzelfUQ4HXNejTcmtT9+yOvjsThFVxySb20s2u7Xn02PkX9tIf8Vd4Z/68Zv8A0YK6r4YeAIPiT+zLHo7hVuvPuJbSZv8AlnOsjbT9Dyp9iar/ALW/gDxD4k1PQNT0jSrnVLaCGW3lFpGZHjYuGBKjnB55HpXp37PXhbU/CXwr0uw1a2azvS8szW7/AHow7kqG9DjHHbNfZVcTGGVUPZy95S+elzz6eFdXNq6qRfJKNvLXlPiKSG506WeyuVkt5IpCs0DEja6Eggj1HI/P1r6g8KfD3/hCP2ePE13dRbNV1TTpLmYEfNGmw+Wn4A5Pux9K9E1v4DeD/EPiw+Ibywd71nWSWNZisMzjozp3PAz645roPiHolzr/AIF17TLJQ91dWUsMSMcBmKnAz2rHF5rHFezhBW1Tl/Xb/gGGCyGeDdarUak7NRt5p6+vT7z5c/Zg/wCSow/9eU/8lrnvjan/ABdzxQf+nkf+i1r0P9nH4eeI9H8eyajqWkXWm2ltayxM93GY9ztgBVz16E5HFZHxf+F/inUvitqs1lot1eW2ozLJBcQIWiIKqDubouCDnOK9FVqf1+T5lbl7+Z85PC13k8I+zd/aPSz7W/M6/wDakO3wv4NP+2//AKKWue0Oymvv2ZNfMILeTqQmcDuimPd+XX8K6T9qyBoPDfhKJiC0c0iEj1ESj+lb/wCzLZw3/wALtQtbiNZoJr6aOSNxkMpRAQfwNedGp7LAU6i6Sv8Aiz2KuH+s51WoPTmp2++KRxn7LWtWWn+ItUsZ3WO6vYU+zluN5Qkso98HOPavpmaVIoXkkdY0UFmdjgKB1JPavlLxz8Cdf8HanJcaJBPqmlht8MltkzwDqAyjnI/vD9Kx5L3x34oiGmTvruox9PszpIQf97jn8aeIwlPHVPrFOorPfyOPBZviMko/UcRh5OUW+W2zvr/TV/Qs67eR+KviJfS6aN8d7qGICo+9lgA349a+u68d+D3wZuPDt0mt66qLfIP9HtAQ3lEj7zEcbvQDp9ensZrzcfWhUlGnTd1FWue5wzgMRhadXE4lcs6rvbstfu3ehG3SmMKeehpjdK81H2YxqhapmqJ+K0RLICKry/e/CrLdarSj5h9K1RkyValSolFSoOaUgRMlSjpUSVKOlZs1Hjg1ItRrzipFrNlD1p3GOaatPXpWbKZ8WftOeGY/B/xbj1Upt0vXYS0+Bxkjypx+RV/qa/K34qeCG8A/FLxHokibY0uWuIABxsdjkD2DhvwxX7b/ALWvgv8A4Sf4V3GoRR77vRZBergZJi+7KP8Avk7v+A1+V37W+gi+0zwx41iGXjzpt+wHcbVDH8PJb8Wr9AwdT61gYTe8NH6L/ga/I+Vpr6lmUofZqa/f/wAH8zmP2YvhHbfEr4jWJ1OOG40PT3Nxd20h5uNiM6xYH8LFRn2yK/QjXfBWk+OfDy6Pq1jb3tjLmNIJ4EaO2kCkxSRLjCFSBwMDGQQQa/Pb9mr4gN4D+IlrIxUw3RETI7YVm5wpPbcCy57EivuHUPjLo0mhSroxupb91eJI5rfy/szkFWLt/EygnGOOQc4r8Y42y3NsVm+FqYO/IkrNfZd9W/lbXysff5fnWWZbg8XQzOSTeqT3lFxtZd2pX9LpnkGkadDb+USvmvGAFLgYT/dUfKv4AVifEe/mlv7KBifJSIuo7FicE/oBVi2bXBr6xiILpwfG7AKlPXPXNdVd+H7XXbcQ3UW8KcqynDKfY191NcyZ/LE5Wd2eW2r4xXtHwjtpoPD9xNJlYp5t0QPcAYJH1P8AKrPhL4CwXapfTJJ9izxNfyiKFvYYGX+gr0iT4dvN5cMPiC2srZVCkRWsisf9kORhR7gZ+lfF47NcDhp+xrVop+v+R7WG4XzrNKXt8HhZSg+trJ+l7X+RzN3fu10LKyhN5qDYAhXomehcjp7AZJ7CvoH4Kfs4mxlTxB4uT7TfuA0dpIuMDqAy/wAKjqE/FiTxXa/BX4U+E/CmlxXunKt/qA+9dTL80bHrtXnBP97JJ9a9XAxXpYdU6kFUg7p7WPssn4R+pzVXMVea+z0T8+78tvURVCgYGKMYp1Ieldx+jbDHljjXc7BB6scCo/t1t/z3i/77H+NfK/7ZmpXK6/4asVuJFtDayzGFWIUvvA3EdzjivMfCnwh8YeK9Ih1TSdIkvLGUsqSrOi5KnB4Zgeor5/EZpOlWlRp0nJrt/lZn6NgeE6OIy6nmGJxapKd90rbtbuS10PvpJ0kXKMHHqpyKcCDXwlLpvjb4SahbzzpqOgzOf3cgkzHJjqMglW+hr6q+C/xN/wCFj+HHkuUSLVbNhHcpGMK2R8rqOwODx2INVgs2hiqv1epBwn2f9I8nNuG6mW0Fi6FVVaT+0un4tW6XvueiYFVdTnks9Oup4YTPNFE7pEOrsASF/E8VZGB1NKcHqa99Hxr1VkfBXibx94l+KOqW41OWW+njZlgsraHAiLHlVRRnPAGTk8V9Z/A7wdd+CfANtZ36+VfTyPdTRE58stjCn3AAz75ru4rK2gkaSOGOORzlnRACT7kdal4B4Neti8esRTVGnBRij5vLsmeDxEsVWqupN6Xf/DsXAPNLgf5NIRSZryD6YU4xgUw9adTW600AxqYe9PPeo2rQkY1RPUrGoXrREMiaoJSN1Tmq833vwrWJDJF7VKnWoV6VKvBoYkTJUw6VAp5qZeRWTNSRe1SLUY4FPFZsoevWng4NMHUU6s2UQX9jBqVhcWlyglt7iNopUPRlYYI/Imvyz+LXw0KWvj74eagCzw+a1uxHLNECVYf70LFvqor9VOoxXxx+2l4Ufw5408P+NLWEFLpRb3HHDSxcrn/ejJX/AIDX1HD9flryw0tpr8Vr/meBnFJ+zjXjvB/gz8hNLlljTy58pdQMYpccESIcH9Rmvpb4d+ObjxLorzwsj6xaoq30LLkyqOFnUDv2b8PavGvj34VTwF8WtTgt/wDkG6kq31q/ZgQP5qUP1Jrm9B8UX3h+/S8068msbtFKrNA21gCMEZr2a+HVWLg911/ruh5hl0M7wUWtJbp+fVen/Dn2ppOqXElmZrrT5Yiv8bYjjI9SzkYrtvghqmjePfHs+m/2hYXo0y0e/nsbNzOXAIVVaT7uNzDIHPFfn1rXi/U9cbfqOo3d+f8Ap5mZx+ROK6H4K/HC/wDgd8Q7PxLYxfaYlje2urXdjzoHxuX0yCFYZ7ivm80y3ETwFaOGl+9cXy9Nf6221PKyjhHD0MXSrY6fNFNNq2nz3bXfQ/VuzuPtd+s9ysUz7cIrsERB2VARgAenfvUlzLNq1wkVvK92OPmCLgseuGAGQPXp1xXg2h/t7fBzVrJbjUbn+y7kjLw3EEykHvwI2B/AmuR+If8AwUy8B6FD9j8H6featNIwRrlYjbQIpOCxd/nbAOcKq59RX8sw4ZzitJ0ZUJ3b1bjJfjJKP3v0P6PqZnhKFqilGyWmqf4K7/BH3z8HJp4tau7CI+Za2toouJB90TF8qo9wN1evE8V5/wDAjVNH8QfCvw/rGjQpDbahbLcSBW3EzEYkyepwwI+gFd/X7flGW1cpwkcJWd5Rvfstdl6fjufmePxdPHV3XpL3X+Pn8/w2FXrSnpSDrTq9k88+R/2y8Hxh4aH/AE4S/wDowV6/+zEMfB/SuP8Altcdv+mrV5H+2Uo/4Szw0f8Apxl/9GCvMvDOheNb7TI5tGs9dl04lgj2Xm+USD82Npx1618XUxTwmYVKig5aWsvkfuVPLY5rwxhKE6qp2d7vbeatuu59T/tK6rpdp8Nby0vHjN7cyR/Y4SRv8wOCXA64C7sn3x3rzf8AZivk0e68T6ndyiDTLWxR55X+6uGJz+QauC0b4OeO/FeoKJdHvo2PDXWqEoqj3Zzk/QA16h8VfBcfwn+Ak+l2cpnuL+9gW+ugMeaSSSAOyjaAB9fWubnr4nF/2hKnyxpp79dH/n9xwfVsHgcDHIqddVJ1pq7VtE2rvd2slp1bOJ8e/tGeJfFepPDodxNoel79sSW4xcSjPBZuoJ/ur096o6f49+Ing+eC8ur7WYYmIIGppI0Uvthxjn2wa639krwzY6nqus6xcRpNdWAijtw4z5ZfcWce+Fxn619L6xpFprumXFhfwLcWtwhjkjcZBB/r3zVUMvxeY0vrUq7jJ3tbbT5meaZtl2S4l5ZSwcZQjbmbtd3V+q1dnu39x8v+Dfir4o1j4gabNPq05iu72ON7QN+4CMwBUJ0AAPB6+9X/AIoePPFnh/4nX8SalcWkNtIj2tujYhaIgFcr0bPOc+/pXF+DLVbD4kaVbI/mJBq0cSv/AHgs2M/pXtf7SPg37dotr4ht0zPYHyp8DkwseCf91iPwY14WH+t4jLq81UlzQknu+2v+fyOvFfUcLm2HpypR5KkHHZb30/y+Z6n4X1+HxLoNhqcH+ruYVkx/dOPmX8DkfhXi/wAX/iJqQ8WNpul6hNZ21ioWQ27lS8p5OSOoAwMfWq3wX+JEXh3wrrlneOD9jja8tlY/eJwCg/4EVP8AwI1znw/0Cbxt4zgjuSZVkkN1due6g5b8yQPxrszPNqmPwmHw2GlapVavbpbT8Xr6I+fwWUU8uxmJr4mN6dK9r9b6/elp6s+jvBtxfXXhbS5tSOb6SBWlJGCSehI9cYrYPJoA2rgAAdgKaxxX6RRg6dOMG72SV+/mfnNWanNzStd7dhpPFManNTSa6kYkb1E3FSvUTVaIIjVaX734VYY1XlHzfhWyM2PU9KlU1CrVIppMSJ1PNTIagU5FSqeKyZqiYd6cp5pgNOWoZZIOlSVGvWnKazZSHZxXmn7RfgY+P/hJrljFH5l7bR/brX182L5sD/eXcv416XSMAQQRkehrSjVlQqxqw3i0/uM6tONWEqctmrH4k/tQ+Fh4g+FOneI7eMve6BP5MpXqYCCy/wDjpkH/AGzFfKUeoZHByPWv0/8Ajd8OrXwX488VeEtTiZPD+rKxifbuCwSEtG4HfY2VI64DDvX50fFD4IeJ/hTrMtrPYTX+lE7rTULVTLHLF/Ccr1+vT6HIH6ViZczWIp6xmr/1+XlZHi5PiVRUsNVdmmcwb4k/eqCe53A81SEVznH2a4z/ANcH/wAKle0cgfLdD62j/wCFec6yfU+ldaHcqXMoOeazJV3Me9a0umyMjFVuWIHANpJz+lURp12f+XS5/wC/D/4VwVailo2YucW9z9hv+CRvxtHi74VX/gq9ud+oaPJ5kSueTHwrY/Dyz9S1foGBzX4qf8EpvDPiyz/aDt9Qt7O6ttKkiYXDSxlVdAj7mwf4QGAz6sor9qwcKK8LHwtOM3vJX/NX+drnJQkvegtk/wDg/hewHj60ucijg0grzDpPkz9sg/8AFXeGvT7DL/6MFet/sxD/AItBpn/Xe4/9GGuu8d/C/wAO/EiG1TXbI3DWzFoZY5GjkTOMgMpzg4HHtWzoHh6w8LaRbaXplutrY2y7IoU6AdTyeSSSSSfWvJpYOcMZPEN6Nf5f5H2uMzuhiMioZXGL54Su3pa3vbdevY0AB+Nch8WvBJ+IPgLU9GjIS6lQSW7t0EqHcmfYkYP1rr6cORXpVKcasHCWz0Pk6FeeFrQr0naUWmvVanwf8PfHWtfB7xVcOtoVkXNve6fc5XcAeh9GB6H+YNer+I/2prrVtIltdH0htMuZVKNdTzCQxg9SgAHPuenpXtvjD4WeGfHbLJrGlxXFwo2rcoTHMB6b1wSPY5rI8PfAPwX4bvY7u30tri4jO6NruZpgp7EKTjP4V8j/AGZmVFOhh6yVN/evw/Jn6TiOIMjzBrF4zCt1kumza+auvVeWp8z/AA5z/wAJvoGc5/tCDOev+sFfaGq6dBq+nXNlcoJLe4jaKRSOqkYNc3bfCfwxZeJW16HTlTUDIZg29tiyHq4TOAep6V0up6hDpWnXF5cOI7e3jaWRz2VRk115Nlk8spVYV2mm/wALdbnzefZvTzevSqYeLTira73v0sfGeu6DP4V8QXukXOTJaylAx/jXqrfiMGvoL4CeGv7O8OSatKmJ79vkJHIiU4H5nJ/KvD4JL34nePDIci41O64HXyo/8FQfpX11p9lDptjBaW6BIIEWNFHZQMCvluG8DTq42ri4L3INqPz/AMl+Z9NxTjalPCUsJUf7ySTlby/zf5E7VGT1p5NMPvX6mj8rYwnmmt1pxqNjWiJbGsetRNyDT3NROeKtEsiYmq8hO6rBNQsMmtUYsQGpVNQKefapUNNoEWEOalU1AjVKprJo1TJ1OaeDzUSGpAahlolBpwNRrTgeazZRLnNKKYGA60GRR1YCosM4H4v/AAU0T4xaNHa6iWtL+3ybTUYADJCT1GD95TxlT6ZGDzXzJc/sh/EbQpXtdOvtJ1SwLFgsku1CfUxSIwB+n519sfaoh1kX86ab22XrKn516+EzPFYSHs6bvHs1dHm4jA0MTLnno+60PiiL9l34kL10vw6f+A23/wAaqPVP2Zfi2BF/ZOneDouvmfboIXz6bdqDHevtk6laf890/Ok/tK0/57p+ddzzzGP7Efuf+Zw/2Phr/FL71/kfIHh/9mz4iR2RGt6Z4Vmu93BsYIkQD3DKea1ov2a/FEsqrJpGgRqTy7RwnH5R19Vi/tT0lT86cLmBuki/nUvO8X/LH7n/AJmDyDCylzc8vv8A+Acd8Mfhhp/w30kxQpBJqE+Dc3MMKxBvRVAHCj9eprts8Ypnmxnoy/nTgQe+a8CrUnWm6lR3bPoaNKFCCp01ZIOlAPOaKDzWRuO3Cg8ikAyaUnFAhDSqKQnNKvSgBCeaAeaMUAc0AK1ZniLRIPEuh3ul3RZbe7iaFyhwwB7itNqbUyjGcXGSumVCUqclOLs1qjzr4dfBay8BapJqJvpNRuthjiZ4wgjB6nAJyT0zXoh4FOLYFMJzXPhcJRwdP2VCPLE6sVi6+Nqe2xEuaXf/AIYQ0wmlJ4phOTXcjhEJ5qN6exqJm5rQkaxyaic09jUTHNaJENkbHimbutK5qIGtDNsjVs1MjVVQ1OjVbRKLSVKhquhqZTWTRoiZGqUGoAalU1kzREwOKUgnvimg0oOKhljJLVpF++R9Koz6JLMMCcj8a1AacDTU5R2E4p7nLzeELiXOLtxn3rOm+H13KeL2TH+9XeK2eM0p61vHG1o7P8DF4eD3R5vJ8Mrxz/x/yj6NTV+GN6p/4/5cf71elZpRWv8AaOI7/gR9Updjz2H4dXcZH+nSH/gVaNt4KuIet25/Guw6UlZyxtaW7/AtYamtkYVv4clhxm4Y/jWlDYNGMeYTVxaB61yyqzlubKMY7DBHtHJp1BpQMmsixQaQmgjFBGKBCU5aTtSjpQULSE80tMzmgkUnNJRSE0D2EJzSE8UZxTCatIQE0w9KWmE1aJY1jUTHmnsaiZq0RI1zUTHNOc1FIeK0SMmxjmow3Xihm4qNWzn61qkQyPpUiPzUTdKVDVtEIuIalUmqsbe9TK1ZNGiLKH8qmU4NVkapVbNZNGqZZDU8Hmq6n86kVs9azsWTA/8A66dmogaeD+VQ0USA07dmowcUoapaHckozTQadnNSUKTSUUUgCiiigApe9JRQAUZzRRQAUDiiigAoNIWpOtOwATmmsTQ1NJqkiQJppPegn1pucirSEJTGPpQze9Rk1aJEYmomOfpSscmo3atEjNsa5qB2p7tUDnFaRRm2Mds8UsY4NM709Oh+taozbI25zSAfhTvWk3VRJIjYNTK2RxVQNipo36VDRaZaRqmRqqo3OamRuaxaNEyyGp4aoA1SBsis2jRMsK2RTgagVqkDcVDRdyVTTgc1ErU4HNTYokBxTs1HupcipsA8H0p26o84pdxpNDuPBzS5qMNS5pWHcfmkyKbkUFqVguOyKN1NzSFqLBcdupM4ppOaM1VhXF3UmaTdTS3NNIQ4tTCcUE00tVWC4E8U0nikd/emFuKqxIjGo2ahmqMmtEiGwY81C7U52qBzWqRkwc8VA7E0rtmm1okQ2IOlSR9D9aZT4+h+tU9CCM96bTm7/Wm0wCnK3am0UDLEbVMjYqmrYqZH9+KzaLTLYccVKrVUVqmV6ysXcsq1PDVWBp4bjrUNGiZZVqcGzUCmnBvwqLFE4alzUQanZqbDuSA0u6o6dmlYofuo3ZphNANKwD80ZFMJoJp2AfupCwFNPBpMmiwD8mkz603NJmiwDs4pCabuBppNMVxxbFMZvxprNTC3FVYkUmmluKaW460wtmrSIbFY4qJmoZxg1CWrRIhsVmqCR80O+T1qJjk1qkZti0HikGOKU9KsgKkj6H61GOlSR9D9aNgIyOtNpzU2gAooooAKcrYpAM0uBQMlV+cVMrVTGVNSK5zUNFJl1Xp6tVRZKkV6zaLTLYNODVXD04NUNFJlgH0p+6q4b3p2+osWmT7qdu4quXpwapsVcnBo3VCGpdxosO5Luo3VFuP+TRvosFyXcaQtURekL0WFck3Um7tUe7NG/FOwrjyfwprH3phemlqaQrji3NRs3vSM1Rs+KtIlsezVGX4pjPUZfj3q0iGxzNULt6UFs02tEiGxrcmkpxFNxVkBTv4abRQA4dKkj6H61EtSx9D9aT2AjYUm3insMGk7UwGgGgA06igBAMUtFB4NK4BRQRjFFK4ChsVIr1F2pVpFJlhW9qkVqgjqRRk1DRZMGpweoh1p3cVJVyXdS7veozxSjpSZVyQNRuqOlpWC5JvpNxpoFIetKwXH7qN1R0UAPLUhamNR2qkJilsU0t+FNHSmMeaZNxWY1Gz0rVE/WrSEwaSoyc0oHFG2qIYlFBoqkyRCSO1NPNPpNopgNop2KNtADc1JGMg59abtp6LwfrQB/9k="
   };
 
   const card = document.getElementById("card");
@@ -2584,25 +2583,19 @@ var qrcode = function() {
   function renderQR(entreprise) {
     const payUrl = `${CONFIG.PAY_PAGE_URL}?businessId=${encodeURIComponent(entreprise.businessId)}`;
 
-    // En-tête : logo du marchand (ou son nom en repli) — le bandeau
-    // "Payer via MIJO PAY" n'est plus affiché ici.
-    const headerHtml = entreprise.LogoURL
-      ? `<img class="merchant-logo-header" src="${entreprise.LogoURL}" alt="${escapeHtml(entreprise.NomCommercial)}">`
-      : `<div class="merchant-name-header">${escapeHtml(entreprise.NomCommercial)}</div>`;
-
     card.innerHTML = `
       <div class="card-body">
-        ${headerHtml}
+        <div class="headline">Payer via <span class="brand-name">MIJO PAY</span></div>
+        <div class="merchant-name">${escapeHtml(entreprise.NomCommercial)}</div>
 
         <div class="qr-frame">
           <span class="corner tl"></span><span class="corner tr"></span>
           <span class="corner bl"></span><span class="corner br"></span>
           <div id="qrcode"></div>
-          ${entreprise.LogoURL ? `<div class="logo-overlay"><img src="${entreprise.LogoURL}" alt=""></div>` : ""}
+          <div class="logo-overlay"><img src="${CONFIG.MIJOPAY_LOGO}" alt="MIJO PAY"></div>
         </div>
 
         <div class="scan-tag">👉 Scanner pour payer</div>
-        <div class="business-name">${escapeHtml(entreprise.NomCommercial)}</div>
         <div class="business-id">${escapeHtml(entreprise.businessId)}</div>
 
         <div class="btn-row">
@@ -2614,21 +2607,18 @@ var qrcode = function() {
       </div>
     `;
 
-    // Niveau H (haute correction d'erreur) quand le logo du commerce recouvre
-    // le centre, pour que le QR reste scannable malgré l'overlay.
-    drawQRCode(document.getElementById("qrcode"), payUrl, 200, entreprise.LogoURL ? "H" : "M");
+    // Niveau H (haute correction d'erreur) car le logo MIJO PAY recouvre
+    // toujours le centre, pour que le QR reste scannable malgré l'overlay.
+    drawQRCode(document.getElementById("qrcode"), payUrl, 200, "H");
 
     document.getElementById("downloadBtn").addEventListener("click", () => downloadQR(entreprise));
     document.getElementById("printBtn").addEventListener("click", () => window.print());
   }
 
-  // Compose la même affiche que celle affichée à l'écran (logo du
-  // marchand en tête, QR avec le même logo au centre) dans un canvas
-  // hors-écran, puis la télécharge en PDF — prête à imprimer et afficher
-  // au comptoir.
-  // Si l'image du logo est hébergée sans en-têtes CORS ouverts, le canvas
-  // est "taché" et l'export échoue silencieusement — on retombe alors sur
-  // le téléchargement simple du QR seul, sans casser le bouton.
+  // Compose la même affiche que celle affichée à l'écran (titre, nom du
+  // commerce, QR avec le logo MIJO PAY au centre, coins colorés) dans un
+  // canvas hors-écran, puis la télécharge en PDF — prête à imprimer et
+  // afficher au comptoir.
   async function downloadQR(entreprise) {
     const qrCanvas = document.querySelector("#qrcode canvas");
     const qrImg = document.querySelector("#qrcode img");
@@ -2646,39 +2636,30 @@ var qrcode = function() {
       ctx.fillRect(0, 0, W, H);
       ctx.textAlign = "center";
 
-      // en-tête : logo du marchand, ou son nom en gros si pas de logo
-      let headerBottomY = 70;
-      if (entreprise.LogoURL) {
-        try {
-          const logo = await loadImage(entreprise.LogoURL);
-          const logoSize = 150;
-          const lx = W / 2 - logoSize / 2, ly = 50;
-          ctx.save();
-          roundRect(ctx, lx, ly, logoSize, logoSize, 22);
-          ctx.clip();
-          ctx.drawImage(logo, lx, ly, logoSize, logoSize);
-          ctx.restore();
-          ctx.strokeStyle = "#e3e7f0";
-          ctx.lineWidth = 2;
-          roundRect(ctx, lx, ly, logoSize, logoSize, 22);
-          ctx.stroke();
-          headerBottomY = ly + logoSize;
-        } catch (e) {
-          // logo indisponible en export — on retombe sur le nom du commerce
-          ctx.fillStyle = "#141a2b";
-          ctx.font = "800 30px Syne, sans-serif";
-          ctx.fillText(entreprise.NomCommercial, W / 2, 100);
-          headerBottomY = 120;
-        }
-      } else {
-        ctx.fillStyle = "#141a2b";
-        ctx.font = "800 30px Syne, sans-serif";
-        ctx.fillText(entreprise.NomCommercial, W / 2, 100);
-        headerBottomY = 120;
-      }
+      // titre bicolore : "Payer via" (encre) + "MIJO PAY" (dégradé orange)
+      ctx.fillStyle = "#141a2b";
+      ctx.font = "800 32px Syne, sans-serif";
+      const partA = "PAYER VIA ";
+      const partB = "MIJO PAY";
+      const widthA = ctx.measureText(partA).width;
+      const widthB = ctx.measureText(partB).width;
+      const startX = W / 2 - (widthA + widthB) / 2;
+      ctx.textAlign = "left";
+      ctx.fillText(partA, startX, 76);
+      const grad = ctx.createLinearGradient(startX + widthA, 0, startX + widthA + widthB, 0);
+      grad.addColorStop(0, "#ff7a3d");
+      grad.addColorStop(1, "#ffb648");
+      ctx.fillStyle = grad;
+      ctx.fillText(partB, startX + widthA, 76);
+      ctx.textAlign = "center";
 
-      // cadre blanc du QR avec coins "viseur" bleus
-      const frameSize = 360, frameX = W / 2 - frameSize / 2, frameY = headerBottomY + 42;
+      // nom du commerce, à la place où figurait le logo auparavant
+      ctx.fillStyle = "#141a2b";
+      ctx.font = "700 26px Syne, sans-serif";
+      fitText(ctx, entreprise.NomCommercial, W / 2, 140, W - 120, 26);
+
+      // cadre blanc du QR avec coins "viseur" multicolores
+      const frameSize = 360, frameX = W / 2 - frameSize / 2, frameY = 190;
       ctx.fillStyle = "#ffffff";
       ctx.strokeStyle = "#e3e7f0";
       ctx.lineWidth = 2;
@@ -2687,22 +2668,22 @@ var qrcode = function() {
       ctx.stroke();
       const qrSize = 300;
       ctx.drawImage(qrSource, frameX + (frameSize - qrSize) / 2, frameY + (frameSize - qrSize) / 2, qrSize, qrSize);
-      drawViewfinderCorners(ctx, frameX, frameY, frameSize, 30, 4, "#2f8fd6");
+      drawViewfinderCorners(ctx, frameX, frameY, frameSize, 30, 4,
+        ["#2f8fd6", "#38c2c9", "#ff7a3d", "#ffb648"]); // TL bleu, TR sarcelle, BL orange, BR or
 
-      if (entreprise.LogoURL) {
-        try {
-          const bizLogo = await loadImage(entreprise.LogoURL);
-          const badge = 64, bx = W / 2 - badge / 2, by = frameY + (frameSize - badge) / 2;
-          ctx.fillStyle = "#ffffff";
-          roundRect(ctx, bx - 5, by - 5, badge + 10, badge + 10, 13);
-          ctx.fill();
-          ctx.save();
-          roundRect(ctx, bx, by, badge, badge, 9);
-          ctx.clip();
-          ctx.drawImage(bizLogo, bx, by, badge, badge);
-          ctx.restore();
-        } catch (e) { /* logo du commerce indisponible en export — on garde le QR seul */ }
-      }
+      // logo MIJO PAY au centre du QR (toujours présent, comme à l'écran)
+      try {
+        const mijoLogo = await loadImage(CONFIG.MIJOPAY_LOGO);
+        const badge = 64, bx = W / 2 - badge / 2, by = frameY + (frameSize - badge) / 2;
+        ctx.fillStyle = "#ffffff";
+        roundRect(ctx, bx - 5, by - 5, badge + 10, badge + 10, 13);
+        ctx.fill();
+        ctx.save();
+        roundRect(ctx, bx, by, badge, badge, 9);
+        ctx.clip();
+        ctx.drawImage(mijoLogo, bx, by, badge, badge);
+        ctx.restore();
+      } catch (e) { /* logo indisponible en export — on garde le QR seul */ }
 
       // pastille "Scanner pour payer"
       const tagY = frameY + frameSize + 34, tagText = "\u{1F449} Scanner pour payer";
@@ -2714,17 +2695,14 @@ var qrcode = function() {
       ctx.fillStyle = "#141a2b";
       ctx.fillText(tagText, W / 2, tagY + 4);
 
-      ctx.fillStyle = "#59627a";
-      ctx.font = "600 17px Inter, sans-serif";
-      ctx.fillText(entreprise.NomCommercial, W / 2, tagY + 44);
-
       ctx.font = "500 13px Inter, sans-serif";
-      ctx.fillText(entreprise.businessId, W / 2, tagY + 70);
+      ctx.fillStyle = "#59627a";
+      ctx.fillText(entreprise.businessId, W / 2, tagY + 44);
 
       downloadCanvasAsPdf(poster, `mijopay-qr-${entreprise.businessId}.pdf`);
 
     } catch (e) {
-      // canvas "taché" (CORS) ou autre échec de composition : on retombe sur
+      // échec de composition (image manquante, etc.) : on retombe sur
       // un PDF ne contenant que le QR seul plutôt que de bloquer l'action.
       const size = qrCanvas ? qrCanvas.width : 240;
       const fallback = document.createElement("canvas");
@@ -2736,6 +2714,19 @@ var qrcode = function() {
       fctx.drawImage(qrSource, 0, 0, size, size);
       downloadCanvasAsPdf(fallback, `qrcode-${entreprise.businessId}.pdf`);
     }
+  }
+
+  // Dessine un texte centré sur une largeur max, en réduisant la taille de
+  // police par paliers si le nom du commerce est trop long pour tenir sur
+  // une seule ligne.
+  function fitText(ctx, text, cx, y, maxWidth, baseSize) {
+    let size = baseSize;
+    ctx.font = `700 ${size}px Syne, sans-serif`;
+    while (ctx.measureText(text).width > maxWidth && size > 14) {
+      size -= 2;
+      ctx.font = `700 ${size}px Syne, sans-serif`;
+    }
+    ctx.fillText(text, cx, y);
   }
 
   // Convertit un canvas en PDF d'une page (image plein cadre) et déclenche
@@ -2801,11 +2792,11 @@ var qrcode = function() {
     return result;
   }
 
-  // Dessine les 4 coins "viseur" bleus autour du cadre QR exporté, pour
-  // reproduire le même repère visuel que celui affiché à l'écran.
-  function drawViewfinderCorners(ctx, x, y, size, len, thickness, color) {
+  // Dessine les 4 coins "viseur" autour du cadre QR exporté, un coin par
+  // couleur de marque, pour reproduire le même repère visuel multicolore
+  // que celui affiché à l'écran.
+  function drawViewfinderCorners(ctx, x, y, size, len, thickness, colors) {
     const inset = 10;
-    ctx.strokeStyle = color;
     ctx.lineWidth = thickness;
     ctx.lineCap = "round";
     const corners = [
@@ -2814,7 +2805,8 @@ var qrcode = function() {
       [[x + inset, y + size - inset - len], [x + inset, y + size - inset], [x + inset + len, y + size - inset]],
       [[x + size - inset - len, y + size - inset], [x + size - inset, y + size - inset], [x + size - inset, y + size - inset - len]]
     ];
-    corners.forEach(pts => {
+    corners.forEach((pts, i) => {
+      ctx.strokeStyle = colors[i];
       ctx.beginPath();
       ctx.moveTo(pts[0][0], pts[0][1]);
       ctx.lineTo(pts[1][0], pts[1][1]);
@@ -2909,6 +2901,7 @@ var qrcode = function() {
   }
 
   init();
+
 </script>
 </body>
 </html>
