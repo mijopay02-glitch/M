@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mon QR Code — MIJO PAY</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --blue:#2f8fd6; --teal:#38c2c9; --orange:#ff7a3d; --gold:#ffb648;
@@ -40,7 +40,7 @@
   .card-body{padding:32px 26px 26px;}
 
   .headline {
-  font-family: 'Baloo 2', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 800;
   font-size: 55px; /* Taille augmentée pour l'impact visuel de loin */
   letter-spacing: 0.01em;
@@ -2642,13 +2642,30 @@ var qrcode = function() {
     const qrImg = document.querySelector("#qrcode img");
     const qrSource = qrCanvas || qrImg;
     if (!qrSource) return;
+    const payUrl = `${CONFIG.PAY_PAGE_URL}?businessId=${encodeURIComponent(entreprise.businessId)}`;
 
     try {
       const W = 640, H = 860;
+      // Supersampling : le canvas est rendu à 4x la taille logique, mais le
+      // PDF final garde un MediaBox de 640x860 pt (taille physique inchangée).
+      // Résultat : ~288 DPI au lieu de ~72 DPI — net même sur une grande
+      // impression (affiche comptoir, A4, etc.) au lieu de pixelisé.
+      const EXPORT_SCALE = 4;
       const poster = document.createElement("canvas");
-      poster.width = W;
-      poster.height = H;
+      poster.width = W * EXPORT_SCALE;
+      poster.height = H * EXPORT_SCALE;
       const ctx = poster.getContext("2d");
+      ctx.scale(EXPORT_SCALE, EXPORT_SCALE);
+      ctx.imageSmoothingEnabled = false; // le QR est du noir/blanc pur : aucun lissage flou
+
+      // s'assure que Montserrat/Syne/Inter sont bien chargées avant de
+      // dessiner du texte sur le canvas (sinon fallback système au 1er export)
+      await Promise.all([
+        document.fonts.load("800 42px 'Montserrat'"),
+        document.fonts.load("700 26px 'Syne'"),
+        document.fonts.load("700 16px 'Inter'"),
+        document.fonts.load("500 13px 'Inter'")
+      ]);
 
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, W, H);
@@ -2656,7 +2673,8 @@ var qrcode = function() {
 
       // titre bicolore, plus gros pour l'impact marketing :
       // "PAYER VIA" (dégradé bleu-sarcelle) + "MIJO PAY" (dégradé orange-or)
-      ctx.font = "800 42px 'Baloo 2', sans-serif";
+      ctx.font = "800 42px 'Montserrat', sans-serif";
+      if ("letterSpacing" in ctx) ctx.letterSpacing = "0.3px"; // aligné avec le 0.01em du CSS écran
       const partA = "PAYER VIA ";
       const partB = "MIJO PAY";
       const widthA = ctx.measureText(partA).width;
@@ -2689,7 +2707,11 @@ var qrcode = function() {
       ctx.fill();
       ctx.stroke();
       const qrSize = 300;
-      ctx.drawImage(qrSource, frameX + (frameSize - qrSize) / 2, frameY + (frameSize - qrSize) / 2, qrSize, qrSize);
+      // Régénère le QR nativement à la résolution d'export (au lieu d'agrandir
+      // le petit canvas 200px affiché à l'écran) : modules bien nets, pas de
+      // flou d'interpolation même une fois le PDF imprimé en grand format.
+      const hiResQR = drawQRCode(document.createElement("div"), payUrl, qrSize * EXPORT_SCALE, "Q");
+      ctx.drawImage(hiResQR, frameX + (frameSize - qrSize) / 2, frameY + (frameSize - qrSize) / 2, qrSize, qrSize);
       drawViewfinderCorners(ctx, frameX, frameY, frameSize, 30, 4,
         ["#2f8fd6", "#38c2c9", "#ff7a3d", "#ffb648"]); // TL bleu, TR sarcelle, BL orange, BR or
 
@@ -2721,7 +2743,7 @@ var qrcode = function() {
       ctx.fillStyle = "#59627a";
       ctx.fillText(entreprise.businessId, W / 2, tagY + 44);
 
-      downloadCanvasAsPdf(poster, `mijopay-qr-${entreprise.businessId}.pdf`);
+      await downloadCanvasAsPdf(poster, `mijopay-qr-${entreprise.businessId}.pdf`, W, H);
 
     } catch (e) {
       // échec de composition (image manquante, etc.) : on retombe sur
@@ -2734,7 +2756,7 @@ var qrcode = function() {
       fctx.fillStyle = "#ffffff";
       fctx.fillRect(0, 0, size, size);
       fctx.drawImage(qrSource, 0, 0, size, size);
-      downloadCanvasAsPdf(fallback, `qrcode-${entreprise.businessId}.pdf`);
+      await downloadCanvasAsPdf(fallback, `qrcode-${entreprise.businessId}.pdf`, size, size);
     }
   }
 
@@ -2751,19 +2773,66 @@ var qrcode = function() {
     ctx.fillText(text, cx, y);
   }
 
-  // Convertit un canvas en PDF d'une page (image plein cadre) et déclenche
-  // le téléchargement. Construit le PDF nous-mêmes, octet par octet, plutôt
-  // que d'ajouter une bibliothèque externe (~400 Ko) ou une dépendance CDN —
-  // exactement le genre de dépendance externe qui a cassé le QR la dernière
-  // fois. Validé séparément par relecture avec deux analyseurs PDF indépendants.
-  function downloadCanvasAsPdf(canvas, filename) {
-    const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
-    const base64 = dataUrl.split(",")[1];
-    const binary = atob(base64);
-    const jpegBytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) jpegBytes[i] = binary.charCodeAt(i);
+  // Compresse des octets bruts avec l'API native CompressionStream (deflate/zlib),
+  // supportée par tous les navigateurs modernes — aucune librairie externe.
+  async function deflateBytes(bytes) {
+    const cs = new CompressionStream("deflate");
+    const writer = cs.writable.getWriter();
+    writer.write(bytes);
+    writer.close();
+    const reader = cs.readable.getReader();
+    const chunks = [];
+    let total = 0;
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      total += value.length;
+    }
+    const out = new Uint8Array(total);
+    let p = 0;
+    for (const c of chunks) { out.set(c, p); p += c.length; }
+    return out;
+  }
 
-    const pdfBytes = buildSingleImagePdf(jpegBytes, canvas.width, canvas.height);
+  // Convertit un canvas en PDF d'une page (image plein cadre) et déclenche le
+  // téléchargement. pageWidthPt/pageHeightPt fixent la taille physique de la
+  // page (en points, 72/pouce) — indépendante de la résolution en pixels du
+  // canvas, ce qui permet d'imprimer une image sur-échantillonnée (plus de
+  // pixels que de points) sans agrandir le format de la page : c'est ce qui
+  // donne une image nette même sur une grande impression.
+  // Encodage sans perte (RGB brut + FlateDecode) plutôt que JPEG : pas
+  // d'artefacts de compression sur le texte et les modules du QR. Si
+  // CompressionStream n'est pas disponible (vieux navigateur), on retombe
+  // sur du JPEG qualité quasi-maximale. Construit le PDF nous-mêmes, octet
+  // par octet, plutôt que d'ajouter une bibliothèque externe (~400 Ko) ou une
+  // dépendance CDN — exactement le genre de dépendance externe qui a cassé
+  // le QR la dernière fois. Validé séparément par relecture avec deux
+  // analyseurs PDF indépendants.
+  async function downloadCanvasAsPdf(canvas, filename, pageWidthPt, pageHeightPt) {
+    const pw = pageWidthPt || canvas.width;
+    const ph = pageHeightPt || canvas.height;
+    let pdfBytes;
+
+    if (typeof CompressionStream !== "undefined") {
+      const ctx = canvas.getContext("2d");
+      const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height); // RGBA
+      const rgb = new Uint8Array(canvas.width * canvas.height * 3);
+      for (let i = 0, j = 0; i < data.length; i += 4, j += 3) {
+        rgb[j] = data[i]; rgb[j + 1] = data[i + 1]; rgb[j + 2] = data[i + 2];
+      }
+      const flateBytes = await deflateBytes(rgb);
+      pdfBytes = buildSingleImagePdf(flateBytes, canvas.width, canvas.height, pw, ph, "FlateDecode");
+    } else {
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.97);
+      const base64 = dataUrl.split(",")[1];
+      const binary = atob(base64);
+      const jpegBytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) jpegBytes[i] = binary.charCodeAt(i);
+      pdfBytes = buildSingleImagePdf(jpegBytes, canvas.width, canvas.height, pw, ph, "DCTDecode");
+    }
+
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -2773,10 +2842,11 @@ var qrcode = function() {
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
 
-  // Construit un PDF minimal à une page contenant une seule image JPEG en
-  // plein cadre (filtre DCTDecode standard — le JPEG est intégré tel quel,
-  // sans ré-encodage). Aucune dépendance externe.
-  function buildSingleImagePdf(jpegBytes, width, height) {
+  // Construit un PDF minimal à une page contenant une seule image en plein
+  // cadre. imgWidth/imgHeight = résolution en pixels de l'image ; pageWidthPt/
+  // pageHeightPt = taille physique de la page en points. filterName est
+  // "FlateDecode" (RGB brut compressé sans perte) ou "DCTDecode" (JPEG déjà encodé).
+  function buildSingleImagePdf(imageBytes, imgWidth, imgHeight, pageWidthPt, pageHeightPt, filterName) {
     const enc = new TextEncoder();
     const chunks = [];
     let offset = 0;
@@ -2792,12 +2862,12 @@ var qrcode = function() {
     objOffsets[2] = offset;
     push("2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n");
     objOffsets[3] = offset;
-    push(`3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${width} ${height}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>\nendobj\n`);
+    push(`3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidthPt} ${pageHeightPt}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>\nendobj\n`);
     objOffsets[4] = offset;
-    push(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${width} /Height ${height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`);
-    push(jpegBytes);
+    push(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${imgWidth} /Height ${imgHeight} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /${filterName} /Length ${imageBytes.length} >>\nstream\n`);
+    push(imageBytes);
     push("\nendstream\nendobj\n");
-    const contentStr = `q\n${width} 0 0 ${height} 0 0 cm\n/Im0 Do\nQ`;
+    const contentStr = `q\n${pageWidthPt} 0 0 ${pageHeightPt} 0 0 cm\n/Im0 Do\nQ`;
     objOffsets[5] = offset;
     push(`5 0 obj\n<< /Length ${enc.encode(contentStr).length} >>\nstream\n${contentStr}\nendstream\nendobj\n`);
     const xrefOffset = offset;
