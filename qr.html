@@ -29,7 +29,7 @@
 
   .wrap{max-width:380px; width:100%;}
 
-  /* ---------- Le panneau : titre de marque + logo + QR, façon
+  /* ---------- Le panneau : logo du marchand + QR, façon
      affichette "scannez pour payer" ---------- */
   .card{
     background:var(--paper); border-radius:22px;
@@ -39,16 +39,19 @@
 
   .card-body{padding:32px 26px 26px;}
 
-  .headline{
-    font-family:'Syne',sans-serif; font-weight:800; font-size:19px; letter-spacing:0.01em;
-    text-transform:uppercase; color:var(--ink); margin-bottom:2px;
+  /* Logo du marchand affiché en haut du panneau (remplace l'ancien
+     bandeau "Payer via MIJO PAY" + logo MIJO PAY) */
+  .merchant-logo-header{
+    width:104px; height:104px; border-radius:20px; object-fit:cover;
+    display:block; margin:2px auto 22px;
+    border:1px solid var(--line);
+    box-shadow:0 14px 30px -18px #1a233540;
   }
-  .headline .brand-name{
-    background:linear-gradient(120deg, var(--orange), var(--gold));
-    -webkit-background-clip:text; background-clip:text; color:transparent;
+  /* Repli texte si le marchand n'a pas encore de logo */
+  .merchant-name-header{
+    font-family:'Syne',sans-serif; font-weight:800; font-size:20px;
+    color:var(--ink); margin:8px auto 24px; padding:0 6px; line-height:1.3;
   }
-
-  .brand-logo{width:118px; display:block; margin:16px auto 22px; object-fit:contain;}
 
   .business-name{color:var(--ink-soft); font-size:13px; margin-top:14px; margin-bottom:4px;}
 
@@ -2485,7 +2488,9 @@ var qrcode = function() {
     // Ajustez si le vrai nom de cette page diffère — le "*" ci-dessous est un
     // repère à remplacer, il ne doit pas rester dans l'URL finale.
     PAY_PAGE_URL: "https://mijopay.com/pay",
-    MIJOPAY_LOGO: "https://i.postimg.cc/yYCsdY18/remove.png"
+    // Logo affiché en repli si le marchand n'a pas encore fourni de logo
+    // (LogoURL vide). Laissez vide pour afficher le nom du commerce à la place.
+    FALLBACK_LOGO: ""
   };
 
   const card = document.getElementById("card");
@@ -2579,10 +2584,15 @@ var qrcode = function() {
   function renderQR(entreprise) {
     const payUrl = `${CONFIG.PAY_PAGE_URL}?businessId=${encodeURIComponent(entreprise.businessId)}`;
 
+    // En-tête : logo du marchand (ou son nom en repli) — le bandeau
+    // "Payer via MIJO PAY" n'est plus affiché ici.
+    const headerHtml = entreprise.LogoURL
+      ? `<img class="merchant-logo-header" src="${entreprise.LogoURL}" alt="${escapeHtml(entreprise.NomCommercial)}">`
+      : `<div class="merchant-name-header">${escapeHtml(entreprise.NomCommercial)}</div>`;
+
     card.innerHTML = `
       <div class="card-body">
-        <div class="headline">Payer via <span class="brand-name">MIJO PAY</span></div>
-        <img class="brand-logo" src="${CONFIG.MIJOPAY_LOGO}" alt="MIJO PAY">
+        ${headerHtml}
 
         <div class="qr-frame">
           <span class="corner tl"></span><span class="corner tr"></span>
@@ -2612,9 +2622,9 @@ var qrcode = function() {
     document.getElementById("printBtn").addEventListener("click", () => window.print());
   }
 
-  // Compose la même affiche que celle affichée à l'écran (titre, logo
-  // MIJO PAY, QR avec le logo du commerce au centre) dans un canvas
-  // hors-écran, puis la télécharge en PNG — prête à imprimer et afficher
+  // Compose la même affiche que celle affichée à l'écran (logo du
+  // marchand en tête, QR avec le même logo au centre) dans un canvas
+  // hors-écran, puis la télécharge en PDF — prête à imprimer et afficher
   // au comptoir.
   // Si l'image du logo est hébergée sans en-têtes CORS ouverts, le canvas
   // est "taché" et l'export échoue silencieusement — on retombe alors sur
@@ -2626,7 +2636,7 @@ var qrcode = function() {
     if (!qrSource) return;
 
     try {
-      const W = 640, H = 900;
+      const W = 640, H = 860;
       const poster = document.createElement("canvas");
       poster.width = W;
       poster.height = H;
@@ -2636,30 +2646,39 @@ var qrcode = function() {
       ctx.fillRect(0, 0, W, H);
       ctx.textAlign = "center";
 
-      // titre bicolore : "Payer via" (encre) + "MIJO PAY" (dégradé orange)
-      ctx.fillStyle = "#141a2b";
-      ctx.font = "800 32px Syne, sans-serif";
-      const partA = "PAYER VIA ";
-      const partB = "MIJO PAY";
-      const widthA = ctx.measureText(partA).width;
-      const widthB = ctx.measureText(partB).width;
-      const startX = W / 2 - (widthA + widthB) / 2;
-      ctx.textAlign = "left";
-      ctx.fillText(partA, startX, 76);
-      const grad = ctx.createLinearGradient(startX + widthA, 0, startX + widthA + widthB, 0);
-      grad.addColorStop(0, "#ff7a3d");
-      grad.addColorStop(1, "#ffb648");
-      ctx.fillStyle = grad;
-      ctx.fillText(partB, startX + widthA, 76);
-      ctx.textAlign = "center";
-
-      // logo MIJO PAY
-      const logoImg = await loadImage(CONFIG.MIJOPAY_LOGO);
-      const logoH = 130, logoW = logoH * (logoImg.width / logoImg.height);
-      ctx.drawImage(logoImg, W / 2 - logoW / 2, 108, logoW, logoH);
+      // en-tête : logo du marchand, ou son nom en gros si pas de logo
+      let headerBottomY = 70;
+      if (entreprise.LogoURL) {
+        try {
+          const logo = await loadImage(entreprise.LogoURL);
+          const logoSize = 150;
+          const lx = W / 2 - logoSize / 2, ly = 50;
+          ctx.save();
+          roundRect(ctx, lx, ly, logoSize, logoSize, 22);
+          ctx.clip();
+          ctx.drawImage(logo, lx, ly, logoSize, logoSize);
+          ctx.restore();
+          ctx.strokeStyle = "#e3e7f0";
+          ctx.lineWidth = 2;
+          roundRect(ctx, lx, ly, logoSize, logoSize, 22);
+          ctx.stroke();
+          headerBottomY = ly + logoSize;
+        } catch (e) {
+          // logo indisponible en export — on retombe sur le nom du commerce
+          ctx.fillStyle = "#141a2b";
+          ctx.font = "800 30px Syne, sans-serif";
+          ctx.fillText(entreprise.NomCommercial, W / 2, 100);
+          headerBottomY = 120;
+        }
+      } else {
+        ctx.fillStyle = "#141a2b";
+        ctx.font = "800 30px Syne, sans-serif";
+        ctx.fillText(entreprise.NomCommercial, W / 2, 100);
+        headerBottomY = 120;
+      }
 
       // cadre blanc du QR avec coins "viseur" bleus
-      const frameSize = 360, frameX = W / 2 - frameSize / 2, frameY = 282;
+      const frameSize = 360, frameX = W / 2 - frameSize / 2, frameY = headerBottomY + 42;
       ctx.fillStyle = "#ffffff";
       ctx.strokeStyle = "#e3e7f0";
       ctx.lineWidth = 2;
