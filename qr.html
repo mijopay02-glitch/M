@@ -40,14 +40,14 @@
   .card-body{padding:32px 26px 26px;}
 
   .headline{
-    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:21px; letter-spacing:0.01em;
-    text-transform:uppercase; color:var(--ink); margin-bottom:2px;
+    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:29px; letter-spacing:0.01em;
+    text-transform:uppercase; color:var(--ink); margin-bottom:4px; line-height:1.15;
   }
-  .headline .brand-mijo{
+  .headline .brand-payervia{
     background:linear-gradient(120deg, var(--blue), var(--teal));
     -webkit-background-clip:text; background-clip:text; color:transparent;
   }
-  .headline .brand-pay{
+  .headline .brand-mijopay{
     background:linear-gradient(120deg, var(--orange), var(--gold));
     -webkit-background-clip:text; background-clip:text; color:transparent;
   }
@@ -2589,7 +2589,7 @@ var qrcode = function() {
 
     card.innerHTML = `
       <div class="card-body">
-        <div class="headline">Payer via <span class="brand-mijo">MIJO</span> <span class="brand-pay">PAY</span></div>
+        <div class="headline"><span class="brand-payervia">Payer via</span> <span class="brand-mijopay">MIJO PAY</span></div>
         <div class="merchant-name">${escapeHtml(entreprise.NomCommercial)}</div>
 
         <div class="qr-frame">
@@ -2642,34 +2642,31 @@ var qrcode = function() {
       ctx.fillRect(0, 0, W, H);
       ctx.textAlign = "center";
 
-      // titre bicolore : "Payer via" (encre) + "MIJO PAY" (dégradé orange)
-      ctx.fillStyle = "#141a2b";
-      ctx.font = "800 32px 'Baloo 2', sans-serif";
+      // titre bicolore, plus gros pour l'impact marketing :
+      // "PAYER VIA" (dégradé bleu-sarcelle) + "MIJO PAY" (dégradé orange-or)
+      ctx.font = "800 42px 'Baloo 2', sans-serif";
       const partA = "PAYER VIA ";
-      const partB = "MIJO ";
-      const partC = "PAY";
+      const partB = "MIJO PAY";
       const widthA = ctx.measureText(partA).width;
       const widthB = ctx.measureText(partB).width;
-      const widthC = ctx.measureText(partC).width;
-      const startX = W / 2 - (widthA + widthB + widthC) / 2;
+      const startX = W / 2 - (widthA + widthB) / 2;
       ctx.textAlign = "left";
-      ctx.fillText(partA, startX, 76);
-      const gradMijo = ctx.createLinearGradient(startX + widthA, 0, startX + widthA + widthB, 0);
-      gradMijo.addColorStop(0, "#2f8fd6");
-      gradMijo.addColorStop(1, "#38c2c9");
-      ctx.fillStyle = gradMijo;
-      ctx.fillText(partB, startX + widthA, 76);
-      const gradPay = ctx.createLinearGradient(startX + widthA + widthB, 0, startX + widthA + widthB + widthC, 0);
-      gradPay.addColorStop(0, "#ff7a3d");
-      gradPay.addColorStop(1, "#ffb648");
-      ctx.fillStyle = gradPay;
-      ctx.fillText(partC, startX + widthA + widthB, 76);
+      const gradPayerVia = ctx.createLinearGradient(startX, 0, startX + widthA, 0);
+      gradPayerVia.addColorStop(0, "#2f8fd6");
+      gradPayerVia.addColorStop(1, "#38c2c9");
+      ctx.fillStyle = gradPayerVia;
+      ctx.fillText(partA, startX, 80);
+      const gradMijoPay = ctx.createLinearGradient(startX + widthA, 0, startX + widthA + widthB, 0);
+      gradMijoPay.addColorStop(0, "#ff7a3d");
+      gradMijoPay.addColorStop(1, "#ffb648");
+      ctx.fillStyle = gradMijoPay;
+      ctx.fillText(partB, startX + widthA, 80);
       ctx.textAlign = "center";
 
       // nom du commerce, à la place où figurait le logo auparavant
       ctx.fillStyle = "#141a2b";
       ctx.font = "700 26px Syne, sans-serif";
-      fitText(ctx, entreprise.NomCommercial, W / 2, 140, W - 120, 26);
+      fitText(ctx, entreprise.NomCommercial, W / 2, 150, W - 120, 26);
 
       // cadre blanc du QR avec coins "viseur" multicolores
       const frameSize = 360, frameX = W / 2 - frameSize / 2, frameY = 190;
