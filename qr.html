@@ -39,10 +39,16 @@
 
   .card-body{padding:32px 26px 26px;}
 
-  .headline{
-    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:29px; letter-spacing:0.01em;
-    text-transform:uppercase; color:var(--ink); margin-bottom:4px; line-height:1.15;
-  }
+  .headline {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 800;
+  font-size: 55px; /* Taille augmentée pour l'impact visuel de loin */
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 12px; /* Marge ajustée pour laisser respirer le texte */
+  line-height: 1.15;
+}
   .headline .brand-payervia{
     background:linear-gradient(120deg, var(--blue), var(--teal));
     -webkit-background-clip:text; background-clip:text; color:transparent;
@@ -65,7 +71,13 @@
     box-shadow:0 14px 30px -18px #1a233540;
   }
   #qrcode{line-height:0;}
-  #qrcode img, #qrcode canvas{border-radius:4px; display:block;}
+  #qrcode img, #qrcode canvas, #qrcode svg {
+  border-radius: 4px;
+  display: block;
+  width: 100%; /* S'assure que le QR code remplit bien son cadre */
+  height: auto;
+  image-rendering: pixelated; /* Force les pixels à rester nets, empêche le flou */
+}
 
   .corner{position:absolute; width:22px; height:22px; border:3px solid transparent;}
   .corner.tl{top:6px; left:6px; border-right:none; border-bottom:none; border-radius:6px 0 0 0; border-color:var(--blue);}
