@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.mijopay.twa",
+        "sha256_cert_fingerprints": ["87:EB:51:DD:01:AA:D7:46:E3:00:06:99:C4:A4:62:16:8F:9E:19:08:30:CD:96:BB:30:7D:2D:DA:F5:0E:EB:EE"]
+      }
+    }]
