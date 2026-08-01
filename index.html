@@ -529,25 +529,22 @@ const cguAcceptee = document.getElementById("acceptCGU").checked;
                 const data = await response.json();
 
                 if (response.ok && data.status === 'success') {
-                    const newUserCredentials = { NumeroCarte: data.card, CIN: data.cin };
-                    localStorage.setItem("user", JSON.stringify(newUserCredentials));
+    const newUserCredentials = {
+        NumeroCarte: data.card,
+        CIN: data.cin,
+        PremiereConnexion: true
+    };
+    localStorage.setItem("user", JSON.stringify(newUserCredentials));
 
-                    document.getElementById("cardNumber").value = data.card;
-                    document.getElementById("cin").value = data.cin;
+    document.getElementById("displayCard").innerText = data.card;
+    document.getElementById("successCredentials").style.display = "block";
 
-                    document.getElementById("displayCard").innerText = data.card;
-                    
-                    document.getElementById("successCredentials").style.display = "block";
-
-                    document.getElementById("nomcomplet").value = "";
-                    document.getElementById("pays").value = "";
-                    document.getElementById("adresseemail").value = "";
-                    document.getElementById("telephone").value = "";
-
-                    hideInscription();
-                } else {
-                    throw new Error(data.message || "Erreur lors de la création.");
-                }
+    // Petite pause pour que l'utilisateur note son numéro, puis redirection
+    setTimeout(() => {
+        showLoadingOverlay();
+        setTimeout(() => { window.location.href = "home.html"; }, 2800);
+    }, 4000);
+}
 
             } catch (err) {
                 console.error("Erreur Inscription:", err);
