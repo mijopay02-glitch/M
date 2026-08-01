@@ -425,6 +425,8 @@
             const data = await res.json();
 
             if (data.success) {
+                 const updatedUser = { ...user, PremiereConnexion: false };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
                 // Afficher succès
                 document.getElementById('form-section').style.display = 'none';
                 document.getElementById('success-screen').classList.add('visible');
