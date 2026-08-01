@@ -493,69 +493,74 @@
         }
 
         async function inscrire() {
-            const nom = document.getElementById("nomcomplet").value.trim();
-            const pays = document.getElementById("pays").value.trim();
-            const email = document.getElementById("adresseemail").value.trim();
-            const telephone = document.getElementById("telephone").value.trim();
-const cguAcceptee = document.getElementById("acceptCGU").checked;
+    const nom = document.getElementById("nomcomplet").value.trim();
+    const pays = document.getElementById("pays").value.trim();
+    const email = document.getElementById("adresseemail").value.trim();
+    const telephone = document.getElementById("telephone").value.trim();
+    const cguAcceptee = document.getElementById("acceptCGU").checked;
+
     if (!cguAcceptee) {
         inscriptionMessageDiv.style.color = "red";
         inscriptionMessageDiv.innerText = "Vous devez accepter les Conditions Générales d'Utilisation pour continuer.";
         return;
     }
-            if (!nom || !pays || !email || !telephone) {
-                inscriptionMessageDiv.style.color = "red";
-                inscriptionMessageDiv.innerText = "Veuillez remplir tous les champs.";
-                return;
-            }
+    if (!nom || !pays || !email || !telephone) {
+        inscriptionMessageDiv.style.color = "red";
+        inscriptionMessageDiv.innerText = "Veuillez remplir tous les champs.";
+        return;
+    }
 
-            inscriptionBtn.disabled = true;
-            inscriptionBtn.innerText = "Création de votre carte en cours...";
-            inscriptionMessageDiv.innerText = "";
+    inscriptionBtn.disabled = true;
+    inscriptionBtn.innerText = "Création de votre carte en cours...";
+    inscriptionMessageDiv.innerText = "";
 
-            try {
-                const response = await fetch(workerUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        action: "auto_register",
-                        nom: nom,
-                        pays: pays,
-                        email: email,
-                        telephone: telephone
-                    })
-                });
+    try {
+        const response = await fetch(workerUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "auto_register", nom, pays, email, telephone })
+        });
 
-                const data = await response.json();
+        const data = await response.json();
 
-                if (response.ok && data.status === 'success') {
-    const newUserCredentials = {
-        NumeroCarte: data.card,
-        CIN: data.cin,
-        PremiereConnexion: true
-    };
-    localStorage.setItem("user", JSON.stringify(newUserCredentials));
+        if (response.ok && data.status === 'success') {
+            // ── succès : le code existant reste ici ──
+            const newUserCredentials = { NumeroCarte: data.card, CIN: data.cin };
+            localStorage.setItem("user", JSON.stringify(newUserCredentials));
 
-    document.getElementById("displayCard").innerText = data.card;
-    document.getElementById("successCredentials").style.display = "block";
+            document.getElementById("cardNumber").value = data.card;
+            document.getElementById("cin").value = data.cin;
+            document.getElementById("displayCard").innerText = data.card;
+            document.getElementById("successCredentials").style.display = "block";
 
-    // Petite pause pour que l'utilisateur note son numéro, puis redirection
-    setTimeout(() => {
-        showLoadingOverlay();
-        setTimeout(() => { window.location.href = "home.html"; }, 2800);
-    }, 4000);
-}
+            document.getElementById("nomcomplet").value = "";
+            document.getElementById("pays").value = "";
+            document.getElementById("adresseemail").value = "";
+            document.getElementById("telephone").value = "";
 
-            } catch (err) {
-                console.error("Erreur Inscription:", err);
-                inscriptionMessageDiv.style.color = "red";
-                inscriptionMessageDiv.innerText = "Une erreur est survenue : " + err.message;
-            } finally {
-                inscriptionBtn.disabled = false;
-                inscriptionBtn.innerText = "Valider et Générer ma carte";
-            }
+            hideInscription();
+
+            setTimeout(() => {
+                showLoadingOverlay();
+                setTimeout(() => { window.location.href = "home.html"; }, 2800);
+            }, 4000);
+
+        } else {
+            // ── erreur métier connue (email/téléphone déjà pris, champs invalides...) ──
+            inscriptionMessageDiv.style.color = "red";
+            inscriptionMessageDiv.innerText = data.message || "Erreur lors de la création du compte.";
         }
 
+    } catch (err) {
+        // ── erreur réseau/technique uniquement ──
+        console.error("Erreur Inscription:", err);
+        inscriptionMessageDiv.style.color = "red";
+        inscriptionMessageDiv.innerText = "Erreur de connexion. Vérifiez votre réseau et réessayez.";
+    } finally {
+        inscriptionBtn.disabled = false;
+        inscriptionBtn.innerText = "Valider et Générer ma carte";
+    }
+}
         function showInscription() {
             document.getElementById("loginContainer").style.display = "none";
             document.getElementById("inscriptionForm").style.display = "block";
