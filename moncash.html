@@ -45,6 +45,12 @@
                 Augmenter mon plafond + Max par dépôt  via KYC
             </a>
         </div>
+        <div id="parrainField" class="hidden mb-4">
+    <label class="block text-sm font-semibold text-gray-700 mb-2">
+        Code parrain <span class="text-gray-400 font-normal">(optionnel — +250 HTG de bonus)</span>
+    </label>
+    <input id="codeParrainInput" type="text" placeholder="Ex: MIJO123" class="w-full p-3 rounded-xl border border-gray-300 text-sm" maxlength="20">
+</div>
 
         <form id="paymentForm" class="space-y-6">
             <div>
@@ -130,6 +136,9 @@
         const userRaw = localStorage.getItem('user');
         const user = userRaw ? JSON.parse(userRaw) : null;
 
+if (user && user.BonusParrainUtilise !== true) {
+    document.getElementById('parrainField').classList.remove('hidden');
+}
         // Calcul des plafonds selon le statut KYC
         const isKycVerified = user && user.kyc_status === 'verifier';
         const maxSoldeAutorise = isKycVerified ? 100000 : 10000;
@@ -242,8 +251,10 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${storedToken}`
                     },
-                    body: JSON.stringify({ amount: totalWithFees })
-                });
+                    body: JSON.stringify({
+    amount: totalWithFees,
+    codeParrain: document.getElementById('codeParrainInput')?.value.trim() || null
+})
 
                 const data = await response.json();
 
