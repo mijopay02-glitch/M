@@ -476,38 +476,11 @@ function renderCapWarning() {
       : `/transactions?from=${from}&to=${to}`;
     const txData = await apiGet(txEndpoint);
 
-    // Sur la vue "Revenus MIJO", on récupère aussi les charges pour calculer le résultat net
+    // Sur la vue "Revenus MIJO", on récupère aussi les charges pour le résultat net
+    let chargesData = null;
     if (currentView === "mijo") {
-  const parType = s.parType || {};
-  const typesTriés = Object.entries(parType).sort((a, b) => b[1].total - a[1].total);
-  const totalCharges = currentData.charges ? currentData.charges.total : 0;
-  const resultatNet = parseFloat((s.total - totalCharges).toFixed(2));
-
-  cardsRow.innerHTML = `
-    <div class="stat-card highlight">
-      <div class="label">Revenu total MIJO</div>
-      <div class="value">${s.total.toLocaleString()} HTG</div>
-      <div class="sub">${(s.transactions || []).length} transaction(s)</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">Charges de la période</div>
-      <div class="value" style="color:var(--error);">${totalCharges.toLocaleString()} HTG</div>
-      <div class="sub">${(currentData.charges?.charges || []).length} charge(s)</div>
-    </div>
-    <div class="stat-card highlight">
-      <div class="label">Résultat net</div>
-      <div class="value" style="color:${resultatNet >= 0 ? 'var(--ok)' : 'var(--error)'};">${resultatNet.toLocaleString()} HTG</div>
-      <div class="sub">Revenus − charges</div>
-    </div>
-    ${typesTriés.slice(0, 2).map(([type, agg]) => `
-      <div class="stat-card">
-        <div class="label">${escapeHtml(type)}</div>
-        <div class="value">${agg.total.toLocaleString()} HTG</div>
-        <div class="sub">${agg.nombre} transaction(s)</div>
-      </div>
-    `).join("")}
-  `;
-}
+      chargesData = await apiGet(`/charges?from=${from}&to=${to}`);
+    }
 
     currentData = { summary: summaryData, transactions: txData.transactions, charges: chargesData };
     renderAll();
@@ -518,7 +491,6 @@ function renderCapWarning() {
     }
   }
 }
-
   function renderAll() {
     renderCapWarning();
     renderKPIs();
@@ -527,59 +499,15 @@ function renderCapWarning() {
     renderTable();
   }
 
-  function renderCapWarning() {
-    const cap = document.getElementById("capWarning");
-    if (currentData.summary.plafondAtteint) {
-      cap.innerHTML = `<div class="cap-warning">⚠️ Plus de 3000 transactions dans cette plage — certaines données peuvent manquer. Réduisez la période pour un calcul exact.</div>`;
-    } else {
-      cap.innerHTML = "";
-    }
+ function renderCapWarning() {
+  const cap = document.getElementById("capWarning");
+  if (currentData.summary && currentData.summary.plafondAtteint) {
+    cap.innerHTML = `<div class="cap-warning">⚠️ Plus de 3000 transactions dans cette plage — certaines données peuvent manquer. Réduisez la période pour un calcul exact.</div>`;
+  } else {
+    cap.innerHTML = "";
   }
+}
 
-  function renderKPIs() {
-    const s = currentData.summary;
-    const cardsRow = document.getElementById("cardsRow");
-
-    if (currentView === "mijo") {
-      const parType = s.parType || {};
-      const typesTriés = Object.entries(parType).sort((a, b) => b[1].total - a[1].total);
-
-      cardsRow.innerHTML = `
-        <div class="stat-card highlight">
-          <div class="label">Revenu total MIJO</div>
-          <div class="value">${s.total.toLocaleString()} HTG</div>
-          <div class="sub">${(s.transactions || []).length} transaction(s)</div>
-        </div>
-        ${typesTriés.slice(0, 3).map(([type, agg]) => `
-          <div class="stat-card">
-            <div class="label">${escapeHtml(type)}</div>
-            <div class="value">${agg.total.toLocaleString()} HTG</div>
-            <div class="sub">${agg.nombre} transaction(s)</div>
-          </div>
-        `).join("")}
-      `;
-    } else {
-      cardsRow.innerHTML = `
-        <div class="stat-card highlight">
-          <div class="label">Volume total</div>
-          <div class="value">${s.total.toLocaleString()} HTG</div>
-          <div class="sub">${s.nombreTransactions} transaction(s)</div>
-        </div>
-        <div class="stat-card">
-          <div class="label">Dépôts</div>
-          <div class="value">${sommeTypesContenant(s.parType, "Dépôt").toLocaleString()} HTG</div>
-        </div>
-        <div class="stat-card">
-          <div class="label">Retraits</div>
-          <div class="value">${sommeTypesContenant(s.parType, "Retrait").toLocaleString()} HTG</div>
-        </div>
-        <div class="stat-card">
-          <div class="label">Revenus MIJO</div>
-          <div class="value">${sommeTypesContenant(s.parType, "Revenu").toLocaleString()} HTG</div>
-        </div>
-      `;
-    }
-  }
 
   function sommeTypesContenant(parType, motCle) {
     if (!parType) return 0;
@@ -657,7 +585,62 @@ function renderCapWarning() {
       types.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
     select.value = types.includes(currentValue) ? currentValue : "";
   }
+function renderKPIs() {
+  const s = currentData.summary;
+  const cardsRow = document.getElementById("cardsRow");
 
+  if (currentView === "mijo") {
+    const parType = s.parType || {};
+    const typesTriés = Object.entries(parType).sort((a, b) => b[1].total - a[1].total);
+    const totalCharges = currentData.charges ? currentData.charges.total : 0;
+    const resultatNet = parseFloat((s.total - totalCharges).toFixed(2));
+
+    cardsRow.innerHTML = `
+      <div class="stat-card highlight">
+        <div class="label">Revenu total MIJO</div>
+        <div class="value">${s.total.toLocaleString()} HTG</div>
+        <div class="sub">${(s.transactions || []).length} transaction(s)</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Charges de la période</div>
+        <div class="value" style="color:var(--error);">${totalCharges.toLocaleString()} HTG</div>
+        <div class="sub">${(currentData.charges?.charges || []).length} charge(s)</div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="label">Résultat net</div>
+        <div class="value" style="color:${resultatNet >= 0 ? 'var(--ok)' : 'var(--error)'};">${resultatNet.toLocaleString()} HTG</div>
+        <div class="sub">Revenus − charges</div>
+      </div>
+      ${typesTriés.slice(0, 2).map(([type, agg]) => `
+        <div class="stat-card">
+          <div class="label">${escapeHtml(type)}</div>
+          <div class="value">${agg.total.toLocaleString()} HTG</div>
+          <div class="sub">${agg.nombre} transaction(s)</div>
+        </div>
+      `).join("")}
+    `;
+  } else {
+    cardsRow.innerHTML = `
+      <div class="stat-card highlight">
+        <div class="label">Volume total</div>
+        <div class="value">${s.total.toLocaleString()} HTG</div>
+        <div class="sub">${s.nombreTransactions} transaction(s)</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Dépôts</div>
+        <div class="value">${sommeTypesContenant(s.parType, "Dépôt").toLocaleString()} HTG</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Retraits</div>
+        <div class="value">${sommeTypesContenant(s.parType, "Retrait").toLocaleString()} HTG</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Revenus MIJO</div>
+        <div class="value">${sommeTypesContenant(s.parType, "Revenu").toLocaleString()} HTG</div>
+      </div>
+    `;
+  }
+}
   function renderTable() {
     const typeFilter = document.getElementById("typeFilter").value;
     const rows = currentData.transactions.filter(tx => !typeFilter || tx.TypeTransaction === typeFilter);
