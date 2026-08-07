@@ -174,9 +174,10 @@
       <button class="apply-btn" id="applyFilters">Appliquer</button>
       <div style="flex:1;"></div>
       <div class="view-toggle">
-        <button class="view-btn active" data-view="all">Toutes les transactions</button>
-        <button class="view-btn" data-view="mijo">Revenus MIJO uniquement</button>
-      </div>
+    <button class="view-btn active" data-view="all">Toutes les transactions</button>
+    <button class="view-btn" data-view="mijo">Revenus MIJO uniquement</button>
+    <button class="view-btn" data-view="charges">Charges</button>
+</div>
     </div>
 
     <div id="capWarning"></div>
@@ -290,7 +291,107 @@
     dashboard.style.display = "none";
     gate.style.display = "flex";
   });
+function renderAllCharges() {
+  document.getElementById("capWarning").innerHTML = "";
+  renderChargesKPIs();
+  renderChargesCharts();
+  populateChargesTypeFilter();
+  renderChargesTable();
+}
 
+function renderChargesKPIs() {
+  const c = currentData.charges;
+  const cardsRow = document.getElementById("cardsRow");
+  const parType = c.parType || {};
+  const typesTriés = Object.entries(parType).sort((a, b) => b[1].total - a[1].total);
+
+  cardsRow.innerHTML = `
+    <div class="stat-card highlight">
+      <div class="label">Total des charges</div>
+      <div class="value" style="color:var(--error);">${c.total.toLocaleString()} HTG</div>
+      <div class="sub">${c.charges.length} charge(s)</div>
+    </div>
+    ${typesTriés.slice(0, 3).map(([type, agg]) => `
+      <div class="stat-card">
+        <div class="label">${escapeHtml(type)}</div>
+        <div class="value">${agg.total.toLocaleString()} HTG</div>
+        <div class="sub">${agg.nombre} charge(s)</div>
+      </div>
+    `).join("")}
+  `;
+}
+
+function renderChargesCharts() {
+  const parJour = currentData.charges.parJour || {};
+  const parType = currentData.charges.parType || {};
+
+  const joursTries = Object.keys(parJour).sort();
+  const labelsJours = joursTries.map(j => new Date(j + "T00:00:00").toLocaleDateString("fr-FR", { day: "2-digit", month: "short" }));
+  const valeursJours = joursTries.map(j => parJour[j]);
+
+  document.getElementById("lineChartTitle").textContent = "Charges par jour";
+
+  if (lineChartInstance) lineChartInstance.destroy();
+  lineChartInstance = new Chart(document.getElementById("lineChart"), {
+    type: "line",
+    data: { labels: labelsJours, datasets: [{ label: "Montant (HTG)", data: valeursJours, borderColor: "#ff5c72", backgroundColor: "#ff5c7222", fill: true, tension: 0.3, pointRadius: 3 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: { ticks: { color: "#aab4cc" }, grid: { color: "#28345a" } }, y: { ticks: { color: "#aab4cc" }, grid: { color: "#28345a" } } }
+    }
+  });
+
+  const typesTypes = Object.keys(parType);
+  const valeursType = typesTypes.map(t => parType[t].total);
+  const palette = ["#ff5c72", "#ffb648", "#a78bfa", "#38bdf8", "#f472b6", "#ff6b35", "#38d996", "#a3e635"];
+
+  document.getElementById("pieChartTitle").textContent = "Répartition des charges";
+
+  if (pieChartInstance) pieChartInstance.destroy();
+  pieChartInstance = new Chart(document.getElementById("pieChart"), {
+    type: "doughnut",
+    data: { labels: typesTypes, datasets: [{ data: valeursType, backgroundColor: palette, borderColor: "#0f1830", borderWidth: 2 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom", labels: { color: "#aab4cc", boxWidth: 11, font: { size: 10.5 } } } } }
+  });
+}
+
+function populateChargesTypeFilter() {
+  const select = document.getElementById("typeFilter");
+  const currentValue = select.value;
+  const types = [...new Set(currentData.charges.charges.map(c => c.type_charge || "Autre"))].sort();
+  select.innerHTML = `<option value="">Tous les types</option>` + types.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
+  select.value = types.includes(currentValue) ? currentValue : "";
+}
+
+function renderChargesTable() {
+  const typeFilter = document.getElementById("typeFilter").value;
+  const rows = currentData.charges.charges.filter(c => !typeFilter || c.type_charge === typeFilter);
+
+  if (rows.length === 0) {
+    document.getElementById("tableContainer").innerHTML = `<div class="empty-state">Aucune charge pour cette sélection.</div>`;
+    return;
+  }
+
+  document.getElementById("tableContainer").innerHTML = `
+    <table class="tx-table">
+      <thead>
+        <tr><th>Date</th><th>Bénéficiaire</th><th>Type de charge</th><th>Montant</th><th>Solde MIJO avant → après</th></tr>
+      </thead>
+      <tbody>
+        ${rows.map(c => `
+          <tr>
+            <td>${formatDateShort(c.created_at)}</td>
+            <td><span class="tx-userid">${escapeHtml(c.beneficiaire_user_id || "—")}</span></td>
+            <td>${escapeHtml(c.type_charge || "—")}${c.description ? `<div class="tx-desc">${escapeHtml(c.description.slice(0, 100))}</div>` : ""}</td>
+            <td class="tx-amount" style="color:var(--error);">-${Number(c.montant || 0).toLocaleString()} HTG</td>
+            <td class="tx-desc">${Number(c.solde_entreprise_avant || 0).toLocaleString()} → ${Number(c.solde_entreprise_apres || 0).toLocaleString()} HTG</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
   function toDateInputValue(d) { return d.toISOString().slice(0, 10); }
 
   function setPreset(preset) {
@@ -315,6 +416,9 @@
     document.querySelectorAll(".preset-btn").forEach(b => b.classList.remove("active"));
     loadData();
   });
+  document.getElementById("typeFilter").addEventListener("change", () => {
+  currentView === "charges" ? renderChargesTable() : renderTable();
+});
 
   document.querySelectorAll(".view-btn").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -326,7 +430,14 @@
   });
 
   document.getElementById("typeFilter").addEventListener("change", renderTable);
-
+function renderCapWarning() {
+  const cap = document.getElementById("capWarning");
+  if (currentData.summary && currentData.summary.plafondAtteint) {
+    cap.innerHTML = `<div class="cap-warning">⚠️ Plus de 3000 transactions dans cette plage — certaines données peuvent manquer. Réduisez la période pour un calcul exact.</div>`;
+  } else {
+    cap.innerHTML = "";
+  }
+}
   async function apiGet(path) {
     const res = await fetch(`${CONFIG.API_URL}${path}`, {
       headers: { "X-MIJO-Accounting-Password": currentPassword }
@@ -344,29 +455,69 @@
     return data;
   }
 
-  async function loadData() {
-    const from = document.getElementById("dateFrom").value;
-    const to = document.getElementById("dateTo").value;
-    document.getElementById("tableContainer").innerHTML = `<div class="loading-state">Chargement…</div>`;
+ async function loadData() {
+  const from = document.getElementById("dateFrom").value;
+  const to = document.getElementById("dateTo").value;
+  document.getElementById("tableContainer").innerHTML = `<div class="loading-state">Chargement…</div>`;
 
-    try {
-      const endpoint = currentView === "mijo" ? "/mijo-revenue" : "/summary";
-      const summaryData = await apiGet(`${endpoint}?from=${from}&to=${to}`);
+  try {
+    if (currentView === "charges") {
+      const chargesData = await apiGet(`/charges?from=${from}&to=${to}`);
+      currentData = { charges: chargesData };
+      renderAllCharges();
+      return;
+    }
 
-      const txEndpoint = currentView === "mijo"
-        ? `/transactions?from=${from}&to=${to}&userId=${MIJO_USERID}`
-        : `/transactions?from=${from}&to=${to}`;
-      const txData = await apiGet(txEndpoint);
+    const endpoint = currentView === "mijo" ? "/mijo-revenue" : "/summary";
+    const summaryData = await apiGet(`${endpoint}?from=${from}&to=${to}`);
 
-      currentData = { summary: summaryData, transactions: txData.transactions };
-      renderAll();
+    const txEndpoint = currentView === "mijo"
+      ? `/transactions?from=${from}&to=${to}&userId=${MIJO_USERID}`
+      : `/transactions?from=${from}&to=${to}`;
+    const txData = await apiGet(txEndpoint);
 
-    } catch (err) {
-      if (err.message !== "unauthorized") {
-        document.getElementById("tableContainer").innerHTML = `<div class="empty-state">⚠️ ${escapeHtml(err.message)}</div>`;
-      }
+    // Sur la vue "Revenus MIJO", on récupère aussi les charges pour calculer le résultat net
+    if (currentView === "mijo") {
+  const parType = s.parType || {};
+  const typesTriés = Object.entries(parType).sort((a, b) => b[1].total - a[1].total);
+  const totalCharges = currentData.charges ? currentData.charges.total : 0;
+  const resultatNet = parseFloat((s.total - totalCharges).toFixed(2));
+
+  cardsRow.innerHTML = `
+    <div class="stat-card highlight">
+      <div class="label">Revenu total MIJO</div>
+      <div class="value">${s.total.toLocaleString()} HTG</div>
+      <div class="sub">${(s.transactions || []).length} transaction(s)</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Charges de la période</div>
+      <div class="value" style="color:var(--error);">${totalCharges.toLocaleString()} HTG</div>
+      <div class="sub">${(currentData.charges?.charges || []).length} charge(s)</div>
+    </div>
+    <div class="stat-card highlight">
+      <div class="label">Résultat net</div>
+      <div class="value" style="color:${resultatNet >= 0 ? 'var(--ok)' : 'var(--error)'};">${resultatNet.toLocaleString()} HTG</div>
+      <div class="sub">Revenus − charges</div>
+    </div>
+    ${typesTriés.slice(0, 2).map(([type, agg]) => `
+      <div class="stat-card">
+        <div class="label">${escapeHtml(type)}</div>
+        <div class="value">${agg.total.toLocaleString()} HTG</div>
+        <div class="sub">${agg.nombre} transaction(s)</div>
+      </div>
+    `).join("")}
+  `;
+}
+
+    currentData = { summary: summaryData, transactions: txData.transactions, charges: chargesData };
+    renderAll();
+
+  } catch (err) {
+    if (err.message !== "unauthorized") {
+      document.getElementById("tableContainer").innerHTML = `<div class="empty-state">⚠️ ${escapeHtml(err.message)}</div>`;
     }
   }
+}
 
   function renderAll() {
     renderCapWarning();
