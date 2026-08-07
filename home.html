@@ -765,6 +765,35 @@
         </div>
     </div>
 </div>
+    <!-- STEP 2 MODAL — PREMIER DÉPÔT AVEC PARRAIN -->
+<div id="step2Modal" class="modal-overlay welcome-overlay">
+    <div class="welcome-sheet">
+        <div class="welcome-header" style="background: linear-gradient(145deg, #10B981 0%, #059669 60%, #047857 100%);">
+            <button class="modal-close" onclick="hideStep2Modal()" style="position:absolute; top:12px; right:16px; color:#fff; z-index:2;">✕</button>
+            <img src="https://i.postimg.cc/wMpBntft/gpt-image-2-cute-mascot-character-for-a-fintech-app-MIJO-PAY-friendly-holding-coins-flat-vec-0-remov.png" alt="Mascotte MIJO PAY" class="welcome-logo">
+            <div class="welcome-glow"></div>
+        </div>
+        <div class="welcome-body">
+            <h2 class="welcome-title">Votre cadeau vous attend! 🎁</h2>
+            <p class="welcome-subtitle">Faites votre premier dépôt avec votre code parrain et recevez un bonus de MIJO PAY.</p>
+
+            <div class="welcome-step">
+                <span class="step-badge" style="background:#D1FAE5; color:#065F46;">Étape 2</span>
+                <span class="step-text">Premier dépôt avec parrain</span>
+            </div>
+
+            <div class="temp-pass-box" style="background:#D1FAE5; border-color:#10B981;">
+                <span class="temp-pass-label" style="color:#065F46;">Dépôt minimum requis</span>
+                <span class="temp-pass-value" style="color:#065F46; letter-spacing:2px;">1000 G → 250 G cadeau</span>
+            </div>
+
+            <button class="welcome-cta" style="background: linear-gradient(135deg, #10B981, #059669);" onclick="window.location.href='moncash.html'">
+                💰 Faire mon dépôt maintenant
+            </button>
+            <p class="welcome-note" style="cursor:pointer; text-decoration:underline;" onclick="hideStep2Modal()">Plus tard</p>
+        </div>
+    </div>
+</div>
     <!-- FLOATING NAV BUTTONS -->
    <div class="float-nav">
     <a href="transaction.html" class="float-btn tx">
@@ -794,7 +823,31 @@
     // ══════════════════════════════════════════════════
     let supabaseClient  = null;
     let realtimeChannel = null;
- 
+ function checkStep2Promo() {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) return;
+    try {
+        const user = JSON.parse(storedUser);
+
+        const aDejaChangeMotDePasse =
+            user.PremiereConnexion === false || user.PremiereConnexion === "false";
+
+        const bonusNonUtilise =
+            user.BonusParrainUtilise === false ||
+            user.BonusParrainUtilise === "false" ||
+            user.BonusParrainUtilise === undefined;
+
+        if (aDejaChangeMotDePasse && bonusNonUtilise) {
+            setTimeout(() => {
+                document.getElementById('step2Modal')?.classList.add('open');
+            }, 600);
+        }
+    } catch (e) {}
+}
+
+function hideStep2Modal() {
+    document.getElementById('step2Modal')?.classList.remove('open');
+}
     function initRealtime(userId, token) {
         if (!userId || !token) return;
         try {
@@ -863,6 +916,7 @@ function goToChangePassword() {
     chargerSponsors();
     initParticles();
     checkPromoPopup();
+        checkStep2Promo(); 
 
     if (new URLSearchParams(window.location.search).get('depot') === 'succes') {
         history.replaceState(null, '', 'home.html');
