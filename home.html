@@ -559,6 +559,14 @@
     color: var(--text-2);
     margin-top: 12px;
 }
+        .balance-amount.status-text {
+    font-size: .62em;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.3;
+    max-width: 170px;
+    text-align: center;
+}
     </style>
 </head>
 <body>
@@ -936,26 +944,72 @@ function goToChangePassword() {
     }
 }
 
+const checkStatusUrl = "https://moncash-connect-webhook.mijocomplexe.workers.dev/check-status"; 
+
 function pollSoldeApresDepot() {
-    const balanceEl = document.getElementById('balance');
-    balanceEl.style.opacity = '0.5';
+    const balanceEl  = document.getElementById('balance');
+    const refreshBtn = document.getElementById('refresh-button');
+    const reference  = localStorage.getItem('depotReference');
+    const soldeAvant = balanceEl.innerText; // pour revenir en arrière si besoin
+
+    balanceEl.classList.add('status-text');
+    balanceEl.innerText = "Confirmation de votre dépôt en cours…";
+    if (refreshBtn) refreshBtn.style.visibility = 'hidden';
+
+    if (!reference) {
+        // Pas de référence en mémoire → on garde l'ancien comportement en filet de sécurité
+        let essaisFallback = 0;
+        const timerFallback = setInterval(async () => {
+            essaisFallback++;
+            await refreshBalance(null);
+            if (essaisFallback >= 12) {
+                clearInterval(timerFallback);
+                balanceEl.classList.remove('status-text');
+                if (refreshBtn) refreshBtn.style.visibility = 'visible';
+            }
+        }, 5000);
+        return;
+    }
 
     let essais = 0;
-    const MAX = 12; // 12 × 5s = 60 secondes max, puis on arrête
+    const MAX = 24; // 24 × 5s = 2 minutes, aligné sur le vrai délai MonCash
 
     const timer = setInterval(async () => {
         essais++;
-        await refreshBalance(null);
+        try {
+            const res  = await fetch(`${checkStatusUrl}?reference=${encodeURIComponent(reference)}`);
+            const data = await res.json();
 
-        // Comparer avec le solde en localStorage avant le dépôt
-        // Realtime va aussi mettre à jour — donc double sécurité
-        balanceEl.style.opacity = '1';
+            if (data.status === 'completed') {
+                clearInterval(timer);
+                localStorage.removeItem('depotReference');
+                await refreshBalance(null);   // recharge le vrai solde et remet à jour l'UI
+                balanceEl.classList.remove('status-text');
+                if (refreshBtn) refreshBtn.style.visibility = 'visible';
+                return;
+            }
+            if (data.status === 'failed') {
+                clearInterval(timer);
+                localStorage.removeItem('depotReference');
+                balanceEl.classList.remove('status-text');
+                balanceEl.innerText = soldeAvant;
+                if (refreshBtn) refreshBtn.style.visibility = 'visible';
+                alert("Le dépôt a échoué. Consultez votre historique de transactions pour plus de détails.");
+                return;
+            }
+            // status === 'pending' → on continue simplement d'attendre
 
-        if (essais >= MAX) clearInterval(timer);
+        } catch (e) {
+            // erreur réseau ponctuelle → on retente au prochain cycle
+        }
+
+        if (essais >= MAX) {
+            clearInterval(timer);
+            balanceEl.classList.remove('status-text');
+            balanceEl.innerText = soldeAvant;
+            if (refreshBtn) refreshBtn.style.visibility = 'visible';
+        }
     }, 5000);
-
-    // Premier appel immédiat après 3s (laisser le temps au webhook)
-    setTimeout(() => refreshBalance(null), 3000);
 }
     function checkUserSession() {
         const storedUser = localStorage.getItem('user');
