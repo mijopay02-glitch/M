@@ -152,6 +152,27 @@
   }
   .qr-cta:hover{ transform:translateY(-2px); box-shadow:0 12px 28px -8px #ff6b3580; }
 
+  /* ---------- Plafond banner ---------- */
+  .plafond-banner{
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    background:var(--navy-900); border:1px solid var(--line); border-radius:var(--radius-lg);
+    padding:16px 20px; margin-bottom:22px;
+  }
+  .plafond-banner-text{display:flex; align-items:center; gap:12px;}
+  .plafond-banner-icon{
+    flex:none; width:38px; height:38px; border-radius:10px; background:var(--gold-dim);
+    display:flex; align-items:center; justify-content:center; font-size:17px;
+  }
+  .plafond-banner-text h4{font-family:'Syne',sans-serif; font-size:13.5px; margin-bottom:2px;}
+  .plafond-banner-text p{font-size:12px; color:var(--text-low);}
+  .plafond-cta{
+    flex:none; display:inline-flex; align-items:center; gap:6px; padding:10px 16px;
+    background:transparent; border:1px solid var(--orange); color:var(--orange);
+    border-radius:10px; font-family:'Syne',sans-serif; font-weight:700; font-size:12.5px;
+    text-decoration:none; white-space:nowrap; transition:background .15s, color .15s;
+  }
+  .plafond-cta:hover{ background:var(--orange); color:var(--navy-950); }
+
   /* ---------- Withdraw row ---------- */
   .section-label{
     font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-low);
@@ -288,7 +309,9 @@
     API_URL: "https://business-dashboard.mijocomplexe.workers.dev",
     MONCASH_WITHDRAW_PAGE: "retrait-moncash.html",
     SUBMIT_BUSINESS_PAGE: "https://mijopay.com/submit.html",
-    QR_PAGE: "qr.html"
+    QR_PAGE: "qr.html",
+    PLAFOND_PAGE: "augmenter-plafond.html",
+    PLAFOND_CIBLE: 500000
   };
 
   const container = document.getElementById("container");
@@ -415,6 +438,24 @@
     return { barsHtml, totalWeek };
   }
 
+  // ---- Bandeau "augmenter mon plafond" : affiché seulement si le plafond
+  // actuel n'a pas déjà atteint la cible (évite de proposer une hausse à
+  // quelqu'un qui l'a déjà). ----
+  function buildPlafondBanner(plafond) {
+    if (plafond && plafond >= CONFIG.PLAFOND_CIBLE) return "";
+    return `
+      <div class="plafond-banner fade-in d2">
+        <div class="plafond-banner-text">
+          <div class="plafond-banner-icon">📈</div>
+          <div>
+            <h4>Augmentez votre plafond</h4>
+            <p>Passez à ${CONFIG.PLAFOND_CIBLE.toLocaleString()} HTG en soumettant votre patente et votre matricule fiscal.</p>
+          </div>
+        </div>
+        <a class="plafond-cta" href="${CONFIG.PLAFOND_PAGE}">Augmenter mon plafond →</a>
+      </div>`;
+  }
+
   function renderDashboard(data) {
     const ent = data.entreprise;
     const stats = data.stats;
@@ -470,6 +511,8 @@
           </div>
         </div>
       </div>
+
+      ${buildPlafondBanner(ent.PlafondSolde)}
 
       <div class="qr-hero fade-in d2">
         <div class="qr-hero-inner">
