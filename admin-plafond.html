@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demandes de plafond — Admin MIJO PAY</title>
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#0a1120; --navy-900:#0f1830; --navy-800:#16213f;
+    --line:#28345a; --orange:#ff6b35; --gold:#ffc266;
+    --text-hi:#f4f6fb; --text-mid:#aab4cc; --text-low:#6b769a;
+    --error:#ff5c72; --ok:#38d996; --warn:#ffb648;
+    --radius-lg:20px; --radius-md:14px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--navy-950); color:var(--text-hi); font-family:'Inter',sans-serif;
+    min-height:100vh; padding-bottom:60px; -webkit-font-smoothing:antialiased;
+  }
+
+  .topbar{
+    background:var(--navy-900); border-bottom:1px solid var(--line);
+    padding:16px 24px; display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:20; flex-wrap:wrap; gap:10px;
+  }
+  .topbar-title{font-family:'Syne',sans-serif; font-weight:700; font-size:15px;}
+  .topbar-title span{color:var(--orange);}
+  .filter-tabs{display:flex; gap:6px;}
+  .filter-tab{
+    padding:7px 14px; border-radius:100px; border:1px solid var(--line); background:transparent;
+    color:var(--text-mid); font-size:12px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif;
+  }
+  .filter-tab.active{background:var(--orange); border-color:var(--orange); color:var(--navy-950);}
+
+  .container{max-width:900px; margin:0 auto; padding:26px 20px;}
+
+  .state-msg{text-align:center; padding:80px 20px; color:var(--text-mid);}
+  .state-msg .icon{font-size:30px; margin-bottom:14px;}
+  .state-msg h2{font-family:'Syne',sans-serif; font-size:18px; margin-bottom:8px; color:var(--text-hi);}
+  .state-msg p{font-size:13.5px; line-height:1.6; max-width:40ch; margin:0 auto;}
+  .action-link{
+    display:inline-block; margin-top:16px; padding:11px 20px; background:var(--orange);
+    color:var(--navy-950); border-radius:10px; text-decoration:none; font-weight:700; font-size:13px;
+    font-family:'Syne',sans-serif;
+  }
+
+  .empty-list{text-align:center; padding:60px 20px; color:var(--text-low); font-size:13.5px;}
+
+  .req-card{
+    background:var(--navy-900); border:1px solid var(--line); border-radius:var(--radius-lg);
+    padding:20px; margin-bottom:16px;
+  }
+  .req-head{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:14px; flex-wrap:wrap;}
+  .req-biz h3{font-family:'Syne',sans-serif; font-size:15.5px; margin-bottom:3px;}
+  .req-biz .req-sub{font-size:12px; color:var(--text-low);}
+  .req-amount{text-align:right;}
+  .req-amount .label{font-size:10.5px; color:var(--text-low); text-transform:uppercase; letter-spacing:0.04em;}
+  .req-amount .value{font-family:'Syne',sans-serif; font-weight:800; font-size:16px; color:var(--gold);}
+
+  .status-pill{
+    display:inline-flex; align-items:center; gap:6px; font-size:10.5px; font-weight:700;
+    padding:4px 11px; border-radius:100px; text-transform:uppercase; letter-spacing:0.03em;
+  }
+  .status-pill.en_attente{background:#ffb64818; color:var(--warn); border:1px solid #ffb64840;}
+  .status-pill.approuve{background:#38d99618; color:var(--ok); border:1px solid #38d99640;}
+  .status-pill.rejete{background:#ff5c7218; color:var(--error); border:1px solid #ff5c7240;}
+
+  .req-fields{
+    display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;
+    background:var(--navy-800); border-radius:12px; padding:14px 16px;
+  }
+  @media (max-width:520px){ .req-fields{grid-template-columns:1fr;} }
+  .req-field .rf-label{font-size:10.5px; color:var(--text-low); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:3px;}
+  .req-field .rf-value{font-size:13px; font-family:monospace;}
+
+  .req-docs{display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+  .doc-link{
+    display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--navy-800);
+    border:1px solid var(--line); border-radius:10px; color:var(--text-hi); text-decoration:none;
+    font-size:12.5px; font-weight:600; transition:border-color .15s;
+  }
+  .doc-link:hover{border-color:var(--orange);}
+
+  .req-note{
+    font-size:12.5px; color:var(--text-mid); background:var(--navy-800); border-radius:10px;
+    padding:12px 14px; margin-bottom:14px; line-height:1.5;
+  }
+  .req-note .rn-label{font-size:10.5px; color:var(--text-low); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:4px;}
+
+  .req-actions{display:flex; gap:10px; flex-wrap:wrap;}
+  .req-btn{
+    flex:1; min-width:140px; padding:11px; border-radius:10px; border:none; cursor:pointer;
+    font-family:'Syne',sans-serif; font-weight:700; font-size:13px; transition:filter .15s, transform .15s;
+  }
+  .req-btn:hover{filter:brightness(1.08); transform:translateY(-1px);}
+  .req-btn:disabled{opacity:0.5; cursor:not-allowed; transform:none;}
+  .req-btn.approve{background:linear-gradient(120deg, var(--orange), var(--gold)); color:var(--navy-950);}
+  .req-btn.reject{background:transparent; border:1px solid var(--error); color:var(--error);}
+
+  .req-resolved-note{font-size:12px; color:var(--text-low);}
+
+  .reject-box{
+    display:none; margin-top:12px; padding-top:12px; border-top:1px dashed var(--line);
+  }
+  .reject-box.show{display:block;}
+  .reject-box textarea{
+    width:100%; padding:10px 12px; background:var(--navy-800); border:1px solid var(--line); border-radius:9px;
+    color:var(--text-hi); font-size:13px; font-family:'Inter',sans-serif; resize:vertical; min-height:60px; margin-bottom:10px;
+  }
+  .reject-box .rb-actions{display:flex; gap:8px;}
+  .reject-box .rb-actions button{
+    padding:9px 14px; border-radius:9px; border:none; font-size:12.5px; font-weight:700; cursor:pointer;
+    font-family:'Syne',sans-serif;
+  }
+  .rb-confirm{background:var(--error); color:#fff;}
+  .rb-cancel{background:transparent; border:1px solid var(--line); color:var(--text-mid);}
+
+  .req-error{color:var(--error); font-size:12px; margin-top:8px; display:none;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-title">MIJO <span>PAY</span> — Demandes de plafond</div>
+  <div class="filter-tabs" id="filterTabs">
+    <button class="filter-tab active" data-filter="en_attente">En attente</button>
+    <button class="filter-tab" data-filter="approuve">Approuvées</button>
+    <button class="filter-tab" data-filter="rejete">Rejetées</button>
+  </div>
+</div>
+
+<div class="container" id="container">
+  <div class="state-msg"><div class="icon">⏳</div>Chargement…</div>
+</div>
+
+<script>
+  // ────────────────────────────────────────────────────────────
+  // CONFIGURATION — endpoints repères, à brancher sur un Worker admin
+  // (idéalement protégé par un rôle admin distinct côté Supabase,
+  // pas seulement un token business) :
+  //   GET  /admin/plafond/demandes?statut=en_attente   → liste des demandes
+  //   POST /admin/plafond/demandes/:id/approuver       → approuve, met à jour PlafondSolde
+  //   POST /admin/plafond/demandes/:id/rejeter         → rejette, avec motif
+  // ────────────────────────────────────────────────────────────
+  const CONFIG = {
+    API_URL: "https://business-dashboard.mijocomplexe.workers.dev"
+  };
+
+  const container = document.getElementById("container");
+  const filterTabs = document.getElementById("filterTabs");
+  let currentFilter = "en_attente";
+
+  function getToken() { return localStorage.getItem("adminToken") || localStorage.getItem("token") || ""; }
+
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return "";
+    return String(str).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function formatDate(iso) {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" }) +
+      " · " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function renderLoginGate() {
+    container.innerHTML = `
+      <div class="state-msg">
+        <div class="icon">🔒</div>
+        <h2>Accès admin requis</h2>
+        <p>Connectez-vous avec un compte administrateur pour examiner les demandes de plafond.</p>
+        <a class="action-link" href="admin-login.html">Se connecter</a>
+      </div>`;
+  }
+
+  function statusLabel(s) {
+    return { en_attente: "En attente", approuve: "Approuvée", rejete: "Rejetée" }[s] || s;
+  }
+
+  function renderList(demandes) {
+    if (!demandes || demandes.length === 0) {
+      container.innerHTML = `<div class="empty-list">Aucune demande ${statusLabel(currentFilter).toLowerCase()} pour le moment.</div>`;
+      return;
+    }
+
+    container.innerHTML = demandes.map(d => `
+      <div class="req-card" data-id="${escapeHtml(d.id)}">
+        <div class="req-head">
+          <div class="req-biz">
+            <h3>${escapeHtml(d.NomCommercial || "Entreprise")}</h3>
+            <div class="req-sub">${escapeHtml(d.businessId)} · Soumise le ${formatDate(d.dateCreation)}</div>
+          </div>
+          <div class="req-amount">
+            <div class="label">Plafond demandé</div>
+            <div class="value">${Number(d.plafondDemande || 0).toLocaleString()} HTG</div>
+          </div>
+        </div>
+
+        <div class="req-fields">
+          <div class="req-field">
+            <div class="rf-label">Numéro de patente</div>
+            <div class="rf-value">${escapeHtml(d.numeroPatente || "—")}</div>
+          </div>
+          <div class="req-field">
+            <div class="rf-label">Matricule fiscal (NIF)</div>
+            <div class="rf-value">${escapeHtml(d.numeroMatricule || "—")}</div>
+          </div>
+          ${d.volumeEstime ? `
+          <div class="req-field">
+            <div class="rf-label">Volume mensuel estimé</div>
+            <div class="rf-value">${escapeHtml(d.volumeEstime)} HTG</div>
+          </div>` : ""}
+          <div class="req-field">
+            <div class="rf-label">Plafond actuel</div>
+            <div class="rf-value">${Number(d.plafondActuel || 0).toLocaleString()} HTG</div>
+          </div>
+        </div>
+
+        <div class="req-docs">
+          ${d.patenteURL ? `<a class="doc-link" href="${escapeHtml(d.patenteURL)}" target="_blank" rel="noopener">📄 Voir la patente</a>` : ""}
+          ${d.matriculeURL ? `<a class="doc-link" href="${escapeHtml(d.matriculeURL)}" target="_blank" rel="noopener">📄 Voir le matricule</a>` : ""}
+        </div>
+
+        ${d.note ? `<div class="req-note"><div class="rn-label">Note du commerçant</div>${escapeHtml(d.note)}</div>` : ""}
+
+        ${d.statut === "en_attente" ? `
+          <div class="req-actions">
+            <button class="req-btn approve" data-action="approve">✓ Approuver — passer à ${Number(d.plafondDemande || 0).toLocaleString()} HTG</button>
+            <button class="req-btn reject" data-action="reject-toggle">✕ Rejeter</button>
+          </div>
+          <div class="reject-box" data-reject-box>
+            <textarea placeholder="Motif du rejet (visible par le commerçant)…" data-reject-reason></textarea>
+            <div class="rb-actions">
+              <button class="rb-confirm" data-action="reject-confirm">Confirmer le rejet</button>
+              <button class="rb-cancel" data-action="reject-cancel">Annuler</button>
+            </div>
+          </div>
+          <div class="req-error" data-req-error></div>
+        ` : `
+          <div class="req-resolved-note">
+            <span class="status-pill ${d.statut}">${statusLabel(d.statut)}</span>
+            ${d.statut === "rejete" && d.motifRejet ? ` — ${escapeHtml(d.motifRejet)}` : ""}
+            ${d.ApprouvePar ? ` · par ${escapeHtml(d.ApprouvePar)}` : ""}
+            ${d.dateResolution ? ` · ${formatDate(d.dateResolution)}` : ""}
+          </div>
+        `}
+      </div>
+    `).join("");
+
+    container.querySelectorAll(".req-card").forEach(card => attachCardHandlers(card));
+  }
+
+  function attachCardHandlers(card) {
+    const id = card.dataset.id;
+    const errBox = card.querySelector("[data-req-error]");
+
+    card.querySelectorAll("[data-action]").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const action = btn.dataset.action;
+
+        if (action === "reject-toggle") {
+          card.querySelector("[data-reject-box]").classList.add("show");
+          return;
+        }
+        if (action === "reject-cancel") {
+          card.querySelector("[data-reject-box]").classList.remove("show");
+          return;
+        }
+        if (action === "approve") {
+          await resolveRequest(card, id, "approuver", {});
+          return;
+        }
+        if (action === "reject-confirm") {
+          const reason = card.querySelector("[data-reject-reason]").value.trim();
+          if (!reason) {
+            if (errBox) { errBox.textContent = "Merci d'indiquer un motif de rejet."; errBox.style.display = "block"; }
+            return;
+          }
+          await resolveRequest(card, id, "rejeter", { motifRejet: reason });
+        }
+      });
+    });
+  }
+
+  async function resolveRequest(card, id, action, payload) {
+    const buttons = card.querySelectorAll(".req-btn, .rb-confirm, .rb-cancel");
+    buttons.forEach(b => b.disabled = true);
+    const errBox = card.querySelector("[data-req-error]");
+    if (errBox) errBox.style.display = "none";
+
+    try {
+      const res = await fetch(`${CONFIG.API_URL}/admin/plafond/demandes/${encodeURIComponent(id)}/${action}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${getToken()}`
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        if (errBox) { errBox.textContent = data.error || "Échec de l'opération."; errBox.style.display = "block"; }
+        buttons.forEach(b => b.disabled = false);
+        return;
+      }
+
+      loadRequests();
+
+    } catch (err) {
+      if (errBox) { errBox.textContent = "Connexion au serveur impossible."; errBox.style.display = "block"; }
+      buttons.forEach(b => b.disabled = false);
+    }
+  }
+
+  filterTabs.addEventListener("click", (e) => {
+    const btn = e.target.closest(".filter-tab");
+    if (!btn) return;
+    currentFilter = btn.dataset.filter;
+    filterTabs.querySelectorAll(".filter-tab").forEach(t => t.classList.toggle("active", t === btn));
+    loadRequests();
+  });
+
+  async function loadRequests() {
+    const token = getToken();
+    if (!token) { renderLoginGate(); return; }
+
+    container.innerHTML = `<div class="state-msg"><div class="icon">⏳</div>Chargement…</div>`;
+
+    try {
+      const res = await fetch(`${CONFIG.API_URL}/admin/plafond/demandes?statut=${encodeURIComponent(currentFilter)}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        if (res.status === 401 || res.status === 403) {
+          renderLoginGate();
+          return;
+        }
+        container.innerHTML = `<div class="state-msg"><div class="icon">⚠️</div><p>${escapeHtml(data.error || "Erreur de chargement.")}</p></div>`;
+        return;
+      }
+
+      renderList(data.demandes || []);
+
+    } catch (err) {
+      container.innerHTML = `<div class="state-msg"><div class="icon">⚠️</div><p>Connexion au serveur impossible.</p></div>`;
+    }
+  }
+
+  loadRequests();
+</script>
+</body>
+</html>
