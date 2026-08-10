@@ -815,40 +815,40 @@ const SUPABASE_ANON = "sb_publishable_pJFApCtYmyFVlQUHJ_eDMw_OANkJ";
 const STORE_URL     = "https://store.mijocomplexe.workers.dev/";
 const SELLER_URL    = "https://store-seller.mijocomplexe.workers.dev/";
 const MAX_IMAGE_BYTES = 1 * 1024 * 1024; // 1 Mo
-
+ 
 let cart = [];
 let promoSelected = false;
 let allVendeursCards = []; // stocke les cards vendeurs pour le filtre
 let selectedImageFile = null;
-
+ 
 const STORE_SELLER_URL = "https://store-seller.mijocomplexe.workers.dev/";
-
+ 
 async function loadVendeursProducts() {
   try {
     const res = await fetch(STORE_SELLER_URL, { method: "GET" });
     const data = await res.json();
     const grid = document.getElementById('vendeurs-grid');
-
+ 
     if (!data.success || !data.produits?.length) {
       document.getElementById('vendeurs-header').style.display = 'none';
       grid.innerHTML = '';
       return;
     }
-
+ 
     grid.innerHTML = '';
     document.getElementById('vendeurs-header').style.display = '';
     document.getElementById('vendeurs-count').textContent =
       data.produits.length + ' produit' + (data.produits.length > 1 ? 's' : '');
-
+ 
     data.produits.forEach(p => {
       const card = buildVendeurCard(p);
       grid.appendChild(card);
       allVendeursCards.push(card);
     });
-
+ 
     const totalCards = document.querySelectorAll('#main-grid .card').length + data.produits.length;
     document.getElementById('stat-count').textContent = totalCards + '+';
-
+ 
   } catch (err) {
     console.error('Erreur chargement produits:', err);
     document.getElementById('vendeurs-grid').innerHTML =
@@ -863,7 +863,7 @@ function buildVendeurCard(p) {
   card.className = 'card';
   card.dataset.cat = (p.Categorie || '').toLowerCase();
   card.dataset.source = 'vendeur'; // marqueur pour le filtre
-
+ 
   // Choisir une image placeholder selon la catégorie si pas d'image uploadée
   const imgMap = {
     'application':             'https://i.postimg.cc/Bv5YV23w/20250410-102102-removebg-preview.png',
@@ -875,30 +875,30 @@ function buildVendeurCard(p) {
   };
   // Priorité : image uploadée par le vendeur (ImageURL) → sinon placeholder catégorie → sinon placeholder générique
   const imgSrc = p.ImageURL || imgMap[(p.Categorie || '').toLowerCase()] || imgMap['e-book'];
-
+ 
   // Badge HTML
   let badgeHTML = '';
   if (p.BadgePromo && p.BadgeLabel) {
     const badgeStyle = getBadgeStyle(p.BadgeLabel);
     badgeHTML = `<span class="badge ${badgeStyle}">${p.BadgeLabel}</span>`;
   }
-
+ 
   // Tag "Vendeur" sur l'image
   const vendeurTag = `<span class="badge-vendeur">🏪 Vendeur</span>`;
-
+ 
   // Prix formaté
   const prixFormat = Number(p.Prix).toLocaleString('fr-FR');
-
+ 
   // ID unique pour ce produit (on utilise le vrai Id Supabase, casse correcte)
   const prodId = 'SB-' + (p.Id ?? p.id ?? Math.random().toString(36).substr(2,6));
-
+ 
   // Sécuriser les valeurs pour l'onclick
   const safeName    = (p.NomProduit  || '').replace(/'/g, "\\'");
   const safeVendeur = (p.vendeurId   || '');
   const safeLink    = (p.LienProduit || '');
-
+ 
   // 1. On injecte UNIQUEMENT la structure HTML statique, sans les données sensibles
-card.innerHTML = `
+  card.innerHTML = `
     <div class="card-img">
       <!-- Les badges peuvent être insérés ici selon ta logique -->
       <img class="img-produit" src="" alt="" loading="lazy" onerror="this.src='https://i.postimg.cc/vHfmQ1cM/a-clean-modern-book-cover-illustration-f-o79-YAln7-Tnao8fxz6p9-Pd-Q-g0-P-NGZVTcu08-SDb-QHh-Yy-Q.jpg'">
@@ -913,27 +913,30 @@ card.innerHTML = `
         <button class="btn-share" title="Partager">🔗</button>
       </div>
     </div>
-`;
-
-// 2. On insère les données de manière 100% sécurisée via textContent et la manipulation d'attributs
-const img = card.querySelector('.img-produit');
-img.src = imgSrc;
-img.alt = p.NomProduit || 'Produit';
-
-card.querySelector('.card-cat').textContent = p.Categorie || 'Produit';
-card.querySelector('.card-title').textContent = p.NomProduit || 'Sans titre';
-card.querySelector('.card-price').textContent = `${prixFormat} G`;
-card.querySelector('.card-seller b').textContent = p.NomVendeur || 'Vendeur MIJO';
-
-// 3. On attache les événements proprement, ce qui évite les failles XSS dans les onclick=""
-card.querySelector('.btn-buy').addEventListener('click', () => {
+  `;
+ 
+  // 2. On insère les données de manière 100% sécurisée via textContent et la manipulation d'attributs
+  const img = card.querySelector('.img-produit');
+  img.src = imgSrc;
+  img.alt = p.NomProduit || 'Produit';
+ 
+  card.querySelector('.card-cat').textContent = p.Categorie || 'Produit';
+  card.querySelector('.card-title').textContent = p.NomProduit || 'Sans titre';
+  card.querySelector('.card-price').textContent = `${prixFormat} G`;
+  card.querySelector('.card-seller b').textContent = p.NomVendeur || 'Vendeur MIJO';
+ 
+  // 3. On attache les événements proprement, ce qui évite les failles XSS dans les onclick=""
+  card.querySelector('.btn-buy').addEventListener('click', () => {
     addToCart(safeName, p.Prix, prodId, safeLink, safeVendeur);
-});
-
-card.querySelector('.btn-share').addEventListener('click', () => {
+  });
+ 
+  card.querySelector('.btn-share').addEventListener('click', () => {
     shareProduct(safeName, prodId);
-});
-
+  });
+ 
+  return card;
+}
+ 
 // Retourner la classe CSS du badge selon le label
 function getBadgeStyle(label) {
   if (!label) return 'badge-new';
@@ -946,7 +949,7 @@ function getBadgeStyle(label) {
   if (l.includes('exclusif'))  return 'badge-dark';
   return 'badge-new';
 }
-
+ 
 // ══════════════════════════════════════════════
 // UTILS
 // ══════════════════════════════════════════════
@@ -969,7 +972,7 @@ function toast(msg, color) {
 }
 function openOverlay(id)  { document.getElementById(id).classList.add('open'); }
 function closeOverlay(id) { document.getElementById(id).classList.remove('open'); }
-
+ 
 // ══════════════════════════════════════════════
 // SEARCH
 // ══════════════════════════════════════════════
@@ -985,20 +988,20 @@ document.getElementById('searchInput').addEventListener('input', function() {
     header.style.display = hasVisible ? '' : 'none';
   }
 });
-
+ 
 // ══════════════════════════════════════════════
 // FILTER PAR CATÉGORIE
 // ══════════════════════════════════════════════
 function filterCat(cat, btn) {
   document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
-
+ 
   const mainCards    = document.querySelectorAll('#main-grid .card');
   const freeCards    = document.querySelectorAll('#free-grid .card');
   const vendeurCards = document.querySelectorAll('#vendeurs-grid .card');
   const freeHeader   = document.getElementById('free-section-header');
   const vendHeader   = document.getElementById('vendeurs-header');
-
+ 
   if (cat === 'all') {
     mainCards.forEach(c    => c.style.display = '');
     freeCards.forEach(c    => c.style.display = '');
@@ -1007,7 +1010,7 @@ function filterCat(cat, btn) {
     vendHeader.style.display  = vendeurCards.length > 0 ? '' : 'none';
     return;
   }
-
+ 
   if (cat === 'gratuit') {
     mainCards.forEach(c    => c.style.display = 'none');
     vendeurCards.forEach(c => c.style.display = 'none');
@@ -1016,14 +1019,14 @@ function filterCat(cat, btn) {
     vendHeader.style.display = 'none';
     return;
   }
-
+ 
   freeHeader.style.display = 'none';
   freeCards.forEach(c => c.style.display = 'none');
-
+ 
   mainCards.forEach(c => {
     c.style.display = (c.dataset.cat || '').toLowerCase().includes(cat) ? '' : 'none';
   });
-
+ 
   let vendeurVisible = 0;
   vendeurCards.forEach(c => {
     const show = (c.dataset.cat || '').toLowerCase().includes(cat);
@@ -1032,7 +1035,7 @@ function filterCat(cat, btn) {
   });
   vendHeader.style.display = vendeurVisible > 0 ? '' : 'none';
 }
-
+ 
 // ══════════════════════════════════════════════
 // PRODUITS GRATUITS
 // ══════════════════════════════════════════════
@@ -1052,7 +1055,7 @@ function getFree(name, code, driveLink) {
     toast('📦 Lien bientôt disponible pour : ' + name);
   }
 }
-
+ 
 // ══════════════════════════════════════════════
 // BADGE SELECTOR
 // ══════════════════════════════════════════════
@@ -1080,7 +1083,7 @@ function togglePromo() {
     document.getElementById('promo-preview-icon').textContent = '🏷️';
   }
 }
-
+ 
 // ══════════════════════════════════════════════
 // UPLOAD IMAGE PRODUIT (validation 1 Mo)
 // ══════════════════════════════════════════════
@@ -1089,9 +1092,9 @@ function handleImageSelect(event) {
   const drop = document.getElementById('file-drop');
   const dropText = document.getElementById('file-drop-text');
   const preview = document.getElementById('file-preview');
-
+ 
   if (!file) return;
-
+ 
   // Vérifier que c'est bien une image
   if (!file.type.startsWith('image/')) {
     toast('❌ Le fichier doit être une image');
@@ -1099,7 +1102,7 @@ function handleImageSelect(event) {
     resetImageState();
     return;
   }
-
+ 
   // Vérifier la taille — max 1 Mo
   if (file.size > MAX_IMAGE_BYTES) {
     const sizeMo = (file.size / (1024*1024)).toFixed(2);
@@ -1108,11 +1111,11 @@ function handleImageSelect(event) {
     resetImageState();
     return;
   }
-
+ 
   selectedImageFile = file;
   drop.classList.add('has-file');
   dropText.textContent = '✅ Image sélectionnée';
-
+ 
   // Aperçu
   const reader = new FileReader();
   reader.onload = e => {
@@ -1129,7 +1132,7 @@ function resetImageState() {
   document.getElementById('file-preview').style.display = 'none';
   document.getElementById('sell-image').value = '';
 }
-
+ 
 // ══════════════════════════════════════════════
 // PANIER
 // ══════════════════════════════════════════════
@@ -1182,9 +1185,9 @@ async function checkout() {
   const user = getUser();
   if (!user)      { toast('❌ Connectez-vous d\'abord'); return; }
   if (!cart.length){ toast('Panier vide'); return; }
-
+ 
   setCheckoutLoading(true, cart.length > 1 ? `Achat 1 sur ${cart.length}…` : 'Ne fermez pas cette page.');
-
+ 
   const results = [];
   try {
     // IMPORTANT : on traite les achats UN PAR UN (séquentiel), pas en parallèle.
@@ -1205,13 +1208,13 @@ async function checkout() {
           productName: item.name
         })
       }).then(r => r.json());
-
+ 
       results.push(r);
-
+ 
       // Si un achat échoue (ex: solde insuffisant en cours de route), on arrête tout de suite
       if (!r.success) break;
     }
-
+ 
     if (results.length > 0 && results.every(r => r.success)) {
       const last = results[results.length-1];
       if (last.newBalance !== undefined) {
@@ -1236,7 +1239,7 @@ async function checkout() {
     setCheckoutLoading(false);
   }
 }
-
+ 
 // ══════════════════════════════════════════════
 // PARTAGE
 // ══════════════════════════════════════════════
@@ -1249,7 +1252,7 @@ function shareProduct(name, code) {
     toast('🔗 Lien copié !');
   }
 }
-
+ 
 // ══════════════════════════════════════════════
 // MODAL VENDRE
 // ══════════════════════════════════════════════
@@ -1265,13 +1268,13 @@ async function submitProduct() {
   const desc     = document.getElementById('sell-desc').value.trim();
   const badgeLabel = document.getElementById('sell-badge-label').value;
   const imageFile  = document.getElementById('sell-image').files[0]; // ← nouveau
-
+ 
   if (!name || !cat || !price || !link) { toast('❌ Remplis tous les champs obligatoires'); return; }
   const user = getUser();
   if (!user) { toast('❌ Connectez-vous'); return; }
-
+ 
   toast('⏳ Publication en cours…');
-
+ 
   try {
     // ── Envoyer FormData au lieu de JSON ──
     const formData = new FormData();
@@ -1286,14 +1289,14 @@ async function submitProduct() {
     if (imageFile) {
       formData.append('image', imageFile); // ← image ajoutée
     }
-
+ 
     const res = await fetch('https://store-seller.mijocomplexe.workers.dev/', {
       method: 'POST',
       // ⚠️ NE PAS mettre Content-Type manuellement avec FormData
       // Le navigateur le met automatiquement avec le bon boundary
       body: formData
     }).then(r => r.json());
-
+ 
     if (res.success) {
       toast('✅ ' + res.message);
       if (res.newBalance !== undefined) {
@@ -1318,14 +1321,14 @@ async function submitProduct() {
     }
   } catch(e) { toast('❌ Erreur réseau'); }
 }
-
+ 
 // ══════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════
 window.onload = function() {
   updateFreeButtons();
   loadVendeursProducts();
-
+ 
   // Deep link vers un produit spécifique
   const prodCode = new URLSearchParams(window.location.search).get('prod');
   if (prodCode) {
