@@ -435,6 +435,8 @@
     align-items: center;
     backdrop-filter: blur(4px);
     background: rgba(10, 20, 45, .55);
+    overflow-y: auto;          /* ajouté */
+    padding: 24px 0;           /* ajouté — respire en haut/bas quand ça scroll */
 }
 .welcome-sheet {
     background: var(--white);
@@ -444,6 +446,8 @@
     overflow: hidden;
     box-shadow: 0 20px 60px rgba(0,0,0,.35);
     animation: welcomePop .45s cubic-bezier(.22,.68,0,1.2) both;
+    max-height: none;          /* laisse le contenu pousser, le scroll se fait sur l'overlay */
+    margin: auto;              /* aide au centrage vertical quand ça scroll */
 }
 @keyframes welcomePop {
     from { opacity: 0; transform: scale(.85) translateY(20px); }
@@ -770,28 +774,26 @@
         </div>
     </div>
 </div>
-   <!-- STEP 2 MODAL — PREMIER DÉPÔT AVEC PARRAIN -->
+    
+  <!-- STEP 2 MODAL — PREMIER DÉPÔT AVEC PARRAIN -->
 <div id="step2Modal" class="modal-overlay welcome-overlay">
-    <div class="welcome-sheet">
+    <div class="welcome-sheet" style="position:relative; margin:auto;">
+        <button class="modal-close" onclick="hideStep2Modal()" style="position:sticky; top:12px; float:right; margin-right:12px; color:#fff; background:rgba(0,0,0,.3); border-radius:50%; width:30px; height:30px; z-index:5;">✕</button>
         <div class="welcome-header" style="background: linear-gradient(145deg, #10B981 0%, #059669 60%, #047857 100%);">
-            <button class="modal-close" onclick="hideStep2Modal()" style="position:absolute; top:12px; right:16px; color:#fff; z-index:2;">✕</button>
             <img src="https://i.postimg.cc/wMpBntft/gpt-image-2-cute-mascot-character-for-a-fintech-app-MIJO-PAY-friendly-holding-coins-flat-vec-0-remov.png" alt="Mascotte MIJO PAY" class="welcome-logo">
             <div class="welcome-glow"></div>
         </div>
         <div class="welcome-body">
             <h2 class="welcome-title">Votre cadeau vous attend! 🎁</h2>
             <p class="welcome-subtitle">Faites votre premier dépôt avec un code parrain valide et recevez un bonus de MIJO PAY.</p>
-
             <div class="welcome-step">
                 <span class="step-badge" style="background:#D1FAE5; color:#065F46;">Étape 2</span>
                 <span class="step-text">Premier dépôt avec parrain</span>
             </div>
-
             <div class="temp-pass-box" style="background:#D1FAE5; border-color:#10B981;">
                 <span class="temp-pass-label" style="color:#065F46;">Dépôt minimum requis</span>
                 <span class="temp-pass-value" style="color:#065F46; letter-spacing:2px;">1000 G → 250 G cadeau</span>
             </div>
-
             <div style="background:#FEF3C7; border:1.5px dashed #F59E0B; border-radius:14px; padding:12px 14px; margin-bottom:18px; text-align:left;">
                 <div style="font-size:.72em; font-weight:800; color:#92400E; text-transform:uppercase; letter-spacing:.4px; margin-bottom:6px;">
                     ⚠️ À bien respecter
@@ -806,7 +808,6 @@
                     En cas de code invalide, dépôt insuffisant, ou code déjà utilisé : aucun bonus ne sera accordé.
                 </div>
             </div>
-
             <button class="welcome-cta" style="background: linear-gradient(135deg, #10B981, #059669);" onclick="window.location.href='moncash.html'">
                 💰 Faire mon dépôt maintenant
             </button>
