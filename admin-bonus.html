@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Bonus Affiliés — MIJO PAY</title>
+<style>
+  :root{
+    --navy:#0B1E39;
+    --navy-deep:#071527;
+    --navy-card:#102B4E;
+    --gold:#D4AF37;
+    --gold-soft:#F1E3B0;
+    --text:#EDEFF5;
+    --text-dim:#9FB0C9;
+    --border:#20395F;
+    --success:#3CA35A;
+    --danger:#C0473E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+    background:linear-gradient(180deg,var(--navy-deep),var(--navy) 40%);
+    color:var(--text);
+    min-height:100vh;
+    padding:24px 16px 80px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+  header{margin-bottom:20px;}
+  header .eyebrow{
+    color:var(--gold);
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    font-weight:600;
+  }
+  header h1{margin:6px 0 4px;font-size:22px;}
+  header p{color:var(--text-dim);font-size:13.5px;margin:0;}
+
+  .filtres{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .filtres button{
+    padding:8px 14px;
+    border-radius:999px;
+    border:1px solid var(--border);
+    background:var(--navy-card);
+    color:var(--text-dim);
+    font-size:13px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .filtres button.active{
+    background:var(--gold);
+    color:var(--navy-deep);
+    border-color:var(--gold);
+  }
+
+  .demande{
+    background:var(--navy-card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:16px 18px;
+    margin-bottom:14px;
+  }
+  .demande-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+    margin-bottom:10px;
+  }
+  .plateforme-badge{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.05em;
+    padding:4px 10px;
+    border-radius:999px;
+    text-transform:uppercase;
+  }
+  .badge-WhatsApp{background:#25D36622;color:#7CE0A8;border:1px solid #25D36655;}
+  .badge-TikTok{background:#ff004422;color:#ff8fae;border:1px solid #ff004455;}
+
+  .statut-badge{
+    font-size:11px;
+    font-weight:700;
+    padding:4px 10px;
+    border-radius:999px;
+  }
+  .statut-En_attente{background:#D4AF3722;color:var(--gold-soft);border:1px solid #D4AF3755;}
+  .statut-Approuvé{background:#3ca35a22;color:#B8E8C6;border:1px solid var(--success);}
+  .statut-Rejeté{background:#c0473e22;color:#F2C3BE;border:1px solid var(--danger);}
+
+  .demande .user{font-weight:700;font-size:15px;}
+  .demande .meta{font-size:13px;color:var(--text-dim);margin-top:4px;line-height:1.6;}
+  .demande .meta b{color:var(--text);}
+  .demande .lien{
+    display:inline-block;
+    margin-top:8px;
+    font-size:13px;
+    color:var(--gold-soft);
+    text-decoration:underline;
+    word-break:break-all;
+  }
+
+  .montant{font-size:20px;font-weight:800;color:var(--gold);white-space:nowrap;}
+
+  .actions{display:flex;gap:8px;margin-top:14px;}
+  .actions button{
+    flex:1;
+    padding:10px;
+    border-radius:8px;
+    border:none;
+    font-weight:700;
+    font-size:13.5px;
+    cursor:pointer;
+  }
+  .btn-approuver{background:var(--success);color:#fff;}
+  .btn-rejeter{background:var(--danger);color:#fff;}
+  .actions button:disabled{opacity:.5;cursor:not-allowed;}
+
+  .vide{
+    text-align:center;
+    color:var(--text-dim);
+    padding:60px 20px;
+    font-size:14px;
+  }
+
+  .msg{
+    margin-bottom:14px;
+    padding:10px 14px;
+    border-radius:10px;
+    font-size:13px;
+    display:none;
+  }
+  .msg.ok{display:block;background:#3ca35a22;border:1px solid var(--success);color:#B8E8C6;}
+  .msg.err{display:block;background:#c0473e22;border:1px solid var(--danger);color:#F2C3BE;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">MIJO Admin</div>
+    <h1>Demandes de bonus affiliés</h1>
+    <p>Validez ou rejetez les demandes de bonus WhatsApp / TikTok</p>
+  </header>
+
+  <div class="msg" id="msgBox"></div>
+
+  <div class="filtres">
+    <button class="active" data-statut="En attente">En attente</button>
+    <button data-statut="Approuvé">Approuvées</button>
+    <button data-statut="Rejeté">Rejetées</button>
+    <button data-statut="Tous">Toutes</button>
+  </div>
+
+  <div id="liste"></div>
+</div>
+
+<script>
+  const WORKER_LISTE_URL   = "https://bonus-admin-liste.VOTRE-SOUS-DOMAINE.workers.dev";   // à remplacer
+  const WORKER_TRAITER_URL = "https://bonus-admin-traiter.VOTRE-SOUS-DOMAINE.workers.dev"; // à remplacer
+
+  const adminId = localStorage.getItem("adminId") || "admin"; // à adapter selon votre système d'auth admin
+
+  let statutActif = "En attente";
+
+  function badgePlateforme(p){
+    return `<span class="plateforme-badge badge-${p}">${p}</span>`;
+  }
+  function badgeStatut(s){
+    const cls = s.replace(/\s/g, "_");
+    return `<span class="statut-badge statut-${cls}">${s}</span>`;
+  }
+
+  async function chargerDemandes(){
+    const liste = document.getElementById("liste");
+    liste.innerHTML = `<div class="vide">Chargement...</div>`;
+
+    try {
+      const res = await fetch(WORKER_LISTE_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ statut: statutActif })
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        liste.innerHTML = `<div class="vide">Erreur : ${data.error}</div>`;
+        return;
+      }
+
+      if (!data.demandes || data.demandes.length === 0) {
+        liste.innerHTML = `<div class="vide">Aucune demande ${statutActif === "Tous" ? "" : "avec ce statut"}.</div>`;
+        return;
+      }
+
+      liste.innerHTML = data.demandes.map(d => `
+        <div class="demande" data-id="${d.id}">
+          <div class="demande-top">
+            <div>
+              <div class="user">${d.user_id}</div>
+              <div class="meta">
+                ${badgePlateforme(d.plateforme)} &nbsp; ${badgeStatut(d.statut)}<br>
+                <b>${d.nombre_vues_declare.toLocaleString()} vues</b> déclarées —
+                palier <b>${d.palier_vues.toLocaleString()} vues / ${d.palier_affiliations_requis} affiliations</b><br>
+                Affiliations au moment de la demande : <b>${d.nombre_affiliations_snapshot}</b><br>
+                Code parrain : <b>${d.code_parrain || "—"}</b>
+              </div>
+              <a class="lien" href="${d.lien_preuve}" target="_blank" rel="noopener">Voir la preuve →</a>
+            </div>
+            <div class="montant">${Number(d.montant).toLocaleString()} HTG</div>
+          </div>
+          ${d.statut === "En attente" ? `
+            <div class="actions">
+              <button class="btn-approuver" onclick="traiter(${d.id}, 'approuver', this)">Approuver</button>
+              <button class="btn-rejeter" onclick="traiter(${d.id}, 'rejeter', this)">Rejeter</button>
+            </div>
+          ` : d.commentaire_admin ? `<div class="meta" style="margin-top:8px;">Commentaire : ${d.commentaire_admin}</div>` : ""}
+        </div>
+      `).join("");
+
+    } catch (err) {
+      liste.innerHTML = `<div class="vide">Erreur de connexion.</div>`;
+    }
+  }
+
+  async function traiter(demandeId, action, btn){
+    const msgBox = document.getElementById("msgBox");
+    msgBox.className = "msg";
+
+    if (action === "rejeter" && !confirm("Confirmer le rejet de cette demande ?")) return;
+
+    const boutons = btn.parentElement.querySelectorAll("button");
+    boutons.forEach(b => b.disabled = true);
+
+    try {
+      const res = await fetch(WORKER_TRAITER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ demandeId, action, adminId })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        msgBox.className = "msg ok";
+        msgBox.textContent = data.message;
+        chargerDemandes();
+      } else {
+        msgBox.className = "msg err";
+        msgBox.textContent = data.error || "Une erreur est survenue.";
+        boutons.forEach(b => b.disabled = false);
+      }
+    } catch (err) {
+      msgBox.className = "msg err";
+      msgBox.textContent = "Erreur de connexion.";
+      boutons.forEach(b => b.disabled = false);
+    }
+  }
+
+  document.querySelectorAll(".filtres button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".filtres button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      statutActif = btn.dataset.statut;
+      chargerDemandes();
+    });
+  });
+
+  chargerDemandes();
+</script>
+</body>
+</html>
