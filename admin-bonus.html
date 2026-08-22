@@ -158,9 +158,9 @@
 
 <script>
   const WORKER_LISTE_URL   = "https://bonus-admin-liste.mijocomplexe.workers.dev/";   // à remplacer
-  const WORKER_TRAITER_URL = "https://bonus-admin-traiter.mijocomplexe.workers.dev/"; // à remplacer
+  const WORKER_TRAITER_URL = "https://bonus-admin-traiter.mijocomplexe.workers.dev/";
 
-  const adminId = localStorage.getItem("adminId") || "admin"; // à adapter selon votre système d'auth admin
+  const adminId = localStorage.getItem("userId") || "admin"; // à adapter selon votre système d'auth admin
 
   let statutActif = "En attente";
 
@@ -185,7 +185,7 @@
       const data = await res.json();
 
       if (!data.success) {
-        liste.innerHTML = `<div class="vide">Erreur : ${data.error}</div>`;
+        liste.innerHTML = `<div class="vide">Erreur : ${data.error}${data.DEBUG ? `<br><br><small style="opacity:.6;word-break:break-all;">${typeof data.DEBUG === "string" ? data.DEBUG : JSON.stringify(data.DEBUG)}</small>` : ""}</div>`;
         return;
       }
 
