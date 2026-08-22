@@ -223,7 +223,12 @@
     const msgBox = document.getElementById("msgBox");
     msgBox.className = "msg";
     msgBox.textContent = "";
+const storedUser = localStorage.getItem('user');
+    if (!storedUser) return;
+    try {
+        const user = JSON.parse(storedUser);
 
+        const userId = user.userId
     if (!userId) {
       msgBox.className = "msg err";
       msgBox.textContent = "Session utilisateur introuvable. Veuillez vous reconnecter.";
